@@ -83,7 +83,6 @@ public class ICareController {
 	        @RequestParam(value = "metadataType", required = true) String metadataType,
 	        @RequestParam(value = "count", defaultValue = "1", required = false) Integer count) throws Exception {
 		List<String> generatedCode = iCareService.generateCode(globalProperty, metadataType, count);
-		
 		return generatedCode;
 	}
 	
