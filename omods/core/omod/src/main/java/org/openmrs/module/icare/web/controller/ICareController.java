@@ -95,6 +95,7 @@ public class ICareController {
 	@ResponseBody
 	public Map<String, Object> onGetSummary() {
 		Summary summary = iCareService.getSummary();
+
 		return summary.toMap();
 	}
 	
