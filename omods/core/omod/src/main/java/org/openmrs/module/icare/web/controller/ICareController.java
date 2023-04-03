@@ -273,7 +273,7 @@ public class ICareController {
 		}
 		
 		prescription.setPatient(patientService.getPatientByUuid(prescription.getPatient().getUuid()));
-		//order.setId(33009);
+
 		
 		ProviderService providerService = Context.getProviderService();
 		Provider provider = providerService.getProviderByUuid(prescription.getOrderer().getUuid());
