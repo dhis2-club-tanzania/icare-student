@@ -279,7 +279,6 @@ public class ICareController {
 		Provider provider = providerService.getProviderByUuid(prescription.getOrderer().getUuid());
 		prescription.setOrderer(provider);
 
-		//concept.setUuid((String) orderObject.get("concept"));
 		prescription.setConcept(conceptService.getConceptByUuid(prescription.getConcept().getUuid()));
 		prescription.setCareSetting(orderService.getCareSetting(1));
 		
