@@ -268,7 +268,6 @@ public class ICareController {
 		prescription.setFrequency(orderService.getOrderFrequencyByUuid(prescription.getFrequency().getUuid()));
 		prescription.setQuantityUnits(conceptService.getConceptByUuid(prescription.getQuantityUnits().getUuid()));
 
-
 		if (prescription.getDrug().getUuid() != null) {
 			prescription.setDrug(conceptService.getDrugByUuid(prescription.getDrug().getUuid()));
 		}
