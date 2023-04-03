@@ -283,7 +283,9 @@ public class ICareController {
 		prescription.setCareSetting(orderService.getCareSetting(1));
 		
 		prescription.setEncounter(Context.getEncounterService().getEncounterByUuid(prescription.getEncounter().getUuid()));
-		
+
+
+
 		OrderType orderType = Context.getOrderService().getOrderTypeByName("Prescription");
 		if (orderType == null) {
 			throw new ConfigurationException("Prescription Order Type is not configured.");
