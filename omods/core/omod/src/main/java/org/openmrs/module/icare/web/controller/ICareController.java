@@ -267,8 +267,7 @@ public class ICareController {
 		prescription.setRoute(conceptService.getConceptByUuid(prescription.getRoute().getUuid()));
 		prescription.setFrequency(orderService.getOrderFrequencyByUuid(prescription.getFrequency().getUuid()));
 		prescription.setQuantityUnits(conceptService.getConceptByUuid(prescription.getQuantityUnits().getUuid()));
-		//order.setNumRefills((Integer) orderObject.get("numRefills"));
-		
+
 		if (prescription.getDrug().getUuid() != null) {
 			prescription.setDrug(conceptService.getDrugByUuid(prescription.getDrug().getUuid()));
 		}
