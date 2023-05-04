@@ -83,6 +83,7 @@ import { ConceptsService } from "../../resources/concepts/services/concepts.serv
 import { VisitConsultationStatusModalComponent } from "../../dialogs/visit-consultation-status-modal/visit-consultation-status-modal.component";
 import { BillingService } from "src/app/modules/billing/services/billing.service";
 import { tap, map as rxMap } from "rxjs/operators";
+import { AppointmentFormComponent } from "../../dialogs/appointment-form/appointment-form.component";
 
 @Component({
   selector: "app-shared-patient-dashboard",
@@ -539,6 +540,13 @@ export class SharedPatientDashboardComponent implements OnInit {
         visit,
         location,
       },
+    });
+  }
+
+  openAppointmentForm() {
+    this.dialog.open(AppointmentFormComponent, {
+      width: "75%",
+      data: {},
     });
   }
 

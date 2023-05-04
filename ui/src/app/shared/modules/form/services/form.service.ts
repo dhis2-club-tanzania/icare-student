@@ -126,6 +126,18 @@ export class FormService {
           return response?.results;
         })
       );
+    } else if (searchControlType === "patient") {
+      return from(this.api.patient.getAllPatients({ q: parameters?.q })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
+    } else if(searchControlType === "appointmentscheduling") {
+      return from(this.api.appointmentscheduling.getAllAppointmentTypes({ q: parameters?.q })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
     } else if (searchControlType === "user") {
       return from(this.api.user.getAllUsers({ q: parameters?.q })).pipe(
         map((response) => {
