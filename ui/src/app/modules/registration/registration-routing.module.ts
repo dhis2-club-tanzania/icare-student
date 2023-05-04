@@ -8,6 +8,8 @@ import { RegisterNewClientHomeComponent } from "./pages/register-new-client-home
 import { RegistrationAddComponent } from "./pages/registration-add/registration-add.component";
 import { RegistrationHomeComponent } from "./pages/registration-home/registration-home.component";
 import { VisitComponent } from "./pages/visit/visit.component";
+import { AppointmentsListComponent } from "./pages/appointments-list/appointments-list.component";
+import { AppointmentDashboardComponent } from "./pages/appointment-dashboard/appointment-dashboard.component";
 
 const routes: Routes = [
   {
@@ -44,6 +46,14 @@ const routes: Routes = [
   {
     path: "patients-list/location/:location",
     component: PatientsListByLocationComponent,
+  },
+  {
+    path: "appointments",
+    component: AppointmentsListComponent,
+  },
+  {
+    path: "dashboard/:appointmentId",
+    component: AppointmentDashboardComponent,
   },
 ];
 

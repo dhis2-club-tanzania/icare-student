@@ -1,0 +1,58 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-12">
+            <div style="padding: 0 4px" *ngIf="{
+            currentUser: currentUser$ | async,
+            userPrivileges: userPrivileges$ | async,
+            loadingVisit: loadingVisit$ | async,
+            activeVisit: activeVisit$ | async,
+            iCareGeneralConfigurations: iCareGeneralConfigurations$ | async,
+            currentLocation: currentLocation$ | async
+          } as params">
+                <app-shared-appointment-dashboard *ngIf="
+              params?.currentUser &&
+              params?.userPrivileges &&
+              params?.activeVisit &&
+              !params?.loadingVisit &&
+              params?.iCareGeneralConfigurations &&
+              params?.iCareGeneralConfigurations !== '' &&
+              params?.currentLocation
+            " [currentUser]="params?.currentUser" [activeVisit]="params?.activeVisit"
+                    [userPrivileges]="params?.userPrivileges"
+                    [iCareGeneralConfigurations]="params?.iCareGeneralConfigurations"
+                    [currentLocation]="params?.currentLocation" [isInpatient]="true" (assignBed)="
+              onAssignBed(
+                bedsByLocationDetails,
+                currentPatient,
+                provider,
+                activeVisit,
+                bedOrdersWithBillStatus
+              )
+            " (dichargePatient)="
+              dischargePatient(
+                $event,
+                activeVisit,
+                currentPatient,
+                provider,
+                lastBedOrder
+              )
+            "></app-shared-appointment-dashboard>
+                <div class="alert alert-danger mt-2" role="alert" *ngIf="params?.iCareGeneralConfigurations === ''">
+                    Missing General iCare Metadata Configurations, Please set
+                    "iCare.GeneralMetadata.Configurations" or Contact IT
+                </div>
+
+                <div class="alert alert-danger mt-2" role="alert" *ngIf="params?.iCareClinicConfigurations === ''">
+                    Missing Icare Clinic Configurations. Please set
+                    "icare.clinic.configurations" or Contact IT
+                </div>
+
+                <mat-progress-bar mode="indeterminate" *ngIf="
+              !params?.userPrivileges ||
+              params?.rolesLoadingState ||
+              params?.loadingVisit ||
+              !params?.currentLocation
+            "></mat-progress-bar>
+            </div>
+        </div>
+    </div>

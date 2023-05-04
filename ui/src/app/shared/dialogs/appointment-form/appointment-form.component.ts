@@ -95,16 +95,16 @@ export class AppointmentFormComponent implements OnInit {
         min: formatDateToYYMMDD(new Date()),
         value: "",
       }),
-      new DateTimeField({
-        id: "startDate",
-        key: "startat",
-        label: "Start Date",
-      }),
-      new DateTimeField({
-        id: "endDate",
-        key: "endat",
-        label: "End Date",
-    }),
+    //   new DateTimeField({
+    //     id: "startDate",
+    //     key: "startat",
+    //     label: "Start Date",
+    //   }),
+    //   new DateTimeField({
+    //     id: "endDate",
+    //     key: "endat",
+    //     label: "End Date",
+    // }),
       new TextArea({
         id: "notes",
         key: "notes",
