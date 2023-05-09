@@ -13,6 +13,7 @@ import { AppState } from "src/app/store/reducers";
 import { Patient } from "../../resources/patient/models/patient.model";
 import { Visit } from "../../resources/visits/models/visit.model";
 import { VisitsService } from "../../resources/visits/services";
+import { AppointmentService } from "../../resources/appointment/services/appointment.service";
 
 import { uniq } from "lodash";
 import {
@@ -69,6 +70,7 @@ export class AppointmentsListTableComponent implements OnInit {
   startingIndex: number = 0;
   errors: any[] = [];
   constructor(
+    private appointmentService: AppointmentService,
     private visitService: VisitsService,
     private store: Store<AppState>,
     private route: ActivatedRoute,
@@ -96,34 +98,14 @@ export class AppointmentsListTableComponent implements OnInit {
       this.paymentTypeSelected = this.defaultFilter;
     }
     this.itemsPerPage = this.itemsPerPage ? this.itemsPerPage : 10;
-    this.getVisits(this.visits);
+    this.getAppointments(this.visits);
   }
 
-  private getVisits(visits: Visit[]) {
+  private getAppointments(visits: Visit[]) {
     this.loadingPatients = true;
-    this.visits$ = visits
-      ? of(visits)
-      : this.service && this.service === "LABS"
-      ? this.visitService.getLabVisits("", 0, this.itemsPerPage).pipe(
-          tap(() => {
-            this.loadingPatients = false;
-          })
-        )
-      : this.visitService
-          .getAllVisits(
-            !this.doNotUseLocation ? this.currentLocation : null,
-            false,
-            false,
-            null,
-            this.startingIndex,
-            this.itemsPerPage,
-            this.orderType,
-            this.orderStatus,
-            this.orderStatusCode,
-            this.orderBy ? this.orderBy : "ENCOUNTER",
-            this.orderByDirection ? this.orderByDirection : "ASC",
+    this.visits$ =  this.appointmentService
+          .getAppointments(
             this.filterBy ? this.filterBy : "",
-            this.encounterType
           )
           .pipe(
             tap((response: any) => {
@@ -132,7 +114,9 @@ export class AppointmentsListTableComponent implements OnInit {
                 this.errors = [...this.errors, response?.error];
               }
             })
-          );
+    );
+    
+    console.log(this.visits$)
   }
 
   getAnotherList(event: Event, visit, type): void {
@@ -234,10 +218,7 @@ export class AppointmentsListTableComponent implements OnInit {
     if (e) {
       e.stopPropagation();
     }
-    this.store.dispatch(clearBills());
-    this.store.dispatch(clearBillItems());
-    this.store.dispatch(clearActiveVisit());
-    this.selectPatient.emit({ ...visit?.patient, visitUuid: visit?.uuid });
+    this.selectPatient.emit({ visit });
   }
 
   togglePatientTypeList(type) {

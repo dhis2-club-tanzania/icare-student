@@ -544,9 +544,16 @@ export class SharedPatientDashboardComponent implements OnInit {
   }
 
   openAppointmentForm() {
+    let patient
+    this.currentPatient$.subscribe(res => {patient = res})
+
     this.dialog.open(AppointmentFormComponent, {
       width: "75%",
-      data: {},
+      data: {
+        patient: patient,
+        location: this.currentLocation,
+        visit: this.activeVisit
+      },
     });
   }
 
