@@ -1,0 +1,10 @@
+<ng-container *ngIf="currentDashboard$ | async as currentDashboard">
+    <!-- Dashboard name -->
+    <div>{{currentDashboard.name}}</div>
+
+<!-- Dashboard items -->
+<!-- Loop through dashboard items *ngFor="let dashboardItem if dashboard.dashboardItems " -->
+<div *ngFor="let dashboardItem of currentDashboard.dashboardItems">
+    <app-dashboard-item [dashboardItem]="dashboardItem"></app-dashboard-item>
+</div>
+</ng-container>

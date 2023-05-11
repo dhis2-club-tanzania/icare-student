@@ -1,0 +1,9 @@
+<p>dashboard works!</p>
+<!-- Dashboard menus-->
+<div>
+    <a *ngFor="let dashboard of dashboards$ | async" [routerLink]="[dashboard.id]">{{dashboard.name}}</a>
+</div>
+<!-- Dashboard menus -->
+
+<!-- Routing -->
+<router-outlet></router-outlet>

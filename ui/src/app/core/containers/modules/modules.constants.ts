@@ -17,13 +17,23 @@ export const ICARE_APPS: ICAREApp[] = [
     hidden: true,
     order: 0,
   },
+  // Mine dashboard
+  {
+    name: "Dashboard",
+    id: "dashboard",
+    image: "assets/material/dashboard.png",
+    icon: "dashboard",
+    path: "/dashboard",
+    order: 1,
+  },
+  // End of mine dashboard
   {
     name: "Registration",
     id: "registration",
     icon: "person_add",
     image: "assets/material/register.png",
     path: "/registration",
-    order: 1,
+    order: 2,
     modules: [
       {
         path: "/registration/home",
@@ -38,7 +48,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/clinic.png",
     icon: "pregnant_woman",
     path: "/clinic",
-    order: 3,
+    order: 4,
   },
   {
     name: "Nursing",
@@ -46,7 +56,7 @@ export const ICARE_APPS: ICAREApp[] = [
     icon: "pregnant_woman",
     image: "assets/material/triage.png",
     path: "/nursing",
-    order: 2,
+    order: 3,
   },
   {
     name: "Diagnostic",
@@ -118,7 +128,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/dispensing.png",
     icon: "store",
     path: "./dispensing",
-    order: 7,
+    order: 8,
   },
   {
     name: "Store",
@@ -134,7 +144,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/inpatient.png",
     icon: "bed",
     path: "/inpatient",
-    order: 4,
+    order: 5,
     considerLocationRoute: true,
   },
   {
@@ -143,7 +153,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/laboratory.png",
     icon: "local_hospital",
     path: "/laboratory",
-    order: 6,
+    order: 7,
   },
   {
     name: "Cashier",
@@ -151,7 +161,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/cashier.png",
     icon: "credit_card",
     path: "/billing",
-    order: 5,
+    order: 6,
   },
   {
     name: "E-claim",
@@ -159,7 +169,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/cashier.png",
     icon: "credit_card",
     path: "/e-claim",
-    order: 9,
+    order: 10,
   },
   {
     name: "Social Welfare",
@@ -167,7 +177,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/welfare.png",
     icon: "credit_card",
     path: "/billing/exemption",
-    order: 8,
+    order: 9,
   },
   {
     name: "Reports",
@@ -175,7 +185,7 @@ export const ICARE_APPS: ICAREApp[] = [
     image: "assets/material/report.png",
     icon: "bar_chart",
     path: "/interactive-reports",
-    order: 10,
+    order: 11,
   },
   {
     name: "Settings",
@@ -183,7 +193,7 @@ export const ICARE_APPS: ICAREApp[] = [
     icon: "settings",
     image: "assets/material/settings.png",
     path: "/maintenance",
-    order: 11,
+    order: 12,
     modules: [
       {
         path: "/maintenance/price-list",

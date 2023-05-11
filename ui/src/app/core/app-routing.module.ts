@@ -159,6 +159,11 @@ const routes: Routes = [
         loadChildren: () =>
           import("../modules/dhis2/dhis2.module").then((m) => m.DHIS2Module),
       },
+      {
+        path: "dashboard",
+        loadChildren: () =>
+          import("../modules/dashboard/dashboard.module").then((m) => m.DashboardModule),
+      },
     ],
   },
   {
