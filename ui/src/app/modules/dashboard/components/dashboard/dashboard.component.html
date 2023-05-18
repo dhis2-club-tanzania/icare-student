@@ -1,5 +1,16 @@
 <p>dashboard works!</p>
 <!-- Dashboard menus-->
+<div class="dashboard">
+    <app-total-patients-by-category></app-total-patients-by-category>
+    <app-annual-patients></app-annual-patients>
+    <app-average-er-wait-time></app-average-er-wait-time>
+    <app-staff-to-patient-ratio></app-staff-to-patient-ratio>
+    <app-available-staff></app-available-staff>
+    <app-out-in-patients></app-out-in-patients>
+    <app-average-treatment-cost></app-average-treatment-cost>
+    <app-common-diseases></app-common-diseases>
+  </div>
+  
 <div>
     <a *ngFor="let dashboard of dashboards$ | async" [routerLink]="[dashboard.id]">{{dashboard.name}}</a>
 </div>
