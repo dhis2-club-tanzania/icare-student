@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators,
 } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -43,7 +43,7 @@ export class AddUserComponent implements OnInit {
   @ViewChild("table", { static: false }) table: MatTable<any>;
   @ViewChild("filter", { static: false }) filter: ElementRef;
   loading: boolean = true;
-  userForm: FormGroup;
+  userForm: UntypedFormGroup;
   hide: boolean = true;
   roles: RoleCreate[];
   selectedRoles: any[] = [];
@@ -90,7 +90,7 @@ export class AddUserComponent implements OnInit {
   passwordIsRequired: boolean = true;
   selectedModules: any[] = [];
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private service: UserService,
     private _snackBar: MatSnackBar,
     private locationService: LocationService,
@@ -234,53 +234,53 @@ export class AddUserComponent implements OnInit {
   generateForm(user: any): any {
     this.selectedRoles = user?.roles || [];
     return this.fb.group({
-      username: new FormControl(user?.username, Validators.required),
+      username: new UntypedFormControl(user?.username, Validators.required),
       password: [
         "",
         !user ? [Validators.required, Validators.minLength(8)] : [],
       ],
-      gender: new FormControl(user?.person ? user?.person?.gender : null, [
+      gender: new UntypedFormControl(user?.person ? user?.person?.gender : null, [
         Validators?.required,
       ]),
-      middleName: new FormControl(
+      middleName: new UntypedFormControl(
         user?.person ? user?.person?.preferredName?.middleName : null
       ),
-      firstName: new FormControl(
+      firstName: new UntypedFormControl(
         user?.person ? user?.person?.preferredName?.givenName : null,
         Validators.required
       ),
-      surname: new FormControl(
+      surname: new UntypedFormControl(
         user?.person ? user?.person?.preferredName?.familyName : null,
         Validators.required
       ),
-      confirmpassword: new FormControl(""),
-      addressDisplay: new FormControl(
+      confirmpassword: new UntypedFormControl(""),
+      addressDisplay: new UntypedFormControl(
         user?.person ? user?.person?.preferredAddress?.address1 : null
       ),
-      country: new FormControl(
+      country: new UntypedFormControl(
         user?.person ? user?.person?.preferredAddress?.country : null,
         Validators.required
       ),
-      district: new FormControl(
+      district: new UntypedFormControl(
         user?.person ? user?.person?.preferredAddress?.countyDistrict : null,
         Validators.required
       ),
-      city: new FormControl(
+      city: new UntypedFormControl(
         user?.person ? user?.person?.preferredAddress?.stateProvince : null,
         Validators.required
       ),
-      postalCode: new FormControl(""),
-      addressDisplay2: new FormControl(
+      postalCode: new UntypedFormControl(""),
+      addressDisplay2: new UntypedFormControl(
         user?.person ? user?.person?.preferredAddress?.address1 : null
       ),
       checked: false,
-      birthdate: new FormControl(
+      birthdate: new UntypedFormControl(
         user?.person ? new Date(user?.person?.birthdate) : null,
         Validators.required
       ),
-      MCTNumber: new FormControl(user?.MCTNumber),
-      phoneNumber: new FormControl(user?.phoneNumber),
-      qualification: new FormControl(user?.qualification),
+      MCTNumber: new UntypedFormControl(user?.MCTNumber),
+      phoneNumber: new UntypedFormControl(user?.phoneNumber),
+      qualification: new UntypedFormControl(user?.qualification),
     });
   }
 

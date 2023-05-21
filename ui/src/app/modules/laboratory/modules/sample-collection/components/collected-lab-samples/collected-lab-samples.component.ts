@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { AppState } from "src/app/store/reducers";
 import { Observable } from "rxjs";
@@ -23,7 +23,7 @@ import { getLabSamplesGroupedBymrNoAndFilteredByStatus } from "src/app/modules/l
   styleUrls: ["./collected-lab-samples.component.scss"],
 })
 export class CollectedLabSamplesComponent implements OnInit {
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
 
   expandedRow: number;
 

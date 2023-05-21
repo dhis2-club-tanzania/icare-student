@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { AppState } from "src/app/store/reducers";
@@ -21,7 +21,7 @@ import { getCurrentUserDetails } from "src/app/store/selectors/current-user.sele
   styleUrls: ["./lab-samples-allocation.component.scss"],
 })
 export class LabSamplesAllocationComponent implements OnInit {
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
   expandedRow: number;
   samples$: Observable<SampleObject[]>;
   testContainers$: Observable<TestContainer[]>;

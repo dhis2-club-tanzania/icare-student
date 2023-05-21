@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import * as _ from "lodash";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
@@ -47,7 +47,7 @@ export class PatientOrdersComponent implements OnInit {
   savedData: any = {};
   samplesCollected: any[];
 
-  selected = new FormControl(0);
+  selected = new UntypedFormControl(0);
 
   sampleValues = {};
 

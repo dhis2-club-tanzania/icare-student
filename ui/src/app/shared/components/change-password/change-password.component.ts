@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators,
 } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -20,13 +20,13 @@ export class ChangePasswordComponent implements OnInit {
   passwordFocusOut: Boolean = false;
   passwordStrong: Boolean = true;
   hide: Boolean = true;
-  userForm: FormGroup;
+  userForm: UntypedFormGroup;
   oldPassword: Boolean = true;
   confirmFocusOut: Boolean = false;
   saving: boolean = false;
   currentPasswordIsEquelToNew: Boolean = false;
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private dialog: MatDialogRef<ChangePasswordComponent>,
     private service: ConfigsService,
     private _snackBar: MatSnackBar
@@ -37,7 +37,7 @@ export class ChangePasswordComponent implements OnInit {
   }
   generateForm() {
     return this.fb.group({
-      oldpassword: new FormControl('', Validators.required),
+      oldpassword: new UntypedFormControl('', Validators.required),
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmpassword: [''],
     });

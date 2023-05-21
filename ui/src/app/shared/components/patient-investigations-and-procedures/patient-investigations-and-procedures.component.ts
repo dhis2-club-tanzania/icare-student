@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { Visit } from "../../resources/visits/models/visit.model";
 
 @Component({
@@ -21,7 +21,7 @@ export class PatientInvestigationsAndProceduresComponent implements OnInit {
   @Input() isInpatient: boolean;
   @Input() tabToShow: boolean;
   @Input() isTheatre: boolean;
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
 
   shouldShowLabSection: boolean = false;
   @Output() updateConsultationOrder = new EventEmitter();

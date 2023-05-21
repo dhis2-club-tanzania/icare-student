@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
@@ -20,7 +20,7 @@ import { getCurrentUserPrivileges } from "src/app/store/selectors/current-user.s
 })
 export class ClinicPatientListComponent implements OnInit {
   currentLocation$: Observable<any>;
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
   settingCurrentLocationStatus$: Observable<boolean>;
   consultationOrderType$: Observable<any>;
   consultationEncounterType$: Observable<any>;

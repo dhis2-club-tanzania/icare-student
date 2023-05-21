@@ -6,7 +6,7 @@ import {
   Output,
   EventEmitter,
 } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
 
 import { ReplaySubject, Subject } from "rxjs";
@@ -28,20 +28,20 @@ export class MultipleResultsEntryComponent implements OnInit {
   @Input() value: any;
   @Output() selectedList: EventEmitter<any[]> = new EventEmitter<any[]>();
 
-  multipleSelectionFormControl: FormControl = new FormControl();
+  multipleSelectionFormControl: UntypedFormControl = new UntypedFormControl();
   list: any[];
 
   /** control for the selected item */
-  public listCtrl: FormControl = new FormControl();
+  public listCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** control for the MatSelect filter keyword */
-  public listFilterCtrl: FormControl = new FormControl();
+  public listFilterCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** control for the selected item for multi-selection */
-  public listMultiCtrl: FormControl = new FormControl();
+  public listMultiCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** control for the MatSelect filter keyword multi-selection */
-  public listMultiFilterCtrl: FormControl = new FormControl();
+  public listMultiFilterCtrl: UntypedFormControl = new UntypedFormControl();
 
   /** list of items filtered by search keyword */
   public filteredList: ReplaySubject<Bank[]> = new ReplaySubject<Bank[]>(1);

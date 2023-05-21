@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Provider } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
@@ -56,7 +56,7 @@ export class InpatientComponent implements OnInit {
   forms$: Observable<any[]>;
   observations$: Observable<any>;
 
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
   lastBedOrder: any;
   observationsGroupedByConcept$: Observable<any>;
 

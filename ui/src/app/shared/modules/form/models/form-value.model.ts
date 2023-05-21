@@ -1,11 +1,11 @@
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { find } from "lodash";
 import { Field } from "./field.model";
 export class FormValue {
-  form: FormGroup;
+  form: UntypedFormGroup;
   fields: Field<string>[];
   fileValues: any;
-  constructor(form: FormGroup, fields: Field<string>[], fileValues?: any) {
+  constructor(form: UntypedFormGroup, fields: Field<string>[], fileValues?: any) {
     this.form = form;
     this.fields = fields;
     this.fileValues = fileValues;

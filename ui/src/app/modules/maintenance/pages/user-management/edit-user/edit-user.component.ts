@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators,
 } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -26,7 +26,7 @@ import { UserService } from "../../../services/users.service";
 export class EditUserComponent implements OnInit {
   @ViewChild("table", { static: false }) table: MatTable<any>;
   @ViewChild("filter", { static: false }) filter: ElementRef;
-  userForm: FormGroup;
+  userForm: UntypedFormGroup;
   loading: boolean = true;
   selectedUserId: any;
   selectedUser: UserCreateModel;
@@ -69,7 +69,7 @@ export class EditUserComponent implements OnInit {
   confirmFocusOut: Boolean = false;
   value: boolean;
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private router: Router,
     private service: UserService,
     private _snackBar: MatSnackBar,
@@ -151,19 +151,19 @@ export class EditUserComponent implements OnInit {
   }
   generateForm() {
     return this.fb.group({
-      username: new FormControl({
+      username: new UntypedFormControl({
         value: this.selectedUser ? this.selectedUser.username : "",
         disabled: true,
       }),
-      systemid: new FormControl({
+      systemid: new UntypedFormControl({
         value: this.selectedUser ? this.selectedUser.systemId : "",
         disabled: true,
       }),
-      password: new FormControl(
+      password: new UntypedFormControl(
         this.selectedUser ? this.selectedUser.password : "",
         Validators.minLength(2)
       ),
-      gender: new FormControl(
+      gender: new UntypedFormControl(
         this.selectedUser &&
         this.selectedUser.person &&
         this.selectedUser.person.gender &&
@@ -171,14 +171,14 @@ export class EditUserComponent implements OnInit {
           ? this.gender[this.selectedUser.person.gender]
           : ""
       ),
-      middleName: new FormControl(
+      middleName: new UntypedFormControl(
         this.selectedUser &&
         this.selectedUser.person &&
         this.selectedUser.person.preferredName
           ? this.selectedUser.person.preferredName.middleName
           : ""
       ),
-      firstName: new FormControl(
+      firstName: new UntypedFormControl(
         this.selectedUser &&
         this.selectedUser.person &&
         this.selectedUser.person.preferredName
@@ -186,7 +186,7 @@ export class EditUserComponent implements OnInit {
           : "",
         Validators.required
       ),
-      surname: new FormControl(
+      surname: new UntypedFormControl(
         this.selectedUser &&
         this.selectedUser.person &&
         this.selectedUser.person.preferredName
@@ -194,51 +194,51 @@ export class EditUserComponent implements OnInit {
           : "",
         Validators.required
       ),
-      birthdate: new FormControl(
+      birthdate: new UntypedFormControl(
         this.selectedUser && this.selectedUser.person
           ? this.selectedUser.person.birthdate
           : "",
         Validators.required
       ),
-      confirmpassword: new FormControl("", Validators.minLength(2)),
+      confirmpassword: new UntypedFormControl("", Validators.minLength(2)),
 
-      addressDisplay: new FormControl(
+      addressDisplay: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.display
           : "",
         Validators.required
       ),
-      country: new FormControl(
+      country: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.country
           : "",
         Validators.required
       ),
-      district: new FormControl(
+      district: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.cityVillage
           : "",
         Validators.required
       ),
-      city: new FormControl(
+      city: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.stateProvince
           : "",
         Validators.required
       ),
-      postalCode: new FormControl(
+      postalCode: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.postalCode
           : ""
       ),
-      addressDisplay2: new FormControl(
+      addressDisplay2: new UntypedFormControl(
         this.selectedUser.person.preferredAddress
           ? this.selectedUser.person.preferredAddress.address2
           : ""
       ),
-      MCTNumber: new FormControl(""),
-      phoneNumber: new FormControl(""),
-      qualification: new FormControl(""),
+      MCTNumber: new UntypedFormControl(""),
+      phoneNumber: new UntypedFormControl(""),
+      qualification: new UntypedFormControl(""),
     });
   }
 

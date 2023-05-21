@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
@@ -34,7 +34,7 @@ export class StartVisitModelComponent implements OnInit {
   loadingPatientByLocation: boolean = true;
   patient: any;
   patientPhone: any;
-  selectedTab = new FormControl(0);
+  selectedTab = new UntypedFormControl(0);
   omitCurrent: boolean = true;
   visitTypes$: Observable<any[]>;
   servicesConfigs$: Observable<any[]>;

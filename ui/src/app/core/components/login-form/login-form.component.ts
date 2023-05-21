@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import {
@@ -27,7 +27,7 @@ import { AuthService } from "../../services/auth.service";
   styleUrls: ["./login-form.component.scss"],
 })
 export class LoginFormComponent implements OnInit {
-  loginForm: FormGroup;
+  loginForm: UntypedFormGroup;
   authenticationLoading$: Observable<boolean>;
   loginErrorStatus$: Observable<boolean>;
   parentLocation$: Observable<any>;
@@ -36,7 +36,7 @@ export class LoginFormComponent implements OnInit {
   @Output() closeLogin = new EventEmitter();
   constructor(
     private store: Store<AppState>,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private authService: AuthService
   ) {}
 
