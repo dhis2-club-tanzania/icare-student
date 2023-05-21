@@ -9,14 +9,13 @@ import { billingPages } from './pages';
 import { billingServices } from './services';
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    BillingSearchComponent,
-    ...billingPages,
-    ...billingComponents,
-  ],
-  entryComponents: [...billingEntryComponents],
-  providers: [...billingServices],
-  imports: [CommonModule, BillingRoutingModule, SharedModule],
+    declarations: [
+        HomeComponent,
+        BillingSearchComponent,
+        ...billingPages,
+        ...billingComponents,
+    ],
+    providers: [...billingServices],
+    imports: [CommonModule, BillingRoutingModule, SharedModule]
 })
 export class BillingModule {}

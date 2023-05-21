@@ -5,9 +5,8 @@ import { theatreComponents } from './components';
 import { theatrePages } from './pages';
 import { TheatreRoutingModule } from './theatre-routing.module';
 @NgModule({
-  declarations: [...theatrePages, ...theatreComponents],
-  entryComponents: [...theatreComponents],
-  providers: [],
-  imports: [CommonModule, TheatreRoutingModule, SharedModule],
+    declarations: [...theatrePages, ...theatreComponents],
+    providers: [],
+    imports: [CommonModule, TheatreRoutingModule, SharedModule]
 })
 export class TheatreModule {}

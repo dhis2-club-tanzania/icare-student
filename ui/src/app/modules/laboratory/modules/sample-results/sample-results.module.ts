@@ -9,18 +9,17 @@ import { modals } from "./modals";
 import { SharedLabModule } from "../../shared/modules/shared-lab.module";
 
 @NgModule({
-  declarations: [
-    SampleResultsComponent,
-    HomeComponent,
-    ...resultsComponents,
-    ...modals,
-  ],
-  imports: [
-    CommonModule,
-    SampleResultsRoutingModule,
-    SharedModule,
-    SharedLabModule,
-  ],
-  entryComponents: [...modals],
+    declarations: [
+        SampleResultsComponent,
+        HomeComponent,
+        ...resultsComponents,
+        ...modals,
+    ],
+    imports: [
+        CommonModule,
+        SampleResultsRoutingModule,
+        SharedModule,
+        SharedLabModule,
+    ]
 })
 export class SampleResultsModule {}

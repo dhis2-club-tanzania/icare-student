@@ -36,24 +36,23 @@ export function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
 }
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
-    EffectsModule.forRoot(effects),
-    SharedModule,
-    StoreRouterConnectingModule.forRoot({
-      serializer: DefaultRouterStateSerializer,
-    }),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
-  ],
-  declarations: [...coreContainers, ...coreComponents, ...coreDialogs],
-  entryComponents: [...coreDialogs],
-  providers: [{ provide: RouterStateSerializer, useClass: RouteSerializer }],
-  exports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        HttpClientModule,
+        StoreModule.forRoot(reducers, { metaReducers }),
+        EffectsModule.forRoot(effects),
+        SharedModule,
+        StoreRouterConnectingModule.forRoot({
+            serializer: DefaultRouterStateSerializer,
+        }),
+        !environment.production ? StoreDevtoolsModule.instrument() : [],
+    ],
+    declarations: [...coreContainers, ...coreComponents, ...coreDialogs],
+    providers: [{ provide: RouterStateSerializer, useClass: RouteSerializer }],
+    exports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule]
 })
 export class CoreModule {
   /* make sure CoreModule is imported only by one NgModule the AppModule */

@@ -6,9 +6,8 @@ import { NursingRoutingModule } from './nursing-routing.module';
 import { nursingPages } from './pages';
 
 @NgModule({
-  declarations: [...nursingPages, ...nursingComponents],
-  entryComponents: [],
-  providers: [],
-  imports: [CommonModule, NursingRoutingModule, SharedModule],
+    declarations: [...nursingPages, ...nursingComponents],
+    providers: [],
+    imports: [CommonModule, NursingRoutingModule, SharedModule]
 })
 export class NursingModule {}

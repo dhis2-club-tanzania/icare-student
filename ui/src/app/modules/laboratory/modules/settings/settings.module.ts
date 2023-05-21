@@ -22,31 +22,30 @@ import { settingsContainers } from "./containers";
 import { SampleRegistrationModule } from "../sample-registration/sample-registration.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SettingsRoutingModule,
-    SharedModule,
-    SampleRegistrationModule,
-  ],
-  declarations: [
-    SettingsComponent,
-    HomeComponent,
-    TestSettingsComponent,
-    ...components,
-    ...settingsContainers,
-    TestSelectorComponent,
-    TestTimeComponent,
-    TestMaleRangeComponent,
-    TestFemaleRangeComponent,
-    TimeSettingsListComponent,
-    TestMaleRangeListComponent,
-    TestFemaleRangeListComponent,
-    TestMethodsDashboardComponent,
-    SpecimenSourcesDashboardComponent,
-    ParametersDashboardComponent,
-    ProfilesAndAccessControlComponent,
-    ExtendedParametersSettingsComponent,
-  ],
-  entryComponents: [...entrySettingComponents],
+    imports: [
+        CommonModule,
+        SettingsRoutingModule,
+        SharedModule,
+        SampleRegistrationModule,
+    ],
+    declarations: [
+        SettingsComponent,
+        HomeComponent,
+        TestSettingsComponent,
+        ...components,
+        ...settingsContainers,
+        TestSelectorComponent,
+        TestTimeComponent,
+        TestMaleRangeComponent,
+        TestFemaleRangeComponent,
+        TimeSettingsListComponent,
+        TestMaleRangeListComponent,
+        TestFemaleRangeListComponent,
+        TestMethodsDashboardComponent,
+        SpecimenSourcesDashboardComponent,
+        ParametersDashboardComponent,
+        ProfilesAndAccessControlComponent,
+        ExtendedParametersSettingsComponent,
+    ]
 })
 export class SettingsModule {}

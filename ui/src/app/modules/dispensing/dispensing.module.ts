@@ -8,12 +8,11 @@ import { dispensingComponents } from './components';
 import { dispensingModals } from './modals';
 
 @NgModule({
-  declarations: [
-    ...dispensingPages,
-    ...dispensingComponents,
-    ...dispensingModals,
-  ],
-  entryComponents: [...dispensingModals],
-  imports: [CommonModule, SharedModule, DispensingRoutingModule],
+    declarations: [
+        ...dispensingPages,
+        ...dispensingComponents,
+        ...dispensingModals,
+    ],
+    imports: [CommonModule, SharedModule, DispensingRoutingModule]
 })
 export class DispensingModule {}

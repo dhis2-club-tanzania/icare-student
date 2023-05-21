@@ -14,19 +14,18 @@ import { LocationsChipsComponent } from './components/locations-chips/locations-
 import { RegistrationSummaryCardsComponent } from './components/registration-summary-cards/registration-summary-cards/registration-summary-cards.component';
 
 @NgModule({
-  declarations: [
-    ...registrationPages,
-    HomeComponent,
-    RegistrationSearchComponent,
-    RegistrationPatientComponent,
-    SelectRoomComponent,
-    PatientEditComponent,
-    RegistrationEditComponent,
-    ...regComponents,
-    LocationsChipsComponent,
-    RegistrationSummaryCardsComponent,
-  ],
-  entryComponents: [...entryRegComponents],
-  imports: [CommonModule, RegistrationRoutingModule, SharedModule],
+    declarations: [
+        ...registrationPages,
+        HomeComponent,
+        RegistrationSearchComponent,
+        RegistrationPatientComponent,
+        SelectRoomComponent,
+        PatientEditComponent,
+        RegistrationEditComponent,
+        ...regComponents,
+        LocationsChipsComponent,
+        RegistrationSummaryCardsComponent,
+    ],
+    imports: [CommonModule, RegistrationRoutingModule, SharedModule]
 })
 export class RegistrationModule {}

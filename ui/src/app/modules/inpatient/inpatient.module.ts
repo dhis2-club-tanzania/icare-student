@@ -5,9 +5,8 @@ import { inpatientComponents } from './components';
 import { InpatientRoutingModule } from './inpatient-routing.module';
 import { inpatientPages } from './pages';
 @NgModule({
-  declarations: [...inpatientPages, ...inpatientComponents],
-  entryComponents: [],
-  providers: [],
-  imports: [CommonModule, InpatientRoutingModule, SharedModule],
+    declarations: [...inpatientPages, ...inpatientComponents],
+    providers: [],
+    imports: [CommonModule, InpatientRoutingModule, SharedModule]
 })
 export class InpatientModule {}

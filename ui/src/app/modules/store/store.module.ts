@@ -9,8 +9,7 @@ import { stockComponents } from './components';
 import { RequestCancelComponent } from './modals/request-cancel/request-cancel.component';
 
 @NgModule({
-  declarations: [...storePages, ...storeModals, ...stockComponents, RequestCancelComponent],
-  entryComponents: [...storeModals],
-  imports: [CommonModule, StoreRoutingModule, SharedModule],
+    declarations: [...storePages, ...storeModals, ...stockComponents, RequestCancelComponent],
+    imports: [CommonModule, StoreRoutingModule, SharedModule]
 })
 export class StoreModule {}

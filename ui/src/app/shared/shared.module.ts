@@ -17,31 +17,30 @@ import { HttpClientModule } from "@angular/common/http";
 import { SearchTestDetailsPipe } from "./pipes/search-test-details.pipe";
 import { FormatLabelCharCountDisplayPipe } from './pipes/format-label-char-count-display.pipe';
 @NgModule({
-  imports: [CommonModule, ...materialModules, ...modules],
-  exports: [
-    CommonModule,
-    FormModule,
-    ...materialModules,
-    ...modules,
-    ...components,
-    ...sharedPipes,
-    ...sharedDialogs,
-    HttpClientModule,
-  ],
-  entryComponents: [...sharedEntryComponents, ...sharedDialogs],
-  declarations: [
-    ...components,
-    ...sharedDialogs,
-    ...sharedPipes,
-    FilterFormsByServiceProvidedPipe,
-    FilterFormsByLocationPipe,
-    FilterServicesConceptPipe,
-    FormatIsoStrDateForDisplayPipe,
-    FilterDiagnosesPipe,
-    FilterItemsBySelectionsPipe,
-    SearchTestDetailsPipe,
-    FormatLabelCharCountDisplayPipe,
-  ],
-  providers: [...sharedServices],
+    imports: [CommonModule, ...materialModules, ...modules],
+    exports: [
+        CommonModule,
+        FormModule,
+        ...materialModules,
+        ...modules,
+        ...components,
+        ...sharedPipes,
+        ...sharedDialogs,
+        HttpClientModule,
+    ],
+    declarations: [
+        ...components,
+        ...sharedDialogs,
+        ...sharedPipes,
+        FilterFormsByServiceProvidedPipe,
+        FilterFormsByLocationPipe,
+        FilterServicesConceptPipe,
+        FormatIsoStrDateForDisplayPipe,
+        FilterDiagnosesPipe,
+        FilterItemsBySelectionsPipe,
+        SearchTestDetailsPipe,
+        FormatLabelCharCountDisplayPipe,
+    ],
+    providers: [...sharedServices]
 })
 export class SharedModule {}

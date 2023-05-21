@@ -8,14 +8,13 @@ import { maintenanceModals } from "./modals";
 import { maintenancePages } from "./pages";
 
 @NgModule({
-  declarations: [
-    ...maintenancePages,
-    ...maintenanceModals,
-    ...maintenanceComponents,
-    ...maintenanceContainers,
-  ],
-  entryComponents: [...maintenanceModals],
-  providers: [],
-  imports: [CommonModule, MaintenanceRoutingModule, SharedModule],
+    declarations: [
+        ...maintenancePages,
+        ...maintenanceModals,
+        ...maintenanceComponents,
+        ...maintenanceContainers,
+    ],
+    providers: [],
+    imports: [CommonModule, MaintenanceRoutingModule, SharedModule]
 })
 export class MaintenanceModule {}

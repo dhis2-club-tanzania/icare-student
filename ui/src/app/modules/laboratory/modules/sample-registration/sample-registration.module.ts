@@ -7,14 +7,13 @@ import { regModals, sampleRegistrationComponents } from "./components";
 import { SharedLabModule } from "../../shared/modules/shared-lab.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SampleRegistrationRoutingModule,
-    SharedModule,
-    SharedLabModule,
-  ],
-  declarations: [...sampleRegistrationPages, ...sampleRegistrationComponents],
-  exports: [...sampleRegistrationPages, ...sampleRegistrationComponents],
-  entryComponents: [...regModals],
+    imports: [
+        CommonModule,
+        SampleRegistrationRoutingModule,
+        SharedModule,
+        SharedLabModule,
+    ],
+    declarations: [...sampleRegistrationPages, ...sampleRegistrationComponents],
+    exports: [...sampleRegistrationPages, ...sampleRegistrationComponents]
 })
 export class SampleRegistrationModule {}

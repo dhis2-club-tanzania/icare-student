@@ -5,9 +5,8 @@ import { radiologyComponents } from "./components";
 import { radiologyContainers } from "./containers";
 import { RadiologyRoutingModule } from "./radiology-routing.module";
 @NgModule({
-  declarations: [...radiologyContainers, ...radiologyComponents],
-  entryComponents: [],
-  providers: [],
-  imports: [CommonModule, RadiologyRoutingModule, SharedModule],
+    declarations: [...radiologyContainers, ...radiologyComponents],
+    providers: [],
+    imports: [CommonModule, RadiologyRoutingModule, SharedModule]
 })
 export class RadiologyModule {}

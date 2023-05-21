@@ -10,19 +10,18 @@ import { SearchTestsPipe } from "../lab-reports/pipes/filter-tests.pipe";
 import { SharedLabModule } from "../../shared/modules/shared-lab.module";
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    ...components,
-    ...sampleAcceptanceContainers,
-    FilterSamplesPipe,
-    SearchTestsPipe,
-  ],
-  imports: [
-    CommonModule,
-    SampleAcceptanceAndResultsRoutingModule,
-    SharedModule,
-    SharedLabModule,
-  ],
-  entryComponents: [...sampleAcceptanceAndResultsModals],
+    declarations: [
+        HomeComponent,
+        ...components,
+        ...sampleAcceptanceContainers,
+        FilterSamplesPipe,
+        SearchTestsPipe,
+    ],
+    imports: [
+        CommonModule,
+        SampleAcceptanceAndResultsRoutingModule,
+        SharedModule,
+        SharedLabModule,
+    ]
 })
 export class SampleAcceptanceAndResultsModule {}

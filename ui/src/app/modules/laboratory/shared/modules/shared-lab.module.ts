@@ -6,15 +6,14 @@ import { SharedModule } from "src/app/shared/shared.module";
 import { sharedModals } from "../../modals";
 import { FilterFieldsPipe } from "../../pipes/filter-fields.pipe";
 @NgModule({
-  imports: [CommonModule, ...materialModules, SharedModule],
-  exports: [
-    CommonModule,
-    ...labSharedComponents,
-    ...sharedModals,
-    FilterFieldsPipe,
-  ],
-  entryComponents: [...sharedModals],
-  declarations: [...labSharedComponents, ...sharedModals, FilterFieldsPipe],
-  providers: [],
+    imports: [CommonModule, ...materialModules, SharedModule],
+    exports: [
+        CommonModule,
+        ...labSharedComponents,
+        ...sharedModals,
+        FilterFieldsPipe,
+    ],
+    declarations: [...labSharedComponents, ...sharedModals, FilterFieldsPipe],
+    providers: []
 })
 export class SharedLabModule {}
