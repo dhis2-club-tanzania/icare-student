@@ -114,7 +114,6 @@
       }
     }
   },
-  "defaultProject": "icare-ui",
   "cli": {
     "analytics": "5c599b07-2246-4c48-b1af-c2064c384d98"
   }
