@@ -1,5 +1,5 @@
 <div style="position: relative;">
-    <mat-toolbar color="primary">Add new appointment</mat-toolbar>
+    <mat-toolbar color="primary">Schedule Reminder</mat-toolbar>
     <div class="loading-overlay" *ngIf="saving">
         <div class="text-center">
             <div>Saving</div>
@@ -9,7 +9,7 @@
         </div>
     </div>
     <div style="margin-inline: 4px; margin-bottom: 4px;">
-        <div>
+        <div style="max-height: 80vh; overflow-y: auto;">
                 <div [formGroup]="appointmentForm">
                         <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
@@ -20,14 +20,14 @@
                             </mat-form-field>
                         </div>
                        
-                        <div class="d-flex mt-1">
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Service</mat-label>
                                 <mat-select formControlName="service" disabled="true">
                                     <mat-option [value]="data.location.uuid" selected="selected">{{data.location.display}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                         <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Location</mat-label>
@@ -37,27 +37,45 @@
                                 </mat-select>
                             </mat-form-field>
                         </div>
-                        <app-form [fields]="appointmentFormFields" [isReport]="false" (formUpdate)="formUpdates($event)"></app-form>
+
                         <div class="d-flex mt-1">
+                            <mat-form-field class="flex-grow-1" appearance="fill">
+                                <mat-label>Date</mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName="scheduledSendTime">
+                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+
+                            </mat-form-field>
+                        </div>
+
+
+
+                        <div class="d-flex mt-1">
+                            <mat-form-field class="flex-grow-1" appearance="fill">
+                                <mat-label>Phone Number</mat-label>
+                                <input matInput formControlName="phoneNumber">
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Start Time</mat-label>
                                 <mat-select formControlName="startTime" (selectionChange)="handleStartTimeChange($event)">
                                     <mat-option [value]="time" *ngFor="let time of timeRange">{{getTimeFromDateString(time.startTime)}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
-                        <div class="d-flex mt-1">
+                        </div> -->
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>End Time</mat-label>
                                 <mat-select formControlName="endTime">
                                     <mat-option [value]="time.endTime" *ngFor="let time of timeRange">{{getTimeFromDateString(time.endTime)}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                         <div class="mt-2">
                             <mat-form-field class="w-100" appearance="fill">
-                                <mat-label>Notes</mat-label>
-                                <textarea matInput rows="5" id="notes" formControlName="notes" placeholder="Notes"></textarea>
+                                <mat-label>Write SMS.</mat-label>
+                                <textarea matInput rows="5" id="message" formControlName="message" placeholder="message"></textarea>
                             </mat-form-field>
                         </div>
                     </div>

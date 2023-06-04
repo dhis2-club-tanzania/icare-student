@@ -3,14 +3,25 @@
         <button mat-icon-button (click)="onBack($event)" matTooltip="Go to Home page">
             <mat-icon>arrow_back</mat-icon>
         </button>
-        <span class="ml-2">Appointments </span>
+        <span class="ml-2">Messages Schedules </span>
     </mat-toolbar>
-    <div class="w-100 text-centered">
-        <app-appointments-list-table 
-            [encounterType]="'e22e39fd-7db2-45e7-80f1-60fa0d5a4378'"
-            (selectPatient)="onSelectPatient($event)"
-            [shouldShowParentLocation]="true"
-            [isTabularList]="true">
-        </app-appointments-list-table>
-    </div>
+    <table>
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Scheduled Send Time</th>
+            <th>Message</th>
+            <th>Phone Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let schedule of schedules">
+            <td>{{ schedule.mother }}</td>
+            <td>{{ schedule.scheduledSendTime }}</td>
+            <td>{{ schedule.message }}</td>
+            <td>{{ schedule.phoneNumber }}</td>
+          </tr>
+        </tbody>
+      </table>
+      
 </div>

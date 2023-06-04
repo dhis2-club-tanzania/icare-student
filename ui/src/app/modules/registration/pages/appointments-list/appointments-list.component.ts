@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Schedules } from 'src/app/shared/dialogs/appointment-form/schedules.model';
+import { SchedulesService } from 'src/app/shared/dialogs/appointment-form/schedules.service';
 import { go } from 'src/app/store/actions';
 import { AppState } from 'src/app/store/reducers';
 
@@ -10,9 +12,11 @@ import { AppState } from 'src/app/store/reducers';
 })
 export class AppointmentsListComponent implements OnInit {
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private schedulesService: SchedulesService) { }
 
   ngOnInit(): void {
+    this.getSchedules();
+
   }
 
   onBack(e: Event) {
@@ -20,13 +24,19 @@ export class AppointmentsListComponent implements OnInit {
     this.store.dispatch(go({ path: ["/registration/home"] }));
   }
 
-  onSelectPatient(patientData) {
-     console.log(patientData)
-    this.store.dispatch(
-      go({
-        path: [`/clinic/patient-dashboard/${patientData?.visit.appointment.patient?.uuid}`],
-        query: { queryParams: { patient: patientData?.visit.appointment.patient?.uuid } },
-      })
+  schedules: Schedules[];
+
+
+ 
+
+  getSchedules() {
+    this.schedulesService.getSchedules().subscribe(
+      (data: Schedules[]) => {
+        this.schedules = data;
+      },
+      (error) => {
+        console.log("Error retrieving schedules: ", error);
+      }
     );
   }
 }
