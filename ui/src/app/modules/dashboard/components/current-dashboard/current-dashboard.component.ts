@@ -13,6 +13,11 @@ currentDashboard$: Observable<any>
   constructor(private route: ActivatedRoute, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe((params)=>{
+      console.log(params)
+      this.currentDashboard$= this.dashboardService.getDashboardById(params['dashboardId'])
+    }
+    )
   }
 
 }

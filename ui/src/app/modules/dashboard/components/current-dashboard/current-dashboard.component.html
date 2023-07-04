@@ -2,6 +2,6 @@
     <div>{{currentDashboard.name}}</div>
     <!-- loop through dashboard items *ngFor="let dashboardItems if dashboard.dashboardItems"-->
     <div *ngFor="let dashboardItem of currentDashboard.dashboardItems">
-        <app-dasboard-item [dasboardItem]="dashboardItem"></app-dasboard-item>
+        <app-dashboard-item [dashboardItem]="dashboardItem"></app-dashboard-item>
     </div>
 </ng-container>

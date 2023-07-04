@@ -17,13 +17,22 @@ export const ICARE_APPS: ICAREApp[] = [
     hidden: true,
     order: 0,
   },
+    {
+      name: "Dashboard",
+      id: "dashboard",
+      image: "assets/material/dashboard.png",
+      icon: "dashboard",
+      path: "/dashboard",
+      order: 1,
+    },
+    
   {
     name: "Registration",
     id: "registration",
     icon: "person_add",
     image: "assets/material/register.png",
     path: "/registration",
-    order: 1,
+    order: 2,
     modules: [
       {
         path: "/registration/home",
@@ -46,7 +55,7 @@ export const ICARE_APPS: ICAREApp[] = [
     icon: "pregnant_woman",
     image: "assets/material/triage.png",
     path: "/nursing",
-    order: 2,
+    order: 4,
   },
   {
     name: "Diagnostic",
@@ -105,7 +114,7 @@ export const ICARE_APPS: ICAREApp[] = [
     order: 20,
   },
   {
-    name: "Motuary",
+    name: "Mortuary",
     id: "mortuary",
     image: "assets/material/stethoscope.png",
     icon: "pregnant_woman",

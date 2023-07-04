@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DashboardDataService } from '../../services/dashboard-data.service';
-import { Chart } from 'chart.js';
 @Component({
   selector: 'app-dashboard-item',
   templateUrl: './dashboard-item.component.html',

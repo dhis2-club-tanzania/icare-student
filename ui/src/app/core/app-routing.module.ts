@@ -15,6 +15,14 @@ const routes: Routes = [
         component: ModulesComponent,
       },
       {
+        path: "dashboard",
+        loadChildren: () => 
+        import("../modules/dashboard/dashboard.module").then(
+          (m) => m.DashboardModule
+        ),
+        canActivate: [AuthGuard],
+      },
+      {
         path: "nursing",
         loadChildren: () =>
           import("../modules/nursing/nursing.module").then(
