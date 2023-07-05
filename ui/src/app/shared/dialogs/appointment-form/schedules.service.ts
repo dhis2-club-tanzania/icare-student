@@ -20,5 +20,11 @@ export class SchedulesService {
 getSchedules(): Observable<Schedules[]> {
   return this.http.get<Schedules[]>(`${this.baseURL}/get`);
 }
+   
+updateSchedules(id:number,schedules: Schedules): Observable<Object>{
+  return this.http.put(`${this.baseURL}/message/${id}`, schedules);
 
 }
+
+}
+

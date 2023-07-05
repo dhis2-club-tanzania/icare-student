@@ -1,0 +1,69 @@
+    <mat-toolbar color="primary">Edit Reminder</mat-toolbar>
+    
+    
+    <div style="margin-inline: 4px; margin-bottom: 4px;">
+        
+          
+        <div style="max-height: 80vh; overflow-y: auto;">
+                <div [formGroup]="appointmentForm">
+                        <div class="d-flex mt-1">
+                            <mat-form-field class="flex-grow-1" appearance="fill">
+                                <mat-label>Patient</mat-label>
+                                <mat-select formControlName="patient" disabled="true">
+                                    <mat-option [value]="data.patient" selected="selected">{{data.patient}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="d-flex mt-1">
+                            <mat-form-field class="flex-grow-1" appearance="fill">
+                                <mat-label>Appointment Type</mat-label>
+                                <mat-select formControlName="appointmentType">
+                                    <mat-option value="information">Information</mat-option>
+                                    <mat-option value="appointments">Appointments</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>                
+                        
+                        
+
+                        <div class="d-flex mt-1">
+                            <mat-form-field class="flex-grow-1" appearance="fill">
+                                <mat-label>Scheduled Send Date</mat-label>
+                                <input matInput [matDatepicker]="picker" formControlName="scheduledSendTime">
+                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+
+                            </mat-form-field>
+                        </div>
+
+                   
+                        <div class="mt-2">
+                            <mat-form-field class="w-100" appearance="fill">
+                                <mat-label>Write SMS.</mat-label>
+                                <textarea matInput rows="5" id="message" formControlName="message" placeholder="message"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div >
+                        
+                    </div>
+
+                </div>
+                
+
+                
+
+        </div>
+        <div class="d-flex justify-content-end m-4">
+            <button mat-stroked-button (click)="onClose($event)">Close</button>
+            <button mat-flat-button color="primary" class="ml-2" (click)="onSave($event)">
+                Save
+            </button>
+            
+            
+        </div>
+        
+        
+
+  

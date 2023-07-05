@@ -16,6 +16,7 @@ import { AppointmentsListComponent } from './pages/appointments-list/appointment
 import { AppointmentDashboardComponent } from './pages/appointment-dashboard/appointment-dashboard.component';
 import { AppointmentsComponent } from './components/appointments/appointments.component';
 
+
 @NgModule({
   declarations: [
     ...registrationPages,
