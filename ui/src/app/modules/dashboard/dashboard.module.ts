@@ -4,6 +4,7 @@ import { DashboardComponent } from './dashboard.component';
 import { CurrentDashboardComponent } from './components/current-dashboard/current-dashboard.component';
 import { DashboardItemComponent } from './components/dashboard-item/dashboard-item.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
    
   ],
   imports: [
-    CommonModule,DashboardRoutingModule
+    CommonModule,DashboardRoutingModule,SharedModule
   ]
 })
 export class DashboardModule { 

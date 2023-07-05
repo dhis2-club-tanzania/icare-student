@@ -1,15 +1,103 @@
- <div class="w-100" id="container">
+<!-- <div class="w-100" id="container">
   <div id="linechart-container"></div>
 <div id="barchart-container"></div>
+<div id="piechart"></div>
 <div id="spline"></div>
 <div id="highcharts"></div>
-   
+   <ng-container *ngIf="currentDashboard$ | async as currentDashboard"
+</div> -->
+
+<!-- <mat-tab-group>
+    <mat-tab label="First">
+      <ng-template matTabContent>
+        Content 1 - Loaded: {{getTimeLoaded(1) | date:'medium'}}
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Second">
+      <ng-template matTabContent>
+        Content 2 - Loaded: {{getTimeLoaded(2) | date:'medium'}}
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Third">
+      <ng-template matTabContent>
+        Content 3 - Loaded: {{getTimeLoaded(3) | date:'medium'}}
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group> -->
+
+<div class="d-flex justify-content-between" >
+  <div> <mat-form-field>
+      <mat-label>Filter by</mat-label>
+      <mat-select disableRipple>
+        <mat-option value="1">Today</mat-option>
+        <mat-option value="2">This week</mat-option>
+        <mat-option value="3">This month</mat-option>
+      </mat-select>
+    </mat-form-field></div>
+    <div><button mat-stroked-button>
+      Print
+    </button></div>
+
 </div>
+
+<div class="row p-9">
+  <div class="col mb-1 p-3">
+    <mat-card class="border p-3">
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Outbed Patients
+      </mat-card-subtitle>
+      <mat-card-title _ngcontent-cmr-c529="" class="mat-card-title h2 text-center">0</mat-card-title>
+      <mat-card-title class="h2 text-center"></mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-1 p-3">
+    <mat-card class="border p-3">
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Available Staff
+      </mat-card-subtitle>
+      <mat-card-title _ngcontent-cmr-c529="" class="mat-card-title h2 text-center">0</mat-card-title>
+      <mat-card-title class="h2 text-center"></mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-1 p-3">
+    <mat-card class="border p-3">
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Average ER Waiting Time
+      </mat-card-subtitle>
+      <mat-card-title _ngcontent-cmr-c529="" class="mat-card-title h2 text-center">0</mat-card-title>
+      <mat-card-title class="h2 text-center"></mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-1 p-3">
+    <mat-card class="border p-3">
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Inbed Patients
+      </mat-card-subtitle>
+      <mat-card-title _ngcontent-cmr-c529="" class="mat-card-title h2 text-center">0</mat-card-title>
+      <mat-card-title class="h2 text-center"></mat-card-title>
+    </mat-card>
+  </div>
+</div>
+
+
+<div class="row">
+
+  <div class="col-sm-4 mt-5">
+    <div id="chart-pie"></div>
+  </div>
+
+  <div class="col-sm-8 mt-5">
+    <div id="chart-column"></div>
+  </div>
+
+
+<!-- <div class="col-sm-8 mt-5">
+<div id="chart-line"></div>
+</div> -->
+</div>
+
+
 <div>
-  <a *ngFor="let dashboard of dashboards$ | async" [routerlink]="['/dashboard/', dashboard.id]">{{dashboard.name}}</a>
+  <!-- <a *ngFor="let dashboard of dashboards$ | async" [routerlink]="['/dashboard/', dashboard.id]">{{dashboard.name}}</a> -->
 </div>
 <router-outlet></router-outlet>
-
-
-
-

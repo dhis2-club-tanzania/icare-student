@@ -10,23 +10,34 @@
         <div>
           <img src="{{ module?.app?.image }}" style="height: 20px" />
           <p class="mt-2 menu-label">{{ module?.app?.name }}</p>
+          <p *ngIf="module?.app?.name == clinic"> i am</p>
+          <mat-menu #clinic="matMenu">
+            <button>service</button>
+          </mat-menu>
         </div>
       </div>
     </div>
   </div>
   <div>
-    <mat-chip-list
-      class="sub-menu-items mat-elevation-z1"
+    <div class="chip-list-container">
+      <mat-chip-list
+      class="sub-menu-items mat-elevation-z1" 
       *ngIf="!lisConfigurations?.isLIS"
-    >
-      <mat-chip
-        (click)="onSetLocation($event, userLocation)"
-        *ngFor="let userLocation of userLocationsForTheCurrentModule"
-        color="primary"
-        [selected]="currentLocation?.uuid == userLocation?.id"
-        >{{ userLocation?.name }}</mat-chip
       >
-    </mat-chip-list>
+        <mat-chip
+          (click)="onSetLocation($event, userLocation)"
+          *ngFor="let userLocation of userLocationsForTheCurrentModule"
+          color="primary"
+          [selected]="currentLocation?.uuid == userLocation?.id"
+        >
+        {{ userLocation?.name }}
+        </mat-chip>
+      </mat-chip-list>
+      <!-- <button mat-icon-button class="more-chips-button" (click)="moreChipsVisible = !moreChipsVisible" #moreButton>
+        <mat-icon>{{moreChipsVisible ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </button>
+    </div>
+     -->
     <!-- <mat-icon style="right: 0%">expand_more</mat-icon> -->
   </div>
 </div>
