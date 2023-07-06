@@ -151,10 +151,10 @@ privileges$: any;
         },
         yAxis: {
           min: 0,
-          title: undefined,
+          title:undefined,
         },
         xAxis: {
-          type: 'category',
+          type: 'Months',
         },
         tooltip: {
           headerFormat: `<div>Date: {point.key}</div>`,
