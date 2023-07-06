@@ -558,6 +558,50 @@
                     ></app-patient-medication-summary>
                   </mat-expansion-panel>
                 </mat-accordion>
+                <mat-accordion *ngIf="isInpatient">
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="isInpatient ? true : false"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Emergency drugs </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-patient-medication-summary
+                      *ngIf="activeVisit"
+                      [fromDispensing]="false"
+                      [patientVisit]="activeVisit"
+                      [isInpatient]="isInpatient"
+                      (updateConsultationOrder)="onUpdateConsultationOrder()"
+                    ></app-patient-medication-summary>
+                  </mat-expansion-panel>
+                </mat-accordion>
+                <mat-accordion
+                  *ngIf="
+                    userPrivileges['CLINIC_ADD_PRESCRIPTION'] &&
+                    !isInpatient &&
+                    !isTheatre
+                  "
+                >
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="false"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Emergency drugs </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-patient-medication-summary
+                      *ngIf="activeVisit && updateMedication"
+                      [fromDispensing]="false"
+                      [patientVisit]="activeVisit"
+                      [forConsultation]="true"
+                      [isInpatient]="isInpatient"
+                      (updateConsultationOrder)="onUpdateConsultationOrder()"
+                      (updateMedicationComponent)="
+                        onUpdateMedicationComponent()
+                      "
+                    ></app-patient-medication-summary>
+                  </mat-expansion-panel>
+                </mat-accordion>
                 <mat-accordion
                   *ngIf="
                     userPrivileges['CLINIC_ADD_PROVISIONAL_DIAGNOSIS'] &&

@@ -1,36 +1,89 @@
 <div class="patient-profile-container" *ngIf="patientDetails">
-  <div class="row">
+    <mat-expansion-panel style="background-color: #f5f5f5;">
+      <mat-expansion-panel-header >
+        <mat-panel-title>
+        <div class="patient-prifile-header">
+        <span class="mr-2 client-names">{{ patientDetails?.person?.display }} , {{ patientDetails?.person?.middleName }} </span>
+        <span class="mr-2 age-and-gender-details">(<b>{{patientDetails?.person?.gender === "M" ? "Male" : "Female"}}</b>|
+          {{ patientDetails?.person?.age }} Yrs |
+          {{ patientDetails?.person?.birthdate | date }}
+          )
+        </span>
+        </div>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+      <div class="other-demographic-details "> 
+        MRN: <span class="text-muted"> {{ patientDetails?.mrn }}</span> <span class="ml-2">
+        Phone:
+        <span class="text-muted">
+          {{
+            patientDetails?.person?.phone
+              ? patientDetails?.person?.phone
+              : " - "
+          }}
+        </span>
+        </span>
+        <span
+        >Email:
+        <span class="text-muted">
+          {{
+            patientDetails?.person?.email
+              ? patientDetails?.person?.email
+              : " - "
+          }}
+        </span>
+        </span>
+        <span class="ml-2">
+        Payment type:
+        <span class="text-muted">
+          {{ (activeVisit$ | async)?.isEnsured ? "INSURANCE" : "CASH" }}
+        </span>
+        </span>
+        <span
+        >Email:
+        <span class="text-muted">
+          {{
+            patientDetails?.person?.email
+              ? patientDetails?.person?.email
+              : " - "
+          }}
+        </span>
+        </span>
+        <span class="ml-2">
+        Payment type:
+        <span class="text-muted">
+          {{ (activeVisit$ | async)?.isEnsured ? "INSURANCE" : "CASH" }}
+        </span>
+        </span>
+
+        <span *ngIf="(activeVisit$ | async)?.isEnsured &&(activeVisit$ | async) as activeVisit">
+          <app-patient-visit-attributes-details [attributes]="activeVisit?.patientProfileAttributes">
+          </app-patient-visit-attributes-details>
+        </span>
+      </div>
+      
+    </mat-expansion-panel>
+    </div>
+    
+<!-- <div class="row">
     <div class="col-md-1 col-sm-6 col-sx-6">
       <mat-icon class="text-muted" style="font-size: 80px">person</mat-icon>
     </div>
     <div class="col-md-11 col-sm-6 col-sx-6">
-      <div
-        color="primary"
-        class="row patient-prifile-header d-flex justify-content-left"
-      >
+      <div color="primary" class="row patient-prifile-header d-flex justify-content-left">
         <span class="mr-2 client-names">
           {{ patientDetails?.person?.display }},
           {{ patientDetails?.person?.middleName }}
         </span>
-        <span class="mr-2 age-and-gender-details"
-          >(<b>{{
-            patientDetails?.person?.gender === "M" ? "Male" : "Female"
-          }}</b>
-          |
+        <span class="mr-2 age-and-gender-details">
+          (<b>{{patientDetails?.person?.gender === "M" ? "Male" : "Female"}}</b>|
           {{ patientDetails?.person?.age }} Yrs |
           {{ patientDetails?.person?.birthdate | date }}
           )
         </span>
       </div>
-      <div
-        class="
-          row
-          other-demographic-details
-          d-flex
-          flex-direction-column
-          justify-content-between
-        "
-      >
+      <div class="row other-demographic-details d-flex flex-direction-column justify-content-between">
         <div class="col-md-5 col-sm-6 col-sx-6">
           <div class="item-left p-items">
             MRN: <span class="text-muted"> {{ patientDetails?.mrn }}</span>
@@ -44,7 +97,6 @@
                 }}
               </span>
             </span>
-
             <span
               >Email:
               <span class="text-muted">
@@ -67,25 +119,19 @@
             </app-patient-address>
           </div>
         </div>
-        <div
-          *ngIf="
-            (activeVisit$ | async)?.isEnsured &&
-            (activeVisit$ | async) as activeVisit
-          "
-          class="col-md-7 col-sm-12 col-sx-12"
-        >
-          <app-patient-visit-attributes-details
-            [attributes]="activeVisit?.patientProfileAttributes"
-          ></app-patient-visit-attributes-details>
+        <div *ngIf="(activeVisit$ | async)?.isEnsured &&(activeVisit$ | async) as activeVisit " 
+        class="col-md-7 col-sm-12 col-sx-12">
+          <app-patient-visit-attributes-details [attributes]="activeVisit?.patientProfileAttributes">
+          </app-patient-visit-attributes-details>
         </div>
       </div>
     </div>
   </div>
-  <!-- <div class="row">
+ <div class="row">
     <div class="col-md-12">
       <button class="float-right" (click)="toggleVitals($event)">Vitals</button>
     </div>
-  </div> -->
-</div>
+  </div> 
+</div> -->
 <!-- <div *ngIf="vitalsIsSet"></div> -->
 <!-- TODO: Add insurance name, in case it is there -->
