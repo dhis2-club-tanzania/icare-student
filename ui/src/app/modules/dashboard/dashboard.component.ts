@@ -6,6 +6,7 @@ import * as Highcharts from 'highcharts';
 import {MatCardModule} from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
 // import { OnInit } from '@angular/core';
+import {MatTabsModule} from '@angular/material/tabs';
 
 
 
@@ -34,85 +35,60 @@ privileges$: any;
   ngOnInit(): void {
     throw new Error('Method not implemented.');
   }
-  // constructor() { }
 
-//   ngOnInit() { 
-  //  //     chart: {
-  //  //        type: "spline",
-  //  //        renderTo: 'spline'
-  //  //     },
-  //  //     title: {
-  //  //        text: "Overall Patients Annually"
-  //  //     },
-  //  //     xAxis:{
-  //  //        categories:["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  //  //           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  //  //     },
-  //  //     yAxis: {          
-  //  //        title:{
-  //  //           text:"Percentage %"
-  //  //        } 
-  //  //     },
-  //  //     tooltip: {
-  //  //        valueSuffix:"%"
-  //  //     },
-  //  //     series: [
-        
-  //  //        {
-  //  //           name: 'other',
-  //  //           data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8,24.1, 20.1, 14.1, 8.6, 2.5]
-  //  //        },
-  //  //     ]
-  //  //  };
-    
-  //  //  this.chart = Highcharts.chart(chartOptions as any);
    public ngAfterViewInit(): void {
     
       this.dashboards$ = this.dashboardService.getAllDashboards();
       this.createChartPie();
       this.createChartColumn();
-      this.createChartLine();
+      this.createLineChart();
+      this.createStackedColumnChart();
+      this.createComplicationChart();
+      this.createFertilityColumnChart();
     }
    // }
   
-    private getRandomNumber(min: number, max: number): number {
-      return Math.floor(Math.random() * (max - min + 1) + min)
-    }
   
   
     private createChartPie(): void {
-      let date = new Date();
-      const data: any[] = [];
-  
-      for (let i = 0; i < 3; i++) {
-        date.setDate(new Date().getDate() + i);
-        data.push({
-          name: `${date.getDate()}/${date.getMonth() + 1}`,
-          y: this.getRandomNumber(0, 1000),
-        });
-      }
-  
+      var data = [
+        { category: 'Student', count: 500 },
+        { category: 'Staff', count: 300 },
+        { category: 'Others', count: 200 }
+      ];
+
       const chart = Highcharts.chart('chart-pie', {
         chart: {
-          type: 'pie',
-        },
-        title: {
-          text: 'Total Patients By Category',
-        },
-        credits: {
-          enabled: false,
-        },
-        tooltip: {
-          headerFormat: `<span class="mb-2">Date: {point.key}</span><br>`,
-          pointFormat: '<span>Amount: {point.y}</span>',
-          useHTML: true,
-        },
-        series: [{
-          name: null,
-          innerSize: '50%',
-          data,
-        }],
-      } as any);
+    type: 'pie'
+  },
+  title: {
+    text: 'Patients by Category'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b>: {point.y}',
+        // style: {
+        //   color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+        // }
+      }
+    }
+  },
+  series: [{
+    name: 'Category',
+    colorByPoint: true,
+    data: data.map(item => ({
+      name: item.category,
+      y: item.count
+    }))
+  }],
+  legend: {
+    enabled: true
+  }
+}as any);
   
       // setInterval(() => {
       //   date.setDate(date.getDate() + 1);
@@ -125,23 +101,27 @@ privileges$: any;
     }
   
     private createChartColumn(): void {
-      let date = new Date();
-      const data: any[] = [];
-  
-      for (let i = 0; i < 10; i++) {
-        date.setDate(new Date().getDate() + i);
-        data.push({
-          name: `${date.getDate()}/${date.getMonth() + 1}`,
-          y: this.getRandomNumber(0, 1000),
-        });
-      }
-  
+      const data: any[] = [
+        { name: 'January', y: 120 },
+        { name: 'February', y: 150 },
+        { name: 'March', y: 180 },
+        { name: 'April', y: 200 },
+        { name: 'May', y: 220 },
+        { name: 'June', y: 250 },
+        { name: 'July', y: 280 },
+        { name: 'August', y: 300 },
+        { name: 'September', y: 320 },
+        { name: 'October', y: 350 },
+        { name: 'November', y: 380 },
+        { name: 'December', y: 400 }
+      ];
+    
       const chart = Highcharts.chart('chart-column' as any, {
         chart: {
           type: 'column',
         },
         title: {
-          text: 'Overall Patients Annually',
+          text: 'Overall Patients Intake Over a Year',
         },
         credits: {
           enabled: false,
@@ -151,65 +131,7 @@ privileges$: any;
         },
         yAxis: {
           min: 0,
-          title:undefined,
-        },
-        xAxis: {
-          type: 'Months',
-        },
-        tooltip: {
-          headerFormat: `<div>Date: {point.key}</div>`,
-          pointFormat: `<div>{series.name}: {point.y}</div>`,
-          shared: true,
-          useHTML: true,
-        },
-        plotOptions: {
-          bar: {
-            dataLabels: {
-              enabled: true,
-            },
-          },
-        },
-        series: [{
-          name: 'Amount',
-          data,
-        }],
-      } as any);
-  
-      // setInterval(() => {
-      //   date.setDate(date.getDate() + 1);
-      //   chart.series[0].addPoint({
-      //     name: `${date.getDate()}/${date.getMonth() + 1}`,
-      //     y: this.getRandomNumber(0, 1000),
-      //   }, true, true);
-      // }, 1500);
-    }
-  
-    private createChartLine(): void {
-      let date = new Date();
-      const data: any[] = [];
-  
-      for (let i = 0; i < 10; i++) {
-        date.setDate(new Date().getDate() + i);
-        data.push([`${date.getDate()}/${date.getMonth() + 1}`, this.getRandomNumber(0, 1000)]);
-      }
-  
-      const chart = Highcharts.chart('chart-line', {
-        chart: {
-          type: 'line',
-        },
-        title: {
-          text: 'Mortality Rate',
-        },
-        credits: {
-          enabled: false,
-        },
-        legend: {
-          enabled: false,
-        },
-        yAxis: {
-          title: {
-            text: null,
-          }
+          title: undefined,
         },
         xAxis: {
           type: 'category',
@@ -220,18 +142,259 @@ privileges$: any;
           shared: true,
           useHTML: true,
         },
+        plotOptions: {
+          column: {
+            dataLabels: {
+              enabled: true,
+            },
+          },
+        },
         series: [{
-          name: 'Amount',
+          name: 'Patients',
           data,
         }],
       } as any);
-  
-      // setInterval(() => {
-      //   date.setDate(date.getDate() + 1);
-      //   chart.series[0].addPoint([`${date.getDate()}/${date.getMonth() + 1}`, this.getRandomNumber(0, 1000)], true, true);
-      // }, 1500);
     }
   
+    private createLineChart(): void {
+      const data: any[] = [
+        { week: 1, time: 4 },
+        { week: 2, time: 5 },
+        { week: 3, time: 6 },
+        { week: 4, time: 6 },
+        { week: 5, time: 5 },
+        { week: 6, time: 3 },
+        { week: 7, time: 4 },
+        { week: 8, time: 7 },
+        { week: 9, time: 2 },
+        { week: 10, time: 6 },
+        { week: 11, time: 5 },
+        { week: 12, time: 3 },
+        { week: 13, time: 7 },
+        { week: 14, time: 4 },
+        { week: 15, time: 2 },
+        { week: 16, time: 6 },
+        { week: 17, time: 3 },
+        { week: 18, time: 5 },
+        { week: 19, time: 6 },
+        { week: 20, time: 4 },
+        { week: 21, time: 7 },
+        { week: 22, time: 2 },
+        { week: 23, time: 3 },
+        { week: 24, time: 5 },
+        { week: 25, time: 4 },
+        { week: 26, time: 6 },
+        { week: 27, time: 5 },
+        { week: 28, time: 4 },
+        { week: 29, time: 7 },
+        { week: 30, time: 2 },
+        { week: 31, time: 3 },
+        { week: 32, time: 6 },
+        { week: 33, time: 4 },
+        { week: 34, time: 5 },
+        { week: 35, time: 7 },
+        { week: 36, time: 3 },
+        { week: 37, time: 6 },
+        { week: 38, time: 5 },
+        { week: 39, time: 4 },
+        { week: 40, time: 7 },
+        { week: 41, time: 2 },
+        { week: 42, time: 4 },
+        { week: 43, time: 6 },
+        { week: 44, time: 5 },
+        { week: 45, time: 3 },
+        { week: 46, time: 7 },
+        { week: 47, time: 4 },
+        { week: 48, time: 3 },
+        { week: 49, time: 5 },
+        { week: 50, time: 7 },
+        { week: 51, time: 4 },
+        { week: 52, time: 6 }
+      ];
+    
+      const chart = Highcharts.chart('chart-line' as any, {
+        chart: {
+          type: 'line',
+        },
+        title: {
+          text: 'Laboratory Turnaround Time Trend',
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          enabled: false,
+        },
+        xAxis: {
+          categories: data.map(item => `Week ${item.week}`),
+        },
+        yAxis: {
+          title: {
+            text: 'Turnaround Time (hours)',
+          },
+        },
+        tooltip: {
+          headerFormat: `<div>Week: {point.key}</div>`,
+          pointFormat: `<div>Turnaround Time: {point.y} hours</div>`,
+          shared: true,
+          useHTML: true,
+        },
+        series: [{
+          name: 'Turnaround Time',
+          data: data.map(item => item.time),
+        }],
+      } as any);
+    }
+  
+    private createStackedColumnChart(): void {
+      const data: any[] = [
+        {
+          name: 'Elderly',
+          data: [5, 3, 4, 7, 2, 6, 4, 5, 3, 4, 7, 2]
+        }, {
+          name: 'Infants',
+          data: [2, 2, 3, 2, 1, 5, 3, 2, 2, 3, 2, 1]
+        }, {
+          name: 'Youth',
+          data: [3, 4, 4, 2, 5, 3, 4, 3, 4, 4, 2, 5]
+        }
+      ];
+    
+      const chart = Highcharts.chart('chart-stacked-column' as any, {
+        chart: {
+          type: 'column',
+        },
+        title: {
+          text: 'Mortality Rate by Category Over a Year',
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          align: 'right',
+          verticalAlign: 'top',
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: 'Mortality Rate',
+          },
+        },
+        xAxis: {
+          categories: ['Adult', 'Youth', 'Infant'],
+        },
+        tooltip: {
+          headerFormat: '<div>Month: {point.key}</div>',
+          pointFormat: '<div>{series.name}: {point.y}</div>',
+          shared: true,
+          useHTML: true,
+        },
+        plotOptions: {
+          column: {
+            stacking: 'normal',
+            dataLabels: {
+              enabled: true,
+            },
+          },
+        },
+        series: data
+      } as any);
+    }
+
+    private createComplicationChart(): void {
+      const data: any[] = [
+        { quarter: 1, time: 4 },
+        { quarter: 2, time: 5 },
+        { quarter: 3, time: 6 },
+        { quarter: 4, time: 6 }
+        
+      ];
+    
+      const chart = Highcharts.chart('chart-complication' as any, {
+        chart: {
+          type: 'line',
+        },
+        title: {
+          text: 'Complication Trend',
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          enabled: false,
+        },
+        xAxis: {
+          categories: data.map(item => `Quarter ${item.quarter}`),
+        },
+        yAxis: {
+          title: {
+            text: 'Complications',
+          },
+        },
+        tooltip: {
+          headerFormat: `<div>Quarter: {point.key}</div>`,
+          pointFormat: `<div>Complications: {point.y}</div>`,
+          shared: true,
+          useHTML: true,
+        },
+        series: [{
+          name: 'Complications',
+          data: data.map(item => item.time),
+        }],
+      } as any);
+    }
+    private createFertilityColumnChart(): void {
+      const data: any[] = [
+        { name: '13-17', y: 5 },
+        { name: '18-24', y: 6 },
+        { name: '25-36', y: 4 },
+        { name: '37-42', y: 3 },
+        { name: '43-55', y: 2 },
+      ];
+    
+      const chart = Highcharts.chart('chart-fertility' as any, {
+        chart: {
+          type: 'column',
+        },
+        title: {
+          text: 'Fertility Rate',
+        },
+        credits: {
+          enabled: false,
+        },
+        legend: {
+          enabled: false,
+        },
+        yAxis: {
+          min: 0,
+          title: undefined,
+        },
+        xAxis: {
+          type: 'category',
+        },
+        tooltip: {
+          headerFormat: `<div>Age: {point.key}</div>`,
+          pointFormat: `<div>{series.name}: {point.y}</div>`,
+          shared: true,
+          useHTML: true,
+        },
+        plotOptions: {
+          column: {
+            dataLabels: {
+              enabled: true,
+            },
+          },
+        },
+        series: [{
+          name: 'Rate',
+          data,
+        }],
+      } as any);
+    }
+
+    private createAntenatalColumnChart(): void {
+      
+    }
   }
 
 

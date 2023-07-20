@@ -24,7 +24,8 @@
       </ng-template>
     </mat-tab>
   </mat-tab-group> -->
-
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="Dashboard">
 <div class="d-flex justify-content-between" >
   <div> <mat-form-field>
       <mat-label>Filter by</mat-label>
@@ -83,21 +84,65 @@
 <div class="row">
 
   <div class="col-sm-4 mt-5">
+    <mat-card class="border p-3">
     <div id="chart-pie"></div>
+    </mat-card>
   </div>
 
   <div class="col-sm-8 mt-5">
+    <mat-card class="border p-3">
     <div id="chart-column"></div>
+    </mat-card>
   </div>
 
 
-<!-- <div class="col-sm-8 mt-5">
-<div id="chart-line"></div>
-</div> -->
+
+</div>
+
+<!-- Tab 2 content below -->
+<div class="row">
+
+  <div class="col-sm-4 mt-5">
+    <mat-card class="border p-3">
+    <div id="chart-line"></div>
+    </mat-card>
+  </div>
+
+  <div class="col-sm-8 mt-5">
+    <mat-card class="border p-3">
+    <div id="chart-stacked-column"></div>
+    </mat-card>
+  </div>
+
+</div>
+
+<!-- Tab 3 content below -->
+<div class="row">
+
+  <div class="col-sm-4 mt-5">
+    <mat-card class="border p-3">
+    <div id="chart-complication"></div>
+    </mat-card>
+  </div>
+
+  <div class="col-sm-8 mt-5">
+    <mat-card class="border p-3">
+    <div id="chart-fertility"></div>
+    </mat-card>
+  </div>
+
 </div>
 
 
 <div>
   <!-- <a *ngFor="let dashboard of dashboards$ | async" [routerlink]="['/dashboard/', dashboard.id]">{{dashboard.name}}</a> -->
 </div>
+  </mat-tab>
+<mat-tab label="Laboratory">
+<!-- Tab 2 content here -->
+</mat-tab>
+<mat-tab label="RCH">
+<!--  Tab 3 content here -->
+</mat-tab>
+</mat-tab-group>
 <router-outlet></router-outlet>
