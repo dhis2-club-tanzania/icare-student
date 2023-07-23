@@ -28,9 +28,10 @@ npm install
 
 ## Development server
 
-Duplicate  proxy-config.example.json and rename the copied file to proxy-config.json
+Duplicate proxy-config.example.json and rename the copied file to proxy-config.json
 
 Copy the following and paste it to the file proxy-config.json
+
 ```bash
 {
   "/": {
@@ -40,10 +41,13 @@ Copy the following and paste it to the file proxy-config.json
   }
 }
 ```
-Start the development server 
+
+Start the development server
+
 ```bash
 npm start
 ```
+
 Navigate to [http://localhost:4200](http://localhost:4200)
 
 ## Build
@@ -55,14 +59,27 @@ Navigate to application root folder
 ```bash
 cd omods/core
 ```
+
 Run the following command to build the application
+
 ```bash
 mvn clean package -DskipTests
 ```
-Upload the omod to openmrs. 
+
+Upload the omod to openmrs.
 
 ## Running unit tests
 
 ## Running end-to-end tests
 
 ## Further help
+
+To run the ICARE SMS SRERVER run node server to terminal of icare sms code
+
+to connect with the mongo db database
+
+Then write the number on the UI page of the Icare by writing the phone number
+
+then sms is sent on specific number with respective message wrote from the server code
+
+To access the labour pattern graph open the code on the IDE then run ng serve

@@ -1,5 +1,5 @@
 <div style="position: relative;">
-    <mat-toolbar color="primary">Add new appointment</mat-toolbar>
+    <mat-toolbar color="primary">Appointments</mat-toolbar>
     <div class="loading-overlay" *ngIf="saving">
         <div class="text-center">
             <div>Saving</div>
@@ -10,25 +10,25 @@
     </div>
     <div style="margin-inline: 4px; margin-bottom: 4px;">
         <div>
-                <div [formGroup]="appointmentForm">
-                        <div class="d-flex mt-1">
+                   <div [formGroup]="appointmentForm"    >
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Patient</mat-label>
                                 <mat-select formControlName="patient" disabled="true">
                                     <mat-option [value]="data.patient.patient.uuid" selected="selected">{{data.patient.patient.display}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                        
-                        <div class="d-flex mt-1">
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Service</mat-label>
                                 <mat-select formControlName="service" disabled="true">
                                     <mat-option [value]="data.location.uuid" selected="selected">{{data.location.display}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
-                        <div class="d-flex mt-1">
+                        </div> -->
+                        <!-- <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
                                 <mat-label>Location</mat-label>
                                 <mat-select formControlName="location" disabled="true">
@@ -36,7 +36,8 @@
                                         selected="selected">{{data.location.parentLocation.display}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </div>
+                        </div> -->
+                        <div  *ngIf="scheduleStatus.status !== 'Scheduled'">
                         <app-form [fields]="appointmentFormFields" [isReport]="false" (formUpdate)="formUpdates($event)"></app-form>
                         <div class="d-flex mt-1">
                             <mat-form-field class="flex-grow-1" appearance="fill">
@@ -54,20 +55,35 @@
                                 </mat-select>
                             </mat-form-field>
                         </div>
+                        </div>
+
                         <div class="mt-2">
                             <mat-form-field class="w-100" appearance="fill">
-                                <mat-label>Notes</mat-label>
-                                <textarea matInput rows="5" id="notes" formControlName="notes" placeholder="Notes"></textarea>
+                                <mat-label>Phone Number</mat-label>
+                                <textarea matInput  id="notes" formControlName="notes" placeholder="Example 255712000111"></textarea>
                             </mat-form-field>
                         </div>
                     </div>
 
                 </div>
         </div>
-        <div class="d-flex justify-content-end m-4">
+        <div class="d-flex justify-content-end m-4" *ngIf="scheduleStatus.status !== 'Scheduled'">
             <button mat-stroked-button (click)="onClose($event)">Close</button>
-            <button mat-flat-button color="primary" class="ml-2" (click)="onSave($event)">
+            <button mat-flat-button color="primary" class="ml-2" (click)="onSave()">
                 Save
             </button>
+            
         </div>
+
+        <div class="d-flex justify-content-end m-4" *ngIf="scheduleStatus.status !== 'NO_SERVICE'">
+            <a>Patient has been scheduled arleady</a>
+            <button mat-flat-button color="primary" class="ml-2" (click)="changeNoService()">
+                change Number Service
+            </button>
+            <button mat-flat-button color="primary" class="ml-2" (click)="cancelService()">
+                Cancel Service 
+            </button>
+          
+        </div>
+
     </div>

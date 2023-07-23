@@ -1,6 +1,6 @@
 {
   "/": {
-    "target": "https://icare.dhis2.udsm.ac.tz",
+    "target": "http://localhost",
     "secure": "false",
     "auth": "admin:Admin123",
     "changeOrigin": "true"
