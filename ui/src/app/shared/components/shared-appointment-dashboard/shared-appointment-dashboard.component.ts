@@ -86,12 +86,13 @@ import { tap, map as rxMap } from "rxjs/operators";
 import { AppointmentFormComponent } from "../../dialogs/appointment-form/appointment-form.component";
 
 @Component({
-  selector: "app-shared-patient-dashboard",
-  templateUrl: "./shared-patient-dashboard.component.html",
-  styleUrls: ["./shared-patient-dashboard.component.scss"],
+  selector: 'app-shared-appointment-dashboard',
+  templateUrl: './shared-appointment-dashboard.component.html',
+  styleUrls: ['./shared-appointment-dashboard.component.scss']
 })
-export class SharedPatientDashboardComponent implements OnInit {
-  @Input() formPrivilegesConfigs: any;
+export class SharedAppointmentDashboardComponent implements OnInit {
+
+ @Input() formPrivilegesConfigs: any;
   @Input() currentUser: any;
   @Input() userPrivileges: any;
   @Input() activeVisit: any;
@@ -358,18 +359,9 @@ export class SharedPatientDashboardComponent implements OnInit {
     this.currentRound = round;
   }
 
-  clearBills(event: Event) {
+  goBack(event: Event) {
     event.stopPropagation();
-    this.store.dispatch(clearBills());
-    this.store.dispatch(
-      go({
-        path: [
-          !this.isInpatient
-            ? "/clinic/patient-list"
-            : "/inpatient/" + this.currentLocation?.uuid,
-        ],
-      })
-    );
+    this.store.dispatch(go({ path: ["/registration/appointments"] }));
   }
 
   viewPatientHistory(event: Event, patientUuid) {
@@ -544,20 +536,14 @@ export class SharedPatientDashboardComponent implements OnInit {
   }
 
   openAppointmentForm() {
-    let patient
-    this.currentPatient$.subscribe(res => {patient = res})
-
     this.dialog.open(AppointmentFormComponent, {
       width: "75%",
-      data: {
-        patient: patient,
-        location: this.currentLocation,
-        visit: this.activeVisit
-      },
+      data: {},
     });
   }
 
   reload(){
     this.ngOnInit();
   }
+
 }

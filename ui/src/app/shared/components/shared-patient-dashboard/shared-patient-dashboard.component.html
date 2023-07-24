@@ -105,6 +105,16 @@
             <button
               *ngIf="!isInpatient"
               class="mr-2"
+              (click)="openAppointmentForm()"
+              
+              mat-stroked-button
+              color="primary"
+            >
+              Schedule Reminder.
+            </button>
+            <button
+              *ngIf="!isInpatient"
+              class="mr-2"
               (click)="onToggleVitalsSummary($event)"
               [ngStyle]="{
                 'background-color':

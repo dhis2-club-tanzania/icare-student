@@ -12,6 +12,10 @@ import { RegistrationEditComponent } from './components/registration-edit/regist
 import { entryRegComponents, regComponents } from './components';
 import { LocationsChipsComponent } from './components/locations-chips/locations-chips.component';
 import { RegistrationSummaryCardsComponent } from './components/registration-summary-cards/registration-summary-cards/registration-summary-cards.component';
+import { AppointmentsListComponent } from './pages/appointments-list/appointments-list.component';
+import { AppointmentDashboardComponent } from './pages/appointment-dashboard/appointment-dashboard.component';
+import { AppointmentsComponent } from './components/appointments/appointments.component';
+
 
 @NgModule({
   declarations: [
@@ -25,6 +29,9 @@ import { RegistrationSummaryCardsComponent } from './components/registration-sum
     ...regComponents,
     LocationsChipsComponent,
     RegistrationSummaryCardsComponent,
+    AppointmentsListComponent,
+    AppointmentDashboardComponent,
+    AppointmentsComponent,
   ],
   entryComponents: [...entryRegComponents],
   imports: [CommonModule, RegistrationRoutingModule, SharedModule],

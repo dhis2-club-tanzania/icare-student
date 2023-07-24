@@ -41,15 +41,23 @@
 
           <span class="toolbar-spacer"></span>
 
-          <button
-            mat-flat-button
-            id="RegistrationBtn"
-            color="primary"
-            (click)="goToAddNewClientPage($event, '/registration/add')"
-          >
-            <mat-icon inline>person_add</mat-icon>
-            <span class="ml-2">Register New Patient</span>
-          </button>
+          <div class="d-flex">
+            <button mat-stroked-button id="RegistrationBtn" color="primary" class="mr-4"
+              (click)="goToAddNewClientPage($event, '/registration/appointments')">
+              <mat-icon inline>list</mat-icon>
+              <span class="ml-2">Reminder List</span>
+            </button>
+
+            <button
+              mat-flat-button
+              id="RegistrationBtn"
+              color="primary"
+              (click)="goToAddNewClientPage($event, '/registration/add')"
+            >
+              <mat-icon inline>person_add</mat-icon>
+              <span class="ml-2">Register New Patient</span>
+            </button>
+          </div>
           <!-- <a class="ml-2 help" (click)="toggleIcareHelp($event)">
             <span>
               <img height="20" src="assets/icons/help_icon-48.png" />

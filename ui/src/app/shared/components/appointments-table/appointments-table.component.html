@@ -1,0 +1,79 @@
+<div>
+    <table class="mat-elevation-z2" mat-table [dataSource]="dataSource" style="width: 100%">
+        <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.position }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="patietId">
+            <th mat-header-cell *matHeaderCellDef>Patient ID</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.patietId }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="patientName">
+            <th mat-header-cell *matHeaderCellDef>Patient Names</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.patientName }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>Doctor's Room / Ward</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.location }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="appointmentType">
+            <th mat-header-cell *matHeaderCellDef>Appointment Type</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.appointmentType }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="provider">
+            <th mat-header-cell *matHeaderCellDef>Provider</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.provider }}
+            </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Appointment date</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.startTime | date: "mediumDate" }} 
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef>Appointment time</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.startTime | date: "shortTime" }} - {{ element.endTime | date: "shortTime" }}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.status}}
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr style="cursor: pointer" class="{{ row?.paymentType === 'Insurance' ? 'insured-client' : '' }}" mat-row
+            *matRowDef="let row; columns: displayedColumns" (click)="getSelectedPatient($event, row?.data)"></tr>
+    </table>
+
+    <!-- <mat-paginator
+    [pageSizeOptions]="[10, 15, 20, 25, 50, 100]"
+    showFirstLastButtons
+  ></mat-paginator> -->
+    <div class="d-flex justify-content-end mt-2 mb-2" *ngIf="visits && visits.length > 0">
+        <button [disabled]="page === 0" mat-stroked-button
+            (click)="getAnotherList($event, visits ? visits[0] : null, 'prev')">
+            Prev
+        </button>
+        <button [disabled]="(visits && visits[0].visit && !visits[0].visit?.pager) && itemsPerPage > visits.length"
+            class="ml-2" mat-stroked-button (click)="getAnotherList($event, visits ? visits[0] : null, 'next')">
+            Next
+        </button>
+    </div>
+</div>
