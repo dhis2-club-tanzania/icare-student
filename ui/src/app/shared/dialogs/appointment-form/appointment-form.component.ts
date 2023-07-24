@@ -112,7 +112,7 @@ export class AppointmentFormComponent implements OnInit {
 
     const hours = `0${date.getUTCHours()}`.slice(-2);
     const minutes = `0${date.getUTCMinutes()}`.slice(-2);
-
+ 
     return `${hours}:${minutes}`;
   }
 
@@ -126,6 +126,8 @@ export class AppointmentFormComponent implements OnInit {
 
     const time = this.getStartEndDates(date, startTime, endTime);
 
+    console.log(time)
+
     const appointmentBlockPayload = {
       "location": {
         "uuid": service,
@@ -134,7 +136,7 @@ export class AppointmentFormComponent implements OnInit {
       "provider": {
         "uuid": provider
       },
-      "startDate": "2023-01-01T07:30:00.000",
+      "startDate": "2025-01-01T07:30:00.000",
       "endDate": "2025-01-01T07:30:00.000",
       types: [
         appointment_type
@@ -143,7 +145,6 @@ export class AppointmentFormComponent implements OnInit {
 
     const appointmentBlock = await this.api.appointmentscheduling.createAppointmentBlock(appointmentBlockPayload)
 
-    console.log(appointmentBlock);
 
     if (appointmentBlock.uuid) {
       
@@ -190,11 +191,14 @@ export class AppointmentFormComponent implements OnInit {
   getStartEndDates(date, startTime, endTime) {
     const currentDate = this.restructureDate(date)
 
+    
     const start_time = this.getTimeFromDateString(startTime.startTime);
     const end_time = this.getTimeFromDateString(endTime);
-
-    const _startDate = `${currentDate}T${start_time}:00`;
-    const _endDate = `${currentDate}T${end_time}:00`;
+    
+    const _startDate = `${currentDate}T${start_time}:00.000`;
+    const _endDate = `${currentDate}T${end_time}:00.000`;
+    
+    console.log(_startDate)
 
     const startDate = new Date(_startDate).toISOString()
     const endDate = new Date(_endDate).toISOString()
@@ -207,7 +211,7 @@ export class AppointmentFormComponent implements OnInit {
     const newDate = new Date(date)
     const fullYear = newDate.getFullYear();
     const month = newDate.getMonth() + 1;
-    const day = newDate.getDate()
+    const day = newDate.getDate() < 10 ? `0${newDate.getDate()}` : newDate.getDate()
     if (month < 10) return `${fullYear}-0${month}-${day}`;
     return `${fullYear}-${month}-${day}`;
   }
