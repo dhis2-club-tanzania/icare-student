@@ -126,7 +126,33 @@ export class FormService {
           return response?.results;
         })
       );
-    } else if (searchControlType === "user") {
+    } else if (searchControlType === "patient") {
+      return from(this.api.patient.getAllPatients({ q: parameters?.q })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
+    } else if (searchControlType === "provider") {
+      return from(this.api.provider.getAllProviders({ q: parameters?.q })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
+    }else if(searchControlType === "appointmenttype") {
+      return from(this.api.appointmentscheduling.getAllAppointmentTypes({ q: parameters?.q })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
+    } else if (searchControlType === "timeslot") {
+      console.log(parameters)
+      return from(this.api.appointmentscheduling.getAllTimeSlots({ q: parameters?.q, appointmentType:"dd2ab965-6630-4dbd-a69b-87d909cd1b2c" })).pipe(
+        map((response) => {
+          return response?.results;
+        })
+      );
+    }
+    else if (searchControlType === "user") {
       return from(this.api.user.getAllUsers({ q: parameters?.q })).pipe(
         map((response) => {
           return response?.results || [];

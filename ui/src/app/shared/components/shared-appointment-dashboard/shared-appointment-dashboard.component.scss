@@ -1,0 +1,62 @@
+button:hover {
+  outline: none !important;
+}
+
+button {
+  outline: none !important;
+}
+
+.patient-dashboard-container {
+  padding-bottom: 5px;
+}
+
+::ng-deep .mat-expansion-panel-header.mat-expanded {
+  height: 44px !important;
+}
+
+.patient-profile-sticky {
+  width: 100%;
+  position: fixed;
+  z-index: 100;
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+.patient-other-details-padding {
+  padding-top: 7rem;
+}
+
+.selected-form {
+  background-color: #2a8fd1 !important;
+  color: #fff !important;
+}
+
+.patient-vitals-mat-menu {
+  position: fixed !important;
+  top: 130px;
+  right: 0 !important;
+  background-color: #fff !important;
+  width: 700px !important;
+  overflow: auto;
+  z-index: 1001;
+}
+
+.obs-table {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.form-listing {
+  border-radius: 30px;
+  padding: 8px 10px;
+  background-color: #eee;
+  text-align: center;
+  /* min-width: 70px; */
+  width: auto;
+  text-decoration: none;
+  color: #222;
+}
+
+.form-listing:hover {
+  cursor: pointer;
+}

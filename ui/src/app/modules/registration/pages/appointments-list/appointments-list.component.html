@@ -1,0 +1,16 @@
+<div>
+    <mat-toolbar>
+        <button mat-icon-button (click)="onBack($event)" matTooltip="Go to Home page">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="ml-2">Appointments </span>
+    </mat-toolbar>
+    <div class="w-100 text-centered">
+        <app-appointments-list-table 
+            [encounterType]="'e22e39fd-7db2-45e7-80f1-60fa0d5a4378'"
+            (selectAppointment)="onSelectAppointment($event)"
+            [shouldShowParentLocation]="true"
+            [isTabularList]="true">
+        </app-appointments-list-table>
+    </div>
+</div>

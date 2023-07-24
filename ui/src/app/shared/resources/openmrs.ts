@@ -5516,6 +5516,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         startIndex?: number;
         v?: "ref" | "default" | "full" | "custom";
         q?: string;
+        appointmentType?: string;
       },
       params?: RequestParams
     ) =>
@@ -5888,6 +5889,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         statusValue?: string;
         toDate?: string;
         location?: string;
+        patient?: string;
       },
       params?: RequestParams
     ) =>

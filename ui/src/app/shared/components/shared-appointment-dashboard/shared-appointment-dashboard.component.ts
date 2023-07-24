@@ -84,15 +84,15 @@ import { VisitConsultationStatusModalComponent } from "../../dialogs/visit-consu
 import { BillingService } from "src/app/modules/billing/services/billing.service";
 import { tap, map as rxMap } from "rxjs/operators";
 import { AppointmentFormComponent } from "../../dialogs/appointment-form/appointment-form.component";
-import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-shared-patient-dashboard",
-  templateUrl: "./shared-patient-dashboard.component.html",
-  styleUrls: ["./shared-patient-dashboard.component.scss"],
+  selector: 'app-shared-appointment-dashboard',
+  templateUrl: './shared-appointment-dashboard.component.html',
+  styleUrls: ['./shared-appointment-dashboard.component.scss']
 })
-export class SharedPatientDashboardComponent implements OnInit {
-  @Input() formPrivilegesConfigs: any;
+export class SharedAppointmentDashboardComponent implements OnInit {
+
+ @Input() formPrivilegesConfigs: any;
   @Input() currentUser: any;
   @Input() userPrivileges: any;
   @Input() activeVisit: any;
@@ -158,7 +158,6 @@ export class SharedPatientDashboardComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private dialog: MatDialog,
-    private router: Router,
     private systemSettingsService: SystemSettingsService,
     private ordersService: OrdersService,
     private configService: ConfigsService,
@@ -360,18 +359,9 @@ export class SharedPatientDashboardComponent implements OnInit {
     this.currentRound = round;
   }
 
-  clearBills(event: Event) {
+  goBack(event: Event) {
     event.stopPropagation();
-    this.store.dispatch(clearBills());
-    this.store.dispatch(
-      go({
-        path: [
-          !this.isInpatient
-            ? "/clinic/patient-list"
-            : "/inpatient/" + this.currentLocation?.uuid,
-        ],
-      })
-    );
+    this.store.dispatch(go({ path: ["/registration/appointments"] }));
   }
 
   viewPatientHistory(event: Event, patientUuid) {
@@ -530,6 +520,7 @@ export class SharedPatientDashboardComponent implements OnInit {
     visit,
     patient
   ): void {
+    console.log(patient);
     event.stopPropagation();
     this.dialog.open(VisitConsultationStatusModalComponent, {
       width: "25%",
@@ -545,32 +536,14 @@ export class SharedPatientDashboardComponent implements OnInit {
   }
 
   openAppointmentForm() {
-    let patient
-    this.currentPatient$.subscribe(res => {patient = res})
-
     this.dialog.open(AppointmentFormComponent, {
-      width: "50%",
-      data: {
-        patient: patient,
-        location: this.currentLocation,
-        visit: this.activeVisit
-      },
-    }).afterClosed().subscribe(() => {
-
+      width: "75%",
+      data: {},
     });
   }
 
-  navigateToAllAppointments(event: Event) {
-    console.log(this.currentLocation)
-    event.stopPropagation();
-    this.router.navigate(['/registration/appointments'], {
-      queryParams: {
-        hideLocationFilter: true,
-        location: this.currentLocation.uuid
-      }
-    });
-  }
   reload(){
     this.ngOnInit();
   }
+
 }

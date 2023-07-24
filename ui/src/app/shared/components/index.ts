@@ -118,7 +118,15 @@ import { DateTimeFieldComponent } from "./date-time-field/date-time-field.compon
 import { PatientHistoryComponent } from "./patient-history/patient-history.component";
 import { PatientHistoryDataComponent } from "./patient-history-data/patient-history-data.component";
 import { SharedSamplesListComponent } from "./shared-samples-list/shared-samples-list.component";
+import { AppointmentsListTableComponent } from "./appointments-list-table/appointments-list-table.component";
+import { AppointmentsListFiltersComponent } from "./appointments-list-filters/appointments-list-filters.component";
+import { SharedAppointmentDashboardComponent } from "./shared-appointment-dashboard/shared-appointment-dashboard.component";
+import { AppointmentsTableComponent } from "./appointments-table/appointments-table.component";
 export const components: any[] = [
+  AppointmentsTableComponent,
+  SharedAppointmentDashboardComponent,
+  AppointmentsListFiltersComponent,
+  AppointmentsListTableComponent,
   PatientAddressComponent,
   PatientSearchComponent,
   PatientProfileComponent,
