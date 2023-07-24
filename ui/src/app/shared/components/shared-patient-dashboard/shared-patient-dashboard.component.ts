@@ -84,6 +84,7 @@ import { VisitConsultationStatusModalComponent } from "../../dialogs/visit-consu
 import { BillingService } from "src/app/modules/billing/services/billing.service";
 import { tap, map as rxMap } from "rxjs/operators";
 import { AppointmentFormComponent } from "../../dialogs/appointment-form/appointment-form.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-shared-patient-dashboard",
@@ -157,6 +158,7 @@ export class SharedPatientDashboardComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private dialog: MatDialog,
+    private router: Router,
     private systemSettingsService: SystemSettingsService,
     private ordersService: OrdersService,
     private configService: ConfigsService,
@@ -528,7 +530,6 @@ export class SharedPatientDashboardComponent implements OnInit {
     visit,
     patient
   ): void {
-    console.log(patient);
     event.stopPropagation();
     this.dialog.open(VisitConsultationStatusModalComponent, {
       width: "25%",
@@ -548,7 +549,7 @@ export class SharedPatientDashboardComponent implements OnInit {
     this.currentPatient$.subscribe(res => {patient = res})
 
     this.dialog.open(AppointmentFormComponent, {
-      width: "75%",
+      width: "50%",
       data: {
         patient: patient,
         location: this.currentLocation,
@@ -557,6 +558,10 @@ export class SharedPatientDashboardComponent implements OnInit {
     });
   }
 
+  navigateToAllAppointments(event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/registration/appointments']);
+  }
   reload(){
     this.ngOnInit();
   }

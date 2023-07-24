@@ -98,18 +98,20 @@
             </ng-container>
           </div>
 
-          <div class="w-50 d-flex justify-content-end">
+          <div class="w-65 d-flex justify-content-end">
             <div class="mr-2">
               <app-shared-bmi></app-shared-bmi>
             </div>
             <button
-              *ngIf="!isInpatient"
               class="mr-2"
               (click)="openAppointmentForm()"
               mat-stroked-button
               color="primary"
             >
               New Appointment
+            </button>
+            <button class="mr-2" (click)="navigateToAllAppointments($event)" mat-stroked-button color="primary">
+              View All Appointments
             </button>
             <button
               *ngIf="!isInpatient"

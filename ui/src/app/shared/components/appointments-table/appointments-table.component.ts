@@ -37,6 +37,7 @@ export class AppointmentsTableComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    
     this.dataSource = new MatTableDataSource(
       sanitizePatientsVisitsForTabularPatientListing(
         this.appointments,

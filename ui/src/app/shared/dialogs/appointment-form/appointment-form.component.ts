@@ -134,7 +134,7 @@ export class AppointmentFormComponent implements OnInit {
       "provider": {
         "uuid": provider
       },
-      "startDate": "2025-01-01T07:30:00.000",
+      "startDate": "2023-01-01T07:30:00.000",
       "endDate": "2025-01-01T07:30:00.000",
       types: [
         appointment_type

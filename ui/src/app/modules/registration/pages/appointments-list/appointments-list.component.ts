@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Location } from '@angular/common';import { Store } from '@ngrx/store';
 import { go } from 'src/app/store/actions';
 import { AppState } from 'src/app/store/reducers';
 
@@ -10,14 +10,14 @@ import { AppState } from 'src/app/store/reducers';
 })
 export class AppointmentsListComponent implements OnInit {
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private location: Location) { }
 
   ngOnInit(): void {
   }
 
   onBack(e: Event) {
     e.stopPropagation();
-    this.store.dispatch(go({ path: ["/registration/home"] }));
+    this.location.back()
   }
 
   onSelectAppointment(patientData) {

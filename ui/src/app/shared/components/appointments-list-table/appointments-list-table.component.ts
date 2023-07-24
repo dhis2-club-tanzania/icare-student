@@ -2,24 +2,21 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
 } from "@angular/core";
 import { Store } from "@ngrx/store";
-import { Observable, of } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
 import { AppState } from "src/app/store/reducers";
 import { Patient } from "../../resources/patient/models/patient.model";
 import { Visit } from "../../resources/visits/models/visit.model";
 import { Appointment } from "../../resources/appointment/models/appointment.model";
-import { VisitsService } from "../../resources/visits/services";
 import { AppointmentService } from "../../resources/appointment/services/appointment.service";
 
 import { uniq } from "lodash";
 import {
   clearActiveVisit,
-  upsertAdmittedPatientLocation,
 } from "src/app/store/actions/visit.actions";
 import { ActivatedRoute, Router } from "@angular/router";
 import { clearBills } from "src/app/store/actions/bill.actions";
@@ -29,6 +26,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { addCurrentPatient, go } from "src/app/store/actions";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import { Api } from '../../resources/openmrs'
+import { getCurrentUserDetails } from "src/app/store/selectors/current-user.selectors";
 @Component({
   selector: 'app-appointments-list-table',
   templateUrl: './appointments-list-table.component.html',
@@ -56,6 +54,7 @@ export class AppointmentsListTableComponent implements OnInit {
 
   page: number = 0;
   appointments$: Observable<Appointment[]>;
+  appointments: any;
   filteredVisits$: Observable<Visit[]>;
   searchTerm: string;
   loadingPatients: boolean;
@@ -70,6 +69,9 @@ export class AppointmentsListTableComponent implements OnInit {
   filterBy: any;
   startingIndex: number = 0;
   errors: any[] = [];
+  loading: boolean
+  currentUser: any;
+
   constructor(
     private appointmentService: AppointmentService,
     private api: Api,
@@ -99,24 +101,35 @@ export class AppointmentsListTableComponent implements OnInit {
       this.paymentTypeSelected = this.defaultFilter;
     }
     this.itemsPerPage = this.itemsPerPage ? this.itemsPerPage : 10;
-    this.getAppointments(this.visits);
+    this.getAppointments();
   }
 
-  private getAppointments(visits: Visit[]) {
-    this.loadingPatients = true;
-    this.appointments$ =  this.appointmentService
-          .getAppointments(
-            this.filterBy ? this.filterBy : "",
-          )
-          .pipe(
-            tap((response: any) => {
-              this.loadingPatients = false;
-              if (response?.error) {
-                this.errors = [...this.errors, response?.error];
-              }
-            })
-    );
+  private getAppointments() {
+    this.store.select(getCurrentUserDetails).subscribe(user => {
+      if (user) {
+        const roles = user.roles.map(role => role.display)
+        if (roles.includes("provider")) {
+          this.getAllAppointments()
+        } else {
+          const providerUuid = user.uuid;
+          this.getAppointmentsByProvider(providerUuid)
+        }
+      }
+    })
+  }
+
+  async getAppointmentsByProvider(provider: string) {
+    this.loading = true
+    this.appointments = await(await this.api.appointmentscheduling.getAllAppointments({ provider,startIndex:this.startingIndex, v: "full", limit: 10 })).results
     
+    this.loading = false
+  }
+  async getAllAppointments() {
+    this.loading = true
+
+    this.appointments = await (await this.api.appointmentscheduling.getAllAppointments({ v: "full",startIndex:this.startingIndex, limit: 10 })).results
+    
+    this.loading = false
   }
 
   getAnotherList(event: Event, visit, type): void {
@@ -137,22 +150,7 @@ export class AppointmentsListTableComponent implements OnInit {
         ? this.startingIndex + Number(this.itemsPerPage)
         : this.startingIndex - Number(this.itemsPerPage);
 
-    this.appointments$ = this.appointmentService
-            .getAppointments(
-              this.searchTerm,
-            )
-            .pipe(
-              tap((response: any) => {
-                this.loadingPatients = false;
-                if (response?.error) {
-                  this.errors = [...this.errors, response?.error];
-                }
-              })
-    );
-    
-    const res = await this.api.appointmentscheduling.getAllAppointments({v:"full",limit:10, startIndex:this.startingIndex})
-
-    console.log(res)
+    this.getAppointments()
   }
 
   onSearchPatient(e) {
