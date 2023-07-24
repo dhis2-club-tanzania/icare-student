@@ -25,7 +25,7 @@ export class AppointmentsListComponent implements OnInit {
     'name',
     'date',
     'message',
-    'phoneNumber',
+    //'phoneNumber',
     'status',
     'appointmentType',
     'actions', // Add a column for the edit button
