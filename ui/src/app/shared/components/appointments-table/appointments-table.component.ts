@@ -17,7 +17,7 @@ export class AppointmentsTableComponent implements OnInit {
   @Input() itemsPerPage: number;
   @Input() page: number;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @Output() patientVisitDetails: EventEmitter<any> = new EventEmitter<any>();
+  @Output() selectedAppointmentDetails: EventEmitter<any> = new EventEmitter<any>();
   @Output() shouldLoadNewList: EventEmitter<boolean> =
     new EventEmitter<boolean>();
   currentPage: number = 0;
@@ -61,9 +61,9 @@ export class AppointmentsTableComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  getSelectedPatient(event, patientVisitDetails) {
+  getSelectedPatient(event, selectedAppointmentDetails) {
     event.stopPropagation();
-    this.patientVisitDetails.emit(patientVisitDetails);
+    this.selectedAppointmentDetails.emit(selectedAppointmentDetails);
   }
 
   applyFilter(event: Event) {

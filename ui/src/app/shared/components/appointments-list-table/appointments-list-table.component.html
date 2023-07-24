@@ -11,13 +11,14 @@
         <div class="patient-list d-flex">
        
             <!-- Filter input start -->
-            <!-- <div class="w-100 patient-list-type-toggle-container d-flex">
-                <div class="w-75" *ngIf="filters$ | async as filters">
+            <div class="w-100 patient-list-type-toggle-container d-flex">
+                <div class="w-75">
                     <app-appointments-list-filters [filterCategories]="filters"
-                        (onFilterChanged)="filterPatientList($event)"></app-appointments-list-filters>
+                    [hideLocationFilter]="hideLocationFilter"
+                        (onFilterChanged)="filterAppointmentList($event)"></app-appointments-list-filters>
                 </div>
                 
-            </div> -->
+            </div>
             <!-- Filter input start -->
 
 
@@ -40,7 +41,7 @@
               appointments.length > 0 
             ">
                     <app-appointments-table [appointments]="appointments" [paymentTypeSelected]="paymentTypeSelected"
-                        (patientVisitDetails)="onSelectPatient(null, $event)" [itemsPerPage]="itemsPerPage" [page]="page"
+                        (selectedAppointmentDetails)="onSelectAppointment(null, $event)" [itemsPerPage]="itemsPerPage" [page]="page"
                         (shouldLoadNewList)="onLoadNewList($event)"></app-appointments-table>
                     </div>
                     <!-- End of Tabular list -->

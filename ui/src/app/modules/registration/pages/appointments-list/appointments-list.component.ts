@@ -20,11 +20,12 @@ export class AppointmentsListComponent implements OnInit {
     this.location.back()
   }
 
-  onSelectAppointment(patientData) {
+  onSelectAppointment({ appointment }) {
+    console.log(appointment.patient.uuid)
     this.store.dispatch(
       go({
-        path: [`/clinic/patient-dashboard/${patientData?.visit.appointment.patient?.uuid}`],
-        query: { queryParams: { patient: patientData?.visit.appointment.patient?.uuid } },
+        path: [`/clinic/patient-dashboard/${appointment.patient.uuid}`],
+        query: { queryParams: { patient: appointment.patient.uuid } },
       })
     );
   }

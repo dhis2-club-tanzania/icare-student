@@ -60,8 +60,8 @@ export class AppointmentsListTableComponent implements OnInit {
   loadingPatients: boolean;
   locationsUuids: string[] = [];
   paymentTypeSelected: string;
-
-  filters$: Observable<any[]>;
+  hideLocationFilter: boolean = false
+  filters: any[];
 
   @Output() selectAppointment = new EventEmitter<any>();
   visitAttributeType: any;
@@ -85,25 +85,40 @@ export class AppointmentsListTableComponent implements OnInit {
   ngOnChanges() {}
 
   ngOnInit() {
-    this.filters$ = this.systemSettingsService
-      .getSystemSettingsMatchingAKey(
-        "iCare.filters." + (this.filterCategory ? this.filterCategory : "")
-      )
-      .pipe(
-        tap((response: any) => {
-          this.loadingPatients = false;
-          if (response?.error) {
-            this.errors = [...this.errors, response?.error];
-          }
-        })
-      );
-    if (this.defaultFilter) {
-      this.paymentTypeSelected = this.defaultFilter;
-    }
+    this.filters = [
+      {
+        display: 'Location',
+        title: 'Location'
+      },
+      {
+        display: 'Date',
+        title: 'Date'
+      }
+    ]
+
     this.itemsPerPage = this.itemsPerPage ? this.itemsPerPage : 10;
-    this.getAppointments();
+    const param = this.route.snapshot.queryParamMap;
+    if (param) {
+      this.hideLocationFilter = param.get('hideLocationFilter') === 'true';
+      const locationUuid = param.get('location');
+
+      this.getAppointmentsByLocation(locationUuid)
+
+    } else {
+
+      this.getAppointments();
+    }
+
+
+
   }
 
+  async getAppointmentsByLocation(location: string) {
+    this.loading = true
+    this.appointments = await (await this.api.appointmentscheduling.getAllAppointments({ location: location, v: "full", limit: 10 })).results;
+    this.loading = false
+
+  }
   private getAppointments() {
     this.store.select(getCurrentUserDetails).subscribe(user => {
       if (user) {
@@ -181,11 +196,11 @@ export class AppointmentsListTableComponent implements OnInit {
     return uniq(this.locationsUuids);
   }
 
-  onSelectPatient(e, visit: Visit) {
+  onSelectAppointment(e, appointment) {
     if (e) {
       e.stopPropagation();
     }
-    this.selectAppointment.emit({ visit });
+    this.selectAppointment.emit({ appointment });
   }
 
   togglePatientTypeList(type) {
@@ -233,23 +248,26 @@ export class AppointmentsListTableComponent implements OnInit {
       });
   }
 
-  filterPatientList(event: any) {
-    this.loadingPatients = true;
+  async filterAppointmentList(event: any) {
+    this.loading = true;
 
-    this.filterBy = event && typeof event === "string" ? event : "";
 
-    this.appointments$ = this.appointmentService
-      .getAppointments(
-        this.filterBy,
-      )
-      .pipe(
-        tap((response: any) => {
-          this.loadingPatients = false;
-          if (response?.error) {
-            this.errors = [...this.errors, response?.error];
-          }
-        })
-      );
+    if (!event) return;
+
+    if (Object.keys(event)[0] === 'location') {
+      if (event.location === 'all') {
+        this.getAllAppointments()
+      } else {
+        this.appointments = await (await this.api.appointmentscheduling.getAllAppointments({ location: event.location, v: "full", limit: 10 })).results;
+      }
+    } else {
+      const date = new Date(event.date);
+      this.appointments = await (await this.api.appointmentscheduling.getAllAppointments({ fromDate: date.toISOString(), v: "full", limit: 10 })).results;
+    }
+
+    this.loading = false;
+
+    // console.log(appointment)
   }
 
 }

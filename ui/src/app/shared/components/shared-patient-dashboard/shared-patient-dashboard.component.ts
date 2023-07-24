@@ -559,8 +559,14 @@ export class SharedPatientDashboardComponent implements OnInit {
   }
 
   navigateToAllAppointments(event: Event) {
+    console.log(this.currentLocation)
     event.stopPropagation();
-    this.router.navigate(['/registration/appointments']);
+    this.router.navigate(['/registration/appointments'], {
+      queryParams: {
+        hideLocationFilter: true,
+        location: this.currentLocation.uuid
+      }
+    });
   }
   reload(){
     this.ngOnInit();

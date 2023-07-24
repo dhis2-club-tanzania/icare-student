@@ -3,6 +3,10 @@ import { Observable, zip } from "rxjs";
 import { map } from "rxjs/operators";
 import { ConceptsService } from "../../resources/concepts/services/concepts.service";
 import { keyBy } from "lodash";
+import { formatDateToYYMMDD } from "../../helpers/format-date.helper";
+import { DateField } from "../../modules/form/models/date-field.model";
+import { Dropdown } from "../../modules/form/models/dropdown.model";
+import { Api } from "../../resources/openmrs";
 
 
 @Component({
@@ -11,125 +15,50 @@ import { keyBy } from "lodash";
   styleUrls: ['./appointments-list-filters.component.scss']
 })
 export class AppointmentsListFiltersComponent implements OnInit {
-@Input() filterCategories: any[];
+  @Input() filterCategories: any[];
+  @Input() hideLocationFilter: boolean;
   filterCategoriesOptions$: Observable<any>;
   filterParameters: any[] = [];
   filterList: any[] = [];
+  locationFilterField: any[]
+  dateFilterField: any[]
 
   @Output() onFilterChanged = new EventEmitter<any>();
 
-  constructor(private conceptService: ConceptsService) {}
+  constructor(private conceptService: ConceptsService, private api: Api) { }
 
   ngOnInit(): void {
-    this.filterCategoriesOptions$ = zip(
-      ...this.filterCategories?.map((category) =>
-        this.conceptService.getConceptDetailsByUuid(
-          category?.value,
-          "custom:(uuid,display,setMembers:(uuid,display))"
-        )
-      )
-    ).pipe(
-      map((response) => {
-        return keyBy(response, "uuid");
+    this.locationFilterField = [
+      new Dropdown({
+        id: "location",
+        key: "location",
+        options: [
+
+        ],
+        label: "Filter by location",
+        required: true,
+        searchControlType: "location",
+        shouldHaveLiveSearchForDropDownFields: true,
+      }),
+
+    ]
+
+    this.dateFilterField = [
+      new DateField({
+        id: "date",
+        key: "date",
+        label: "Filter by Date",
+        value: "",
       })
-    );
+    ]
   }
 
-  getValue(event: any) {
-    // Filter out existing filters to use only the current selected filters
-    if (this.filterList?.length > 0) {
-      this.filterList.map((filter) => {
-        if (filter?.visitAttributeType === event?.value?.visitAttributeType) {
-          const index = this.filterList?.indexOf(filter, 0);
-          if (index > -1) {
-            return this.filterList?.splice(index, 1);
-          }
-        }
-      });
-      this.filterList?.push(event.value);
-    } else {
-      this.filterList?.push(event.value);
-    }
-
-    // construct a filters strings list
-    this.filterList?.map((filter) => {
-      // check if a value is selected and not the all option
-      if (filter?.value && filter?.filterIndex === event?.value?.filterIndex) {
-        if (
-          filter?.value?.display === "PENDING" ||
-          filter?.value?.display === "PAID"
-        ) {
-          var searchPattern = new RegExp("^&paymentStatus=");
-
-          this.filterParameters = this.filterOutStringFromStringList(
-            this.filterParameters,
-            searchPattern
-          );
-
-          this.filterParameters = [
-            ...this.filterParameters,
-            `&paymentStatus=${filter?.value?.display}`,
-          ];
-        }
-      }
-
-      if (
-        filter?.value &&
-        filter?.value?.display !== "PENDING" &&
-        filter?.value?.display !== "PAID"
-      ) {
-        var searchPattern = new RegExp("^&attributeValueReference=");
-
-        this.filterParameters = this.filterOutStringFromStringList(
-          this.filterParameters,
-          searchPattern
-        );
-
-        this.filterParameters = [
-          ...this.filterParameters,
-          `&attributeValueReference=${filter?.value?.uuid}`,
-        ];
-      }
-
-      // remove one filter statement from the list All selected
-      if (!filter?.value && filter?.filterIndex === 0) {
-        // use function filterOutStringFromStringList to remove filter parameter from the list of parameters
-        var searchPattern = new RegExp("^&paymentStatus=");
-        this.filterParameters = this.filterOutStringFromStringList(
-          this.filterParameters,
-          searchPattern
-        );
-      }
-
-      if (!filter?.value && filter?.filterIndex === 1) {
-        // use function filterOutStringFromStringList to remove filter parameter from the list of parameters
-        var searchPattern = new RegExp("^&attributeValueReference=");
-        this.filterParameters = this.filterOutStringFromStringList(
-          this.filterParameters,
-          searchPattern
-        );
-      }
-    });
-
-    // Construct the filter statement string to be emmited
-    let parametersString = "";
-    this.filterParameters.map(
-      (parameter) => (parametersString = `${parametersString}${parameter}`)
-    );
-
-    this.onFilterChanged.emit(parametersString);
+  handleLocationFilter(event) {
+    console.log(event)
+    this.onFilterChanged.emit(event.form.value)
   }
 
-  //Filter out string statement from String List based on regex pattern
-  filterOutStringFromStringList(stringList: string[], regex: RegExp): any {
-    stringList.map((item) => {
-      if (regex.test(item)) {
-        const index = stringList.indexOf(item, 0);
-        if (index > -1) {
-          return stringList.splice(index, 1);
-        }
-      }
-    });
-    return stringList;
+  handleDateFilter(event) {
+    this.onFilterChanged.emit(event.form.value)
   }
 }

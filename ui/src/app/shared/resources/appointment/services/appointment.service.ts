@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, from, of } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -64,6 +64,20 @@ export class AppointmentService {
     return this.httpClient.post(url, payload).pipe(
       map((response) => {
         return response;
+      })
+    );
+  }
+
+  filterAppointments(payload) {
+    return from(
+      this.api.appointmentscheduling.getAllAppointments(payload)
+    ).pipe(
+      map((response) => {
+        console.log(response)
+        return response;
+      }),
+      catchError((error) => {
+        return of(error);
       })
     );
   }
