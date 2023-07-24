@@ -8,7 +8,7 @@ import { SharedSamplesVerificationIntegratedComponent } from "./shared-samples-v
 import { ShortMessageConstructionComponent } from "./short-message-construction/short-message-construction.component";
 import { VisitConsultationStatusModalComponent } from "./visit-consultation-status-modal/visit-consultation-status-modal.component";
 import { AppointmentFormComponent } from './appointment-form/appointment-form.component'
-
+import { EditAppointmentFormDialogComponent } from './edit-appointment-form-dialog/edit-appointment-form-dialog.component'
 export const sharedDialogs: any[] = [
   PatientListDialogComponent,
   DispensingFormComponent,
@@ -19,11 +19,13 @@ export const sharedDialogs: any[] = [
   ManageUserProfileModalComponent,
   SharedSamplesVerificationIntegratedComponent,
   PatientHistoryDialogComponent,
-  AppointmentFormComponent
+  AppointmentFormComponent,
+  EditAppointmentFormDialogComponent
 ];
 export {
   PatientListDialogComponent,
   DispensingFormComponent,
   ShortMessageConstructionComponent,
-  AppointmentFormComponent
+  AppointmentFormComponent,
+  EditAppointmentFormDialogComponent
 };

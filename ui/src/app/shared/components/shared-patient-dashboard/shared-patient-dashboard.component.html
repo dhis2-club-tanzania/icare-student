@@ -106,7 +106,6 @@
               *ngIf="!isInpatient"
               class="mr-2"
               (click)="openAppointmentForm()"
-              
               mat-stroked-button
               color="primary"
             >
@@ -568,6 +567,18 @@
                     ></app-patient-medication-summary>
                   </mat-expansion-panel>
                 </mat-accordion>
+                <mat-accordion *ngIf="true">
+                  <mat-expansion-panel class="mb-2 border p-0" [expanded]="true">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Patient Appointments </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div>
+                      <app-patient-appointment-summary [location]="currentLocation" [patient]="currentPatient$"
+                        [patientVisit]="activeVisit">
+                      </app-patient-appointment-summary>
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
                 <mat-accordion
                   *ngIf="
                     userPrivileges['CLINIC_ADD_PROVISIONAL_DIAGNOSIS'] &&
@@ -577,7 +588,7 @@
                 >
                   <mat-expansion-panel
                     class="mb-2 border p-0"
-                    [expanded]="true"
+                    [expanded]="false"
                   >
                     <mat-expansion-panel-header>
                       <mat-panel-title>Provisional Diagnoses </mat-panel-title>

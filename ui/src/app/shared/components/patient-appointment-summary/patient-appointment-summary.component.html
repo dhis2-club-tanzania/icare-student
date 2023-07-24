@@ -1,0 +1,70 @@
+<div>
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <ng-container *ngIf="!!appointments">
+                    <ng-container *ngFor="
+              let appointment of appointments.results;
+              let count = index
+            ">
+                        <tr>
+                            <td>
+                                <span>
+
+                                    {{
+                                    formatAppointmentDate(appointment?.timeSlot.startDate)
+                                    }}
+
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+
+                                    {{
+                                    appointment?.timeSlot.startDate | date: "shortTime"
+                                    }}
+
+                                </span>{{"-"}}
+                                <span>
+                                    {{
+                                    appointment?.timeSlot.endDate | date: "shortTime"
+                                    }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ appointment?.status.name}}
+                            </td>
+                            <td>
+                                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item (click)="onEdit($event, appointment)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                    <button mat-menu-item (click)="onDelete($event, appointment)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                    </button>
+                                </mat-menu>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </ng-container>
+            </tbody>
+        </table>
+        <div *ngIf="isLoadingAppointment">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+    </div>
+</div>

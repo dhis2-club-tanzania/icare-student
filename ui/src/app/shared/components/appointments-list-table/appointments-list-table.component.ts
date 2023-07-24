@@ -137,32 +137,9 @@ export class AppointmentsListTableComponent implements OnInit {
         ? this.startingIndex + Number(this.itemsPerPage)
         : this.startingIndex - Number(this.itemsPerPage);
 
-    this.visits$ =
-      this.service && this.service === "LABS"
-        ? this.visitService.getLabVisits("", this.page, this.itemsPerPage).pipe(
-            tap(() => {
-              this.loadingPatients = false;
-            })
-          )
-        : this.visitService
-            .getAllVisits(
-              this.currentLocation,
-              false,
-              false,
+    this.visits$ = this.appointmentService
+            .searchAppointments(
               this.searchTerm,
-              details.visit?.pager
-                ? (details.visit?.pager.filter(
-                    (pageLink) => pageLink?.rel === details?.type
-                  ) || [])[0]?.uri?.split("&startIndex=")[1]
-                : this.startingIndex,
-              this.itemsPerPage,
-              this.orderType,
-              this.orderStatus,
-              this.orderStatusCode,
-              this.orderBy ? this.orderBy : "ENCOUNTER",
-              this.orderByDirection ? this.orderByDirection : "ASC",
-              this.filterBy,
-              this.encounterType
             )
             .pipe(
               tap((response: any) => {
@@ -178,21 +155,9 @@ export class AppointmentsListTableComponent implements OnInit {
     e.stopPropagation();
     this.searchTerm = e?.target?.value;
     this.loadingPatients = true;
-    this.visits$ = this.visitService
-      .getAllVisits(
-        this.currentLocation,
-        false,
-        false,
+    this.visits$ = this.appointmentService
+      .searchAppointments(
         this.searchTerm,
-        0,
-        this.itemsPerPage,
-        this.orderType,
-        this.orderStatus,
-        this.orderStatusCode,
-        this.orderBy ? this.orderBy : "ENCOUNTER",
-        this.orderByDirection ? this.orderByDirection : "ASC",
-        this.filterBy ? this.filterBy : "",
-        this.encounterType
       )
       .pipe(
         tap((response: any) => {
@@ -271,21 +236,9 @@ export class AppointmentsListTableComponent implements OnInit {
 
     this.filterBy = event && typeof event === "string" ? event : "";
 
-    this.visits$ = this.visitService
-      .getAllVisits(
-        this.currentLocation,
-        false,
-        false,
-        null,
-        0,
-        this.itemsPerPage,
-        this.orderType,
-        this.orderStatus,
-        this.orderStatusCode,
-        this.orderBy ? this.orderBy : "ENCOUNTER",
-        this.orderByDirection ? this.orderByDirection : "ASC",
+    this.visits$ = this.appointmentService
+      .getAppointments(
         this.filterBy,
-        this.encounterType
       )
       .pipe(
         tap((response: any) => {

@@ -17,6 +17,8 @@ import { HttpClientModule } from "@angular/common/http";
 import { SearchTestDetailsPipe } from "./pipes/search-test-details.pipe";
 import { FormatLabelCharCountDisplayPipe } from './pipes/format-label-char-count-display.pipe';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { PatientAppointmentSummaryComponent } from './components/patient-appointment-summary/patient-appointment-summary.component';
+import { EditAppointmentFormDialogComponent } from './dialogs/edit-appointment-form-dialog/edit-appointment-form-dialog.component';
 @NgModule({
   imports: [CommonModule, ...materialModules, ...modules, NgxMaterialTimepickerModule],
   exports: [
@@ -42,6 +44,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     FilterItemsBySelectionsPipe,
     SearchTestDetailsPipe,
     FormatLabelCharCountDisplayPipe,
+    PatientAppointmentSummaryComponent,
+    EditAppointmentFormDialogComponent,
   ],
   providers: [...sharedServices],
 })

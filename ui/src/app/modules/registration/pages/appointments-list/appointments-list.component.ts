@@ -20,8 +20,7 @@ export class AppointmentsListComponent implements OnInit {
     this.store.dispatch(go({ path: ["/registration/home"] }));
   }
 
-  onSelectPatient(patientData) {
-     console.log(patientData)
+  onSelectAppointment(patientData) {
     this.store.dispatch(
       go({
         path: [`/clinic/patient-dashboard/${patientData?.visit.appointment.patient?.uuid}`],

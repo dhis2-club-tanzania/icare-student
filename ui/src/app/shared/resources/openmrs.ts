@@ -5889,6 +5889,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         statusValue?: string;
         toDate?: string;
         location?: string;
+        patient?: string;
       },
       params?: RequestParams
     ) =>
