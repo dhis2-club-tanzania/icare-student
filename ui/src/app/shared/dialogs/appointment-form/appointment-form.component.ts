@@ -14,6 +14,9 @@ import { TimeRange } from './time-range'
 import { map } from 'rxjs/operators';
 import { from } from 'rxjs';
 import { Api } from '../../resources/openmrs';
+import { SmsService } from '../../resources/sms/services/sms.service';
+import { VisitsService } from "src/app/shared/resources/visits/services";
+
 @Component({
   selector: 'app-appointment-form',
   templateUrl: './appointment-form.component.html',
@@ -30,13 +33,14 @@ export class AppointmentFormComponent implements OnInit {
 
   datesFields: any;
   validTime: boolean = true;
-
+  isSaving: boolean = false;
 
   constructor(
     private appointmentService: AppointmentService,
     private clinicService: ClinicService,
     private dialogRef: MatDialogRef<AppointmentFormComponent>,
     private formBuilder: FormBuilder,
+    private smsService: SmsService,
     private api: Api,
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -119,7 +123,7 @@ export class AppointmentFormComponent implements OnInit {
 
   async onSave(event: Event) {
     event.stopPropagation();
-
+    this.isSaving = true
     const { patient, location, service, startTime, endTime, notes } = this.appointmentForm.value;
 
     const { date, provider, appointment_type } = this.appointmentFormGroup.value;
@@ -162,7 +166,6 @@ export class AppointmentFormComponent implements OnInit {
   
   
       if (timeslot.uuid) {
-  
         const appointmentPayload = {
           "timeSlot": {
             "uuid": timeslot.uuid
@@ -180,7 +183,21 @@ export class AppointmentFormComponent implements OnInit {
   
         }
         const appointment = await this.api.appointmentscheduling.createAppointment(appointmentPayload)
-        console.log(appointment)
+        console.log(this.data.patient.patient.person.attributes[0].display)
+        console.log(this.data.patient.patient.person.attributes[0].value)
+
+        this.isSaving = false;
+        this.smsService.sendSms({ patientPhoneNo: '255755668673', message: 'Hey, Buddy!' }).subscribe((result) => {
+          console.log(result)
+        })
+        this.smsService.scheduleSms({
+          patientPhoneNo: '255755668673',
+          message: 'Hey, Buddy!',
+          date: '2023-07-01',
+          time: '12:00'
+        }).subscribe((result) => {
+          console.log(result)
+        })
       }
     }
 

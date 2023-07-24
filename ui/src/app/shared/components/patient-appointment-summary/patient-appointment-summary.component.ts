@@ -28,7 +28,8 @@ export class PatientAppointmentSummaryComponent implements OnInit {
   async fetchPatientAppointment() {
     this.isLoadingAppointment = true
     const patientUuid = this.patientVisit.patientUuid
-    this.appointments = await this.api.appointmentscheduling.getAllAppointments({ patient: patientUuid, v: "full", limit: 10 })
+    this.appointments = await (await this.api.appointmentscheduling.getAllAppointments({ patient: patientUuid, v: "full", limit: 10 }));
+    this.appointments = { ...this.appointments, results: this.appointments.results.reverse() }
     this.isLoadingAppointment = false
   }
 

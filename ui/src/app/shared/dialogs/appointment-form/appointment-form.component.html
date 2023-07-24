@@ -71,8 +71,8 @@
     </div>
     <div class="d-flex justify-content-end m-4">
         <button mat-stroked-button (click)="onClose($event)">Close</button>
-        <button mat-flat-button color="primary" class="ml-2" (click)="onSave($event)">
-            Save
+        <button mat-flat-button color="primary" class="ml-2" (click)="onSave($event)" [disabled]="isSaving">
+            {{isSaving ? 'Saving...':'Save'}}
         </button>
     </div>
 </div>
