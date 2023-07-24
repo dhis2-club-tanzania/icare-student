@@ -1,0 +1,413 @@
+<div *ngIf="{
+    currentPatient: currentPatient$ | async,
+    vitalSignObservations: vitalSignObservations$ | async,
+    hasConsultationStarted: hasConsultationStarted$ | async,
+    startingConsultation: startingConsultation$ | async,
+    diagnoses: diagnoses$ | async,
+    encounterTypes: encounterTypes$ | async,
+    billLoadingState: billLoadingState$ | async,
+    loadingPaymentStatus: loadingPaymentStatus$ | async,
+    hasPatientHavePendingPaymentForTheCurrentVisitType:
+      hasPatientHavePendingPaymentForTheCurrentVisitType$ | async,
+    activeVisitDeathStatus: activeVisitDeathStatus$ | async,
+    observationsGroupedByConcept: observationsGroupedByConcept$ | async,
+    formEntities: consultationForms$ | async,
+    loadingForms: loadingForms$ | async,
+    currentLocation: currentLocation$ | async,
+    forms: forms$ | async,
+    countOfVitalsElementsFilled: countOfVitalsElementsFilled$ | async,
+    orderTypes: orderTypes$ | async,
+    provider: provider$ | async,
+    consultationEncounterType: consultationEncounterType$ | async,
+    consultationOrderType: consultationOrderType$ | async,
+    facilityDetails: facilityDetails$ | async,
+    useGeneralPrescription: useGeneralPrescription$ | async,
+    generalPrescriptionOrderType: generalPrescriptionOrderType$ | async,
+    observationChartForm: observationChartForm$ | async,
+    observationChartEncounterType: observationChartEncounterType$ | async,
+    visitEndingControlStatusesConcept:
+      visitEndingControlStatusesConcept$ | async,
+    patientInvoice: patientInvoice$ | async,
+    latestRound: latestRound$ | async
+  } as dashboardParams">
+    <div class="w-100" *ngIf="
+      !dashboardParams?.loadingPaymentStatus &&
+      dashboardParams?.encounterTypes &&
+      !dashboardParams?.billLoadingState &&
+      dashboardParams?.currentPatient &&
+      dashboardParams?.forms &&
+      dashboardParams?.provider &&
+      dashboardParams?.consultationEncounterType
+    ">
+        <div class="patient-dashboard-container mat-elevation-z1">
+            <div class="patient-profile-sticky">
+                <app-new-patient-profile [currentPatient]="dashboardParams?.currentPatient"></app-new-patient-profile>
+            </div>
+            <div class="w-100 patient-other-details-padding">
+                <div class="
+            d-flex
+            justify-content-between
+            align-items-center
+            pt-2
+            pl-3
+            pr-3
+          ">
+                    <div class="d-flex justify-content-left">
+                        <button class="float-left mr-4" mat-stroked-button (click)="goBack($event)"
+                            matTooltip="Back to Appointments List">
+                            <mat-icon>arrow_back</mat-icon>
+                            Back to Appointments List
+                        </button>
+                        <ng-container>
+                            <button *ngFor="let form of dashboardParams?.forms" class="mr-2" [ngClass]="{
+                  'selected-form':
+                    (selectedForm &&
+                      !showRoundDetails &&
+                      selectedForm?.uuid === form?.uuid) ||
+                    (!selectedForm &&
+                      !showRoundDetails &&
+                      dashboardParams?.forms[0] &&
+                      dashboardParams?.forms[0]?.uuid === form?.uuid)
+                }" mat-stroked-button (click)="getSelectedForm($event, form)">
+                                {{ form?.name }}
+                            </button>
+                            
+                        </ng-container>
+                    </div>
+
+                    <div class="w-50 d-flex justify-content-end">
+                        <div class="mr-2">
+                            <app-shared-bmi></app-shared-bmi>
+                        </div>
+                        <button *ngIf="!isInpatient" class="mr-2" (click)="openAppointmentForm()" mat-stroked-button
+                            color="primary">
+                            New Appointment
+                        </button>
+                        <button *ngIf="!isInpatient" class="mr-2" (click)="onToggleVitalsSummary($event)" [ngStyle]="{
+                'background-color':
+                  dashboardParams?.countOfVitalsElementsFilled === 0
+                    ? '#F00'
+                    : 'transparent',
+                color:
+                  dashboardParams?.countOfVitalsElementsFilled === 0
+                    ? '#FFF'
+                    : '#222'
+              }" mat-stroked-button>
+                            View Vitals
+                        </button>
+                        <div class="patient-vitals-mat-menu mat-elevation-z1" *ngIf="showVitalsSummary">
+                            <div class="p-2">
+                                <button mat-icon-button class="float-right" (click)="onToggleVitalsSummary($event)">
+                                    <mat-icon> close </mat-icon>
+                                </button>
+                                <app-patient-vitals-summary></app-patient-vitals-summary>
+                            </div>
+                        </div>
+
+                        <span class="text-danger mr-2" *ngIf="activeVisit?.waitingToBeAdmitted">
+                            <img matTooltip="Patient is waiting to be given a bed" height="40" width="40"
+                                src="data:image/webp;base64,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"
+                                alt="" />
+                        </span>
+                        <span class="mr-2" *ngIf="
+                !activeVisit?.waitingToBeAdmitted && activeVisit?.isAdmitted
+              ">
+                            <img height="20"
+                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAAEqUlEQVRYhc2YW2hURxjH/9/MnL3lVovGS28ENa0iFKq1m2wi0j4UQ4wxmrZUKAg2rU9FCn1YrF1aRREsBS20kZbeESnFJESNCD4kGyMGSxG8Uo3QSzReqnGze/bMpQ9bN4m71Wxy1uT/eGbmm9+Zb/4f5zvAFBe5GWz1lo4vlJIbYAgewXf+/PGr4YnGZG6AAUBTU6+lldxQGQzypS8t4Y5Wm9yI6xrghTmDHCDDBYclBGAg3IjrGmC+NOUBx52GYUOAAwCSQyAifW/cGCPqwu1meAWp8RhnXC5uauq1rs64Gq8IBjkXfExr7GQSJ0/2Jlq21vhz2UusjnSUMm2+k1pXM8YvKK3faN264vx4wPMhwbT5aebMWcueevpJ69rAwPN9l6+0AHjuQYuam5c4DR91fNnd0/NOOsUAGJEOVVUyrTWi0eOj1hCRZIJ9misg1YcPJitCQYuxlF+i0e6kTjrTW3euGswl0PLIMV+JEx+sqqoUWmt0d/fIlm01Vq5A94tpQNyDAwACKR7w5XRP8qkpX2ZcAyz/q0gBhpRUcKQECNKNuBl1kDPywqjzb35y5FzclgcU6MBYXD3SOAQy4zFENlFduF1XV4fS9fDXkyf02pfnMr/HwulLN+xTFwckDHpjtt7ctm1Flxub5qKMFGsDMEZYWDYNr78yz7v97WBBfXXZsmIf63gt0vHD8sgx36QCOkqbOzFneAInVCyaRR+ufzFQNqdoTSmS0cZN+x+ZyzPuoFJGXekflAC8I5/7vQIb6xf5vj10dsGZPvM9gLVrNh/ZI7Wz0UzQbETM4Zz9qbT5UUq5q31H7a302Kpwu6qqDqU3iEaP234v1zveDWY9JUcqRL7ujd2NJ2qN5keDlUu54BP79NNaIxYbQv/f/fbA9esJLeXKlu21nUCWN6fUNbx28Y/bWYNZgqOm4pmAR3giBoZNFA4AGGMoKirE/PJ53gULF5QwwQ+vDLe9kBUQAJIJ+VlL56WYMSbbMBY/O4Ok0kGXWxoAwLTHSjCvfL5fcOuXxsb9PCsgt8y+a7fs31q7+pxs4z4PR9nsYtt1uv9UOn06+QP+x+3yQAMzlHlKEkLfScj6ztP9v3/VfjY+GM/knPtEUUG+AAFgzuzZRZbwvvW/7ju0vWYgYZKLz1y+uXfL3hP2NwfPxc5d+Qd2UgEASqcVcPcTPKzikmIoLYMPvOFtkZVDAN5rCB/ecerC9fVn+m6uSzpmfmHASggCM4RAvgC9Hg+MRokgw9I51lpDae1HUl+tC7enJ0sowABxO3V6t+/aqe+8PB4hYwzGaDHqBIkIAGH3pqqHBkg4Eh983pMvPgAGAI0uM0QEIgOls5eXUcsfPmVCMgYgGJNhEkY0NkDkNcOpHShrX0x4f3d0zGE6O8c+N1cRwATuq4OVoYq8bZirurqiamr3JIamdtNkSJPAiBxna7gfpRgjHQpVpg+NDGWahIhcabhzVWPkWKEjEzcAeEY+nzIpHkrELKSqV1oGIHavlwXgaj+bq7SPKRjDtE79wZNSgoiU4Fw0d/f0NMGAE5FknO2aDMBDkZo7DZEj+7qjx9cZgBFIcYvvmQyWnPQvCULmfbqY+pMAAAAASUVORK5CYII=" />
+                        </span>
+                        <button *ngIf="isInpatient" [disabled]="!activeVisit?.waitingToBeAdmitted" mat-stroked-button
+                            class="mr-2 float-right" (click)="onAssignBed($event)">
+                            Assign Bed
+                        </button>
+
+                        <button *ngIf="isInpatient" mat-stroked-button class="mr-2 float-right" (click)="
+                onOpenTransferWithinPopup(
+                  $event,
+                  'a007bbfe-fbe5-11e2-8ff2-fd54ab5fdb2a',
+                  'Bed Location',
+                  dashboardParams?.currentPatient,
+                  activeVisit,
+                  dashboardParams?.currentLocation,
+                  true
+                )
+              ">
+                            Transfer within
+                        </button>
+                        <button (click)="
+                onDischargePatient($event, dashboardParams?.patientInvoice)
+              " *ngIf="activeVisit?.isAdmitted && isInpatient" mat-stroked-button class="mr-2 float-right">
+                            Discharge
+                        </button>
+                        <button mat-stroked-button (click)="onToggleVisibityIcons($event)" class="mr-2 float-right">
+                            
+                            History
+                        </button>
+                        <button *ngIf="!isInpatient" class="mr-2" mat-stroked-button
+                            [matMenuTriggerFor]="moreMenuItems">
+                            More
+                        </button>
+                        <mat-menu #moreMenuItems="matMenu">
+                            <button mat-menu-item [disabled]="
+                  activeVisit?.isAdmitted ||
+                  activeVisit?.waitingToBeAdmitted ||
+                  activeVisitDeathStatus ||
+                  dashboardParams?.startingConsultation ||
+                  (!activeVisit?.isEmergency &&
+                    dashboardParams?.hasPatientHavePendingPaymentForTheCurrentVisitType) ||
+                  activeVisitDeathStatus
+                " (click)="
+                  onOpenAdmitPopup(
+                    $event,
+                    'd2c7532c-fb01-11e2-8ff2-fd54ab5fdb2a',
+                    'Admission Location',
+                    dashboardParams?.currentPatient,
+                    activeVisit,
+                    dashboardParams?.currentLocation
+                  )
+                ">
+                                Admit
+                            </button>
+                            <button mat-menu-item (click)="
+                  onOpenTransferWithinPopup(
+                    $event,
+                    'a007bbfe-fbe5-11e2-8ff2-fd54ab5fdb2a',
+                    'Treatment Room',
+                    dashboardParams?.currentPatient,
+                    activeVisit,
+                    dashboardParams?.currentLocation
+                  )
+                ">
+                                Transfer within
+                            </button>
+                            <button mat-menu-item [disabled]="
+                  dashboardParams?.startingConsultation ||
+                  (!activeVisit?.isEmergency &&
+                    dashboardParams?.hasPatientHavePendingPaymentForTheCurrentVisitType) ||
+                  activeVisitDeathStatus ||
+                  !dashboardParams?.provider
+                " (click)="
+                  onOpenPopup(
+                    $event,
+                    'iCARE703-FORM-4df6-a364-abc9b1f48193',
+                    'Refer-to Location',
+                    dashboardParams?.currentPatient,
+                    activeVisit,
+                    dashboardParams?.currentLocation,
+                    null,
+                    dashboardParams?.provider,
+                    dashboardParams?.facilityDetails.results,
+                    dashboardParams?.observationsGroupedByConcept,
+                    dashboardParams?.generalPrescriptionOrderType,
+                    dashboardParams?.useGeneralPrescription,
+                    true
+                  )
+                ">
+                                Refer
+                            </button>
+                            <button mat-menu-item [disabled]="
+                  activeVisitDeathStatus || !dashboardParams?.provider
+                " (click)="
+                  onOpenPopup(
+                    $event,
+                    '73d36615-9a4a-46a4-8134-2dca15acacc1',
+                    null,
+                    dashboardParams?.currentPatient,
+                    activeVisit,
+                    dashboardParams?.currentLocation,
+                    null,
+                    dashboardParams?.provider,
+                    false
+                  )
+                ">
+                                Mark Patient Deceased
+                            </button>
+                        </mat-menu>
+
+                        <span class="ml-2 text-left" *ngIf="dashboardParams?.currentPatient">
+                            <app-is-first-visit
+                                [patient]="dashboardParams?.currentPatient?.patient?.uuid"></app-is-first-visit>
+                        </span>
+                        <button class="ml-2" [disabled]="
+                codedVisitCloseStatus && codedVisitCloseStatus?.display
+              " *ngIf="
+                dashboardParams?.visitEndingControlStatusesConcept &&
+                dashboardParams?.currentPatient &&
+                visitEndingControlStatusesConceptUuid !== 'none'
+              " mat-stroked-button (click)="
+                onOpenModalToEndConsultation(
+                  $event,
+                  dashboardParams?.visitEndingControlStatusesConcept,
+                  dashboardParams?.consultationEncounterType,
+                  dashboardParams?.provider,
+                  dashboardParams?.currentLocation,
+                  activeVisit,
+                  dashboardParams?.currentPatient?.patient
+                )
+              ">
+                            End consultation
+                        </button>
+                        <span color="primary" class="ml-2" style="margin-top: 8px"
+                            *ngIf="codedVisitCloseStatus && codedVisitCloseStatus?.display">
+                            Visit status: {{ codedVisitCloseStatus?.display }}
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="
+            !dashboardParams?.startingConsultation &&
+            !(
+              !activeVisit?.isEmergency &&
+              dashboardParams?.hasPatientHavePendingPaymentForTheCurrentVisitType
+            )
+          ">
+                    <div class="p-2">
+                        <div class="row">
+                            <div [ngClass]="{
+                  'col-lg-6 col-md-6 col-sm-12 col-sx-12':
+                    !isInpatient || isTheatre,
+                  'col-lg-8 col-md-8 col-sm-12 col-sx-12 obs-table': isInpatient
+                }">
+                                <div>
+                                    <mat-progress-bar *ngIf="!readyForClinicalNotes" mode="indeterminate">
+                                    </mat-progress-bar>
+                                    <div class="w-100">
+                                        <div class="w-100">
+                                            <div class="w-100 mt-2">
+                                                <div class="w-100" *ngIf="showRoundDetails">
+                                                    <mat-accordion>
+                                                        <mat-expansion-panel class="mb-2 border p-0" [expanded]="true">
+                                                            <mat-expansion-panel-header>
+                                                                <mat-panel-title>Appointment Status History
+                                                                </mat-panel-title>
+                                                            </mat-expansion-panel-header>
+                                                            <!-- History start here -->
+                                                            <app-patient-history [patient]="
+                                  dashboardParams?.currentPatient?.patient
+                                " [location]="dashboardParams?.currentLocation"></app-patient-history>
+                                                        </mat-expansion-panel>
+                                                            <!-- History end here -->
+                                                    </mat-accordion>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <app-clinical-notes *ngIf="
+                      !isInpatient &&
+                      readyForClinicalNotes &&
+                      !dashboardParams.loadingForms &&
+                      dashboardParams.currentPatient &&
+                      dashboardParams?.forms &&
+                      dashboardParams?.forms?.length > 0 &&
+                      !showRoundDetails
+                    " [clinicalObservations]="
+                      dashboardParams?.observationsGroupedByConcept
+                    " [patient]="dashboardParams?.currentPatient" [location]="dashboardParams?.currentLocation"
+                                        [visit]="activeVisit" [forms]="dashboardParams?.forms"
+                                        [shouldUseOwnFormSelection]="false" [provider]="dashboardParams?.provider"
+                                        (updateConsultationOrder)="onUpdateConsultationOrder()" [selectedForm]="
+                      selectedForm ? selectedForm : dashboardParams?.forms[0]
+                    " (saveObservations)="reload()">
+                                    </app-clinical-notes>
+                                    <app-patient-observations-chart *ngIf="
+                      isInpatient &&
+                      !showRoundDetails &&
+                      !dashboardParams.loadingForms &&
+                      dashboardParams.currentPatient &&
+                      dashboardParams?.forms &&
+                      dashboardParams?.forms?.length > 0 &&
+                      ((selectedForm &&
+                        dashboardParams?.observationChartForm ===
+                          selectedForm?.uuid) ||
+                        (!selectedForm?.uuid &&
+                          dashboardParams?.observationChartForm ===
+                            dashboardParams?.forms[0].uuid))
+                    " [clinicalObservations]="
+                      dashboardParams?.observationsGroupedByConcept
+                    " [patient]="dashboardParams?.currentPatient" [location]="dashboardParams?.currentLocation"
+                                        [visit]="activeVisit" [forms]="dashboardParams?.forms"
+                                        [shouldUseOwnFormSelection]="false" [obsChartEncounterType]="
+                      dashboardParams?.observationChartEncounterType
+                    " [provider]="dashboardParams?.provider" [selectedForm]="
+                      selectedForm &&
+                      dashboardParams?.observationChartForm ===
+                        selectedForm?.uuid
+                        ? selectedForm
+                        : dashboardParams?.forms[0]?.uuid ===
+                          dashboardParams?.observationChartForm
+                        ? dashboardParams?.forms[0]
+                        : {}
+                    ">
+                                    </app-patient-observations-chart>
+                                    <app-ipd-forms *ngIf="
+                      isInpatient &&
+                      !showRoundDetails &&
+                      readyForClinicalNotes &&
+                      !dashboardParams.loadingForms &&
+                      dashboardParams.currentPatient &&
+                      dashboardParams?.forms &&
+                      dashboardParams?.forms?.length > 0 &&
+                      ((selectedForm &&
+                        selectedForm?.uuid &&
+                        dashboardParams?.observationChartForm !==
+                          selectedForm?.uuid) ||
+                        (!selectedForm &&
+                          dashboardParams?.observationChartForm !==
+                            dashboardParams?.forms[0]?.uuid))
+                    " [clinicalObservations]="
+                      dashboardParams?.observationsGroupedByConcept
+                    " [patient]="dashboardParams?.currentPatient" [location]="dashboardParams?.currentLocation"
+                                        [visit]="activeVisit" [forms]="dashboardParams?.forms"
+                                        [shouldUseOwnFormSelection]="false" [provider]="dashboardParams?.provider"
+                                        [selectedForm]="
+                      selectedForm &&
+                      dashboardParams?.observationChartForm !==
+                        selectedForm?.uuid
+                        ? selectedForm
+                        : dashboardParams?.forms[0]?.uuid !==
+                          dashboardParams?.observationChartForm
+                        ? dashboardParams?.forms[0]
+                        : {}
+                    " (saveObservations)="reload()">
+                                    </app-ipd-forms>
+
+                                    <div class="alert alert-warning" role="alert" *ngIf="
+                      readyForClinicalNotes &&
+                      !dashboardParams.loadingForms &&
+                      dashboardParams.currentPatient &&
+                      dashboardParams?.forms &&
+                      dashboardParams?.forms?.length === 0
+                    ">
+                                        NO Forms assigned for Location, Contact IT
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div [ngClass]="{
+                  'col-lg-6 col-md-6 col-sm-12 col-sx-12':
+                    !isInpatient || isTheatre,
+                  'col-lg-4 col-md-4 col-sm-12 col-sx-12': isInpatient
+                }">
+                                <mat-accordion *ngIf="isInpatient">
+                                    <mat-expansion-panel class="mb-2 border p-0"
+                                        [expanded]="isInpatient ? true : false">
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>Details </mat-panel-title>
+                                        </mat-expansion-panel-header>
+                                       <h2>Details Here</h2>
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <mat-progress-bar *ngIf="
+      dashboardParams?.loadingPaymentStatus ||
+      !dashboardParams?.encounterTypes ||
+      dashboardParams?.billLoadingState ||
+      !dashboardParams?.currentPatient ||
+      dashboardParams?.loadingForms
+    " mode="indeterminate">
+    </mat-progress-bar>
+</div>
