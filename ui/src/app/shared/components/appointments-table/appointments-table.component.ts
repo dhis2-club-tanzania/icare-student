@@ -2,7 +2,7 @@ import { EventEmitter, OnChanges, Output, ViewChild } from "@angular/core";
 import { Component, Input, OnInit } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
-import { sanitizePatientsVisitsForTabularPatientListing } from "../../helpers/sanitize-visits-list-for-patient-tabular-listing.helper";
+import { sanitizePatientsVisitsForTabularPatientListing } from "../../helpers/sanitize-visits-list-for-appointment-tabular-listing.helper";
 import { Visit } from "../../resources/visits/models/visit.model";
 
 @Component({
@@ -25,16 +25,26 @@ export class AppointmentsTableComponent implements OnInit {
 
   displayedColumns: string[] = [
     "position",
-    "names",
-    "gender",
-    "age",
+    "patietId",
+    "patientName",
+    "appointmentType",
+    "provider",
     "location",
-    "startDatetime",
+    "date",
+    "time",
+    "status",
   ];
   dataSource: any;
   constructor() {}
 
   ngOnInit(): void {
+    console.log(sanitizePatientsVisitsForTabularPatientListing(
+        this.visits,
+        this.shouldShowParentLocation,
+        this.paymentTypeSelected,
+        this.itemsPerPage,
+        this.page
+      ))
     this.dataSource = new MatTableDataSource(
       sanitizePatientsVisitsForTabularPatientListing(
         this.visits,
@@ -48,6 +58,7 @@ export class AppointmentsTableComponent implements OnInit {
   }
 
   ngOnChanges() {
+    console.log(this.visits)
     this.dataSource = new MatTableDataSource(
       sanitizePatientsVisitsForTabularPatientListing(
         this.visits,

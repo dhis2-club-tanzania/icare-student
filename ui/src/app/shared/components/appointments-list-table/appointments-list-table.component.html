@@ -11,13 +11,13 @@
         <div class="patient-list d-flex">
        
             <!-- Filter input start -->
-            <div class="w-100 patient-list-type-toggle-container d-flex">
+            <!-- <div class="w-100 patient-list-type-toggle-container d-flex">
                 <div class="w-75" *ngIf="filters$ | async as filters">
                     <app-appointments-list-filters [filterCategories]="filters"
                         (onFilterChanged)="filterPatientList($event)"></app-appointments-list-filters>
                 </div>
                 
-            </div>
+            </div> -->
             <!-- Filter input start -->
 
 
@@ -28,7 +28,7 @@
                     "
                 >
                 <h3 class="text-muted">
-                    Patient with keyword "{{ searchTerm }}" could not be found
+                    Appointment with keyword "{{ searchTerm }}" could not be found
                 </h3>
             </div>
 
@@ -52,7 +52,7 @@
             <!-- End of Tabular list -->
 
             <div class="text-center w-100 mt-5" *ngIf="!params?.visits || !params?.visits?.length > 0">
-                <h3 class="text-muted">No patient found</h3>
+                <h3 class="text-muted">No appointment found</h3>
             </div>
         </div>
     </div>

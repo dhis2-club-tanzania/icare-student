@@ -20,11 +20,12 @@ export class AppointmentsListComponent implements OnInit {
     this.store.dispatch(go({ path: ["/registration/home"] }));
   }
 
-   onSelectPatient(patientData) {
+  onSelectPatient(patientData) {
+     console.log(patientData)
     this.store.dispatch(
       go({
-        path: ["/registration/dashboard/" + patientData?.patient?.uuid],
-        query: { queryParams: { patient: patientData?.patient?.uuid } },
+        path: [`/clinic/patient-dashboard/${patientData?.visit.appointment.patient?.uuid}`],
+        query: { queryParams: { patient: patientData?.visit.appointment.patient?.uuid } },
       })
     );
   }
