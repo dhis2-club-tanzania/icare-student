@@ -44,9 +44,10 @@ export class EditAppointmentFormDialogComponent implements OnInit {
     console.log(this.data)
     this.statusOptions = [
       "Scheduled",
-      "Check In",
+      "Active",
+      "Missed",
       "Completed",
-      "Canceled",
+      "Cancelled",
     ]
   }
 
@@ -57,7 +58,9 @@ export class EditAppointmentFormDialogComponent implements OnInit {
 
     console.log(appointmentUuid)
 
-    await this.api.appointmentscheduling.updateAppointment(appointmentUuid, {status})
+    await this.api.appointmentscheduling.updateAppointment(appointmentUuid, { status })
+    
+    this.dialogRef.close();
   }
    onClose(event: Event): void {
     event.stopPropagation();

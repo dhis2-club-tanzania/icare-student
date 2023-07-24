@@ -21,7 +21,11 @@ export class PatientAppointmentSummaryComponent implements OnInit {
 
   constructor(private store: Store<AppState>, private dialog: MatDialog, private api: Api,) {}
 
-  async ngOnInit() {
+   ngOnInit() {
+    this.fetchPatientAppointment()
+  }
+
+  async fetchPatientAppointment() {
     this.isLoadingAppointment = true
     const patientUuid = this.patientVisit.patientUuid
     this.appointments = await this.api.appointmentscheduling.getAllAppointments({ patient: patientUuid, v: "full", limit: 10 })
@@ -31,6 +35,8 @@ export class PatientAppointmentSummaryComponent implements OnInit {
   formatAppointmentDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-UK')
   }
+
+  
   onEdit(e: Event, appointmentData) {
    let patient
     this.patient.subscribe(res => {patient = res})
@@ -45,7 +51,7 @@ export class PatientAppointmentSummaryComponent implements OnInit {
           appointment: appointmentData,
           location: this.location
         },
-      })
+      }).afterClosed().subscribe(()=>this.fetchPatientAppointment())
       
   }
 

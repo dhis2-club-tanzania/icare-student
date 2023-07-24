@@ -12,6 +12,7 @@ import { map, tap } from "rxjs/operators";
 import { AppState } from "src/app/store/reducers";
 import { Patient } from "../../resources/patient/models/patient.model";
 import { Visit } from "../../resources/visits/models/visit.model";
+import { Appointment } from "../../resources/appointment/models/appointment.model";
 import { VisitsService } from "../../resources/visits/services";
 import { AppointmentService } from "../../resources/appointment/services/appointment.service";
 
@@ -27,7 +28,7 @@ import { PatientListDialogComponent } from "../../dialogs";
 import { MatDialog } from "@angular/material/dialog";
 import { addCurrentPatient, go } from "src/app/store/actions";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
-
+import { Api } from '../../resources/openmrs'
 @Component({
   selector: 'app-appointments-list-table',
   templateUrl: './appointments-list-table.component.html',
@@ -54,7 +55,7 @@ export class AppointmentsListTableComponent implements OnInit {
   @Input() encounterType: string;
 
   page: number = 0;
-  visits$: Observable<Visit[]>;
+  appointments$: Observable<Appointment[]>;
   filteredVisits$: Observable<Visit[]>;
   searchTerm: string;
   loadingPatients: boolean;
@@ -63,7 +64,7 @@ export class AppointmentsListTableComponent implements OnInit {
 
   filters$: Observable<any[]>;
 
-  @Output() selectPatient = new EventEmitter<any>();
+  @Output() selectAppointment = new EventEmitter<any>();
   visitAttributeType: any;
   paymentType: any;
   filterBy: any;
@@ -71,7 +72,7 @@ export class AppointmentsListTableComponent implements OnInit {
   errors: any[] = [];
   constructor(
     private appointmentService: AppointmentService,
-    private visitService: VisitsService,
+    private api: Api,
     private store: Store<AppState>,
     private route: ActivatedRoute,
     private router: Router,
@@ -103,7 +104,7 @@ export class AppointmentsListTableComponent implements OnInit {
 
   private getAppointments(visits: Visit[]) {
     this.loadingPatients = true;
-    this.visits$ =  this.appointmentService
+    this.appointments$ =  this.appointmentService
           .getAppointments(
             this.filterBy ? this.filterBy : "",
           )
@@ -116,7 +117,6 @@ export class AppointmentsListTableComponent implements OnInit {
             })
     );
     
-    console.log(this.visits$)
   }
 
   getAnotherList(event: Event, visit, type): void {
@@ -124,10 +124,10 @@ export class AppointmentsListTableComponent implements OnInit {
       ...visit,
       type,
     };
-    this.onLoadNewList(details);
+    // this.onLoadNewList(details);
   }
 
-  onLoadNewList(details): void {
+  async onLoadNewList(details) {
     this.loadingPatients = true;
     this.page =
       details?.type === "next" ? Number(this.page) + 1 : Number(this.page) - 1;
@@ -137,8 +137,8 @@ export class AppointmentsListTableComponent implements OnInit {
         ? this.startingIndex + Number(this.itemsPerPage)
         : this.startingIndex - Number(this.itemsPerPage);
 
-    this.visits$ = this.appointmentService
-            .searchAppointments(
+    this.appointments$ = this.appointmentService
+            .getAppointments(
               this.searchTerm,
             )
             .pipe(
@@ -148,14 +148,18 @@ export class AppointmentsListTableComponent implements OnInit {
                   this.errors = [...this.errors, response?.error];
                 }
               })
-            );
+    );
+    
+    const res = await this.api.appointmentscheduling.getAllAppointments({v:"full",limit:10, startIndex:this.startingIndex})
+
+    console.log(res)
   }
 
   onSearchPatient(e) {
     e.stopPropagation();
     this.searchTerm = e?.target?.value;
     this.loadingPatients = true;
-    this.visits$ = this.appointmentService
+    this.appointments$ = this.appointmentService
       .searchAppointments(
         this.searchTerm,
       )
@@ -183,7 +187,7 @@ export class AppointmentsListTableComponent implements OnInit {
     if (e) {
       e.stopPropagation();
     }
-    this.selectPatient.emit({ visit });
+    this.selectAppointment.emit({ visit });
   }
 
   togglePatientTypeList(type) {
@@ -220,7 +224,7 @@ export class AppointmentsListTableComponent implements OnInit {
         if (response?.action === "PATIENT_SELECT") {
           this.store.dispatch(clearBills());
           this.store.dispatch(clearBillItems());
-          this.selectPatient.emit(response?.patient);
+          this.selectAppointment.emit(response?.patient);
           this.store.dispatch(
             addCurrentPatient({
               patient: response?.patient,
@@ -236,7 +240,7 @@ export class AppointmentsListTableComponent implements OnInit {
 
     this.filterBy = event && typeof event === "string" ? event : "";
 
-    this.visits$ = this.appointmentService
+    this.appointments$ = this.appointmentService
       .getAppointments(
         this.filterBy,
       )

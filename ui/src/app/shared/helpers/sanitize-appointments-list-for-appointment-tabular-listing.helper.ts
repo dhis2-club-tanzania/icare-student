@@ -1,15 +1,14 @@
 export function sanitizePatientsVisitsForTabularPatientListing(
-  allVisitsData,
-  shouldShowParentLocation,
+  allAppointmentsData,
   paymentTypeSelected?,
   itemsPerPage?,
   currentPage?
 ) {
   const filteredVisitDetails = paymentTypeSelected
-    ? allVisitsData.filter(
+    ? allAppointmentsData.filter(
         (visitData) => visitData?.visit?.paymentType === paymentTypeSelected
       )
-    : allVisitsData;
+    : allAppointmentsData;
   const data = filteredVisitDetails.map((visitDetails, index) => {
     return {
       ...visitDetails?.visit,

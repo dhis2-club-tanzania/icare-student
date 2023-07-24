@@ -1,5 +1,5 @@
 <app-shared-error [errors]="errors"></app-shared-error>
-<div *ngIf="{ visits: visits$ | async } as params" class="w-100">
+<div *ngIf="{ appointment: appointments$ | async } as params" class="w-100">
     <div>
         <!-- Search input start -->
         <div class="search-input-card p-2 border mb-3 mt-3">
@@ -21,10 +21,10 @@
             <!-- Filter input start -->
 
 
-            <!-- {{ params?.visits | json }} -->
+            <!-- {{ params?.appointment | json }} -->
             <div class="text-center w-100 mt-5" *ngIf="
                     searchTerm &&
-                    (params?.visits | filterBy: searchTerm:'patientName')?.length === 0
+                    (params?.appointment | filterBy: searchTerm:'patientName')?.length === 0
                     "
                 >
                 <h3 class="text-muted">
@@ -37,39 +37,35 @@
             <!-- Tabular list -->
             <div class="tabular-patient-list" *ngIf="
           isTabularList &&
-          params?.visits &&
-          params?.visits.length > 0 &&
-          ((paymentTypeSelected &&
-            visit?.visit?.paymentType === paymentTypeSelected) ||
-            !paymentTypeSelected)
+          params?.appointment &&
+          params?.appointment.length > 0 
         ">
-                <app-appointments-table [shouldShowParentLocation]="shouldShowParentLocation" [visits]="
-            params?.visits | filterBy: searchTerm:'patientName':null:service
+                <app-appointments-table [appointments]="params?.appointment | filterBy: searchTerm:'patientName':null:service
           " [paymentTypeSelected]="paymentTypeSelected" (patientVisitDetails)="onSelectPatient(null, $event)"
                     [itemsPerPage]="itemsPerPage" [page]="page"
                     (shouldLoadNewList)="onLoadNewList($event)"></app-appointments-table>
             </div>
             <!-- End of Tabular list -->
 
-            <div class="text-center w-100 mt-5" *ngIf="!params?.visits || !params?.visits?.length > 0">
+            <div class="text-center w-100 mt-5" *ngIf="!params?.appointment || !params?.appointment?.length > 0">
                 <h3 class="text-muted">No appointment found</h3>
             </div>
         </div>
     </div>
 
-    <div *ngIf="params?.visits">
+    <div *ngIf="params?.appointment">
         <div class="d-flex justify-content-end mt-2 mb-2"
-            *ngIf="!isTabularList && params?.visits && params?.visits.length > 0">
+            *ngIf="!isTabularList && params?.appointment && params?.appointment.length > 0">
             <button [disabled]="page === 0" mat-stroked-button
-                (click)="getAnotherList($event, params?.visits[0], 'prev')">
+                (click)="getAnotherList($event, params?.appointment[0], 'prev')">
                 Prev
             </button>
             <button [disabled]="
-          params?.visits &&
-          params?.visits[0]?.visit &&
-          !params?.visits[0].visit?.pager &&
-          itemsPerPage > params?.visits.length
-        " class="ml-2" mat-stroked-button (click)="getAnotherList($event, params?.visits[0], 'next')">
+          params?.appointment &&
+          params?.appointment[0]?.visit &&
+          !params?.appointment[0].visit?.pager &&
+          itemsPerPage > params?.appointment.length
+        " class="ml-2" mat-stroked-button (click)="getAnotherList($event, params?.appointment[0], 'next')">
                 Next
             </button>
         </div>

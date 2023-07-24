@@ -2,9 +2,9 @@ import { EventEmitter, OnChanges, Output, ViewChild } from "@angular/core";
 import { Component, Input, OnInit } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
-import { sanitizePatientsVisitsForTabularPatientListing } from "../../helpers/sanitize-visits-list-for-appointment-tabular-listing.helper";
-import { Visit } from "../../resources/visits/models/visit.model";
+import { sanitizePatientsVisitsForTabularPatientListing } from "../../helpers/sanitize-appointments-list-for-appointment-tabular-listing.helper";
 
+import { Appointment } from '../../resources/appointment/models/appointment.model'
 @Component({
   selector: 'app-appointments-table',
   templateUrl: './appointments-table.component.html',
@@ -12,8 +12,7 @@ import { Visit } from "../../resources/visits/models/visit.model";
 })
 export class AppointmentsTableComponent implements OnInit {
 
-  @Input() visits: Visit[];
-  @Input() shouldShowParentLocation: boolean;
+  @Input() appointments: Appointment[];
   @Input() paymentTypeSelected: string;
   @Input() itemsPerPage: number;
   @Input() page: number;
@@ -38,17 +37,9 @@ export class AppointmentsTableComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log(sanitizePatientsVisitsForTabularPatientListing(
-        this.visits,
-        this.shouldShowParentLocation,
-        this.paymentTypeSelected,
-        this.itemsPerPage,
-        this.page
-      ))
     this.dataSource = new MatTableDataSource(
       sanitizePatientsVisitsForTabularPatientListing(
-        this.visits,
-        this.shouldShowParentLocation,
+        this.appointments,
         this.paymentTypeSelected,
         this.itemsPerPage,
         this.page
@@ -58,11 +49,9 @@ export class AppointmentsTableComponent implements OnInit {
   }
 
   ngOnChanges() {
-    console.log(this.visits)
     this.dataSource = new MatTableDataSource(
       sanitizePatientsVisitsForTabularPatientListing(
-        this.visits,
-        this.shouldShowParentLocation,
+        this.appointments,
         this.paymentTypeSelected,
         this.itemsPerPage,
         this.page
