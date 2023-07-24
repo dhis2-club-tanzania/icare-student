@@ -555,6 +555,8 @@ export class SharedPatientDashboardComponent implements OnInit {
         location: this.currentLocation,
         visit: this.activeVisit
       },
+    }).afterClosed().subscribe(() => {
+
     });
   }
 

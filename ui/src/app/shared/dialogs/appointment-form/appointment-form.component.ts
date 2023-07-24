@@ -120,7 +120,11 @@ export class AppointmentFormComponent implements OnInit {
     return `${hours}:${minutes}`;
   }
 
+  subtractDays(date, days) {
+    date.setDate(date.getDate() - days);
 
+    return date;
+  }
   async onSave(event: Event) {
     event.stopPropagation();
     this.isSaving = true
@@ -184,17 +188,39 @@ export class AppointmentFormComponent implements OnInit {
         }
         const appointment = await this.api.appointmentscheduling.createAppointment(appointmentPayload)
         console.log(this.data.patient.patient.person.attributes[0].display)
-        console.log(this.data.patient.patient.person.attributes[0].value)
+        // console.log(this.data)
+
+        let phoneNumber;
+        this.data.patient.patient.person.attributes.map(attribute => {
+          console.log(attribute)
+          if (attribute.display.includes('phone')) {
+            phoneNumber = attribute.value
+          }
+        })
+
+
+        phoneNumber = phoneNumber.replace('0', '255');
+
+        const scheduleDateTime = this.subtractDays(date, 3);
+        const smsScheduleDate = scheduleDateTime.toLocaleDateString('en-CA')
+        // const scheduleTime = this.getTimeFromDateString(scheduleDateTime)
+        const scheduleTime = this.removeSecondsFromTime(scheduleDateTime.toLocaleTimeString('en-US', { hour12: false }));
+
+        console.log(smsScheduleDate)
+        console.log(scheduleTime)
+        const appointmentDate = new Date(time.startDate).toLocaleDateString('sw', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        const scheduledSms = `Mpendwa ${this.data.patient.patient.person.display}, hii ni kukukumbusha kwenda hospitalini siku ya ${appointmentDate} kwa ajili ya appointment (kuonana na daktari). hii itasaidia kupata matibabu, ushauri na kufanya uchunguzi wa afya yako ya kimwili na kiakili na kutoa tiba sahihi. ASANTE`
 
         this.isSaving = false;
-        this.smsService.sendSms({ patientPhoneNo: '255755668673', message: 'Hey, Buddy!' }).subscribe((result) => {
+        this.smsService.sendSms({ patientPhoneNo: phoneNumber, message: scheduledSms }).subscribe((result) => {
           console.log(result)
         })
         this.smsService.scheduleSms({
-          patientPhoneNo: '255755668673',
-          message: 'Hey, Buddy!',
-          date: '2023-07-01',
-          time: '12:00'
+          patientPhoneNo: phoneNumber,
+          message: scheduledSms,
+          date: smsScheduleDate,
+          time: scheduleTime
         }).subscribe((result) => {
           console.log(result)
         })
@@ -203,7 +229,24 @@ export class AppointmentFormComponent implements OnInit {
 
     this.dialogRef.close();
   }
+  removeSecondsFromTime(time) {
+    // Split the time string by ":" separator
+    const timeComponents = time.split(":");
 
+    // Extract the hour and minute components
+    const hour = timeComponents[0];
+    const minute = timeComponents[1];
+
+    // Construct the modified time without seconds
+    const modifiedTime = hour + ":" + minute;
+
+    return modifiedTime;
+  }
+  addMinutes(date, minutes) {
+    date.setMinutes(date.getMinutes() + minutes);
+
+    return date;
+  }
 
   getStartEndDates(date, startTime, endTime) {
     const currentDate = this.restructureDate(date)

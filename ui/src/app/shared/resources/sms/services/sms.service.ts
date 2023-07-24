@@ -6,12 +6,12 @@ import { HttpClient } from '@angular/common/http';
     providedIn: 'root',
 })
 export class SmsService {
-    baseUrl = 'http://localhost:8080'
+    baseUrl = 'http://139.162.223.43:4000'
     constructor(private httpClient: HttpClient) { }
 
     sendSms(smsPayload: { patientPhoneNo: string, message: string }) {
         const payload = { "phoneNumber": smsPayload.patientPhoneNo, "message": smsPayload.message }
-        return this.httpClient.post(`${this.baseUrl}/api/send/single`, payload).pipe(
+        return this.httpClient.post(`${this.baseUrl}/api/sms/send`, payload).pipe(
             map((response) => {
                 return response;
             })
@@ -25,7 +25,7 @@ export class SmsService {
             "date": smsPayload.date,
             "time": smsPayload.time
         }
-        return this.httpClient.post(`${this.baseUrl}/api/schedule/single`, payload).pipe(
+        return this.httpClient.post(`${this.baseUrl}/api/sms/schedule`, payload).pipe(
             map((response) => {
                 return response;
             })
