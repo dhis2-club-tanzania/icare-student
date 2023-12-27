@@ -176,7 +176,7 @@ export class SharedPatientConsultationComponent implements OnInit {
     });
   }
 
-  clearBills(event: Event) {
+  clearBills(event: Event): void {
     event.stopPropagation();
     this.store.dispatch(clearBills());
     this.store.dispatch(go({ path: ["/clinic/patient-list"] }));
