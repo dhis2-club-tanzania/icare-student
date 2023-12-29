@@ -59,7 +59,7 @@
               [isTabularList]="true"
               [itemsPerPage]="10"
               [currentLocation]="(currentLocation$ | async)?.id"
-              [orderType]="params?.consultationOrderType"
+              [orderType]="params?.consultationOrderType.uuid"
               [orderStatus]="'RECEIVED'"
               [currentLocation]="(currentLocation$ | async)?.id"
               (selectPatient)="onSelectPatient($event)"
