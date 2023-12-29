@@ -51,7 +51,7 @@ export class ClinicPatientListComponent implements OnInit {
       );
     this.radiologyOrderType$ =
       this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.radiology.radiologyOrderType"
+        "iCare.clinic.consultation.orderType"
       );
     this.drugOrderType$ = this.systemSettingsService.getSystemSettingsByKey(
       "iCare.clinic.drug.drugOrderType"
