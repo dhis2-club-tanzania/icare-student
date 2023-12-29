@@ -176,11 +176,12 @@ export class SharedPatientConsultationComponent implements OnInit {
     });
   }
 //modified clearBills method
-  clearBills(event: Event){
+   clearBills(event: Event){
     event.stopPropagation();
     this.store.dispatch(clearBills());
     this.store.dispatch(go({ path: ["/clinic/patient-list"] }));
   }
+
   //onOpenNewDiagnosisModal method
 
   onOpenNewDiagnosisModal(event: Event, patient, diagnosisForm, visit): void {
