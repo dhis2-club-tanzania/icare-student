@@ -10,3 +10,4 @@ import { eClaimContainers } from './containers';
   imports: [CommonModule, EClaimRoutingModule, SharedModule],
 })
 export class EClaimModule {}
+//imports: [CommonModule, EClaimRoutingModule, SharedModule],
