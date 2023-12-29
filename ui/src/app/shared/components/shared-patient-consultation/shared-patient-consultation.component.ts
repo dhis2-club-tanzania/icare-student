@@ -84,7 +84,8 @@ export class SharedPatientConsultationComponent implements OnInit {
     private store: Store<AppState>,
     private billableItemsService: BillableItemsService,
     private visitService: VisitsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router:Router,
   ) {}
 
   ngOnInit(): void {
@@ -181,7 +182,9 @@ export class SharedPatientConsultationComponent implements OnInit {
     this.store.dispatch(clearBills());
     this.store.dispatch(go({ path: ["/clinic/patient-list"] }));
   }
-
+     navigateToList(){
+    this.routernavigate(['/clinic/patient-list']);
+     }
   //onOpenNewDiagnosisModal method
 
   onOpenNewDiagnosisModal(event: Event, patient, diagnosisForm, visit): void {
