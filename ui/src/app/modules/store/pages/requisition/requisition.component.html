@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <!-- <table class="table">
+    <table class="table">
       <tr>
         <td>#</td>
         <td>Item</td>
@@ -184,7 +184,7 @@
           </div>
         </td>
       </tr>
-    </table> -->
+    </table> 
     <div *ngIf="!showRequisitionForm">
       <mat-progress-bar mode="indeterminate" *ngIf="!requisitions?.length && !loadedRequisitions"></mat-progress-bar>
       <mat-paginator 
@@ -257,6 +257,7 @@
                         >
                             <mat-icon>send</mat-icon>
                         </a>
+                        
                         <a
                           class="anchor-button ml-4" 
                           color="primary" 
