@@ -1,3 +1,5 @@
+// patient-procedures-summary.component.ts
+
 import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormValue } from "../../modules/form/models/form-value.model";
 import { Visit } from "../../resources/visits/models/visit.model";
@@ -38,8 +40,9 @@ export class PatientProceduresSummaryComponent implements OnInit {
   formDetails: FormValue;
   observationsKeyedByConcepts$: Observable<any>;
   @Output() updateConsultationOrder = new EventEmitter();
-  reloadOrderComponent: any;
+  @Output() reloadOrderComponent = new EventEmitter(); // Step 1: Declare reloadOrderComponent
   errors: any[];
+
   constructor(
     private ordersService: OrdersService,
     private visitService: VisitsService,
@@ -48,6 +51,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.reloadOrderComponent = new EventEmitter(); // Step 2: Initialize reloadOrderComponent
     this.procedures$ = this.visitService.getActiveVisitProcedures(
       this.patientVisit.uuid,
       this.fields
@@ -91,7 +95,10 @@ export class PatientProceduresSummaryComponent implements OnInit {
     this.formDetails = formValues;
     this.isFormValid = formValues.isValid;
   }
-
+  onReloadOrderComponent() {
+    // Handle reloadOrderComponent event
+    console.log('Reload order component event received'); 
+    
   onSave(event: Event): void {
     event.stopPropagation();
     let procedures = [];
@@ -175,7 +182,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
           })
           .subscribe((response) => {
             if (!response?.error) {
-              this.reloadOrderComponent.emit();
+              this.reloadOrderComponent.emit(); // Step 3: Emit reloadOrderComponent
             }
             if (response?.error) {
               this.errors = [...this.errors, response?.error];
