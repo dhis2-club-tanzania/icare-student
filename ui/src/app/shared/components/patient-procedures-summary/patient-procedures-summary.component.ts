@@ -95,10 +95,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
     this.formDetails = formValues;
     this.isFormValid = formValues.isValid;
   }
-  onReloadOrderComponent() {
-    // Handle reloadOrderComponent event
-    console.log('Reload order component event received'); 
-    
+  
   onSave(event: Event): void {
     event.stopPropagation();
     let procedures = [];
@@ -173,6 +170,9 @@ export class PatientProceduresSummaryComponent implements OnInit {
       disableClose: false,
       panelClass: "custom-dialog-container",
     });
+    onReloadOrderComponent() {
+      // Handle reloadOrderComponent event
+      console.log('Reload order component event received'); 
     confirmDialog.afterClosed().subscribe((confirmationObject) => {
       if (confirmationObject?.confirmed) {
         this.ordersService
