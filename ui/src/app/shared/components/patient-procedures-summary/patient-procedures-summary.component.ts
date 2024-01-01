@@ -147,6 +147,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
     this.updateConsultationOrder.emit();
   }
 
+
   onOpenAttendProcedure(event: Event, proceduredOrder): void {
     event.stopPropagation();
     this.dialog.open(AttendProcedureOrderComponent, {
@@ -173,6 +174,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
     onReloadOrderComponent() {
       // Handle reloadOrderComponent event
       console.log('Reload order component event received'); 
+      
     confirmDialog.afterClosed().subscribe((confirmationObject) => {
       if (confirmationObject?.confirmed) {
         this.ordersService
