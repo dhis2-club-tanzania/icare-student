@@ -47,8 +47,7 @@
             <button
               class="float-left ml-2"
               mat-stroked-button
-              (click)="clearBills($event)"
-              [routerLink]="'/clinic/patient-list'"
+              (click)="clearBillls();navigateToList()"
               matTooltip="Back to List"
             >
               <mat-icon>arrow_back</mat-icon>
