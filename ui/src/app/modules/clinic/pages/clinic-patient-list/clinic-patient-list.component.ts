@@ -79,8 +79,11 @@ export class ClinicPatientListComponent implements OnInit {
     this.selectedTab.setValue(index);
   }
 
+  //modified onBack method
   onBack(e: Event) {
-    e.stopPropagation();
+    e.stopPropagation
+    const allPatientsTabIndex = 5; 
+    this.selectedTab.setValue(allPatientsTabIndex);
     this.store.dispatch(go({ path: ["/"] }));
   }
 
