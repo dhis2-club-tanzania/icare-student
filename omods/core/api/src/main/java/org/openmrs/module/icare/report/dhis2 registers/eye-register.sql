@@ -1,3 +1,6 @@
+--filtering data that is to be recorded in the report
+--after filtering we also group those information according to their sites
+
 SELECT `HUDHURIO LA KWANZA`,(@row_number:=@row_number+1) AS "Na",TAREHE,`NAMBA YA HUDHURIO`,`JINA LA MGONJWA`,`MAHALI ANAISHI`,UMRI,`JINSIA YA MGONJWA`,`UZITO(kg)`,`UREFU(cm)`,`VISUAL ACUITY GRADING IN THE BETTER EYE(RE) (PRESENTING)`,`VISUAL ACUITY GRADING IN THE BETTER EYE(LE) (PRESENTING)`,`VIPIMO`,`MATOKEO YA VIPIMO`,DIAGNOSIS,`MATIBABU`,`MATOKEO YA MAHUDHURIO`,`MALIPO` FROM(
 SELECT
 		CASE WHEN COUNT(othervisit.visit_id)> 0  THEN '' ELSE '*' END AS `HUDHURIO LA KWANZA`,
@@ -41,7 +44,7 @@ SELECT
 	-- Addressing other vitals obs
 	 LEFT JOIN obs ob2 ON ob2.encounter_id=test_order_encounter.encounter_id
      LEFT JOIN concept_name value_coded_concept_name ON value_coded_concept_name.concept_id=ob2.value_coded AND value_coded_concept_name.concept_name_type = 'FULLY_SPECIFIED'
-	-- Addressing Diagnosis
+	-- Addressing Diagnosis data to get more infos about the patient
 	LEFT JOIN encounter diagnosis_encounter ON diagnosis_encounter.visit_id=v.visit_id
 	LEFT JOIN encounter_diagnosis ed ON ed.encounter_id=diagnosis_encounter.encounter_id
 	LEFT JOIN concept diagnosis_concept ON ed.diagnosis_coded=diagnosis_concept.concept_id
@@ -58,7 +61,7 @@ SELECT
 	LEFT JOIN concept visit_attribute_concept ON va.value_reference=visit_attribute_concept.uuid
 	LEFT JOIN concept_name payment_concept_name ON payment_concept_name.concept_id=visit_attribute_concept.concept_id AND payment_concept_name.concept_name_type = 'FULLY_SPECIFIED'
 
-	-- ADDRESSING VISIT TYPE
+	-- ADDRESSING VISIT TYPE by specifying whether it's first time or not
 	WHERE v.location_id=45 AND v.voided=0 AND CAST(CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT') AS DATE) BETWEEN '2022-11-01' AND '2023-11-30'
 	GROUP BY v.visit_id,v.date_started,`JINA LA MGONJWA`,`MAHALI ANAISHI`,v.uuid,`NAMBA YA HUDHURIO`
 	ORDER BY v.date_started ASC) AS VISITDETAILS, (SELECT @row_number:=0) AS temp
