@@ -32,6 +32,7 @@
             <th>SN</th>
             <th>Name</th>
             <th>Date created</th>
+            <th *ngIf="stockable">Stockable</th>
             <th></th>
           </tr>
         </thead>
@@ -60,6 +61,9 @@
               <td>
                 {{ concept?.dateCreated | date }}
               </td>
+              <td *ngIf="stockable">
+                {{ concept?.item?.stockable }}
+              </td>
               <td>
                 <button mat-icon-button [matMenuTriggerFor]="menu">
                   <mat-icon>more_vert</mat-icon>
@@ -72,6 +76,15 @@
                   >
                     <mat-icon>edit</mat-icon>
                     <span>Edit</span>
+                  </button>
+
+                  <button
+                    [disabled]="concept?.item?.stockable"
+                    mat-menu-item
+                    (click)="onMakeItemStockable($event, concept)"
+                  >
+                    <mat-icon>store</mat-icon>
+                    <span>Make item stockable</span>
                   </button>
                   <button
                     [disabled]="concept?.retired"
@@ -126,7 +139,7 @@
         </tbody>
       </table>
     </div>
-
+    <!-- {{ params?.conceptsList | json }} -->
     <div class="w-100 mt-2">
       <mat-paginator
         [hidden]="!pageCounts"

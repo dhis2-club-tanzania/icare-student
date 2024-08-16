@@ -26,13 +26,13 @@
     [existingStockInvoice]="data?.stockInvoice"
     [stockInvoiceItem]="data?.stockInvoiceItem"
     [currentLocation]="data?.currentLocation"
+    [hideAddedItems]="true"
     (closeDialog)="onClosePopup()"
   ></app-stock-receiving-form>
   <div class="mt-2 mb-2" *ngIf="!data?.stockInvoice">
     <button
       class="float-right mr-2 mb-2"
-      mat-flat-button
-      color="primary"
+      mat-stroked-button
       (click)="onClosePopup($event)"
     >
       Close

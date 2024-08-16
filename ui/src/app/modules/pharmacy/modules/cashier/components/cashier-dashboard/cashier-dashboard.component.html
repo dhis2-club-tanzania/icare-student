@@ -74,6 +74,7 @@
                   <tr>
                     <th>SN</th>
                     <th>Item</th>
+                    <th>Type</th>
                     <ng-container *ngIf="shouldShowDoseDetails === 'true'">
                       <th [attr.colspan]="prescriptionVariables?.length">
                         Dose details
@@ -89,78 +90,86 @@
                 </thead>
                 <tbody>
                   <ng-container
-                    *ngIf="selectedItems && selectedItems?.length > 0 "
+                    *ngIf="selectedItems && selectedItems?.length > 0"
                   >
                     <tr *ngFor="let item of selectedItems; let count = index">
-                    <ng-container *ngIf="item?.name">
-                      <td style="width: 30px">
-                        {{ count + 1 }}
-                      </td>
-                      <td>
-                        {{ item?.name }}
-                      </td>
-                      <ng-container *ngIf="shouldShowDoseDetails === 'true'">
-                        <td
-                          style="min-width: 100px"
-                          *ngFor="let variable of prescriptionVariables"
-                        >
+                      <ng-container *ngIf="item?.name">
+                        <td style="width: 30px">
+                          {{ count + 1 }}
+                        </td>
+                        <td>
+                          {{ item?.name }}
+                        </td>
+                        <td>
+                          {{ item?.drug?.uuid ? "Drug" : "Non Drug" }}
+                        </td>
+                        <ng-container *ngIf="shouldShowDoseDetails === 'true'">
+                          <td
+                            style="min-width: 100px"
+                            *ngFor="let variable of prescriptionVariables"
+                          >
+                            <app-form
+                              [fields]="[
+                                doseFields[variable?.key + item?.itemUuid]
+                              ]"
+                              (formUpdate)="onFormDataUpdate($event)"
+                            ></app-form>
+                          </td>
+                        </ng-container>
+                        <td *ngIf="shouldShowDoseDetails !== 'true'">
                           <app-form
                             [fields]="[
-                              doseFields[variable?.key + item?.itemUuid]
+                              doseFields['instructions' + item?.itemUuid]
                             ]"
                             (formUpdate)="onFormDataUpdate($event)"
                           ></app-form>
                         </td>
+                        <td style="width: 30px">
+                          <app-form
+                            [fields]="[quantityFields[item?.itemUuid]]"
+                            (formUpdate)="
+                              onFormDataUpdate(
+                                $event,
+                                item?.itemUuid,
+                                item?.drug
+                                  ? item?.drug?.uuid
+                                  : item?.concept?.uuid,
+                                item?.drug ? true : false
+                              )
+                            "
+                          ></app-form>
+                        </td>
+                        <td>
+                          {{
+                            itemsPrices && itemsPrices[item?.itemUuid]?.ready
+                              ? itemsPrices[item?.itemUuid]?.isPriceSet
+                                ? itemsPrices[item?.itemUuid]?.price
+                                : "Not set"
+                              : "-"
+                          }}
+                        </td>
+                        <td style="width: 30px">
+                          <button
+                            (click)="onRemove($event, item)"
+                            mat-icon-button
+                          >
+                            <mat-icon color="warn">delete</mat-icon>
+                          </button>
+                        </td>
                       </ng-container>
-                      <td *ngIf="shouldShowDoseDetails !== 'true'">
-                        <app-form
-                          [fields]="[
-                            doseFields['instructions' + item?.itemUuid]
-                          ]"
-                          (formUpdate)="onFormDataUpdate($event)"
-                        ></app-form>
-                      </td>
-                      <td style="width: 30px">
-                        <app-form
-                          [fields]="[quantityFields[item?.itemUuid]]"
-                          (formUpdate)="
-                            onFormDataUpdate(
-                              $event,
-                              item?.itemUuid,
-                              item?.drug?.uuid
-                            )
-                          "
-                        ></app-form>
-                      </td>
-                      <td>
-                        {{
-                          itemsPrices && itemsPrices[item?.itemUuid]?.ready
-                            ? itemsPrices[item?.itemUuid]?.price
-                            : "-"
-                        }}
-                      </td>
-                      <td style="width: 30px">
-                        <button
-                          (click)="onRemove($event, item)"
-                          mat-icon-button
-                        >
-                          <mat-icon color="warn">delete</mat-icon>
-                        </button>
-                      </td>
-                   
-                    </ng-container> </tr>
+                    </tr>
                     <tr>
                       <ng-container *ngIf="shouldShowDoseDetails === 'true'">
                         <td
                           style="text-align: right"
-                          [attr.colspan]="prescriptionVariables?.length + 3"
+                          [attr.colspan]="prescriptionVariables?.length + 4"
                         >
                           Total Price
                         </td>
                       </ng-container>
 
                       <ng-container *ngIf="shouldShowDoseDetails !== 'true'">
-                        <td colspan="4" style="text-align: right">
+                        <td colspan="5" style="text-align: right">
                           Total Price
                         </td>
                       </ng-container>
@@ -189,10 +198,12 @@
                 [disabled]="
                   selectedItems?.length === 0 ||
                   !params?.currentLocation ||
+                  !itemsPrices ||
+                  !itemsPrices['total'] ||
                   itemsPrices['total'] === 0
                 "
               >
-                Save 
+                Save
               </button>
             </div>
           </div>

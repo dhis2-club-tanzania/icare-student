@@ -340,6 +340,13 @@
 		</description>
 	</globalProperty>
 	<!-- Envaya SMS ends -->
+	<globalProperty>
+		<property>iCare.billing.orderTypes.skipBillingOrderAdvisor</property>
+		<defaultValue></defaultValue>
+		<description>
+			For order type to be skipped when Billing advisor for order is being executed
+		</description>
+	</globalProperty>
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>

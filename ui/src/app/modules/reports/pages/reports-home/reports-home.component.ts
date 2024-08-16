@@ -37,7 +37,7 @@ export class ReportsHomeComponent implements OnInit {
     private reportsService: ReportService,
     private reportParamsService: ReportParamsService
   ) {
-    // this.store.dispatch(loadRolesDetails());
+    this.store.dispatch(loadRolesDetails());
   }
 
   ngOnInit(): void {

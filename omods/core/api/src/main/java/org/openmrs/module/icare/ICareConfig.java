@@ -225,4 +225,5 @@ public class ICareConfig {
 	public static final int POWER_SOURCE_USB = 2;
 	
 	//EnvayaSMS constant values ends
+	public static final String ORDER_TO_SKIP_BILLING_ADVISOR = "iCare.billing.orderTypes.skipBillingOrderAdvisor";
 }

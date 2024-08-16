@@ -206,27 +206,164 @@ public class ICareDao extends BaseDAO<Item> {
 		return query.list();
 	}
 	
-	public List<Item> getStockableItems(String search, Integer limit, Integer startIndex, Item.Type type) {
+	public List<Object> getConceptItems(String search, Integer limit, Integer startIndex, Item.Type type, Boolean stockable,
+	        String conceptClass) {
 		DbSession session = getSession();
 		String queryStr;
-		queryStr = "SELECT ip FROM Item ip WHERE id.stockable = true ";
+		queryStr = "SELECT item FROM Item item ";
+		System.out.println(conceptClass);
+		if (conceptClass != null) {
+			queryStr += "LEFT JOIN item.concept c INNER JOIN c.conceptClass cc WHERE lower(cc.name) like lower(:conceptClass) ";
+		}
+		if (stockable != null) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.stockable = :stockable";
+		}
 		
 		if (queryStr != null && type == Item.Type.DRUG) {
-			queryStr += " AND ip.drug IS NOT NULL";
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.drug IS NOT NULL";
 		} else if (queryStr != null && type == Item.Type.CONCEPT) {
-			queryStr += " AND ip.concept IS NOT NULL";
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.concept IS NOT NULL";
 		}
 		
 		if (search != null) {
-			queryStr = "SELECT ip FROM Item ip " + "LEFT JOIN ip.concept as c WITH c.retired = false "
+			queryStr = "SELECT item FROM Item item LEFT JOIN item.concept c "
+			        + "  INNER JOIN c.conceptClass cc  "
 			        + "LEFT JOIN c.names cn WITH cn.conceptNameType = 'FULLY_SPECIFIED' "
-			        + "LEFT JOIN ip.drug as d WITH d.retired=false "
-			        + "WHERE ip.stockable = true AND lower(cn.name) like :search  OR lower(d.name) like :search";
+			        + "LEFT JOIN item.drug as d WITH d.retired=false "
+			        + "WHERE lower(cc.name) like lower(:conceptClass) AND (lower(cn.name) like lower(:search)  OR lower(d.name) like lower(:search)) ";
+			
 			if (type == Item.Type.DRUG) {
-				queryStr += " AND ip.drug IS NOT NULL";
+				queryStr += " AND item.drug IS NOT NULL";
 			}
 			if (type == Item.Type.CONCEPT) {
-				queryStr += " AND ip.concept IS NOT NULL";
+				queryStr += " AND item.concept IS NOT NULL";
+			}
+			if (stockable != null) {
+				queryStr += " AND item.stockable = :stockable";
+			}
+		}
+		Query query = session.createQuery(queryStr);
+		query.setFirstResult(startIndex);
+		query.setMaxResults(limit);
+		if (search != null) {
+			query.setParameter("search", "%" + search + "%");
+		}
+		if (stockable != null) {
+			query.setParameter("stockable", stockable);
+		}
+		if (conceptClass != null) {
+			query.setParameter("conceptClass", conceptClass);
+		}
+		
+		return query.list();
+	}
+	
+	public List<Item> getStockableItems(String search, Integer limit, Integer startIndex, Item.Type type, Boolean stockable) {
+		DbSession session = getSession();
+		String queryStr;
+		queryStr = "SELECT item FROM Item item ";
+		if (stockable != null) {
+			queryStr += "WHERE item.stockable = :stockable ";
+		}
+		
+		if (queryStr != null && type == Item.Type.DRUG) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.drug IS NOT NULL";
+		} else if (queryStr != null && type == Item.Type.CONCEPT) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.concept IS NOT NULL";
+		}
+		
+		if (search != null) {
+			queryStr = "SELECT item FROM Item item " + "LEFT JOIN item.concept as c WITH c.retired = false "
+			        + "LEFT JOIN c.names cn WITH cn.conceptNameType = 'FULLY_SPECIFIED' "
+			        + "LEFT JOIN item.drug as d WITH d.retired=false "
+			        + "WHERE lower(cn.name) like :search  OR lower(d.name) like :search";
+			
+			if (type == Item.Type.DRUG) {
+				queryStr += " AND item.drug IS NOT NULL";
+			}
+			if (type == Item.Type.CONCEPT) {
+				queryStr += " AND item.concept IS NOT NULL";
+			}
+			if (stockable != null) {
+				queryStr += " AND item.stockable = :stockable";
+			}
+		}
+		Query query = session.createQuery(queryStr);
+		query.setFirstResult(startIndex);
+		query.setMaxResults(limit);
+		if (search != null) {
+			query.setParameter("search", "%" + search + "%");
+		}
+		if (stockable != null) {
+			query.setParameter("stockable", stockable);
+		}
+		return query.list();
+	}
+	
+	public List<Concept> getConceptStockableItems(String search, Integer limit, Integer startIndex, Item.Type type,
+	        Boolean stockable) {
+		DbSession session = getSession();
+		String queryStr;
+		queryStr = "SELECT c FROM Concept c RIGHT JOIN Item item ";
+		if (stockable != null) {
+			queryStr += "WHERE item.stockable = :stockable ";
+		}
+		
+		if (queryStr != null && type == Item.Type.DRUG) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.drug IS NOT NULL";
+		} else if (queryStr != null && type == Item.Type.CONCEPT) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			queryStr += " item.concept IS NOT NULL";
+		}
+		
+		if (search != null) {
+			queryStr = "SELECT c FROM Concept c RIGHT JOIN Item item  "
+			        + "LEFT JOIN c.names cn WITH cn.conceptNameType = 'FULLY_SPECIFIED' "
+			        + "LEFT JOIN item.drug as d WITH d.retired=false "
+			        + "WHERE lower(cn.name) like :search  OR lower(d.name) like :search";
+			
+			if (type == Item.Type.DRUG) {
+				queryStr += " AND item.drug IS NOT NULL";
+			}
+			if (type == Item.Type.CONCEPT) {
+				queryStr += " AND item.concept IS NOT NULL";
+			}
+			if (stockable != null) {
+				queryStr += " AND item.stockable = :stockable";
 			}
 			
 		}
@@ -235,6 +372,9 @@ public class ICareDao extends BaseDAO<Item> {
 		query.setMaxResults(limit);
 		if (search != null) {
 			query.setParameter("search", "%" + search + "%");
+		}
+		if (stockable != null) {
+			query.setParameter("stockable", stockable);
 		}
 		return query.list();
 	}
@@ -958,7 +1098,6 @@ public class ICareDao extends BaseDAO<Item> {
 		Query query = session.createQuery(queryStr);
 		query.setParameter("Id", Id);
 		return query.list();
-		
 	}
 	
 	//EnvayaSMS database interactions
@@ -1020,4 +1159,13 @@ public class ICareDao extends BaseDAO<Item> {
 	//		return uuid;
 	//	}
 	//
+	
+	public List<Visit> getVisitsByStartDateAndEndDate(Date startDate, Date endDate) {
+		DbSession session = getSession();
+		String queryStr = " SELECT visit FROM Visit visit WHERE visit.startDatetime BETWEEN :startDate AND :endDate";
+		Query query = session.createQuery(queryStr);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		return query.list();
+	}
 }

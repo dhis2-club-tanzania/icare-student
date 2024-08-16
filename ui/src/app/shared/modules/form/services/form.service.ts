@@ -329,6 +329,7 @@ export class FormService {
                         item: {
                           drug: responseItem?.drug,
                           uuid: responseItem?.uuid,
+                          concept: responseItem?.concept,
                         },
                         quantity: 0,
                       };
@@ -353,6 +354,7 @@ export class FormService {
                       ...batch,
                       itemUuid: batch?.item?.uuid,
                       drug: batch?.item?.drug,
+                      concept: batch?.item?.concept,
                     };
                   }),
                   "itemUuid"
@@ -370,19 +372,34 @@ export class FormService {
                       )
                     );
                     return {
-                      uuid: groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid,
-                      id: groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid,
-                      display:
-                        groupedByItemUuid[itemUuid][0]?.item?.drug?.display +
-                        " (" +
-                        totalQuantity.toLocaleString("en-US") +
-                        ") ",
+                      uuid: groupedByItemUuid[itemUuid][0]?.item?.drug
+                        ? groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid
+                        : groupedByItemUuid[itemUuid][0]?.item?.concept?.uuid,
+                      id: groupedByItemUuid[itemUuid][0]?.item?.drug
+                        ? groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid
+                        : groupedByItemUuid[itemUuid][0]?.item?.concept?.uuid,
+                      display: groupedByItemUuid[itemUuid][0]?.item?.drug
+                        ? groupedByItemUuid[itemUuid][0]?.item?.drug?.display +
+                          " (" +
+                          totalQuantity.toLocaleString("en-US") +
+                          ") "
+                        : groupedByItemUuid[itemUuid][0]?.item?.concept
+                            ?.display +
+                          " (" +
+                          totalQuantity.toLocaleString("en-US") +
+                          ") ",
                       itemUuid,
                       drug: groupedByItemUuid[itemUuid][0]?.drug,
+                      concept: groupedByItemUuid[itemUuid][0]?.concept,
                       location: { uuid: field?.locationUuid },
-                      value: groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid,
+                      value: groupedByItemUuid[itemUuid][0]?.drug
+                        ? groupedByItemUuid[itemUuid][0]?.item?.drug?.uuid
+                        : groupedByItemUuid[itemUuid][0]?.item?.concept?.uuid,
                       batches: flatten(groupedByItemUuid[itemUuid]),
-                      name: groupedByItemUuid[itemUuid][0]?.item?.drug?.display,
+                      name: groupedByItemUuid[itemUuid][0]?.drug
+                        ? groupedByItemUuid[itemUuid][0]?.item?.drug?.display
+                        : groupedByItemUuid[itemUuid][0]?.item?.concept
+                            ?.display,
                       quantity: totalQuantity,
                       isStockOut: totalQuantity === 0 ? true : false,
                     };

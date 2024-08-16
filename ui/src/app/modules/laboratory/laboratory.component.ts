@@ -91,7 +91,7 @@ export class LaboratoryComponent implements OnInit {
     private locationService: LocationService,
     private systemSettingsService: SystemSettingsService
   ) {
-    // this.store.dispatch(loadRolesDetails());
+    this.store.dispatch(loadRolesDetails());
     this.store.dispatch(loadOrderTypes());
     // this.store.dispatch(loadLISConfigurations());
     this.labs$ = this.store.select(getUserAssignedLocations);

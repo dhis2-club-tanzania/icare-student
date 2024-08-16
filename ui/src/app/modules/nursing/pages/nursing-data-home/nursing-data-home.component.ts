@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import {
   authenticateUser,
@@ -36,6 +37,7 @@ export class NursingDataHomeComponent implements OnInit {
   userPrivileges$: Observable<any>;
   nursingConfigurations$: Observable<any>;
   currentLocation$: Observable<any>;
+
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
@@ -46,10 +48,10 @@ export class NursingDataHomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.nursingConfigurations$ =
-      this.systemSettingsService.getSystemSettingsDetailsByKey(
-        "icare.nursing.configurations"
-      );
+    this.nursingConfigurations$ = this.systemSettingsService.getSystemSettingsDetailsByKey(
+      "icare.nursing.configurations"
+    );
+
     const patientId = this.route.snapshot.queryParams["patient"];
     this.store.dispatch(
       loadPatientBills({
@@ -60,13 +62,53 @@ export class NursingDataHomeComponent implements OnInit {
     this.store.dispatch(loadActiveVisit({ patientId }));
     this.store.dispatch(loadCurrentPatient({ uuid: patientId }));
     this.store.dispatch(loadPatientBills({ patientUuid: patientId }));
-    this.allUserRoles$ = this.store.select(getAllUSerRoles);
-    this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
-    this.privilegesConfigs$ = this.store.select(getFormPrivilegesConfigs);
+    this.userPrivileges$ = this.store.select(getCurrentUserPrivileges).pipe(
+      tap(privileges => {
+        if (!privileges) {
+          console.warn('Warning: User privileges data is missing.');
+        }
+      })
+    );
+
+    this.privilegesConfigs$ = this.store.select(getFormPrivilegesConfigs).pipe(
+      tap(configs => {
+        if (!configs) {
+          console.warn('Warning: Privileges configs data is missing.');
+        }
+      })
+    );
+
     this.formPrivilegesConfigsLoadingState$ = this.store.select(
       getFormPrivilegesConfigsLoadingState
     );
-    this.currentUser$ = this.store.select(getCurrentUserDetails);
-    this.currentLocation$ = this.store.select(getCurrentLocation(false));
+
+    this.currentUser$ = this.store.select(getCurrentUserDetails).pipe(
+      tap(user => {
+        if (!user) {
+          console.warn('Warning: Current user data is missing.');
+        }
+      })
+    );
+
+    this.currentLocation$ = this.store.select(getCurrentLocation(false)).pipe(
+      tap(location => {
+        if (!location) {
+          console.warn('Warning: Current location data is missing.');
+        }
+      })
+    );
+  }
+
+  hasAllRequiredData(params: any): boolean {
+    return (
+      params?.currentUser &&
+      params?.privilegesConfigs &&
+      params?.allUserRoles &&
+      params?.allUserRoles?.length > 0 &&
+      params?.userPrivileges &&
+      params?.nursingConfigurations &&
+      params?.nursingConfigurations['value'] !== '' &&
+      params?.currentLocation
+    );
   }
 }

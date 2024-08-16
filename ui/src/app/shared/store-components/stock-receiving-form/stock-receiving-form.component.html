@@ -16,14 +16,14 @@
   <mat-progress-bar
     class="mt-2"
     mode="indeterminate"
-    *ngIf="
-      (!stockInvoice && loadingInvoice) ||
-      !params?.suppliers ||
-      !params?.unitsOfMeasurementsDetails
-    "
+    *ngIf="!params?.suppliers || !params?.unitsOfMeasurementsDetails"
   ></mat-progress-bar>
   <div class="row">
-    <div class="col-md-6 col-sm-12 col-sx-12">
+    <div
+      [ngClass]="{ 'col-md-5': !hideAddedItems, 'col-md-12': hideAddedItems }"
+      class="col-md-5 col-sm-12 col-sx-12"
+      style="border-right: solid 1px #eee"
+    >
       <div
         class="row"
         *ngIf="
@@ -48,8 +48,8 @@
         ></app-stock-receiving-form-fields>
       </div>
     </div>
-    <div class="col-md-6 col-sm-12 col-sx-12">
-      <div class="row mt-2" *ngIf="stockInvoice && !loadingInvoice">
+    <div class="col-md-7 col-sm-12 col-sx-12" *ngIf="!hideAddedItems">
+      <div class="row mt-2">
         <div class="col-12">
           <mat-accordion>
             <mat-expansion-panel

@@ -39,6 +39,7 @@ export class SharedConceptCreateComponent implements OnInit {
   @Input() multipleSelectionCompHeight: string;
   @Input() conceptData: any;
   @Input() showCodesSection: boolean;
+  @Input() isItemStockable: boolean;
   basicConceptFields: any[];
   dataTypeField: any;
   unitsField: any;
@@ -443,6 +444,7 @@ export class SharedConceptCreateComponent implements OnInit {
                 const billableItem = {
                   concept: { uuid: response?.uuid },
                   unit: "default",
+                  stockable: this.isItemStockable,
                 };
                 this.billableItemService
                   .createBillableItem(billableItem)
@@ -531,7 +533,7 @@ export class SharedConceptCreateComponent implements OnInit {
                       this.alertType = "success";
                       this.savingMessage =
                         "Successfully created " + conceptName;
-                        this.trackActionForAnalytics(`Non Drugs: Save`);
+                      this.trackActionForAnalytics(`Non Drugs: Save`);
 
                       setTimeout(() => {
                         this.savingMessage = null;
@@ -554,10 +556,13 @@ export class SharedConceptCreateComponent implements OnInit {
         }
       });
   }
- 
+
   trackActionForAnalytics(eventname: any) {
     // Send data to Google Analytics
-   this.googleAnalyticsService.sendAnalytics('Pharmacy',eventname,'Pharmacy')
+    this.googleAnalyticsService.sendAnalytics(
+      "Pharmacy",
+      eventname,
+      "Pharmacy"
+    );
   }
-
 }

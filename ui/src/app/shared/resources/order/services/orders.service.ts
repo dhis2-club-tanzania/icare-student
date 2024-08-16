@@ -174,6 +174,24 @@ export class OrdersService {
     );
   }
 
+  createNonDrugOrderWithDispensing(payload: any): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`icare/nondrugorderwithdispensing`, payload)
+      .pipe(
+        map((order) => order),
+        catchError((error) => of(error))
+      );
+  }
+
+  createBillAndDispenseNonDrugOrder(payload: any): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`icare/nondrugorderbillanddispensing`, payload)
+      .pipe(
+        map((order) => order),
+        catchError((error) => of(error))
+      );
+  }
+
   getOrdersFrequencies() {
     return from(
       this.API.orderfrequency.getAllOrderFrequencies({ v: "full" })
@@ -206,6 +224,21 @@ export class OrdersService {
             };
           })
         ),
+        catchError((error) => of(error))
+      );
+  }
+
+  deductStockAfterSellingOrderedGeneralOrderItem(
+    orderDetails: any
+  ): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`store/generalOrder/${orderDetails?.uuid}/sell`, {
+        location: orderDetails?.location,
+        conceptUuid: orderDetails?.concept?.uuid,
+        quantity: Number(orderDetails?.quantity),
+      })
+      .pipe(
+        map((response) => response),
         catchError((error) => of(error))
       );
   }

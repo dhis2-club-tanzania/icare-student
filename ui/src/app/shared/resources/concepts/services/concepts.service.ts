@@ -15,7 +15,6 @@ import { flatten, omit } from "lodash";
   providedIn: "root",
 })
 export class ConceptsService {
-  
   constructor(private api: Api, private httpClient: OpenmrsHttpClientService) {}
 
   getConceptDetails(name: string, fields: string): Observable<any> {
@@ -564,6 +563,30 @@ export class ConceptsService {
     ).pipe(
       map((data) => {
         return data;
+      }),
+      catchError((error) => {
+        return of(error);
+      })
+    );
+  }
+
+  getConceptsWithItemsDetails(parameters?: any): Observable<any> {
+    return this.httpClient
+      .get(`icare/conceptswithitems?${parameters ? parameters.join("&") : ""}`)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error) => {
+          return of(error);
+        })
+      );
+  }
+
+  updateItemStockableStatus(payload): Observable<any> {
+    return this.httpClient.put(`icare/item`, payload).pipe(
+      map((response) => {
+        return response;
       }),
       catchError((error) => {
         return of(error);

@@ -572,6 +572,53 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
+	public OrderStatus dispenseNonDrug(Order order, Double quantity, String locationUuid, String remarks) {
+		OrderService orderService = Context.getOrderService();
+		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(order.getUuid());
+		for (OrderStatus orderStatus : orderStatuses) {
+			if (orderStatus.getStatus() == OrderStatus.OrderStatusCode.DISPENSED) {
+				throw new OrderEntryException("Order is already dispensed");
+			}
+		}
+		ICareService iCareService = Context.getService(ICareService.class);
+		Item item = iCareService.getItemByConceptUuid(order.getConcept().getUuid());
+		
+		List<Stock> stockList = this.getStockByItemAndLocation(item.getUuid(), locationUuid);
+		AdministrationService administrationService = Context.getAdministrationService();
+		String stockEnabled = administrationService.getGlobalProperty(ICareConfig.STOCK_ENABLE);
+		if (!(stockEnabled != null && stockEnabled.equals("false"))) {
+			Double totalQuantity = new Double(quantity);
+			for (Stock stock : stockList) {
+				if (totalQuantity == 0.0) {
+					break;
+				}
+				Double quantityToDeduct;
+				if (totalQuantity > stock.getQuantity()) {
+					quantityToDeduct = stock.getQuantity();
+				} else {
+					quantityToDeduct = totalQuantity;
+				}
+				StockableItem stockableItem = new StockableItem();
+				stockableItem.setBatch(stock.getBatch());
+				stockableItem.setExpiryDate(stock.getExpiryDate());
+				stockableItem.setItem(item);
+				stockableItem.setLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setSourceLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setQuantity(quantityToDeduct);
+				stockableItem.setOrder(order);
+				TransactionUtil.deductStock(stockableItem);
+				totalQuantity -= quantityToDeduct;
+			}
+		}
+		
+		OrderStatus orderStatus = new OrderStatus();
+		orderStatus.setOrder(order);
+		orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
+		orderStatus.setRemarks(remarks);
+		return this.stockDAO.saveOrderStatus(orderStatus);
+	}
+	
+	@Override
 	public OrderStatus setDrugOrderStatus(String drugUuid, String status, String remarks) {
 		OrderService orderService = Context.getOrderService();
 		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(drugUuid);

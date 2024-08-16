@@ -160,7 +160,8 @@ public class VisitDiagnosisAdvisor extends StaticMethodMatcherPointcutAdvisor im
 										dataSection.put("reportDetails", reportDetails);
 										dataSection.put("facilityDetails", facilityDetails);
 										dataSection.put("listGrid", listGrid);
-										templateDetails.put("data", dataSection);
+										dataTemplateData.put("templateDetails", templateDetails);
+										dataTemplateData.put("data",dataSection);
 
 										String mediatorMappingReferenceKey = mediator.getString("mediatorMappingReferenceKey");
 										String mediatorKey = mediator.getString("mediatorKey");
@@ -173,11 +174,11 @@ public class VisitDiagnosisAdvisor extends StaticMethodMatcherPointcutAdvisor im
 											Map<String, Object> data = eidsrWrapper.formatData(mappings,capturedEventData);
 
 											if (new JSONObject(templateDetails).toString() != null) {
-												String response = iCareService.pushDataToExternalMediator(new JSONObject(templateDetails).toString(),mediatorKey,mediatorUrlPath,authenticationType);
-												GlobalProperty globalProperty2 = new GlobalProperty();
-												globalProperty2.setProperty("HDUAPI.test.response");
-												globalProperty2.setPropertyValue(response);
-												adminService.saveGlobalProperty(globalProperty2);
+												String response = iCareService.pushDataToExternalMediator(new JSONObject(dataTemplateData).toString(),mediatorKey,mediatorUrlPath,authenticationType);
+//												GlobalProperty globalProperty2 = new GlobalProperty();
+//												globalProperty2.setProperty("HDUAPI.test.response");
+//												globalProperty2.setPropertyValue(response);
+//												adminService.saveGlobalProperty(globalProperty2);
 											}
 										}
 									} else if (mediator.has("mediatorKey") && mediator.getString("mediatorKey").equals("dhis2")) {

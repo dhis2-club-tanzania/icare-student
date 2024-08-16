@@ -827,7 +827,6 @@ public class StoreControllerAPITest extends BaseResourceControllerTest {
 		assertThat("stock invoice has been updated", updatedInvoice.get("invoiceNumber").equals("StInvoice3"));
 		
 		Map<String, Object> invoiceItemMap = (Map) (((List) stockInvoiceMap.get("invoiceItems")).get(0));
-		System.out.println(((Map) invoiceItemMap.get("location")).get("uuid"));
 		
 		//updating stock invoice status
 		MockHttpServletRequest newGetRequest = newGetRequest("store/stock", new Parameter("locationUuid",

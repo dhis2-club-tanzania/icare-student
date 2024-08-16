@@ -1,9 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
 import { Observable, of } from "rxjs";
 import { delay, map, switchMap } from "rxjs/operators";
 import { ConceptsService } from "src/app/shared/resources/concepts/services/concepts.service";
 import { SupplierService } from "../../resources/store/services/supplier.service";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { StockInvoiceItemsComponent } from "../stock-invoice-items/stock-invoice-items.component";
 
 @Component({
   selector: "app-stock-receiving-form",
@@ -14,14 +22,17 @@ export class StockReceivingFormComponent implements OnInit {
   @Input() existingStockInvoice: any;
   @Input() stockInvoiceItem: any;
   @Input() currentLocation: any;
+  @Input() hideAddedItems: boolean;
   @Output() closeDialog: EventEmitter<any> = new EventEmitter();
 
   suppliers$: Observable<any>;
   unitsOfMeasurementsDetails$: Observable<any>;
-  stockInvoice: any;
+  stockInvoice: Observable<any>;
   loadingInvoice: boolean = false;
   updateStockInvoice: boolean = false;
   errors: any[] = [];
+  @ViewChild(StockInvoiceItemsComponent)
+  stockInvoiceItemsComponent: StockInvoiceItemsComponent;
   constructor(
     private conceptService: ConceptsService,
     private supplierService: SupplierService,
@@ -66,20 +77,19 @@ export class StockReceivingFormComponent implements OnInit {
       );
 
     this.updateStockInvoice = this.existingStockInvoice ? true : false;
-    this.stockInvoice = this.existingStockInvoice;
+    this.stockInvoice = this.existingStockInvoice
+      ? this.existingStockInvoice
+      : null;
   }
 
   loadInvoices(invoice) {
-    this.loadingInvoice = true;
-    this.stockInvoice = undefined;
-
-    this.stockInvoice = this.existingStockInvoice || invoice;
-    this.loadingInvoice = false;
-
-    setTimeout(() => {
-      this.stockInvoice = this.existingStockInvoice || invoice;
-      this.loadingInvoice = false;
-    }, 200);
+    // this.loadingInvoice = true;
+    this.stockInvoice = invoice;
+    this.stockInvoiceItemsComponent.loadStockInvoiceByUuid(invoice?.uuid);
+    // setTimeout(() => {
+    //   this.stockInvoice$ = of(this.existingStockInvoice || invoice);
+    //   this.loadingInvoice = false;
+    // }, 20);
   }
 
   onCloseDialog() {

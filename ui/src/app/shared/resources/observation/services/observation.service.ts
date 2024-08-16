@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { from, Observable, of, zip } from "rxjs";
-import { catchError, map, tap } from "rxjs/operators";
+import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
 import { Api, ObsCreate, ObsGetFull, ObsUpdate } from "../../openmrs";
 import { Observation } from "../models/observation.model";
@@ -46,16 +46,23 @@ export class ObservationService {
       ? `encounter/${data.encounterUuid}`
       : "encounter";
 
-    return this.httpClient.post(endpoint, data?.encounterUuid ? {
-      obs: data["obs"],
-      } : data).pipe(
-      tap((response) => {
-        return response;
-      }),
-      catchError((error) => {
-        throw error;
-      })
-    );
+    return this.httpClient
+      .post(
+        endpoint,
+        data?.encounterUuid
+          ? {
+              obs: data["obs"],
+            }
+          : data
+      )
+      .pipe(
+        tap((response) => {
+          return response;
+        }),
+        catchError((error) => {
+          throw error;
+        })
+      );
   }
 
   // saveObservationsViaEncounter(data): Observable<any> {
@@ -91,6 +98,35 @@ export class ObservationService {
       map((response) => response),
       catchError((error) => of(error))
     );
+  }
+
+  saveEncounterWithObsAndOrdersDetails(
+    data,
+    shouldReturnOrderPayloadWithConcept?: boolean
+  ): Observable<any> {
+    return !shouldReturnOrderPayloadWithConcept
+      ? this.httpClient.post("encounter", omit(data, "fileObs")).pipe(
+          map((response) => response),
+          catchError((error) => of(error))
+        )
+      : this.httpClient.post("encounter", omit(data, "fileObs")).pipe(
+          switchMap((response: any) =>
+            zip(
+              ...response?.orders.map((order: any) =>
+                this.httpClient.get(
+                  `orders/${order?.uuid}?v=custom:(uuid,display,concept:(uuid,display))`
+                )
+              )
+            ).pipe(
+              map((orders: any[]) => {
+                return {
+                  ...response,
+                  orders,
+                };
+              })
+            )
+          )
+        );
   }
 
   saveObsDetailsForFiles(data): Observable<any> {

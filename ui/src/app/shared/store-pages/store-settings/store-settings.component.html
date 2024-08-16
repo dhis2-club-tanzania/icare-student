@@ -31,11 +31,15 @@
                 [showCodesSection]="false"
                 [itemTypeName]="'Non-drug'"
                 [saveOnTheComponent]="true"
+                [isItemStockable]="
+                  params?.platformProductConfigs?.isPharmacy ? true : false
+                "
               ></app-shared-concept-create>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12">
               <div class="h6">List of non-drugs</div>
               <app-standard-concepts-list
+                [stockable]="true"
                 [conceptClass]="'Non Drug'"
               ></app-standard-concepts-list>
             </div>

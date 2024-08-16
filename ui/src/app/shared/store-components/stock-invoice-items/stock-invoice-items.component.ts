@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { SharedConfirmationComponent } from "src/app/shared/components/shared-confirmation/shared-confirmation.component";
 import { toISOStringFormat } from "src/app/shared/helpers/format-date.helper";
@@ -30,9 +30,25 @@ export class StockInvoiceItemsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.specificStockInvoice$ = this.stockInvoice
+      ? this.stockInvoicesService.getStockInvoice(this.stockInvoice?.uuid).pipe(
+          map((response) => {
+            this.loadingInvoice = false;
+            return {
+              ...response,
+              InvoiceItems: response?.InvoiceItems?.filter(
+                (item) => !item?.voided
+              ),
+            };
+          })
+        )
+      : of({});
+  }
+
+  loadStockInvoiceByUuid(uuid: string): void {
     this.loadingInvoice = true;
     this.specificStockInvoice$ = this.stockInvoicesService
-      .getStockInvoice(this.stockInvoice?.uuid)
+      .getStockInvoice(uuid)
       .pipe(
         map((response) => {
           this.loadingInvoice = false;

@@ -1,6 +1,7 @@
 package org.openmrs.module.icare.store.services;
 
 import org.openmrs.Location;
+import org.openmrs.Order;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.core.ListResult;
@@ -106,6 +107,8 @@ public interface StoreService extends OpenmrsService {
 	List<Stock> getDrugStockMetrics(String drugUuid);
 	
 	OrderStatus dispense(String drugOrderUuid, String locationUuid, String remarks);
+	
+	OrderStatus dispenseNonDrug(Order order, Double quantity, String locationUuid, String remarks);
 	
 	List<OrderStatus> getOrderStatus(String visitUuid);
 	
