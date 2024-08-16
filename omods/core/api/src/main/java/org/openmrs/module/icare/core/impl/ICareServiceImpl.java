@@ -29,6 +29,7 @@ import org.openmrs.module.icare.core.dao.*;
 import org.openmrs.module.icare.core.models.EncounterPatientProgram;
 import org.openmrs.module.icare.core.models.EncounterPatientState;
 import org.openmrs.module.icare.core.models.PasswordHistory;
+import org.openmrs.module.icare.core.utils.OutgoingSMS;
 import org.openmrs.module.icare.core.utils.PatientWrapper;
 import org.openmrs.module.icare.core.utils.VisitWrapper;
 import org.openmrs.module.icare.report.dhis2.DHIS2Config;
@@ -1111,7 +1112,9 @@ public class ICareServiceImpl extends BaseOpenmrsService implements ICareService
 		// Check if user is authenticated first
 		User user = Context.getAuthenticatedUser();
 		if (user != null) {
-			this.auditLogDAO.save(auditLog);
+			System.out.print(this.auditLogDAO);
+			System.out.print(auditLog);
+			//this.auditLogDAO.save(auditLog);
 		}
 	}
 	
@@ -1219,5 +1222,66 @@ public class ICareServiceImpl extends BaseOpenmrsService implements ICareService
 			e.printStackTrace();
 			return e.toString();
 		}
+	}
+	
+	// Envaya SMS Implementation
+	@Override
+	public void processIncomingMessage(String from, String messageContent, String messageType) {
+		dao.save(from, messageContent, messageType);
+	}
+	
+	@Override
+    public Map<String, Object> handleOutgoingsms() {
+    List<OutgoingSMS> outgoingSMSlist = dao.findByStatus("queued");
+
+    Map<String, Object> response = new HashMap<>();
+    List<Map<String, Object>> messagesList = new ArrayList<>();
+    Map<String, Object> eventMap = new HashMap<>();
+
+    for (OutgoingSMS outgoingSMS : outgoingSMSlist) {
+        Map<String, Object> messageObject = new HashMap<>();
+        messageObject.put("id", String.valueOf(outgoingSMS.getId()));
+        messageObject.put("to", outgoingSMS.getRecipient());
+        messageObject.put("message", outgoingSMS.getMessage());
+
+        messagesList.add(messageObject);
+
+        outgoingSMS.setStatus(ICareConfig.STATUS_SENT);
+        dao.updateStatusOutgoingSMS(outgoingSMS);
+    }
+
+    eventMap.put("messages", messagesList);
+    eventMap.put("event", "send");
+
+    List<Map<String, Object>> events = new ArrayList<>();
+    events.add(eventMap);
+    response.put("events", events);
+
+    return response;
+}
+	
+	@Override
+	public Map<String, Object> error() {
+		Map<String, Object> errorMap = new HashMap<>();
+
+		Map<String, Object> errorObject = new HashMap<>();
+		errorObject.put("message", "unsupported action!");
+
+		errorMap.put("Error", errorObject);
+		return errorMap;
+	}
+	
+	@Override
+	public String insertOutgoingMessages(String recipient, String message) {
+		//AdministrationService administrationService = Context.getAdministrationService();
+		
+		OutgoingSMS outgoingSMS = new OutgoingSMS();
+		outgoingSMS.setRecipient(recipient);
+		outgoingSMS.setMessage(message);
+		//outgoingSMS.setStatus(administrationService.getGlobalProperty(ICareConfig.STATUS_QUEUED));
+		outgoingSMS.setStatus(ICareConfig.STATUS_QUEUED);
+		dao.saveOutgoingMessage(outgoingSMS);
+		
+		return "Saved successfully";
 	}
 }

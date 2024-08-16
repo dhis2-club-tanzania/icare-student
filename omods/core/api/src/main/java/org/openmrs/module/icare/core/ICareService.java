@@ -201,4 +201,15 @@ public interface ICareService extends OpenmrsService {
 	String pushEventWithoutRegistrationDataToDHIS2Instance(String eventData);
 	
 	String pushDataToExternalMediator(String data, String mediatorKey, String mediatorUrl, String authenticationType);
+	
+	//EnvayaSMS methods declarations
+	void processIncomingMessage(String from, String messageContent, String messageType);
+	
+	public Map<String, Object> error();
+	
+	String insertOutgoingMessages(String recipient, String message);
+	
+	Map<String, Object> handleOutgoingsms();
+	
+	// EnvayaSMS methods declaration ends
 }

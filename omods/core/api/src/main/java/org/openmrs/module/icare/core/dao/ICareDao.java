@@ -17,6 +17,7 @@ import org.openmrs.*;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.DbSession;
+import org.openmrs.module.icare.ICareConfig;
 import org.openmrs.module.icare.auditlog.AuditLog;
 import org.openmrs.module.icare.billing.models.ItemPrice;
 import org.openmrs.module.icare.billing.models.Prescription;
@@ -24,15 +25,17 @@ import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.core.ListResult;
 import org.openmrs.module.icare.core.Pager;
 import org.openmrs.module.icare.core.Summary;
+import org.openmrs.module.icare.core.utils.IncomingSMS;
+import org.openmrs.module.icare.core.utils.OutgoingSMS;
 import org.openmrs.module.icare.core.utils.PatientWrapper;
 import org.openmrs.module.icare.core.utils.VisitWrapper;
 import org.openmrs.module.icare.store.models.OrderStatus;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.transaction.Transaction;
 
 public class ICareDao extends BaseDAO<Item> {
 	
@@ -215,8 +218,7 @@ public class ICareDao extends BaseDAO<Item> {
 		}
 		
 		if (search != null) {
-			queryStr = "SELECT ip FROM Item ip "
-			        + "LEFT JOIN ip.concept as c WITH c.retired = false "
+			queryStr = "SELECT ip FROM Item ip " + "LEFT JOIN ip.concept as c WITH c.retired = false "
 			        + "LEFT JOIN c.names cn WITH cn.conceptNameType = 'FULLY_SPECIFIED' "
 			        + "LEFT JOIN ip.drug as d WITH d.retired=false "
 			        + "WHERE ip.stockable = true AND lower(cn.name) like :search  OR lower(d.name) like :search";
@@ -958,6 +960,43 @@ public class ICareDao extends BaseDAO<Item> {
 		return query.list();
 		
 	}
+	
+	//EnvayaSMS database interactions
+	//insert outgoing messages to outgoing message table to sent later
+	public void saveOutgoingMessage(OutgoingSMS outgoingSMS) {
+		getSession().save(outgoingSMS);
+	}
+	
+	//save incoming messages to the incoming message table
+	public void save(String from, String messageContent, String messageType) {
+		IncomingSMS incomingSMS = new IncomingSMS(from, messageContent, messageType);
+		getSession().save(incomingSMS);
+	}
+	
+	// pull outgoing messsages from outgoing message table
+	public List<OutgoingSMS> findByStatus(String status) {
+		DbSession session = getSession();
+		String queryStr = "SELECT os FROM OutgoingSMS os WHERE os.status = :status";
+		Query query = session.createQuery(queryStr);
+		query.setParameter("status", status);
+		System.out.println("Executing query: " + queryStr + " with status: " + status);
+		
+		List<OutgoingSMS> results = query.list();
+		System.out.println("Number of messages found: " + results.size());
+		
+		return results;
+	}
+	
+	//Set status of the pulled message to SENT status
+	public void updateStatusOutgoingSMS(OutgoingSMS outgoingSMS) {
+		String recipient = outgoingSMS.getRecipient();
+		String message = outgoingSMS.getMessage();
+		String status = ICareConfig.STATUS_SENT;/*outgoingSMS.getStatus();*/
+		OutgoingSMS pulledOutgoingSMS = new OutgoingSMS(recipient, message, status);
+		getSession().save(pulledOutgoingSMS);
+	}
+	
+	//Ends of EnvayaSMS interactions
 	
 	//	public String voidOrder(String uuid, String voidReason) {
 	//		DbSession session = getSession();

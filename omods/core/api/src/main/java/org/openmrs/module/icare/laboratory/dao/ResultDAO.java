@@ -56,4 +56,9 @@ public class ResultDAO extends BaseDAO<Result> {
 		return query.list();
 	}
 	
+	public Result update(Result result) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'update'");
+	}
+	
 }

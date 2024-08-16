@@ -162,4 +162,67 @@ public class ICareConfig {
 	
 	public static final String CLIENT_PRIVATE_KEY = "MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAOKJJaeHkWryn6D0A/xrcNLOD9fj5Hn2zJKAJOT+6pEZTaTY/aeiQmqLLr6/s9xfj5oa+TsbmnCEeoiJ63/LdkMqaYEjLgC/TacFsxK7nOLQ7CZeFpEYKG2zZv0ppSTUcEL72a8Ia3+PmuOm7CsuVWGHP/IzoWNRs+bCoNTPdanPAgMBAAECgYEAhWagDuytfJ5N1Fl982pNsUX5XHfuNshYJbligJuBBFszNu01Sj8p/1Xg/CElyJNZnDVgKSeTJclN4xPc44+sHru7JbFUIZYzeXPI3nJzw/KlFDiB3UKJWj9mjF89G9IEgOhqzEfuRvyKtyouwKqlmMvY+XT5z9uphKnGUf9IEUECQQDy066RTEkzZt1en0tM07ZUlvuznfKT7nx+KGHkxxPW1+lkwtKge5jFNvIzYy6H9P8SzFI8iYLU4weoNPs65/hhAkEA7tM3whLxhrUL83brUSIp8UBkWG37G8Rrxgt4wdly/ZRnVA4KZz5ZCZ8KmwYbEVSdN3JL0mBCyKAuQ226ifkQLwJAT534bsuEdMYVbyDrn5ULA1E91fbDwp0/VF4JOunLJ3ZDoDYAuX3M6VzKrO6oIwvBVniHvjGYJBUMPaqhdP76AQJBALPKTKqMykjH2QRjHQnKN1sIR8KOoUCpIR1Jm5ILmlauNw9/NnO86xikIz7LXOsyEN0h7VSl5QDWHZ3jaE/gMT8CQQCFq2VBx7yHNeORrVK4BgArsWxajssplqM0s1zhZO4SM0WZZqRdhdXgedWv7OsO57kP1KlYrkz8atqRo2OwWQSj";
 	
+	//EnvayaSMS Constant values starts
+	
+	//ACTIONS
+	public static final String ACTION_INCOMING = "incoming";
+	
+	public static final String ACTION_OUTGOING = "outgoing";
+	
+	public static final String ACTION_FORWARD_SENT = "forward sent";
+	
+	public static final String ACTION_SEND_STATUS = "send status";
+	
+	public static final String ACTION_DEVICE_STATUS = "device status";
+	
+	public static final String ACTION_TEST = "test";
+	
+	public static final String ACTION_AMQP_STARTED = "amqp started";
+	
+	//STATUSES
+	public static final String STATUS_QUEUED = "queued";
+	
+	public static final String STATUS_FAILED = "failed";
+	
+	public static final String STATUS_SENT = "sent";
+	
+	public static final String STATUS_CANCELLED = "cancelled";
+	
+	//EVENTS
+	public static final String EVENT_SEND = "send";
+	
+	public static final String EVENT_CANCEL = "cancel";
+	
+	public static final String EVENT_CANCEL_ALL = "all";
+	
+	public static final String EVENT_LOG = "log";
+	
+	public static final String EVENT_SETTINGS = "settings";
+	
+	//DEVICE
+	public static final String DEVICE_STATUS_POWER_CONNECTED = "power connected";
+	
+	public static final String DEVICE_STATUS_POWER_DISCONNECTED = "power disconnected";
+	
+	public static final String DEVICE_STATUS_BATTERY_LOW = "battery low";
+	
+	public static final String DEVICE_STATUS_BATTERY_OKAY = "battery okay";
+	
+	public static final String DEVICE_STATUS_SEND_LIMIT_EXCEED = "send limit exceed";
+	
+	//TYPE OF MESSAGE
+	public static final String MESSAGE_TYPE_SMS = "sms";
+	
+	public static final String MESSAGE_TYPE_MMS = "mms";
+	
+	public static final String MESSAGE_TYPE_CALL = "call";
+	
+	//POWER SOURCE
+	public static final int POWER_SOURCE_BATTERY = 0;
+	
+	public static final int POWER_SOURCE_AC = 1;
+	
+	public static final int POWER_SOURCE_USB = 2;
+	
+	//EnvayaSMS constant values ends
 }

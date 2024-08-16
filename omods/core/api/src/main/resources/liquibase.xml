@@ -5479,4 +5479,39 @@
     </changeSet>
 
 
+    <!--EnvayaSMS Database Structure-->
+    <changeSet id="create_outgoing_sms" author="muddy-ramadhan" dbms="mysql">
+      <preConditions onFail="MARK_RAN">
+        <not>
+          <tableExists tableName="outgoing_sms"/>
+        </not>
+      </preConditions>
+      <comment>Creating openmrs outgoing_sms table for --EnvayaSMS</comment>
+      <createTable tableName="outgoing_sms">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="id_pk"/>
+            </column>
+            <column name="recipient" type="TEXT"/>
+            <column name="message" type="TEXT"/>
+            <column name="status" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_incoming_sms" author="muddy-ramadhan" dbms="mysql">
+      <preConditions onFail="MARK_RAN">
+        <not>
+          <tableExists tableName="incoming_sms"/>
+        </not>
+      </preConditions>
+      <comment>Creating openmrs incoming_sms table for --EnvayaSMS</comment>
+      <createTable tableName="incoming_sms">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="id_pk"/>
+            </column>
+            <column name="sender" type="TEXT"/>
+            <column name="message_content" type="TEXT"/>
+            <column name="message_type" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
