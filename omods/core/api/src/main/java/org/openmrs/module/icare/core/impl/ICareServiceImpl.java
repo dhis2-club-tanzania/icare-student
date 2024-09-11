@@ -1296,6 +1296,7 @@ public class ICareServiceImpl extends BaseOpenmrsService implements ICareService
 		
 		return "Saved successfully";
 	}
+	
 	public Map<String, Object> generateVisitsData(Date startDate, Date endDate, Boolean sendToExternalMediator) throws Exception {
 		// TODO: Implement for all HDU API template blocks and respective parameters
 		Map<String, Object> response = new HashMap<>();

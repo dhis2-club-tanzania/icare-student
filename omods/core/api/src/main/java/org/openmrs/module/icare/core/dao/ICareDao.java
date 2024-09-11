@@ -1128,11 +1128,7 @@ public class ICareDao extends BaseDAO<Item> {
 	
 	//Set status of the pulled message to SENT status
 	public void updateStatusOutgoingSMS(OutgoingSMS outgoingSMS) {
-		String recipient = outgoingSMS.getRecipient();
-		String message = outgoingSMS.getMessage();
-		String status = ICareConfig.STATUS_SENT;/*outgoingSMS.getStatus();*/
-		OutgoingSMS pulledOutgoingSMS = new OutgoingSMS(recipient, message, status);
-		getSession().save(pulledOutgoingSMS);
+		getSession().save(outgoingSMS);
 	}
 	
 	//Ends of EnvayaSMS interactions
