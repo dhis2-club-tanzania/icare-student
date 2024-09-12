@@ -58,7 +58,7 @@ export class LocationsEffects {
         concatMap((action) =>
           of(action).pipe(
             withLatestFrom(
-              this.store.pipe(select(getCurrentLocation)),
+              this.store.pipe(select(getCurrentLocation(false))),
               this.store.pipe(select(getUrl))
             )
           )

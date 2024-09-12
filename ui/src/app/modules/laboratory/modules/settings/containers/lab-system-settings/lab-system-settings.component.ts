@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 
 @Component({
@@ -9,12 +10,24 @@ import { SystemSettingsService } from "src/app/core/services/system-settings.ser
 })
 export class LabSystemSettingsComponent implements OnInit {
   systemSettingsGroups$: Observable<any[]>;
+  @Input() currentUser: any;
   constructor(private systemSettingsService: SystemSettingsService) {}
 
   ngOnInit(): void {
-    this.systemSettingsGroups$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.general.systemSettings.groups"
+    this.systemSettingsGroups$ = this.systemSettingsService
+      .getSystemSettingsByKey("iCare.general.systemSettings.groups")
+      .pipe(
+        map((response: any) => {
+          return this.currentUser?.userPrivileges["ALL"]
+            ? response
+            : response?.filter((group: any) =>
+                group?.privileges?.every((privName) => {
+                  const returnedPrivilege =
+                    this.currentUser?.userPrivileges[privName];
+                  return returnedPrivilege ? true : false;
+                })
+              );
+        })
       );
   }
 }

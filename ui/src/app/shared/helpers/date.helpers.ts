@@ -41,7 +41,7 @@ export function getDateDifferenceYearsMonthsDays(d1, d2) {
   };
 }
 
-export function getAgeInYearsMontthsDays(birthdate) {
+export function getAgeInYearsMonthsDays(birthdate) {
   var DOB = new Date(birthdate);
   var today = new Date();
   var age = today.getTime() - DOB.getTime();
@@ -63,14 +63,12 @@ export function compateTwoDates(date1: Date, date2: Date) {
   let day1 = date1.getDate();
   let hours1 = date1.getHours() === 24 ? 0 : date1.getHours();
   let minutes1 = date1.getMinutes();
-  
 
   let year2 = date2.getFullYear();
   let month2 = date2.getMonth();
   let day2 = date2.getDate();
   let hours2 = date2.getHours() === 24 ? 0 : date2.getHours();
   let minutes2 = date2.getMinutes();
-
 
   let date1IsGreater: boolean;
   let date2IsGreater: boolean;

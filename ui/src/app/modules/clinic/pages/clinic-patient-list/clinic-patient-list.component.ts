@@ -4,6 +4,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { PatientHistoryDialogComponent } from "src/app/shared/dialogs/patient-history-dialog/patient-history-dialog.component";
 import { go } from "src/app/store/actions";
 import { AppState } from "src/app/store/reducers";
@@ -32,11 +33,12 @@ export class ClinicPatientListComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private systemSettingsService: SystemSettingsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   ngOnInit() {
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
     this.settingCurrentLocationStatus$ = this.store.select(
       getSettingCurrentLocationStatus
     );
@@ -73,10 +75,32 @@ export class ClinicPatientListComponent implements OnInit {
         go({ path: [`/clinic/patient-dashboard/${patient?.patient?.uuid}`] })
       );
     }, 200);
+    this.trackActionForAnalytics(`Patients Search: View`);
+  }
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+    this.googleAnalyticsService.sendAnalytics("Clinic", eventname, "Clinic");
   }
 
   changeTab(index) {
     this.selectedTab.setValue(index);
+    index == 0
+      ? this.trackActionForAnalytics(`Awaiting Consultation : Open`)
+      : index == 1
+      ? this.trackActionForAnalytics(`Attended: Open`)
+      : index == 2
+      ? this.trackActionForAnalytics(`With Laboratory Tests: Open`)
+      : index == 3
+      ? this.trackActionForAnalytics(`With Radiology Orders: Open`)
+      : index == 4
+      ? this.trackActionForAnalytics(`With Medications: Open`)
+      : index == 5
+      ? this.trackActionForAnalytics(`Admitted Patients:Open`)
+      : index == 6
+      ? this.trackActionForAnalytics(`All Patients: Open`)
+      : index == 7
+      ? this.trackActionForAnalytics(`Every Patients History: Open`)
+      : null;
   }
 
   onBack(e: Event) {

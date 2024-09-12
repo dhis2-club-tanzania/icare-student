@@ -15,7 +15,7 @@ export class LocationElementComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log(this.nodeData);
+    // console.log(this.nodeData);
     this.treeControl = new NestedTreeControl<any>((node) => node.children);
     this.dataSource = new ArrayDataSource(this.nodeData);
   }
@@ -25,7 +25,7 @@ export class LocationElementComponent implements OnInit {
 
   expandTheNode(event: Event, node: any): void {
     event.stopPropagation();
-    console.log(node);
+    // console.log(node);
     this.currentNodeData = node?.children;
   }
 }

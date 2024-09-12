@@ -119,8 +119,6 @@ export class ObservationEffects {
                 type: "SUCCESS",
               })
             );
-
-            console.log("observationResults", observationResults);
             return [
               data?.fileObs && data?.fileObs?.length > 0
                 ? saveObservationsForFiles({
@@ -163,8 +161,6 @@ export class ObservationEffects {
             status: "PRELIMINARY",
           };
         });
-
-        console.log("obsData", obsData);
         return this.observationService.saveObsDetailsForFiles(obsData).pipe(
           switchMap((observationResults: any) => {
             this.notificationService.show(

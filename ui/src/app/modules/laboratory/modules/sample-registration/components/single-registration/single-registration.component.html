@@ -10,36 +10,19 @@
     <div class="col-12">
       <mat-radio-group class="registration-category">
         <mat-radio-button
-          (change)="getSelection($event)"
-          class="registration-category-btn"
-          [value]="'CLINICAL'"
-          [checked]="registrationCategory === 'CLINICAL'"
-          color="primary"
-        >
-          Clinical
-        </mat-radio-button>
-        <mat-radio-button
+          *ngFor="let regCategoryItem of sampleRegistrationCategories"
           (change)="getSelection($event)"
           class="registration-category-btn ml-2"
-          [value]="'NON_CLINICAL'"
-          [checked]="registrationCategory === 'NON_CLINICAL'"
+          [value]="regCategoryItem"
+          [checked]="registrationCategory?.refKey === regCategoryItem?.refKey"
           color="primary"
         >
-          Non-Clinical
-        </mat-radio-button>
-        <mat-radio-button
-          (change)="getSelection($event)"
-          class="registration-category-btn ml-2"
-          [value]="'EQA'"
-          [checked]="registrationCategory === 'EQA'"
-          color="primary"
-        >
-          EQA
+          {{ regCategoryItem?.display }}
         </mat-radio-button>
       </mat-radio-group>
     </div>
 
-    <div class="col-12" *ngIf="registrationCategory === 'CLINICAL'">
+    <div class="col-12" *ngIf="registrationCategory?.refKey !== 'non-clinical'">
       <fieldset>
         <legend
           (click)="togglePatientDetailsFieldSet($event)"
@@ -60,175 +43,54 @@
           [referFromFacilityVisitAttribute]="referFromFacilityVisitAttribute"
           [allRegistrationFields]="allRegistrationFields"
           [maximumDate]="maximumDate"
+          [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+          [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
+          [labTestRequestProgramStageId]="labTestRequestProgramStageId"
           (personDetails)="onGetPersonDetails($event)"
           (fromExternalSystem)="onGetIsDataFromExternalSystem($event)"
           (selectedSystem)="onGetSelectedSystem($event)"
         ></app-person-details>
       </fieldset>
     </div>
+
+    <ng-template
+      *ngIf="registrationCategory?.refKey !== 'non-clinical'"
+      matStepLabel
+      >Clinical Data</ng-template
+    >
+    <div
+      class="col-12"
+      *ngIf="
+        registrationCategory?.refKey !== 'non-clinical' && !fromExternalSystem
+      "
+    >
+      <div class="clinical-data">
+        <fieldset>
+          <legend (click)="toggleFieldSet('clinicalData')" class="d-flex">
+            <span> Clinical Data </span>
+            <span>
+              <mat-icon *ngIf="!clinicalData">keyboard_arrow_down</mat-icon>
+              <mat-icon *ngIf="clinicalData">keyboard_arrow_up</mat-icon>
+            </span>
+          </legend>
+          <ng-container *ngIf="allRegistrationFields.clinicalFormFields">
+            <app-clinical-data
+              [clinicalFields]="allRegistrationFields.clinicalFormFields"
+              (clinicalDataValues)="onGetClinicalDataValues($event)"
+            ></app-clinical-data>
+          </ng-container>
+        </fieldset>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="renderGenericForms">
+      <app-dynamic-openmrs-registration-dashboard
+        [registrationCategory]="registrationCategory"
+        (formDataUpdate)="onCustomFormUpdate($event)"
+        (formId)="onGetFormId($event)"
+      ></app-dynamic-openmrs-registration-dashboard>
+    </div>
     <div class="col-12">
-      <!-- ===================================================== Commented Mat Stepper ============================================================================= -->
-      <!-- <mat-stepper #stepper>
-        <mat-step errorMessage="Some fields not fed.">
-          <ng-template matStepLabel>Sample Information</ng-template>
-          <div class="row">
-            <div class="col-lg-12 col-md-12 col-sx-12 col-sm-12">
-              <div class="for-specimen-details">
-                <fieldset>
-                  <legend>Sample Information</legend> -->
-      <!-- <app-sample-label
-                    [label]="params?.labSampleLabel"
-                    (sampleLabel)="onGetSampleLabel($event)"
-                  ></app-sample-label> -->
-      <!-- <app-form
-                    [fields]="specimenDetailsFields"
-                    [isFormHorizontal]="true"
-                    (formUpdate)="onFormUpdate($event, 'specimenDetails')"
-                  ></app-form>
-
-                  <div class="row">
-                    <div class="col-4">
-                      <app-form
-                        [fields]="[sampleCollectedByField]"
-                        (formUpdate)="onFormUpdate($event)"
-                      ></app-form>
-                    </div>
-                    <div class="col-4">
-                      <app-form
-                        [fields]="[sampleColectionDateField]"
-                        (formUpdate)="onFormUpdate($event)"
-                      ></app-form>
-                    </div>
-                    <div class="col-4">
-                      <input
-                        (change)="getSelectedRCollectedOnTime($event)"
-                        class="time-input-field"
-                        placeholder="Collected At"
-                        type="time"
-                      />
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-4">
-                      <app-form
-                        [fields]="[receivedByField]"
-                        (formUpdate)="onFormUpdate($event)"
-                      ></app-form>
-                    </div>
-                    <div class="col-4">
-                      <app-form
-                        [fields]="[receivedOnField]"
-                        (formUpdate)="onFormUpdate($event)"
-                      ></app-form>
-                    </div>
-                    <div class="col-4">
-                      <input
-                        (change)="getSelectedReceivedOnTime($event)"
-                        class="time-input-field"
-                        placeholder="Received At"
-                        type="time"
-                      />
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </mat-step> -->
-
-      <!-- <mat-step
-          errorMessage="Some fields not fed."
-          *ngIf="registrationCategory === 'CLINICAL'"
-        >
-          <ng-template matStepLabel>Clinical Data</ng-template>
-          <div>
-            <div class="clinical-data">
-              <fieldset>
-                <legend>Clinical Data</legend>
-                <app-clinical-data
-                  (clinicalDataValues)="onGetClinicalDataValues($event)"
-                ></app-clinical-data>
-              </fieldset>
-            </div>
-          </div>
-        </mat-step> -->
-
-      <!-- <mat-step
-          errorMessage="Some fields not fed."
-          *ngIf="registrationCategory === 'CLINICAL'"
-        >
-          <ng-template matStepLabel>Referring Doctor</ng-template>
-          <div>
-            <div class="referring-doctor-field">
-              <fieldset>
-                <legend>Referring Doctor</legend>
-                <app-form
-                  [isFormHorizontal]="true"
-                  [fields]="referringDoctorFields"
-                  (formUpdate)="onFormUpdate($event)"
-                ></app-form>
-              </fieldset>
-            </div>
-          </div>
-        </mat-step> -->
-
-      <!-- <mat-step errorMessage="Some fields not fed.">
-          <ng-template matStepLabel>Brought By</ng-template>
-          <div>
-            <div class="brought-by-field">
-              <fieldset>
-                <legend>Who brought sample</legend>
-
-                <div class="row">
-                  <div class="col-4">
-                    <app-form
-                      [fields]="[broughtByField]"
-                      (formUpdate)="onFormUpdate($event)"
-                    ></app-form>
-                  </div>
-                  <div class="col-4">
-                    <app-form
-                      [fields]="[broughtOnField]"
-                      (formUpdate)="onFormUpdate($event)"
-                    ></app-form>
-                  </div>
-                  <div class="col-4">
-                    <input
-                      (change)="getSelectedBroughtOnTime($event)"
-                      class="time-input-field"
-                      placeholder="Brought At"
-                      type="time"
-                    />
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-        </mat-step> -->
-
-      <!-- <mat-step errorMessage="Some fields not fed.">
-          <ng-template matStepLabel>Tests</ng-template> -->
-      <!-- {{ formData?.specimen?.value }}
-          {{ params?.testsUnderSpecimen | json }} -->
-      <!-- <div
-            *ngIf="
-              (selectedSpecimenUuid && params?.testsUnderSpecimen) ||
-              !selectedSpecimenUuid
-            "
-          >
-            <app-multiple-tests-selection
-              [setMembersFromSpecimen]="params?.testsUnderSpecimen"
-              (testsData)="onFormUpdateForTest($event)"
-            ></app-multiple-tests-selection>
-          </div>
-          <mat-progress-bar
-            *ngIf="selectedSpecimenUuid && !params?.testsUnderSpecimen"
-            mode="indeterminate"
-          ></mat-progress-bar>
-        </mat-step>
-      </mat-stepper> -->
-      <!-- ===================================================== Commented Mat Stepper ============================================================================= -->
-      <ng-template matStepLabel>Sample Information</ng-template>
+      <!-- <ng-template matStepLabel>Specimen Information</ng-template>
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sx-12 col-sm-12">
           <div class="for-specimen-details">
@@ -237,7 +99,7 @@
                 (click)="toggleFieldSet('sampleInformation')"
                 class="d-flex"
               >
-                <span> Sample Information </span>
+                <span> Specimen Information </span>
                 <span>
                   <mat-icon *ngIf="!sampleInformation"
                     >keyboard_arrow_down</mat-icon
@@ -269,7 +131,7 @@
                         (formUpdate)="onFormUpdate($event)"
                       ></app-form>
                     </div>
-                    <div class="col-1">
+                    <div class="col-2">
                       <input
                         (change)="getSelectedRCollectedOnTime($event)"
                         [ngClass]="{
@@ -284,7 +146,7 @@
                       </p>
                     </div>
                   </ng-container>
-                  <div class="col-3">
+                  <div class="col-2">
                     <app-form
                       [fields]="[transportCondition]"
                       (formUpdate)="onFormUpdate($event)"
@@ -309,7 +171,9 @@
                     <div class="col-4">
                       <input
                         (change)="getSelectedBroughtOnTime($event)"
-                        [ngClass]="{ 'invalid-time-input': !broughtOnTimeValid }"
+                        [ngClass]="{
+                          'invalid-time-input': !broughtOnTimeValid
+                        }"
                         class="time-input-field"
                         placeholder="Brought At"
                         type="time"
@@ -335,10 +199,12 @@
                         (formUpdate)="onFormUpdate($event)"
                       ></app-form>
                     </div>
-                    <div class="col-1">
+                    <div class="col-2">
                       <input
                         (change)="getSelectedReceivedOnTime($event)"
-                        [ngClass]="{ 'invalid-time-input': !receivedOnTimeValid }"
+                        [ngClass]="{
+                          'invalid-time-input': !receivedOnTimeValid
+                        }"
                         class="time-input-field"
                         placeholder="Received At"
                         type="time"
@@ -348,7 +214,7 @@
                       </p>
                     </div>
                   </ng-container>
-                  <div class="col-3">
+                  <div class="col-2">
                     <app-form
                       [fields]="[transportationTemperature]"
                       (formUpdate)="onFormUpdate($event)"
@@ -359,40 +225,24 @@
             </fieldset>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <ng-template *ngIf="registrationCategory === 'CLINICAL'" matStepLabel
-        >Clinical Data</ng-template
-      >
-      <div *ngIf="registrationCategory === 'CLINICAL' && !fromExternalSystem">
-        <div class="clinical-data">
-          <fieldset>
-            <legend (click)="toggleFieldSet('clinicalData')" class="d-flex">
-              <span> Clinical Data </span>
-              <span>
-                <mat-icon *ngIf="!clinicalData">keyboard_arrow_down</mat-icon>
-                <mat-icon *ngIf="clinicalData">keyboard_arrow_up</mat-icon>
-              </span>
-            </legend>
-            <ng-container *ngIf="allRegistrationFields.clinicalFormFields">
-              <app-clinical-data
-                [clinicalFields]="allRegistrationFields.clinicalFormFields"
-                (clinicalDataValues)="onGetClinicalDataValues($event)"
-              ></app-clinical-data>
-            </ng-container>
-          </fieldset>
-        </div>
-      </div>
-      <ng-template
-        *ngIf="registrationCategory === 'CLINICAL' && !fromExternalSystem"
+      <!-- <ng-template
+        *ngIf="
+          registrationCategory?.refKey !== 'non-clinical' && !fromExternalSystem
+        "
         matStepLabel
         >Referring Doctor</ng-template
       >
-      <div *ngIf="registrationCategory === 'CLINICAL' && !fromExternalSystem">
+      <div
+        *ngIf="
+          registrationCategory?.refKey !== 'non-clinical' && !fromExternalSystem
+        "
+      >
         <div class="referring-doctor-field">
           <fieldset>
             <legend (click)="toggleFieldSet('referingDoctor')" class="d-flex">
-              <span> Refering Doctor </span>
+              <span> Referring Doctor </span>
               <span>
                 <mat-icon *ngIf="!referingDoctor">keyboard_arrow_down</mat-icon>
                 <mat-icon *ngIf="referingDoctor">keyboard_arrow_up</mat-icon>
@@ -407,7 +257,8 @@
             </ng-container>
           </fieldset>
         </div>
-      </div>
+      </div> -->
+      <!-- {{ selectedSpecimenUuid }} -->
       <ng-template matStepLabel>Tests</ng-template>
       <div
         *ngIf="
@@ -471,10 +322,6 @@
         {{ errorMessage }}
       </div>
     </div>
-
-    <!-- <div class="col-12" *ngIf="savingData">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </div> -->
     <div class="loading-overlay" *ngIf="savingData">
       <div class="text-center">
         <div>Saving sample...</div>
@@ -485,14 +332,14 @@
     </div>
     <div class="col-12 d-flex justify-content-end mt-2 mb-2">
       <button
-        mat-flat-button
+        mat-stroked-button
         [disabled]="
           errorMessage ||
           !broughtOnTimeValid ||
           !receivedOnTimeValid ||
           !collectedOnTimeValid
         "
-        color="primary"
+        class="btn btn-danger"
         (click)="onSave($event, true, params?.labLocations)"
       >
         Save to Reject
@@ -504,10 +351,11 @@
           errorMessage ||
           !broughtOnTimeValid ||
           !receivedOnTimeValid ||
-          !collectedOnTimeValid
+          !collectedOnTimeValid ||
+          !isGeneralObsFormValid
         "
         class="ml-2"
-        (click)="onSave($event, false,  params?.labLocations)"
+        (click)="onSave($event, false, params?.labLocations)"
       >
         Save & Continue
       </button>

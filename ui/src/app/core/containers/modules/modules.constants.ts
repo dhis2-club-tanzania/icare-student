@@ -77,7 +77,7 @@ export const ICARE_APPS: ICAREApp[] = [
     id: "vertical_programs",
     image: "assets/material/programs.png",
     icon: "pregnant_woman",
-    path: "/vertical-programs",
+    path: "/vertical_programs",
     order: 20,
   },
   {
@@ -119,6 +119,14 @@ export const ICARE_APPS: ICAREApp[] = [
     icon: "store",
     path: "./dispensing",
     order: 7,
+  },
+  {
+    name: "Pharmacy",
+    id: "pharmacy",
+    image: "assets/material/dispensing.png",
+    icon: "store",
+    path: "./pharmacy",
+    order: 25,
   },
   {
     name: "Store",

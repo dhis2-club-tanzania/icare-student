@@ -2,7 +2,6 @@ import { PatientProfileComponent } from "./patient-profile/patient-profile.compo
 import { PatientSearchComponent } from "./patient-search/patient-search.component";
 import { DrugOrderComponent } from "./drug-order/drug-order.component";
 import { LocationSelectModalComponent } from "./location-select-modal/location-select-modal.component";
-import { MenuComponent } from "./menu/menu.component";
 import { PatientClinicalNotesSummaryComponent } from "./patient-clinical-notes-summary/patient-clinical-notes-summary.component";
 import { PatientListComponent } from "./patient-list/patient-list.component";
 import { PatientSidebarComponent } from "./patient-sidebar/patient-sidebar.component";
@@ -44,7 +43,6 @@ import { DrugOrderFormComponent } from "./drug-order-form/drug-order-form.compon
 import { ChangePasswordComponent } from "./change-password/change-password.component";
 import { SharedConceptDisplayComponent } from "./shared-concept-display/shared-concept-display.component";
 import { PatientVisitAttributesDetailsComponent } from "./patient-visit-attributes-details/patient-visit-attributes-details.component";
-import { ModulesSelectorComponent } from "./modules-selector/modules-selector.component";
 import { OrderResultsRendererComponent } from "./order-results-renderer/order-results-renderer.component";
 import { LabResultDisplayComponent } from "./lab-result-display/lab-result-display.component";
 import { PatientPreviousPrescriptionsComponent } from "./patient-previous-prescriptions/patient-previous-prescriptions.component";
@@ -118,13 +116,27 @@ import { DateTimeFieldComponent } from "./date-time-field/date-time-field.compon
 import { PatientHistoryComponent } from "./patient-history/patient-history.component";
 import { PatientHistoryDataComponent } from "./patient-history-data/patient-history-data.component";
 import { SharedSamplesListComponent } from "./shared-samples-list/shared-samples-list.component";
+import { SharedReportsListComponent } from "./shared-reports-list/shared-reports-list.component";
+import { SharedCustomReportComponent } from "./shared-custom-report/shared-custom-report.component";
+import { SharedRenderReportDashboardComponent } from "./shared-render-report-dashboard/shared-render-report-dashboard.component";
+import { SharedDrugDosageInterpretationComponent } from "./shared-drug-dosage-interpretation/shared-drug-dosage-interpretation.component";
+import { SharedLocationBasedLogoComponent } from "./shared-location-based-logo/shared-location-based-logo.component";
+import { SharedPatientDischargeDetailsComponent } from "./shared-patient-discharge-details/shared-patient-discharge-details.component";
+import { DischargeDeceasedPatientModalComponent } from "./discharge-deceased-patient-modal/discharge-deceased-patient-modal.component";
+import { SharedNextOfKinsFormComponent } from "./shared-next-of-kins-form/shared-next-of-kins-form.component";
+import { SharedNextOfKinsFormDataComponent } from "./shared-next-of-kins-form-data/shared-next-of-kins-form-data.component";
+import { SystemSettingsListComponent } from "./system-settings-list/system-settings-list.component";
+import { DrugsListComponent } from "./drugs-list/drugs-list.component";
+import { GenericDrugsListComponent } from "./generic-drugs-list/generic-drugs-list.component";
+import { UnitsOfMeasureSettingsComponent } from "./units-of-measure-settings/units-of-measure-settings.component";
+import { SharedDisplayOrderedTestsNamesComponent } from "./shared-display-ordered-tests-names/shared-display-ordered-tests-names.component";
+
 export const components: any[] = [
   PatientAddressComponent,
   PatientSearchComponent,
   PatientProfileComponent,
   DrugOrderComponent,
   LocationSelectModalComponent,
-  MenuComponent,
   PatientClinicalNotesSummaryComponent,
   PatientListComponent,
   PatientVisitListComponent,
@@ -157,6 +169,7 @@ export const components: any[] = [
   PatientVisitHistoryModalComponent,
   PatientMedicationSummaryComponent,
   DischargePatientModalComponent,
+  DischargeDeceasedPatientModalComponent,
   CreatePatientBedOrderModalComponent,
   ProceduresHistorySummaryComponent,
   TransferPatientOutsideComponent,
@@ -166,7 +179,6 @@ export const components: any[] = [
   ChangePasswordComponent,
   SharedConceptDisplayComponent,
   PatientVisitAttributesDetailsComponent,
-  ModulesSelectorComponent,
   OrderResultsRendererComponent,
   LabResultDisplayComponent,
   PatientPreviousPrescriptionsComponent,
@@ -239,6 +251,19 @@ export const components: any[] = [
   PatientHistoryDataComponent,
   SharedConfirmationComponent,
   SharedSamplesListComponent,
+  SharedReportsListComponent,
+  SharedCustomReportComponent,
+  SharedRenderReportDashboardComponent,
+  SharedDrugDosageInterpretationComponent,
+  SharedLocationBasedLogoComponent,
+  SharedPatientDischargeDetailsComponent,
+  SharedNextOfKinsFormComponent,
+  SharedNextOfKinsFormDataComponent,
+  SystemSettingsListComponent,
+  DrugsListComponent,
+  GenericDrugsListComponent,
+  UnitsOfMeasureSettingsComponent,
+  SharedDisplayOrderedTestsNamesComponent,
 ];
 
 export const sharedEntryComponents: any[] = [

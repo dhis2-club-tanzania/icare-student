@@ -37,6 +37,7 @@ export class PrivilegesListComponent implements OnInit {
   getPrivileges(event: Event, actionType: string): void {
     event.stopPropagation();
     this.page = actionType === "next" ? this.page + 1 : this.page - 1;
+    // console.log("PAGE", this.page);
     this.getPrivilegesList();
   }
 

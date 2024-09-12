@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, Input, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Observable, of, zip } from "rxjs";
 import { catchError, map } from "rxjs/operators";
@@ -18,11 +18,12 @@ import { VisitsService } from "../../resources/visits/services";
   styleUrls: ["./shared-samples-verification-integrated.component.scss"],
 })
 export class SharedSamplesVerificationIntegratedComponent implements OnInit {
+  labTestRequestProgramStageId: string;
   externalSystems$: Observable<any>;
   systemsField: Field<string>;
   isFormValid: boolean = false;
   selectedSystem: string;
-  externalSystems: any = DHIS2BasedSystems;
+  DHIS2BasedSystems: any = DHIS2BasedSystems;
   searchCriteriaField: Field<string>;
   searchCriteria: string;
   clientDetails$: Observable<any>;
@@ -39,7 +40,9 @@ export class SharedSamplesVerificationIntegratedComponent implements OnInit {
     private systemSettongsService: SystemSettingsService,
     private otherClientLevelSystemsService: OtherClientLevelSystemsService,
     private visitService: VisitsService
-  ) {}
+  ) {
+    this.labTestRequestProgramStageId = data?.labTestRequestProgramStageId;
+  }
 
   ngOnInit(): void {
     this.externalSystems$ = this.conceptService
@@ -103,6 +106,7 @@ export class SharedSamplesVerificationIntegratedComponent implements OnInit {
       .getClientsFromOtherSystems({
         identifier: this.data?.mrn,
         identifierReference: this.searchCriteria,
+        labTestRequestProgramStageId: this.labTestRequestProgramStageId,
       })
       .pipe(
         map((response) => {
@@ -125,7 +129,7 @@ export class SharedSamplesVerificationIntegratedComponent implements OnInit {
     const values = formValue.getValues();
     this.isFormValid = formValue.isValid;
     this.selectedSystem = values?.system?.value;
-    const searchingCriteria = (this.externalSystems?.filter(
+    const searchingCriteria = (this.DHIS2BasedSystems?.filter(
       (system) => system?.id === this.selectedSystem
     ) || [])[0]?.searchingCriteria;
     this.searchCriteriaField = new Dropdown({
@@ -202,6 +206,7 @@ export class SharedSamplesVerificationIntegratedComponent implements OnInit {
           .getClientsFromOtherSystems({
             identifier: this.data?.mrn,
             identifierReference: this.searchCriteria,
+            labTestRequestProgramStageId: this.labTestRequestProgramStageId,
           })
           .pipe(
             map((response) => {

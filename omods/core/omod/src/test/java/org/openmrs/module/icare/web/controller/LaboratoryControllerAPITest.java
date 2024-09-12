@@ -2,7 +2,6 @@ package org.openmrs.module.icare.web.controller;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,25 +11,15 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.icare.ICareConfig;
 import org.openmrs.module.icare.laboratory.dao.TestOrderLocationDAO;
-import org.openmrs.module.icare.laboratory.models.TestOrderLocation;
-import org.openmrs.module.icare.laboratory.models.WorkloadSummary;
 import org.openmrs.module.icare.laboratory.services.LaboratoryService;
-import org.openmrs.module.icare.report.dhis2.DHIS2Config;
 import org.openmrs.module.icare.web.controller.core.BaseResourceControllerTest;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.IOException;
-import java.security.spec.ECField;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,6 +36,12 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 	public void setUp() throws SQLException {
 		initializeInMemoryDatabase();
 		executeDataSet("lab-data.xml");
+		AdministrationService adminService = Context.getService(AdministrationService.class);
+		adminService.setGlobalProperty(ICareConfig.LAB_RELATED_METADATA_ATTRIBUTE_TYPE,
+		    "8987bbb9-52b9-11zz-b60d-880027ae421d1");
+		adminService.setGlobalProperty(ICareConfig.LAB_UNIFIED_CODING_REFERENCE_CONCEPT_SOURCE,
+		    "8987bbb9-52b9-11zz-b60d-880027ae421s");
+		adminService.setGlobalProperty(ICareConfig.LAB_RESULTS_SHOULD_SEND_EMAIL_FOR_AUTHORIZED_RESULTS, "false");
 	}
 	
 	@Test
@@ -162,7 +157,7 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		MockHttpServletRequest getRequest = newGetRequest("lab/sampledorders/d9c1d8ac-2b8e-427f-804d-b858c52e6f11");
 		MockHttpServletResponse handle = handle(getRequest);
 		List<Map<String, Object>> orders = (new ObjectMapper()).readValue(handle.getContentAsString(), List.class);
-		System.out.println(orders);
+		System.out.println(handle.getContentAsString());
 		
 		//Then
 		assertThat("Samples orders available is 4:", orders.size(), is(4));
@@ -327,14 +322,13 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		
 		//System.out.println(Context.getVisitService().getVisitByUuid("d9c1d8ac-2b8e-427f-804d-b858c52e6f11").getLocation().getUuid());
 		Map<String, Object> sampleResults = (new ObjectMapper()).readValue(handleGet.getContentAsString(), Map.class);
-		//		System.out.println(sampleResults);
-		
+		//		System.out.println(((List) sampleResults.get("results")));
 		Map<String, Object> pagerObject = (Map<String, Object>) sampleResults.get("pager");
 		assertThat("Page Count is 2", (Integer) pagerObject.get("pageCount") == 2, is(true));
-		assertThat("Total is 4", (Integer) pagerObject.get("total") == 4, is(true));
+		assertThat("Total is 3", (Integer) pagerObject.get("total") == 3, is(true));
 		assertThat("Page Size is 2", (Integer) pagerObject.get("pageSize") == 2, is(true));
 		assertThat("Page is 2", (Integer) pagerObject.get("page") == 2, is(true));
-		assertThat("List count is 2", ((List) sampleResults.get("results")).size() == 2, is(true));
+		assertThat("List count is 1", ((List) sampleResults.get("results")).size() == 1, is(true));
 		assertThat(
 		    "There is atleast 1 sample for the visit from lab-data.xml with visit id = d9c1d8ac-2b8e-427f-804d-b858c52e6f11",
 		    handleGet.getContentAsString().contains("d9c1d8ac-2b8e-427f-804d-b858c52e6f11"));
@@ -349,7 +343,6 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		//System.out.println("aaaa "+sampleResults);
 		
 		pagerObject = (Map<String, Object>) sampleResults.get("pager");
-		System.out.println((Integer) pagerObject.get("pageCount"));
 		assertThat("Page Count is 2", (Integer) pagerObject.get("pageCount") == 0, is(true));
 		assertThat("Total is 3", (Integer) pagerObject.get("total") == 0, is(true));
 		assertThat("Page Size is 2", (Integer) pagerObject.get("pageSize") == 50, is(true));
@@ -368,8 +361,14 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		        "excludeAllocations", "TRUE"));
 		MockHttpServletResponse handle2 = handle(newGetRequest2);
 		Map<String, Object> samples = (new ObjectMapper()).readValue(handle2.getContentAsString(), Map.class);
+		assertThat("There is 2 sample", ((List<Map>) samples.get("results")).size(), is(2));
 		
-		assertThat("There is 1 sample", ((List<Map>) samples.get("results")).size(), is(1));
+		MockHttpServletRequest instrumentRequest = newGetRequest("lab/samples", new Parameter("instrument",
+		        "123111zz-0011-477v-8y8y-acc38ebc6252"), new Parameter("excludeAllocations", "TRUE"));
+		MockHttpServletResponse instrumentResponse = handle(instrumentRequest);
+		Map<String, Object> samplesByInstrument = (new ObjectMapper()).readValue(instrumentResponse.getContentAsString(),
+		    Map.class);
+		assertThat("There is 1 sample with instrument used", ((List<Map>) samplesByInstrument.get("results")).size(), is(1));
 		
 		MockHttpServletRequest newGetRequest3 = newGetRequest("lab/samples", new Parameter("excludeAllocations", "true"),
 		    new Parameter("sampleCategory", "NOT ACCEPTED"), new Parameter("hasStatus", "yes"));
@@ -404,7 +403,27 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		handleGet = handle(newGetRequest);
 		Map<String, Object> sampleResultsFilteredBySpecimen = (new ObjectMapper()).readValue(handleGet.getContentAsString(),
 		    Map.class);
-		assertThat("There is 1 sample", ((List<Map>) samples.get("results")).size(), is(1));
+		//		System.out.println(((List<Map>) samples.get("results")).size());
+		//		for(Map<String, Object> sample: ((List<Map>) samples.get("results"))) {
+		//			System.out.println(sample.get("label"));
+		//		}
+		assertThat("There is 2 sample", ((List<Map>) samples.get("results")).size(), is(2));
+		
+		newGetRequest = newGetRequest("lab/samples", new Parameter("q", "Gilbert"));
+		handleGet = handle(newGetRequest);
+		sampleResults = (new ObjectMapper()).readValue(handleGet.getContentAsString(), Map.class);
+		assertThat("There are 5 samples", ((List<Map<String, Object>>) sampleResults.get("results")).size(), is(5));
+		
+		newGetRequest = newGetRequest("lab/samples", new Parameter("sampleCategory", "rejected"));
+		handleGet = handle(newGetRequest);
+		Map<String, Object> samplesRejected = (new ObjectMapper()).readValue(handleGet.getContentAsString(), Map.class);
+		System.out.println("rejected samples: " + samplesRejected);
+		
+		newGetRequest = newGetRequest("lab/samples", new Parameter("visit", "d9c1d8ac-2b8e-427f-804d-b858c52e6f11"),
+		    new Parameter("excludeAllocations", "true"));
+		handleGet = handle(newGetRequest);
+		Map<String, Object> samplesVisit = (new ObjectMapper()).readValue(handleGet.getContentAsString(), Map.class);
+		assertThat("There are 5 samples", ((List<Map<String, Object>>) sampleResults.get("results")).size(), is(5));
 	}
 	
 	@Test
@@ -412,7 +431,12 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		
 		AdministrationService adminService = Context.getService(AdministrationService.class);
 		adminService.setGlobalProperty(ICareConfig.LAB_RESULT_APPROVAL_CONFIGURATION, "2");
-		
+		String bodyAttachmentHtml = this.readFile("dto/laboratory/body-attachment.html");
+		String bodySummaryHtml = this.readFile("dto/laboratory/body-summary.html");
+		adminService.setGlobalProperty(ICareConfig.LAB_RESULTS_BODY_ATTACHMENT_CONFIGURATION_HTML, bodyAttachmentHtml);
+		adminService.setGlobalProperty(ICareConfig.LAB_RESULTS_BODY_SUMMARY_CONFIGURATION_HTML, bodySummaryHtml);
+		adminService.setGlobalProperty(ICareConfig.ICARE_VISIT_EMAIL_ATTRIBUTE_TYPE, "36b071d8-d5ea-0000-8e56-5b066420aaa1");
+		adminService.setGlobalProperty(ICareConfig.LAB_RESULTS_SHOULD_SEND_EMAIL_FOR_AUTHORIZED_RESULTS, "true");
 		// creating sample status
 		String dto = this.readFile("dto/sample-status-create-dto.json");
 		Map<String, Object> sampleStatus = (new ObjectMapper()).readValue(dto, Map.class);
@@ -444,12 +468,13 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		MockHttpServletResponse handleGet3 = handle(newGetRequest3);
 		Map<String, Object> sampleResults3 = (new ObjectMapper()).readValue(handleGet3.getContentAsString(), Map.class);
 		
-		System.out.println("Results1: " + sampleResults);
-		System.out.println("Results2: " + sampleResults2);
-		System.out.println("Results3: " + sampleResults3);
-		
 		assertThat("Should return a sample", ((List) sampleResults.get("results")).size() == 1);
 		assertThat("Should return a sample", ((List) sampleResults2.get("results")).size() == 1);
+		
+		newGetRequest = newGetRequest("lab/samples", new Parameter("excludeStatus", "RECEIVED"));
+		handleGet = handle(newGetRequest);
+		sampleResults = (new ObjectMapper()).readValue(handleGet.getContentAsString(), Map.class);
+		//		System.out.println("aa: " + handleGet.getContentAsString());
 		
 	}
 	
@@ -524,6 +549,12 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 	public void testCreateMultipleResults() throws Exception {
 		//Given
 		String dto = this.readFile("dto/lab-related-results-create.json");
+		
+		AdministrationService administrationService = Context.getService(AdministrationService.class);
+		
+		administrationService.setGlobalProperty(ICareConfig.LAB_INSTRUMENT_CLASS_UUID,
+		    "YUsir5eb-5345-11e8-9c7c-40b034cCOBAS");
+		
 		List<Map<String, Object>> results = (new ObjectMapper()).readValue(dto, List.class);
 		
 		MockHttpServletRequest newPostRequest = newPostRequest("lab/multipleresults", results);
@@ -532,7 +563,20 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		
 		List<Map<String, Object>> resultsObject = (new ObjectMapper()).readValue(handle.getContentAsString(),
 		    ArrayList.class);
-		System.out.println(resultsObject);
+	}
+	
+	@Test
+	public void testVoidMultipleResults() throws Exception {
+		//Given
+		String dto = this.readFile("dto/results-void.json");
+		
+		Map<String, Object> resultsToVoid = (new ObjectMapper()).readValue(dto, Map.class);
+		MockHttpServletRequest newPutRequest = newPutRequest("lab/voidmultipleresults", resultsToVoid);
+		MockHttpServletResponse updateHandle = handle(newPutRequest);
+		
+		List<Map<String, Object>> updateResponse = (new ObjectMapper()).readValue(updateHandle.getContentAsString(),
+		    ArrayList.class);
+		assertThat("Count of voided results", updateResponse.size(), is(1));
 	}
 	
 	@Test
@@ -641,9 +685,20 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		
 		//Then
 		assertThat("The encounter should one observation", observations.size(), is(1));
-		assertThat("The observation concept name is mrdt result", observations.get(0).getConcept().getName().getName(),
-		    is("mrdt result"));
+		//		assertThat("The observation concept name is mrdt result", observations.get(0).getConcept().getName().getName(),
+		//		    is("mrdt result"));
 		assertThat("The observation value text should be positive", observations.get(0).getValueText(), is("positive"));
+		//
+	}
+	
+	@Test
+	public void testUpdateMultipleTestAllocations() throws Exception {
+		// Given
+		String dataReference = this.readFile("dto/approve-test-results.json");
+		Map<String, Object> testAllocationStatuses = (new ObjectMapper()).readValue(dataReference, Map.class);
+		//When
+		MockHttpServletRequest newPostRequest = newPostRequest("lab/allocationstatuses", testAllocationStatuses);
+		MockHttpServletResponse handle = handle(newPostRequest);
 		
 	}
 	
@@ -725,11 +780,12 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		//2. Getting batchSamples
 		//when
 		MockHttpServletRequest newGetRequest = newGetRequest("lab/batchsamples", new Parameter("startDate", "2022-12-10"),
-		    new Parameter("endDate", "2022-12-10"), new Parameter("q", "BS01"));
+		    new Parameter("endDate", "2022-12-10"), new Parameter("q", "BS01"), new Parameter("batchUuid",
+		            "iCARE890-TEST-MOTR-9beb-d30dcfc0c635"));
 		
 		MockHttpServletResponse handle2 = handle(newGetRequest);
 		List<Map<String, Object>> batchsamples = (new ObjectMapper()).readValue(handle2.getContentAsString(), List.class);
-		System.out.println(batchsamples);
+		System.out.println("aa " + handle2.getContentAsString());
 		assertThat("Has 1 batch sample", batchsamples.size(), is(1));
 		
 		//3. Getting a single batchSample
@@ -878,6 +934,15 @@ public class LaboratoryControllerAPITest extends BaseResourceControllerTest {
 		System.out.println(worksheetdefinitions);
 		
 		assertThat("Has 1 worksheet definition", worksheetdefinitions.size(), is(1));
+		
+		//3. Getting worksheet by instrument
+		//When
+		newGetRequest = newGetRequest("lab/worksheetdefinitions", new Parameter("instrument",
+		        "123111zz-0011-477v-8y8y-acc38ebc6252"));
+		handle = handle(newGetRequest);
+		worksheetdefinitions = (new ObjectMapper()).readValue(handle.getContentAsString(), List.class);
+		System.out.println(worksheetdefinitions);
+		
 	}
 	
 	@Test

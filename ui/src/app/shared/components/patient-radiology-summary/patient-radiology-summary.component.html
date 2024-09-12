@@ -10,6 +10,7 @@
         <th>Radiology order</th>
         <th>Results</th>
         <th>Date & Time</th>
+        <th style="width: 160px">Remarks</th>
         <th style="width: 160px"></th>
       </tr>
     </thead>
@@ -17,74 +18,93 @@
       <ng-container
         *ngIf="params?.orders && params?.orders?.length > 0 && !addingOrder"
       >
-        <tr *ngFor="let order of params?.orders; let count = index">
-          <td>
-            {{ count + 1 }}
-          </td>
-          <td>
-            {{ order?.display }}
-          </td>
-          <td *ngIf="order?.value?.display">
-            <a
-              *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
-              href="{{
-                '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
-              }}"
-            >
-              Download Results
-            </a>
-            <a
-              *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
-              href="{{
-                '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
-              }}"
-            >
-              Download Results
-            </a>
-          </td>
-          <td *ngIf="!order?.value?.display && !order?.value?.length">
-            No results
-          </td>
-          <td *ngIf="!order?.value?.display && order?.value?.length">
-            <a
-              *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
-              href="{{
-                '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
-              }}"
-            >
-              Download Results
-            </a>
-            <a
-              *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
-              href="{{
-                '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
-              }}"
-            >
-              Download Results
-            </a>
-          </td>
-          <td>
-            {{ order?.dateActivated | date: "medium" }}
-          </td>
-          <td>
-            <button
-              mat-icon-button
-              [matMenuTriggerFor]="menu"
-              aria-label="Options"
-            >
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button
-                mat-menu-item
-                (click)="onDeleteOrder($event, order)"
+        <ng-container *ngFor="let order of params?.orders; let count = index">
+          <tr
+            [ngClass]="{
+              'voided-item': order?.dateStopped || order?.autoExpireDate
+            }"
+          >
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ order?.display }}
+            </td>
+            <td *ngIf="order?.value?.display">
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
+                }}"
               >
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
+                Download Results
+              </a>
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
+                }}"
+              >
+                Download Results
+              </a>
+              <button
+                class="ml-2"
+                mat-button
+                (click)="
+                  previewUploadPDF($event, order?.value?.links?.uri, 'iframe')
+                "
+              >
+                Preview 
               </button>
-            </mat-menu>
-          </td>
-        </tr>
+            </td>
+            <td *ngIf="!order?.value?.display && !order?.value?.length">
+              No results
+            </td>
+            <td *ngIf="!order?.value?.display && order?.value?.length">
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
+                }}"
+              >
+                Download Results
+              </a>
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
+                }}"
+              >
+                Download Results
+              </a>
+            </td>
+            <td>
+              {{ order?.dateActivated | date: "medium" }}
+            </td>
+            <td>
+              {{order?.remarks}}
+            </td>
+            <td>
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Options"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  [disabled]="order?.value"
+                  mat-menu-item
+                  (click)="onDeleteOrder($event, order)"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
       <ng-container *ngIf="!params?.orders || addingProcedure">
         <tr>
@@ -116,10 +136,10 @@
       </tr>
       <ng-container *ngIf="forConsultation && !isInpatient && formFields">
         <tr>
-          <td colspan="3">
+          <td colspan="4">
             <app-form
               [fields]="formFields"
-              [isFormHorizontal]="true"
+              [isFormHorizontal]="false"
               (formUpdate)="onFormUpdate($event)"
             >
             </app-form>

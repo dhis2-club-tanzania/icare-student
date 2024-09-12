@@ -5,10 +5,17 @@ export class FormValue {
   form: FormGroup;
   fields: Field<string>[];
   fileValues: any;
-  constructor(form: FormGroup, fields: Field<string>[], fileValues?: any) {
+  formId: string;
+  constructor(
+    form: FormGroup,
+    fields: Field<string>[],
+    fileValues?: any,
+    formId?: string
+  ) {
     this.form = form;
     this.fields = fields;
     this.fileValues = fileValues;
+    this.formId = formId;
   }
 
   get isValid(): boolean {
@@ -30,12 +37,8 @@ export class FormValue {
       if (field) {
         newValues[key] = {
           id: field.id,
-          value:
-            formValues[key]
-              ? formValues[key]
-              : field?.value
-              ? field?.value
-              : "",
+          value: formValues[key] ? formValues[key] : "",
+          form: this.formId,
           options: field.options,
           isFile: this.fileValues ? true : false,
           label: field?.label,
@@ -47,10 +50,10 @@ export class FormValue {
     return newValues;
   }
 
-  getFields(){
+  getFields() {
     return this.fields;
   }
-  setValue(key, value){
+  setValue(key, value) {
     this.fields.filter((field) => field.key === key)[0].value = value;
   }
 }

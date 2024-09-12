@@ -53,7 +53,7 @@ export class LocationTreeHomeComponent implements OnInit {
 
   expandTheNode(event: Event, node: any): void {
     event.stopPropagation();
-    console.log(node);
+    // console.log(node);
     this.currentNodeData = node?.children;
   }
 }

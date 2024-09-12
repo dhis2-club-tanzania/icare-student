@@ -1,0 +1,63 @@
+<div
+  class="stock-container"
+  *ngIf="{
+    ledgerTypes: ledgerTypes$ | async,
+    currentStore: currentStore$ | async,
+    currentStock: currentStock$ | async,
+    isCurrentLocationMainStore: isCurrentLocationMainStore$ | async,
+    isCurrentLocationPharmacy: isCurrentLocationPharmacy$ | async,
+    userPrivileges: userPrivileges$ | async
+  } as params"
+>
+  <!-- stock content -->
+  <div class="row">
+    <div class="col-12">
+      <mat-progress-bar
+        *ngIf="
+          !params?.currentStore ||
+          !params?.userPrivileges ||
+          !params?.ledgerTypes
+        "
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <mat-card
+        class="border"
+        *ngIf="
+          params?.userPrivileges && params?.currentStore && params?.ledgerTypes
+        "
+      >
+        <div class="row">
+          <div class="overflow-x-auto col-sm-12">
+            <app-stock-status-list
+              [currentLocation]="params?.currentStore"
+              [isCurrentLocationMainStore]="params?.isCurrentLocationMainStore"
+              [isCurrentLocationPharmacy]="params?.isCurrentLocationPharmacy"
+              [userPrivileges]="params?.userPrivileges"
+              [ledgerTypes]="params?.ledgerTypes"
+            ></app-stock-status-list>
+          </div>
+          <div class="overflowing-stock-list">
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="!params?.currentStock"
+            ></mat-progress-bar>
+            <app-stock-batch-list
+              *ngIf="params?.currentStock"
+              [stock]="params?.currentStock"
+              [ledgerTypes]="params?.ledgerTypes"
+              [currentStore]="params?.currentStore"
+              [isCurrentLocationMainStore]="params?.isCurrentLocationMainStore"
+              [saving]="params?.savingLedger"
+              (closeBatchList)="onToggleCurrentStock($event)"
+              (saveLedger)="onSaveLedger($event, params?.currentStock)"
+            >
+            </app-stock-batch-list
+            ><!-- 
+            <app-stock-in-other-units></app-stock-in-other-units> -->
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+  <!-- end of stock content -->
+</div>

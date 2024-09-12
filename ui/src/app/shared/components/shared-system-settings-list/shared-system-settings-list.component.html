@@ -1,6 +1,6 @@
 <div
   class="system-settings-list-container"
-  *ngIf="systemSettings$ | async as systemSettings"
+  *ngIf="{ systemSettings: systemSettings$ | async } as params"
 >
   <div class="loading-overlay" *ngIf="saving">
     <div class="text-center">
@@ -12,7 +12,7 @@
   </div>
 
   <mat-progress-bar
-    *ngIf="!systemSettings && !saving && !error"
+    *ngIf="!params?.systemSettings && !saving && !error"
     mode="indeterminate"
   ></mat-progress-bar>
   <!-- {{ systemSettings | json }} -->
@@ -29,7 +29,7 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div *ngIf="systemSettings && !saving && !error">
+  <div *ngIf="params?.systemSettings && !saving && !error">
     <div class="card" style="overflow: auto">
       <table class="mt-2 table table-striped">
         <thead>
@@ -42,7 +42,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let systemSetting of systemSettings; let count = index">
+          <tr
+            *ngFor="
+              let systemSetting of params?.systemSettings;
+              let count = index
+            "
+          >
             <td>{{ count + 1 + (page - 1) * pageSize }}.</td>
             <td>
               {{ systemSetting?.property }}
@@ -86,17 +91,12 @@
           </tr>
         </tbody>
       </table>
-      <div class="d-flex justify-content-end">
-        <button
-          class="add-button"
-          (click)="openModal($event, systemSettings[0], true)"
-        >
-          New
-        </button>
-      </div>
     </div>
 
-    <div class="mt-2 d-flex justify-content-end">
+    <div
+      class="mt-2 d-flex justify-content-end"
+      *ngIf="currentUser?.userPrivileges['ALL']"
+    >
       <button
         mat-stroked-button
         (click)="getItems($event, 'prev')"
@@ -111,6 +111,50 @@
         [disabled]="systemSettings?.length < pageSize"
       >
         Next
+      </button>
+    </div>
+
+    <div class="w-100 d-flex justify-content-end mt-2">
+      <button
+        (click)="
+          openModal(
+            $event,
+            params?.systemSettings && params?.systemSettings[0]
+              ? params?.systemSettings[0]
+              : null,
+            true
+          )
+        "
+        tabindex="0"
+        type="button"
+        title="Add new"
+        class="add-new-general-button"
+      >
+        <div>
+          <div
+            style="
+              transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+              top: 0px;
+            "
+          >
+            <svg
+              class=""
+              viewBox="0 0 24 24"
+              style="
+                display: inline-block;
+                color: rgb(255, 255, 255);
+                fill: rgb(255, 255, 255);
+                height: 56px;
+                width: 24px;
+                user-select: none;
+                transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+                line-height: 56px;
+              "
+            >
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+            </svg>
+          </div>
+        </div>
       </button>
     </div>
   </div>

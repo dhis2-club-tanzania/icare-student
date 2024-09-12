@@ -1,0 +1,54 @@
+<div
+  class="w-100 p-2"
+  *ngIf="{
+    currentUser: currentUser$ | async,
+    pharmacyClientDetailsFormUuid: pharmacyClientDetailsFormUuid$ | async,
+    visitUuid: visitUuid$ | async,
+    patientUuid: patientUuid$ | async,
+    encounterTypeUuid: encounterTypeUuid$ | async,
+    provider: provider$ | async,
+    prescriptionVariables: prescriptionVariables$ | async,
+    shouldShowDoseDetails: shouldShowDoseDetails$ | async
+  } as params"
+>
+  <div
+    class="mt-5 d-flex justify-content-center w-100"
+    *ngIf="
+      !params?.currentUser ||
+      !params?.pharmacyClientDetailsFormUuid ||
+      !params?.visitUuid ||
+      !params?.patientUuid ||
+      !params?.encounterTypeUuid ||
+      !params?.provider ||
+      !params?.prescriptionVariables ||
+      !params?.shouldShowDoseDetails
+    "
+  >
+    <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+  </div>
+  <div
+    class="w-100"
+    *ngIf="
+      params?.currentUser &&
+      params?.pharmacyClientDetailsFormUuid &&
+      params?.visitUuid &&
+      params?.patientUuid &&
+      params?.encounterTypeUuid &&
+      params?.provider &&
+      params?.prescriptionVariables &&
+      params?.shouldShowDoseDetails
+    "
+  >
+    <app-cashier-dashboard
+      [currentUser]="params?.currentUser"
+      [currentLocation]="currentLocation"
+      [visitUuid]="params?.visitUuid"
+      [patientUuid]="params?.patientUuid"
+      [encounterTypeUuid]="params?.encounterTypeUuid"
+      [formId]="params?.pharmacyClientDetailsFormUuid"
+      [provider]="params?.provider"
+      [prescriptionVariables]="params?.prescriptionVariables"
+      [shouldShowDoseDetails]="params?.shouldShowDoseDetails"
+    ></app-cashier-dashboard>
+  </div>
+</div>

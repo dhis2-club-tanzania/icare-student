@@ -19,7 +19,7 @@ import { SampleTrackingModalComponent } from "./sample-tracking-modal/sample-tra
 import { PrintResultsModalComponent } from "./print-results-modal/print-results-modal.component";
 import { ResultsToPrintComponent } from "./results-to-print/results-to-print.component";
 import { SampleStatusSummaryForHomeComponent } from "./sample-status-summary-for-home/sample-status-summary-for-home.component";
-import { BarCodeModalComponent } from "./bar-code-modal/bar-code-modal.component";
+import { BarCodeModalComponent } from "../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component";
 import { UploadFileComponent } from "./upload-file/upload-file.component";
 import { SampleAcceptanceComponent } from "./sample-acceptance/sample-acceptance.component";
 import { RejectAnswerModalComponent } from "./reject-answer-modal/reject-answer-modal.component";
@@ -45,6 +45,11 @@ import { SampleTrackingListComponent } from "./sample-tracking-list/sample-track
 import { SamplesRejectedAfterRegistrationComponent } from "./samples-rejected-after-registration/samples-rejected-after-registration.component";
 import { BarCodePrintModalComponent } from "./bar-code-print-modal/bar-code-print-modal.component";
 import { SampleToPrintResultsComponent } from "./sample-to-print-results/sample-to-print-results.component";
+import { ResultEntryByBatchHomeComponent } from "./result-entry-by-batch-home/result-entry-by-batch-home.component";
+import { SamplesForResultsReviewComponent } from "./samples-for-results-review/samples-for-results-review.component";
+import { AuthorizationAndResultEntryActionSummaryComponent } from "./authorization-and-result-entry-action-summary/authorization-and-result-entry-action-summary.component";
+import { SharedTestedByResultEntryFieldsComponent } from "./shared-tested-by-result-entry-fields/shared-tested-by-result-entry-fields.component";
+
 
 export const components: any[] = [
   PatientsByVisitsListComponent,
@@ -94,6 +99,10 @@ export const components: any[] = [
   SamplesRejectedAfterRegistrationComponent,
   BarCodePrintModalComponent,
   SampleToPrintResultsComponent,
+  ResultEntryByBatchHomeComponent,
+  SamplesForResultsReviewComponent,
+  AuthorizationAndResultEntryActionSummaryComponent,
+  SharedTestedByResultEntryFieldsComponent,
 ];
 
 export const sampleAcceptanceAndResultsModals: any[] = [

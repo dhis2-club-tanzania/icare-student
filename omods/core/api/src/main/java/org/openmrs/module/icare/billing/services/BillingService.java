@@ -65,7 +65,7 @@ public interface BillingService extends OpenmrsService {
 	
 	List<Invoice> getPatientsInvoices(String patientUuid);
 	
-	<T extends Order> Order processOrder(OrderMetaData<T> orderMetaData);
+	<T extends Order> Order processOrder(OrderMetaData<T> orderMetaData, Double quantity);
 	
 	InvoiceItem getInvoiceItemByOrder(Order order);
 	
@@ -73,5 +73,9 @@ public interface BillingService extends OpenmrsService {
 	
 	List<Invoice> getInvoicesByVisitUuid(String visit);
 	
+	Invoice getInvoiceDetailsByUuid(String uuid);
+	
 	Order createOrderForOngoingIPDPatients() throws Exception;
+	
+	Order createOrderForOngoingDeceasedPatients() throws Exception;
 }

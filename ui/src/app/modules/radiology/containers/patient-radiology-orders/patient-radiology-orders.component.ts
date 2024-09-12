@@ -7,7 +7,10 @@ import { loadCurrentPatient, loadRolesDetails } from "src/app/store/actions";
 import { loadPatientBills } from "src/app/store/actions/bill.actions";
 import { loadActiveVisit } from "src/app/store/actions/visit.actions";
 import { AppState } from "src/app/store/reducers";
-import { getAllRadiologyOrders } from "src/app/store/selectors";
+import {
+  getAllRadiologyOrders,
+  getCurrentLocation,
+} from "src/app/store/selectors";
 import { getAllBills } from "src/app/store/selectors/bill.selectors";
 import { getCurrentPatient } from "src/app/store/selectors/current-patient.selectors";
 import {
@@ -15,7 +18,10 @@ import {
   getCurrentUserDetails,
   getCurrentUserPrivileges,
 } from "src/app/store/selectors/current-user.selectors";
-import { getActiveVisit, getActiveVisitUuid } from "src/app/store/selectors/visit.selectors";
+import {
+  getActiveVisit,
+  getActiveVisitUuid,
+} from "src/app/store/selectors/visit.selectors";
 
 @Component({
   selector: "app-patient-radiology-orders",
@@ -36,12 +42,14 @@ export class PatientRadiologyOrdersComponent implements OnInit {
   currentPatient$: Observable<any>;
   currentBills$: Observable<any>;
   activeVisit$: Observable<any>;
+  currentLocation$: Observable<any>;
+  showHistoryDetails: boolean = false;
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
     private systemSettingsService: SystemSettingsService
   ) {
-    this.store.dispatch(loadRolesDetails());
+    // this.store.dispatch(loadRolesDetails());
   }
 
   ngOnInit(): void {
@@ -63,5 +71,11 @@ export class PatientRadiologyOrdersComponent implements OnInit {
     this.activeVisitUuid$ = this.store.select(getActiveVisitUuid);
     this.activeVisit$ = this.store.pipe(select(getActiveVisit));
     this.currentPatient$ = this.store.select(getCurrentPatient);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
+  }
+
+  onToggleHistory(event: Event): void {
+    event.stopPropagation();
+    this.showHistoryDetails = !this.showHistoryDetails;
   }
 }

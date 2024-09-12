@@ -5,7 +5,7 @@ export function constructMessagesForDrugs(
   dosePerIntake,
   startingDateTime
 ): any {
-  console.log("data", data);
+  // console.log("data", data);
   let messages = [];
   if (days && frequency && dosePerIntake && startingDateTime) {
     for (

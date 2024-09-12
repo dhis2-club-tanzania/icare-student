@@ -1,0 +1,36 @@
+<ng-container *ngIf="{ formUuids: formUuids$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="registrationCategory && !params?.formUuids"
+  ></mat-progress-bar>
+  <div
+    class="row"
+    *ngIf="(registrationCategory && params?.formUuids) || !registrationCategory"
+  >
+    <ng-container
+      *ngIf="
+        (errors?.length === 0 && registrationCategory) || !registrationCategory
+      "
+    >
+      <div class="col-12">
+        <app-shared-batch-fields-definitions-form
+          *ngIf="
+            (params?.formUuids && registrationCategory) || !registrationCategory
+          "
+          [formUuids]="params?.formUuids"
+          [existingBatchFieldsInformations]="existingBatchFieldsInformations"
+          [fromMaintenance]="fromMaintenance"
+          [clinicalFields]="clinicalFields"
+          [personFields]="personFields"
+          [specimenTypeConceptUuid]="specimenTypeConceptUuid"
+          (selectedFieldsByCategory)="onGetSelectedFields($event)"
+          (selectedFieldsData)="onGetFormFieldsData($event)"
+          (fields)="onGetAllFields($event)"
+        ></app-shared-batch-fields-definitions-form>
+      </div>
+    </ng-container>
+    <div class="col-12" *ngIf="errors?.length > 0 && registrationCategory">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
+  </div>
+</ng-container>

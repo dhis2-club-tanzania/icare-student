@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Entity
-@Table(name = "st_stock_invoice")
+@Table(name = "st_stock_invoice", uniqueConstraints = {@UniqueConstraint(columnNames = {"invoice_number","supplier_id"})})
 public class StockInvoice extends BaseOpenmrsData implements java.io.Serializable, JSONConverter {
 
     @Id
@@ -177,14 +177,15 @@ public class StockInvoice extends BaseOpenmrsData implements java.io.Serializabl
             purchaseOrderObject.put("display",this.getPurchaseOrder().getCode());
             stockInvoiceObject.put("purchaseOrder",purchaseOrderObject);
         }
-        if(this.getStockInvoiceItems() != null) {
-                List<Map<String, Object>> stockInvoiceItems = new ArrayList<>();
-                for (StockInvoiceItem stockInvoiceItem : this.getStockInvoiceItems()) {
-                    stockInvoiceItems.add(stockInvoiceItem.toMap());
-                }
-                stockInvoiceObject.put("InvoiceItems", stockInvoiceItems);
 
-        }
+//        if(this.getStockInvoiceItems() != null) {
+//                List<Map<String, Object>> stockInvoiceItems = new ArrayList<>();
+//                for (StockInvoiceItem stockInvoiceItem : this.getStockInvoiceItems()) {
+//                    stockInvoiceItems.add(stockInvoiceItem.toMap());
+//                }
+//                stockInvoiceObject.put("InvoiceItems", stockInvoiceItems);
+//
+//        }
 
 
         if (this.getCreator() != null) {
@@ -214,6 +215,22 @@ public class StockInvoice extends BaseOpenmrsData implements java.io.Serializabl
         }
 
         return stockInvoiceObject;
+    }
+
+    // Added this function to optimize performance when getting stock invoices
+    public Map<String, Object> toMapWithItems(){
+
+        Map<String,Object> stockInvoiceObject = this.toMap();
+
+        if(this.getStockInvoiceItems() != null) {
+            List<Map<String, Object>> stockInvoiceItems = new ArrayList<>();
+            for (StockInvoiceItem stockInvoiceItem : this.getStockInvoiceItems()) {
+                stockInvoiceItems.add(stockInvoiceItem.toMap());
+            }
+            stockInvoiceObject.put("InvoiceItems", stockInvoiceItems);
+
+        }
+        return  stockInvoiceObject;
     }
 
 }

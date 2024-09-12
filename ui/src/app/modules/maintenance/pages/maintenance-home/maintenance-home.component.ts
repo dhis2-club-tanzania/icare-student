@@ -31,12 +31,13 @@ export class MaintenanceHomeComponent implements OnInit {
         searchCode: "PRICE_LIST",
         children: [{ id: "dept-1" }],
       },
-      { id: "users-management", name: "User Management" },
       { id: "drug", name: "Drug Management" },
-      { id: "location", name: "Location Management" },
-      { id: "system-settings", name: "System Settings" },
-      { id: "system-privileges-and-roles", name: "Privileges & Roles" },
+      { id: "programs", name: "Programs" },
       { id: "reports-settings", name: "Reports" },
+      { id: "location", name: "Location Management" },
+      { id: "users-management", name: "User Management" },
+      { id: "system-privileges-and-roles", name: "Privileges & Roles" },
+      { id: "system-settings", name: "System Settings" },
     ];
 
     this.getDepartmentsForTheCurrentMenu(this.pages[0]);

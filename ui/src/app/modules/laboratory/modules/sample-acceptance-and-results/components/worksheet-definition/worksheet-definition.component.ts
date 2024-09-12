@@ -10,13 +10,15 @@ import { TextArea } from "src/app/shared/modules/form/models/text-area.model";
 import { DateField } from "src/app/shared/modules/form/models/date-field.model";
 import { GenerateMetadataLabelsService } from "src/app/core/services";
 import { MatCheckboxChange } from "@angular/material/checkbox";
-// import jsPDF from "jspdf";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import htmlToPdfmake from "html-to-pdfmake";
 import { AdditionalFieldsModalComponent } from "src/app/modules/laboratory/modals/additional-fields-modal/additional-fields-modal.component";
 import { MatDialog } from "@angular/material/dialog";
+import { ExportDataService } from "src/app/core/services/export-data.service";
 
 @Component({
   selector: "app-worksheet-definition",
@@ -51,12 +53,14 @@ export class WorksheetDefinitionComponent implements OnInit {
   isFormValid: boolean = false;
   expirationDateChecked: boolean = true;
   searchingText: string;
+
   @ViewChild("wsdefntable") pdfTable: ElementRef;
   constructor(
     private worksheetsService: WorkSheetsService,
     private datasetDataService: DatasetDataService,
     private generateMetadataLabelsService: GenerateMetadataLabelsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private exportService: ExportDataService
   ) {}
 
   ngOnInit(): void {
@@ -351,10 +355,10 @@ export class WorksheetDefinitionComponent implements OnInit {
             },
           };
           this.isWorksheetRenderingReady = true;
-          console.log(
-            "currentWorksheetDefinition",
-            this.currentWorksheetDefinition
-          );
+          // console.log(
+          //   "currentWorksheetDefinition",
+          //   this.currentWorksheetDefinition
+          // );
           // this.generateDefaultWorksheetRowsColumns();
         }
       });
@@ -548,6 +552,19 @@ export class WorksheetDefinitionComponent implements OnInit {
     // a.download = 'bill.pdf';
     // document.body.appendChild(a);
     // a.click();
+  }
+
+  downloadToExcel(event: Event, id: string, name: string): void {
+    event.stopPropagation();
+    this.exportService.downloadTableToExcel(
+      id,
+      name +
+        new Date().getFullYear() +
+        "_" +
+        (new Date().getMonth() + 1) +
+        "_" +
+        new Date().getDate()
+    );
   }
 
   public download(event: Event, id, filename): void {

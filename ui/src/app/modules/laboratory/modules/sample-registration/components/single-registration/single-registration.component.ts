@@ -21,9 +21,9 @@ import { DiagnosisService } from "src/app/shared/resources/diagnosis/services";
 import { ConceptGetFull } from "src/app/shared/resources/openmrs";
 import { VisitsService } from "src/app/shared/resources/visits/services";
 import { SamplesService } from "src/app/shared/services/samples.service";
-import { BarCodeModalComponent } from "../../../sample-acceptance-and-results/components/bar-code-modal/bar-code-modal.component";
+import { BarCodeModalComponent } from "../../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component";
 
-import { uniqBy, keyBy, omit } from "lodash";
+import { uniqBy, keyBy, omit, groupBy, flatten } from "lodash";
 import { OrdersService } from "src/app/shared/resources/order/services/orders.service";
 import { SampleRegistrationFinalizationComponent } from "../sample-registration-finalization/sample-registration-finalization.component";
 import { ConceptsService } from "src/app/shared/resources/concepts/services/concepts.service";
@@ -34,15 +34,15 @@ import { Store } from "@ngrx/store";
 import { AppState } from "src/app/store/reducers";
 import { getLocationsByIds } from "src/app/store/selectors";
 import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
-import { BarCodePrintModalComponent } from "../../../sample-acceptance-and-results/components/bar-code-print-modal/bar-code-print-modal.component";
-import { webSocket } from 'rxjs/webSocket';
+import { webSocket } from "rxjs/webSocket";
+import { Textbox } from "src/app/shared/modules/form/models/text-box.model";
 
 @Component({
   selector: "app-single-registration",
   templateUrl: "./single-registration.component.html",
   styleUrls: ["./single-registration.component.scss"],
 })
-export class SingleRegistrationComponent implements OnInit,AfterViewInit {
+export class SingleRegistrationComponent implements OnInit, AfterViewInit {
   labSampleLabel$: Observable<string>;
   @Input() mrnGeneratorSourceUuid: string;
   @Input() preferredPersonIdentifier: string;
@@ -58,6 +58,11 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
   @Input() LISConfigurations: any;
   @Input() barcodeSettings: any;
   @Input() specimenSources: ConceptGetFull[];
+  @Input() personEmailAttributeTypeUuid: string;
+  @Input() personPhoneAttributeTypeUuid: string;
+  @Input() labTestRequestProgramStageId: string;
+  @Input() sampleRegistrationCategories: any[];
+  @Input() specimenSourceConceptUuid: string;
 
   departmentField: any = {};
   specimenDetailsFields: any;
@@ -80,7 +85,8 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
 
   patientFieldSetClosed: boolean = false;
 
-  registrationCategory: string = "CLINICAL";
+  registrationCategory: any;
+  // "CLINICAL";
 
   receivedOnField: any;
   receivedByField: any;
@@ -129,6 +135,15 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
   currentLabLocation: any;
   existingFields: any;
   connection: any;
+  referralFields: any[];
+  referralData: any;
+  showReferralDataFields: boolean = true;
+
+  renderGenericForms: boolean = false;
+  generalObsFormData: any = {};
+  generalObservationsData: any;
+  isGeneralObsFormValid: boolean = true;
+  formId: string;
 
   constructor(
     private samplesService: SamplesService,
@@ -148,41 +163,21 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
     this.currentLocation = JSON.parse(localStorage.getItem("currentLocation"));
   }
   ngAfterViewInit(): void {
-    // this.openBarCodeDialog({
-    //   sampleLabelsUsedDetails:  [{
-    //       visit: {
-    //           uuid: "330a23f2-83f6-4795-861c-71c22bcf230a"
-    //       },
-    //       label: "NPHL/23/0000115",
-    //       concept: {
-    //           uuid: "e61969c1-eb08-4c26-b9ce-fd7b02a4064e"
-    //       },
-    //       location: {
-    //           uuid: "7fdfa2cb-bc95-405a-88c6-32b7673c0453"
-    //       },
-    //       orders: [
-    //           {
-    //               uuid: "36799ca6-bd8f-4dfb-8e47-3994c6775dde"
-    //           },
-    //           {
-    //               uuid: "ad49832a-05e6-46af-bae4-3781b0e55749"
-    //           }
-    //       ],
-    //       uuid: "051b1294-b272-41bf-ba60-dbd95d308bf6"
-    //     }],
-    //     isLis: true
-    // })
     this.connection = webSocket(this.barcodeSettings?.socketUrl);
 
     this.connection.subscribe({
-      next: msg => console.log('message received: ', msg), // Called whenever there is a message from the server.
-      error: err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
-      complete: () => console.log('complete') // Called when connection is closed (for whatever reason).
+      next: (msg) => console.log("message received: ", msg), // Called whenever there is a message from the server.
+      error: (err) => console.log(err), // Called if at any point WebSocket API signals some kind of error.
+      complete: () => console.log("complete"), // Called when connection is closed (for whatever reason).
     });
   }
 
-
   ngOnInit(): void {
+    // console.log(
+    //   "sampleRegistrationCategories refKey",
+    //   this.sampleRegistrationCategories
+    // );
+    this.registrationCategory = this.sampleRegistrationCategories[0];
     const userLocationsIds = JSON.parse(
       this.currentUser?.userProperties?.locations
     );
@@ -202,63 +197,7 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
         const field = this.allRegistrationFields?.specimenDetailFields[key];
         return field;
       });
-
-    // this.specimenDetailsFields = [
-    //   new Dropdown({
-    //     id: "specimen",
-    //     key: "specimen",
-    //     label: "Specimen",
-    //     searchTerm: "SPECIMEN_SOURCE",
-    //     options: [],
-    //     conceptClass: "Specimen",
-    //     searchControlType: "concept",
-    //     shouldHaveLiveSearchForDropDownFields: true,
-    //   }),
-    //   new Dropdown({
-    //     id: "condition",
-    //     key: "condition",
-    //     label: "Condition",
-    //     options: [],
-    //     conceptClass: "condition",
-    //     searchControlType: "concept",
-    //     searchTerm: "SAMPLE_CONDITIONS",
-    //     shouldHaveLiveSearchForDropDownFields: true,
-    //   }),
-    //   new Dropdown({
-    //     id: "agency",
-    //     key: "agency",
-    //     label: "Urgency/Priority",
-    //     options: [],
-    //     conceptClass: "priority",
-    //     searchControlType: "concept",
-    //     searchTerm: "SAMPLE_PRIORITIES",
-    //     shouldHaveLiveSearchForDropDownFields: true,
-    //   }),
-    //   // new Dropdown({
-    //   //   id: "receivinglab",
-    //   //   key: "receivinglab",
-    //   //   label: "Receiving Lab",
-    //   //   options: [],
-    //   //   searchControlType: "concept",
-    //   //   conceptClass: "Lab Department",
-    //   //   shouldHaveLiveSearchForDropDownFields: true,
-    //   // }),
-    //   // new DateField({
-    //   //   id: "receivedOn",
-    //   //   key: "receivedOn",
-    //   //   label: "Received On",
-    //   // }),
-    //   // new Dropdown({
-    //   //   id: "department",
-    //   //   key: "department",
-    //   //   label: "Department",
-    //   //   options: [],
-    //   //   searchControlType: "concept",
-    //   //   conceptClass: "Lab Department",
-    //   //   shouldHaveLiveSearchForDropDownFields: true,
-    //   // }),
-    // ];
-
+    this.createReferralFields();
     this.receivedOnField =
       this.allRegistrationFields?.specimenDetailFields?.receivedOn;
     this.receivedByField =
@@ -287,20 +226,38 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
         ? currentLocation?.childLocations
         : [];
 
-    // this.labFormField = new Dropdown({
-    //   id: "lab",
-    //   key: "lab",
-    //   label: "Receiving Lab",
-    //   options: labsAvailable.map((location) => {
-    //     return {
-    //       key: location?.uuid,
-    //       value: location?.uuid,
-    //       label: location?.display,
-    //       name: location?.display,
-    //     };
-    //   }),
-    //   shouldHaveLiveSearchForDropDownFields: false,
-    // });getSelectedRCollectedOnTime
+    this.renderGenericForms = true;
+  }
+
+  onCustomFormUpdate(data: FormValue): void {
+    this.isGeneralObsFormValid = data.isValid;
+    this.generalObsFormData = {
+      ...this.generalObsFormData,
+      ...data.getValues(),
+    };
+    this.selectedSpecimenUuid =
+      this.generalObsFormData[this.specimenSourceConceptUuid]?.value;
+    // console.log("this.selectedSpecimenUuid", this.selectedSpecimenUuid);
+    if (this.selectedSpecimenUuid) {
+      this.testsUnderSpecimen$ =
+        this.labTestsService.getSetMembersByConceptUuid(
+          this.selectedSpecimenUuid
+        );
+    }
+    this.generalObservationsData = groupBy(
+      Object.keys(this.generalObsFormData).map((key) => {
+        return {
+          concept: key,
+          value: (this.generalObsFormData[key]?.value).toString(),
+          form: this.generalObsFormData[key]?.form,
+        };
+      }) || [],
+      "form"
+    );
+  }
+
+  onGetFormId(id: string): void {
+    this.formId = id;
   }
 
   get maximumDate() {
@@ -335,10 +292,57 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
 
   getSelection(event: MatRadioChange): void {
     this.registrationCategory = event?.value;
+    this.renderGenericForms = false;
+    setTimeout(() => {
+      this.renderGenericForms = true;
+    }, 20);
   }
 
   getTimestampFromDateAndTime(date: string, time: string): number {
     return new Date(`${date} ${time}`).getTime();
+  }
+
+  createReferralFields(): void {
+    this.referralFields = [
+      new Dropdown({
+        id: "isReferred",
+        key: "isReferred",
+        label: "Referred?",
+        required: true,
+        options: [
+          {
+            key: "YES",
+            label: "YES",
+            name: "YES",
+            value: "YES",
+          },
+          {
+            key: "NO",
+            label: "NO",
+            name: "NO",
+            value: "NO",
+          },
+        ],
+      }),
+      new Textbox({
+        id: "referralReason",
+        key: "referralReason",
+        label: "Referral reason",
+      }),
+    ];
+  }
+
+  onGetReferralData(formValue: FormValue): void {
+    const values = formValue.getValues();
+    if (values["isReferred"]?.value === "YES") {
+      this.referralData = {
+        status: "REFERRED SAMPLE",
+        category: "SAMPLE_REFERRAL",
+        remarks: values?.referralReason?.value
+          ? values?.referralReason?.value
+          : "Referred",
+      };
+    }
   }
 
   getSelectedReceivedOnTime(event: Event): void {
@@ -528,17 +532,17 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
     this.maxForCollectedOn = true;
 
     // this.getDateStringFromMoment_i();
-    if (
-      itemKey &&
-      itemKey === "specimenDetails" &&
-      this.selectedSpecimenUuid !== this.formData["specimen"]?.value
-    ) {
-      this.selectedSpecimenUuid = this.formData["specimen"]?.value;
-      this.testsUnderSpecimen$ =
-        this.labTestsService.getSetMembersByConceptUuid(
-          this.selectedSpecimenUuid
-        );
-    }
+    // if (
+    //   itemKey &&
+    //   itemKey === "specimenDetails" &&
+    //   this.selectedSpecimenUuid !== this.formData["specimen"]?.value
+    // ) {
+    //   this.selectedSpecimenUuid = this.formData["specimen"]?.value;
+    //   this.testsUnderSpecimen$ =
+    //     this.labTestsService.getSetMembersByConceptUuid(
+    //       this.selectedSpecimenUuid
+    //     );
+    // }
   }
 
   onFormUpdateForTest(testValues: any): void {
@@ -597,10 +601,8 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
 
   onGetPersonDetails(personDetails: any): void {
     this.personDetailsData =
-      this.registrationCategory === "CLINICAL"
+      this.registrationCategory?.refKey !== "non-clinical"
         ? personDetails
-        : this.registrationCategory === "EQA"
-        ? EQA_PERSON_DATA
         : NON_CLINICAL_PERSON_DATA;
     if (this.fromExternalSystem && this.selectedSystem) {
       // console.log(
@@ -658,7 +660,7 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
       // Then user should define the lab
     }
     let confirmationDialogue = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: forRejection ? `Save to reject sample` : `Save sample`,
         modalMessage: forRejection
@@ -695,14 +697,45 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
           });
         }
 
+        const testOrdersWithNoDepartments: any[] = flatten(
+          this.groupedTestOrdersByDepartments
+            ?.map((groupedTestOrdersByDepartment: any) => {
+              if (
+                (
+                  groupedTestOrdersByDepartment?.filter(
+                    (testOrder: any) => !testOrder?.departmentUuid
+                  ) || []
+                )?.length > 0
+              ) {
+                return (
+                  groupedTestOrdersByDepartment?.filter(
+                    (testOrder: any) => !testOrder?.departmentUuid
+                  ) || []
+                );
+              }
+            })
+            ?.filter(
+              (testOrdersWithNoDepartment: any) => testOrdersWithNoDepartment
+            )
+        );
         this.personDetailsData =
-          this.registrationCategory === "CLINICAL"
+          this.registrationCategory?.refKey !== "non-clinical"
             ? this.personDetailsData
-            : this.registrationCategory === "EQA"
-            ? EQA_PERSON_DATA
             : NON_CLINICAL_PERSON_DATA;
         if (this.testOrders?.length === 0) {
           this.errorMessage = "No test has been selected";
+        } else if (testOrdersWithNoDepartments.length > 0) {
+          this.errorMessage = `Test${
+            testOrdersWithNoDepartments.length > 1 ? "s" : ""
+          }s
+            ${(
+              testOrdersWithNoDepartments?.map(
+                (testOrderWithNoDept: any) => testOrderWithNoDept?.display
+              ) || []
+            ).join(", ")}
+            " ${
+              testOrdersWithNoDepartments?.length > 1 ? " have " : " has "
+            } no departments set, Contact IT for support`;
         } else {
           this.errorMessage = "";
           const orderConceptUuids =
@@ -711,12 +744,21 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
             .getConceptSetsByConceptUuids(orderConceptUuids)
             .subscribe((conceptSetsResponse: any) => {
               if (conceptSetsResponse && !conceptSetsResponse?.error) {
-                // console.log("conceptSetsResponse", conceptSetsResponse);
-                this.groupedTestOrdersByDepartments =
-                  formulateSamplesByDepartments(
-                    conceptSetsResponse,
-                    this.testOrders
-                  );
+                const groupedTestorders = groupBy(
+                  conceptSetsResponse,
+                  "testOrder"
+                );
+                this.groupedTestOrdersByDepartments = [];
+                Object.keys(groupedTestorders).forEach((key: string) => {
+                  let metadata = [];
+                  metadata = groupedTestorders[key];
+                  if (metadata.length > 0) {
+                    this.groupedTestOrdersByDepartments = [
+                      ...this.groupedTestOrdersByDepartments,
+                      metadata,
+                    ];
+                  }
+                });
                 zip(
                   this.registrationService.getPatientIdentifierTypes(),
                   this.locationService.getFacilityCode(),
@@ -772,13 +814,21 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                               attributes: [
                                 {
                                   attributeType:
-                                    "aeb3a16c-f5b6-4848-aa51-d7e3146886d6", //TODO: Find a way to softcode this
+                                    this.personPhoneAttributeTypeUuid,
                                   value: this.personDetailsData?.mobileNumber,
                                 },
-                              ],
+                                {
+                                  attributeType:
+                                    this.personEmailAttributeTypeUuid,
+                                  value: this.personDetailsData?.email,
+                                },
+                              ]?.filter(
+                                (personAttribute: any) => personAttribute?.value
+                              ),
                             },
                             identifiers:
-                              this.registrationCategory === "CLINICAL"
+                              this.registrationCategory?.refKey !==
+                              "non-clinical"
                                 ? (patientIdentifierTypes || [])
                                     .map((personIdentifierType) => {
                                       if (
@@ -874,7 +924,10 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                   },
                                 ];
 
-                                if (this.registrationCategory === "CLINICAL") {
+                                if (
+                                  this.registrationCategory?.refKey !==
+                                  "non-clinical"
+                                ) {
                                   const personDataAttributeKeys =
                                     Object.keys(this.personDetailsData).filter(
                                       (key) => key.indexOf("attribute-") === 0
@@ -902,7 +955,9 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                       {
                                         attributeType:
                                           key.split("attribute-")[1],
-                                        value: this.formData[key]?.value,
+                                        value: this.formData[key]?.value
+                                          ? this.formData[key]?.value
+                                          : "-",
                                       },
                                     ];
                                   });
@@ -955,28 +1010,26 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
 
                                       // Create encounter with orders
                                       zip(
-                                        ...this.groupedTestOrdersByDepartments.map(
+                                        ...this.groupedTestOrdersByDepartments?.map(
                                           (groupedTestOrders) => {
-                                            const orders =
-                                              groupedTestOrders.map(
-                                                (testOrder) => {
-                                                  // TODO: Remove hard coded order type
-                                                  return {
-                                                    concept: testOrder?.value,
-                                                    orderType:
-                                                      "52a447d3-a64a-11e3-9aeb-50e549534c5e", // TODO: Find a way to soft code this
-                                                    action: "NEW",
-                                                    orderer:
-                                                      this.provider?.uuid,
-                                                    patient:
-                                                      patientResponse?.uuid,
-                                                    careSetting: "OUTPATIENT",
-                                                    urgency: "ROUTINE", // TODO: Change to reflect users input
-                                                    instructions: "",
-                                                    type: "testorder",
-                                                  };
-                                                }
-                                              );
+                                            const orders = uniqBy(
+                                              groupedTestOrders,
+                                              "testOrder"
+                                            ).map((testOrder) => {
+                                              // TODO: Remove hard coded order type
+                                              return {
+                                                concept: testOrder?.testOrder,
+                                                orderType:
+                                                  "52a447d3-a64a-11e3-9aeb-50e549534c5e", // TODO: Find a way to soft code this
+                                                action: "NEW",
+                                                orderer: this.provider?.uuid,
+                                                patient: patientResponse?.uuid,
+                                                careSetting: "OUTPATIENT",
+                                                urgency: "ROUTINE", // TODO: Change to reflect users input
+                                                instructions: "",
+                                                type: "testorder",
+                                              };
+                                            });
 
                                             let obs = [];
                                             if (this.formData["notes"]?.value) {
@@ -990,30 +1043,115 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                 },
                                               ];
                                             }
-                                            const encounterObject = {
-                                              visit: visitResponse?.uuid,
-                                              patient: patientResponse?.uuid,
-                                              encounterType:
-                                                "9b46d3fe-1c3e-4836-a760-f38d286b578b",
-                                              location:
-                                                this.currentLocation?.uuid,
-                                              orders,
-                                              obs,
-                                              encounterProviders: [
-                                                {
-                                                  provider: this.provider?.uuid,
-                                                  encounterRole:
-                                                    ICARE_CONFIG.encounterRole,
-                                                },
-                                              ],
-                                            };
-                                            return this.labOrdersService.createLabOrdersViaEncounter(
-                                              encounterObject
+                                            let encounterObjects = [
+                                              {
+                                                visit: visitResponse?.uuid,
+                                                patient: patientResponse?.uuid,
+                                                encounterType:
+                                                  "9b46d3fe-1c3e-4836-a760-f38d286b578b",
+                                                location:
+                                                  this.currentLocation?.uuid,
+                                                orders,
+                                                obs:
+                                                  obs?.filter(
+                                                    (observation) =>
+                                                      observation?.value
+                                                  ) || [],
+                                                encounterProviders: [
+                                                  {
+                                                    provider:
+                                                      this.provider?.uuid,
+                                                    encounterRole:
+                                                      ICARE_CONFIG.encounterRole,
+                                                  },
+                                                ],
+                                              },
+                                            ];
+                                            encounterObjects = [
+                                              ...encounterObjects,
+                                              ...Object.keys(
+                                                this.generalObservationsData
+                                              ).map((key) => {
+                                                return {
+                                                  visit: visitResponse?.uuid,
+                                                  patient:
+                                                    patientResponse?.uuid,
+                                                  encounterType:
+                                                    "9b46d3fe-1c3e-4836-a760-f38d286b578b",
+                                                  location:
+                                                    this.currentLocation?.uuid,
+                                                  orders: [],
+                                                  obs: (
+                                                    this.generalObservationsData[
+                                                      key
+                                                    ]?.map((obs) =>
+                                                      omit(obs, "form")
+                                                    ) || []
+                                                  )
+                                                    .filter((obs) => obs?.value)
+                                                    .map((obsValue) => {
+                                                      return {
+                                                        ...obsValue,
+                                                        value:
+                                                          obsValue?.value?.indexOf(
+                                                            "GMT+"
+                                                          ) === -1
+                                                            ? obsValue?.value
+                                                            : formatDateToYYMMDD(
+                                                                new Date(
+                                                                  obsValue?.value
+                                                                )
+                                                              ) +
+                                                              " " +
+                                                              this.formatDimeChars(
+                                                                new Date(
+                                                                  obsValue?.value
+                                                                )
+                                                                  .getHours()
+                                                                  .toString()
+                                                              ) +
+                                                              ":" +
+                                                              this.formatDimeChars(
+                                                                new Date(
+                                                                  obsValue?.value
+                                                                )
+                                                                  .getMinutes()
+                                                                  .toString()
+                                                              ),
+                                                      };
+                                                    }),
+                                                  encounterProviders: [
+                                                    {
+                                                      provider:
+                                                        this.provider?.uuid,
+                                                      encounterRole:
+                                                        ICARE_CONFIG.encounterRole,
+                                                    },
+                                                  ],
+                                                  form: key,
+                                                };
+                                              }),
+                                            ];
+                                            return zip(
+                                              ...encounterObjects.map(
+                                                (encounterObject) =>
+                                                  this.labOrdersService.createLabOrdersViaEncounter(
+                                                    encounterObject
+                                                  )
+                                              )
+                                            ).pipe(
+                                              map((responses) => {
+                                                return responses[0];
+                                              })
                                             );
                                           }
                                         )
                                       ).subscribe((responses: any[]) => {
                                         if (responses) {
+                                          // console.log(
+                                          //   "responsesjsjsj",
+                                          //   flatten(responses)
+                                          // );
                                           responses.forEach(
                                             (encounterResponse, index) => {
                                               if (!encounterResponse?.error) {
@@ -1042,7 +1180,6 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                             ordersResponse,
                                                             "uuid"
                                                           );
-
                                                         this.samplesService
                                                           .getIncreamentalSampleLabel()
                                                           .subscribe(
@@ -1055,11 +1192,15 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                   label:
                                                                     sampleLabel,
                                                                   concept: {
-                                                                    uuid: this
-                                                                      .groupedTestOrdersByDepartments[
+                                                                    uuid: (this.groupedTestOrdersByDepartments[
                                                                       index
-                                                                    ][0]
-                                                                      ?.departmentUuid,
+                                                                    ]?.filter(
+                                                                      (dpt) =>
+                                                                        dpt?.systemName?.indexOf(
+                                                                          "LAB_DEPARTMENT:"
+                                                                        ) > -1
+                                                                    ) || [])[0]
+                                                                      ?.uuid,
                                                                   },
                                                                   specimenSource:
                                                                     {
@@ -1194,341 +1335,6 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                             ];
                                                                         }
 
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "receivedOn"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const receivedOnStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this.getTimestampFromDateAndTime(
-                                                                                  this
-                                                                                    .receivedOnDateLatestValue,
-                                                                                  this
-                                                                                    .receivedOnTime
-                                                                                ),
-                                                                              status:
-                                                                                "RECEIVED_ON",
-                                                                              category:
-                                                                                "RECEIVED_ON",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              receivedOnStatus,
-                                                                            ];
-                                                                        }
-
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "broughtOn"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const broughtOnStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this.getTimestampFromDateAndTime(
-                                                                                  this
-                                                                                    .broughtOnDateLatestValue,
-                                                                                  this
-                                                                                    .broughtOnTime
-                                                                                ),
-                                                                              status:
-                                                                                "BROUGHT_ON",
-                                                                              category:
-                                                                                "BROUGHT_ON",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              broughtOnStatus,
-                                                                            ];
-                                                                        }
-
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "collectedOn"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const collectedOnStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this.getTimestampFromDateAndTime(
-                                                                                  this
-                                                                                    .collectedOnDateLatestValue,
-                                                                                  this
-                                                                                    .collectedOnTime
-                                                                                ),
-                                                                              status:
-                                                                                "COLLECTED_ON",
-                                                                              category:
-                                                                                "COLLECTED_ON",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              collectedOnStatus,
-                                                                            ];
-                                                                        }
-
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "condition"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const receivedOnStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "condition"
-                                                                                ]
-                                                                                  ?.value,
-                                                                              category:
-                                                                                "CONDITION",
-                                                                              status:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "condition"
-                                                                                ]
-                                                                                  ?.value,
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              receivedOnStatus,
-                                                                            ];
-                                                                        }
-
-                                                                        const receivedByStatus =
-                                                                          {
-                                                                            sample:
-                                                                              {
-                                                                                uuid: sampleResponse?.uuid,
-                                                                              },
-                                                                            user: {
-                                                                              uuid: this
-                                                                                .formData[
-                                                                                "receivedBy"
-                                                                              ]
-                                                                                ?.value
-                                                                                ? this
-                                                                                    .formData[
-                                                                                    "receivedBy"
-                                                                                  ]
-                                                                                    ?.value
-                                                                                : localStorage.getItem(
-                                                                                    "userUuid"
-                                                                                  ),
-                                                                            },
-                                                                            category:
-                                                                              "RECEIVED_BY",
-                                                                            remarks:
-                                                                              "RECEIVED_BY",
-                                                                            status:
-                                                                              "RECEIVED_BY",
-                                                                          };
-                                                                        statuses =
-                                                                          [
-                                                                            ...statuses,
-                                                                            receivedByStatus,
-                                                                          ];
-
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "collectedBy"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const collectedByStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "collectedBy"
-                                                                                ]
-                                                                                  ?.value ||
-                                                                                "NO COLLECTOR SPECIFIED",
-                                                                              status:
-                                                                                "COLLECTED_BY",
-                                                                              category:
-                                                                                "COLLECTED_BY",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              collectedByStatus,
-                                                                            ];
-                                                                        }
-
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "broughtBy"
-                                                                          ]
-                                                                            ?.value
-                                                                        ) {
-                                                                          const broughtdByStatus =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "broughtBy"
-                                                                                ]
-                                                                                  ?.value ||
-                                                                                "NO PERSON SPECIFIED",
-                                                                              status:
-                                                                                "DELIVERED_BY",
-                                                                              category:
-                                                                                "DELIVERED_BY",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              broughtdByStatus,
-                                                                            ];
-                                                                        }
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "transportCondition"
-                                                                          ]
-                                                                            ?.value
-                                                                            .length >
-                                                                          0
-                                                                        ) {
-                                                                          const transportCondition =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "transportCondition"
-                                                                                ]
-                                                                                  ?.value ||
-                                                                                "NO TRANSPORT CONDITION SPECIFIED",
-                                                                              category:
-                                                                                "TRANSPORT_CONDITION",
-                                                                              status:
-                                                                                "TRANSPORT_CONDITION",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              transportCondition,
-                                                                            ];
-                                                                        }
-                                                                        if (
-                                                                          this
-                                                                            .formData[
-                                                                            "transportationTemperature"
-                                                                          ]
-                                                                            ?.value
-                                                                            ?.length >
-                                                                          0
-                                                                        ) {
-                                                                          const transportationTemperature =
-                                                                            {
-                                                                              sample:
-                                                                                {
-                                                                                  uuid: sampleResponse?.uuid,
-                                                                                },
-                                                                              user: {
-                                                                                uuid: localStorage.getItem(
-                                                                                  "userUuid"
-                                                                                ),
-                                                                              },
-                                                                              remarks:
-                                                                                this
-                                                                                  .formData[
-                                                                                  "transportationTemperature"
-                                                                                ]
-                                                                                  ?.value ||
-                                                                                "NO TRANSPORTATION TEMPERATURE SPECIFIED",
-                                                                              category:
-                                                                                "TRANSPORT_TEMPERATURE",
-                                                                              status:
-                                                                                "TRANSPORT_TEMPERATURE",
-                                                                            };
-                                                                          statuses =
-                                                                            [
-                                                                              ...statuses,
-                                                                              transportationTemperature,
-                                                                            ];
-                                                                        }
-
                                                                         statuses =
                                                                           [
                                                                             ...statuses,
@@ -1547,15 +1353,32 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                               remarks:
                                                                                 "Sample registration form type reference",
                                                                               status:
-                                                                                this
-                                                                                  .registrationCategory,
+                                                                                this.registrationCategory?.refKey?.toUpperCase(),
                                                                             },
                                                                           ];
 
-                                                                        // console.log(
-                                                                        //   "statuses",
-                                                                        //   statuses
-                                                                        // );
+                                                                        if (
+                                                                          this
+                                                                            .referralData
+                                                                        ) {
+                                                                          statuses =
+                                                                            [
+                                                                              ...statuses,
+                                                                              {
+                                                                                ...this
+                                                                                  .referralData,
+                                                                                sample:
+                                                                                  {
+                                                                                    uuid: sampleResponse?.uuid,
+                                                                                  },
+                                                                                user: {
+                                                                                  uuid: localStorage.getItem(
+                                                                                    "userUuid"
+                                                                                  ),
+                                                                                },
+                                                                              },
+                                                                            ];
+                                                                        }
 
                                                                         if (
                                                                           this
@@ -1585,6 +1408,28 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                             ];
                                                                         }
 
+                                                                        statuses =
+                                                                          [
+                                                                            ...statuses,
+                                                                            {
+                                                                              sample:
+                                                                                {
+                                                                                  uuid: sampleResponse?.uuid,
+                                                                                },
+                                                                              user: {
+                                                                                uuid: localStorage.getItem(
+                                                                                  "userUuid"
+                                                                                ),
+                                                                              },
+                                                                              remarks:
+                                                                                "Sample collection",
+                                                                              category:
+                                                                                "COLLECTED",
+                                                                              status:
+                                                                                "COLLECTED",
+                                                                            },
+                                                                          ];
+
                                                                         if (
                                                                           statuses?.length >
                                                                           0
@@ -1612,7 +1457,10 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                                     sampleLabelsUsedDetails:
                                                                                       this
                                                                                         .sampleLabelsUsedDetails,
-                                                                                    isLis: this.LISConfigurations?.isLIS
+                                                                                    isLis:
+                                                                                      this
+                                                                                        .LISConfigurations
+                                                                                        ?.isLIS,
                                                                                   };
                                                                                 this.dialog
                                                                                   .open(
@@ -1642,9 +1490,9 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
                                                                                   .afterClosed()
                                                                                   .subscribe(
                                                                                     () => {
-                                                                                    this.openBarCodeDialog(
-                                                                                          data
-                                                                                        );
+                                                                                      this.openBarCodeDialog(
+                                                                                        data
+                                                                                      );
                                                                                       this.isRegistrationReady =
                                                                                         false;
                                                                                       setTimeout(
@@ -1794,6 +1642,9 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
       case "tests":
         this.tests = !this.tests;
         break;
+      case "referralData":
+        this.showReferralDataFields = !this.showReferralDataFields;
+        break;
       default:
         break;
     }
@@ -1869,35 +1720,45 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
       })
       .afterClosed()
       .subscribe((results) => {
-        if(results){
-          let tests = []
+        if (results) {
+          let tests = [];
           results?.sampleData?.orders?.forEach((order) => {
             tests = [
               ...tests,
-              order?.order?.shortName?.split("TEST_ORDERS:")?.join("")
-            ]
-          })
+              order?.order?.shortName?.replace("TEST_ORDERS:")?.join(""),
+            ];
+          });
           // let message = this.barcodeSettings?.barcode?.split("{{SampleID}}").join(results?.sampleData?.label);
           // message = message.split("{{PatientNames}}").join(`${results?.sampleData?.patient?.givenName} ${results?.sampleData?.patient?.middleName} ${results?.sampleData?.patient?.familyName}`);
           // message = message?.split("{{Date}}").join(formatDateToYYMMDD(new Date(results?.sampleData?.created), true));
           // message = message?.split("{{Storage}}").join("");
           // message = message?.split("{{Tests}}").join(tests?.join(","));
           const message = {
-                SampleID: results?.sampleData?.label,
-                Tests: tests?.join(","),
-                PatientNames: `${results?.sampleData?.patient?.givenName} ${results?.sampleData?.patient?.middleName?.length ? results?.sampleData?.patient?.middleName : ""} ${results?.sampleData?.patient?.familyName}`,
-                Date: formatDateToYYMMDD(new Date(results?.sampleData?.created), true),
-                Storage: "",
-                Department: results?.sampleData?.department?.shortName?.split("LAB_DEPARTMENT:").join("") || "",
-                BarcodeData: results?.sampleData?.label?.split(this.barcodeSettings?.textToIgnore).join("")
-              }
-          this.connection.next(
-            {
-              Message: message,
-              Description: "Message of data to be printed",
-              Type: "print"
-            }
-          )
+            SampleID: results?.sampleData?.label,
+            Tests: tests?.join(","),
+            PatientNames: `${results?.sampleData?.patient?.givenName} ${
+              results?.sampleData?.patient?.middleName?.length
+                ? results?.sampleData?.patient?.middleName
+                : ""
+            } ${results?.sampleData?.patient?.familyName}`,
+            Date: formatDateToYYMMDD(
+              new Date(results?.sampleData?.created),
+              true
+            ),
+            Storage: "",
+            Department:
+              results?.sampleData?.department?.shortName
+                ?.split("LAB_DEPARTMENT:")
+                .join("") || "",
+            BarcodeData: results?.sampleData?.label
+              ?.split(this.barcodeSettings?.textToIgnore)
+              .join(""),
+          };
+          this.connection.next({
+            Message: message,
+            Description: "Message of data to be printed",
+            Type: "print",
+          });
         }
       });
   }
@@ -1972,106 +1833,4 @@ export class SingleRegistrationComponent implements OnInit,AfterViewInit {
   formatDimeChars(char: string): string {
     return char.length == 1 ? "0" + char : char;
   }
-
-    //Check JSPM WebSocket status
-  
-  
-  // jsPrint(data: any = [{
-  //         visit: {
-  //             uuid: "330a23f2-83f6-4795-861c-71c22bcf230a"
-  //         },
-  //         label: "NPHL/23/0000115",
-  //         concept: {
-  //             uuid: "e61969c1-eb08-4c26-b9ce-fd7b02a4064e"
-  //         },
-  //         location: {
-  //             uuid: "7fdfa2cb-bc95-405a-88c6-32b7673c0453"
-  //         },
-  //         orders: [
-  //             {
-  //                 uuid: "36799ca6-bd8f-4dfb-8e47-3994c6775dde"
-  //             },
-  //             {
-  //                 uuid: "ad49832a-05e6-46af-bae4-3781b0e55749"
-  //             }
-  //         ],
-  //         uuid: "051b1294-b272-41bf-ba60-dbd95d308bf6"
-  //       }]) {
-  //   // WebSocket settings
-  //   JSPM.JSPrintManager.auto_reconnect = true;
-  //   JSPM.JSPrintManager.start();
-  //   JSPM.JSPrintManager.WS.onStatusChanged = () => {
-  //       if (this.jspmWSStatus()) {
-  //           // get client installed printers
-  //           JSPM.JSPrintManager.getPrinters().then((printers) => {
-  //             this.openBarCodeDialog({
-  //               sampleLabelsUsedDetails: data?.sampleLabelsUsedDetails ? data?.sampleLabelsUsedDetails : data,
-  //               printers: printers,
-  //               isLis: true,
-  //             });
-  //           })
-  //       }
-  //   };
-  // }
-
-  // jspmWSStatus() {
-  //   if (JSPM.JSPrintManager.websocket_status === JSPM.WSStatus.Open) {
-  //       return true;
-  //   } else if (JSPM.JSPrintManager.websocket_status === JSPM.WSStatus.Closed) {
-  //       this.errorMessage = 'JSPrintManager (JSPM) is not installed or not running! Download JSPM Client App from https://neodynamic.com/downloads/jspm';
-  //       return false;
-  //     } else if (JSPM.JSPrintManager.websocket_status === JSPM.WSStatus.Blocked) {
-  //     this.errorMessage = 'JSPM has blocked this website!';
-  //       return false;
-  //   }
-  // }
-
-  // // Do Zebra ZPL printing...
-  // doPrintZPL(data?: any) {
-  //       // Create a ClientPrintJob
-  //   const cpj = new JSPM.ClientPrintJob();
-  //   if(data?.selectedPrinter){
-  //     cpj.clientPrinter = new JSPM.InstalledPrinter(data?.selectedPrinter)
-  //   } else {
-  //     cpj.clientPrinter = new JSPM.DefaultPrinter();
-  //   }
-  //       // Set content to print...
-  //       //Create Zebra ZPL commands for sample label
-	// 	var cmds =  `
-  //     ^XA
-  //     ^FX Barcode: BC-NRIB for orientation,number for height, Y for show data,Y on top^FS
-  //     ^FT30,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT30,120^A@B,15,10^FD[FORM]^FS
-  //     ^FO40,45^BCB,80,N,N,N,N^FD{{SampleID}}^FS
-  //     ^FT150,400^A@B,20,10^FD{{PatientNames}}^FS
-  //     ^FT145,150^A@B,15,10^FD{{Date}}^FS
-  //     ^FT220,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT220,210^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT240,210^A@B,15,5^FD{{PatientNames}}^FS
-  //     ^FXMiddle label starts Here^FS
-  //     ^FT310,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT310,120^A@B,15,10^FD[FORM]^FS
-  //     ^FT360,400^A@B,15,10^FD{{Tests}}^FS
-  //     ^FT460,400^A@B,20,10^FD{{PatientNames}}^FS
-  //     ^FT460,140^A@B,15,10^FD{{Date}}^FS
-  //     ^FT510,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT510,210^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT530,210^A@B,15,5^FD{{PatientNames}}^FS
-  //     ^FXMiddle Label Ends Here^FS
-  //     ^FT610,40^A@N,15,10^FD{{Storage}}^FS
-  //     ^FT590,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FO600,45^BCB,80,N,N,N,N^FD{{SampleID}}^FS
-  //     ^FT710,400^A@B,20,10^FD{{PatientNames}}^FS
-  //     ^FT740,400^A@B,15,10^FD{{Tests}}^FS
-  //     ^FT790,400^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT810,400^A@B,15,10^FD{{Storage}}^FS
-  //     ^FT790,210^A@B,15,10^FD{{SampleID}}^FS
-  //     ^FT810,210^A@B,15,5^FD{{PatientNames}}^FS
-  //     ^XZ
-  //   `;
-	// 	cpj.printerCommands = cmds;
-
-  //   // Send print job to printer!
-  //   cpj.sendToClient();
-  //   }
 }

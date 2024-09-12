@@ -18,6 +18,7 @@ import { AddDiagnosisModalComponent } from "../add-diagnosis-modal/add-diagnosis
 import { DeleteDiagnosisModalComponent } from "../delete-diagnosis-modal/delete-diagnosis-modal.component";
 import { getAllDiagnosesFromVisitDetails } from "../../helpers/patient.helper";
 import { VisitObject } from "../../resources/visits/models/visit-object.model";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 
 @Component({
   selector: "app-patient-diagnoses-summary",
@@ -41,11 +42,17 @@ export class PatientDiagnosesSummaryComponent implements OnInit {
   savingDiagnosisState$: Observable<boolean>;
   @Output() updateConsultationOrder = new EventEmitter();
   @Output() updateMedicationComponent = new EventEmitter();
-  constructor(private store: Store<AppState>, private dialog: MatDialog) {}
+  surveillanceDiagnosesConfigurations$: Observable<any>;
+  constructor(
+    private store: Store<AppState>,
+    private dialog: MatDialog,
+    private systemSettingsService: SystemSettingsService
+  ) {}
 
   ngOnInit(): void {
     if (this.diagnosisFormDetails) {
       this.diagnosisForm = formatDiagnosisFormObject(this.diagnosisFormDetails);
+      // console.log("TEST", this.diagnosisForm);
       this.diagnosisField = (this.diagnosisForm?.formFields.filter(
         (field) => field?.key === "diagnosis"
       ) || [])[0];
@@ -57,13 +64,17 @@ export class PatientDiagnosesSummaryComponent implements OnInit {
       ? this.store.select(getAllDiagnoses)
       : of(getAllDiagnosesFromVisitDetails(this.patientVisit));
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
+    this.surveillanceDiagnosesConfigurations$ =
+      this.systemSettingsService.getSystemSettingsByKey(
+        "iCare.surveillance.settings.immediate.diagnoses"
+      );
   }
 
   onFormUpdate(formValues: FormValue, type): void {
     this.formValuesData = { ...this.formValuesData, ...formValues.getValues() };
   }
 
-  addDiagnosis(e: Event): void {
+  addDiagnosis(e: Event, surveillanceDiagnosesConfigurations: any): void {
     e.stopPropagation();
     this.diagnosisField = null;
     this.diagnosisRankField = null;

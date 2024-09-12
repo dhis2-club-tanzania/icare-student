@@ -1,0 +1,47 @@
+<div
+  class="w-100"
+  *ngIf="{ enrolledPatients: enrolledPatients$ | async } as params"
+>
+  <mat-chip-list
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <mat-chip
+      color="primary"
+      [selected]="program?.uuid == selectedProgram?.uuid"
+      cdkDrag
+      *ngFor="let program of programs"
+    >
+      {{ program?.name ? program?.name : program?.display }}
+    </mat-chip>
+  </mat-chip-list>
+  <div
+    class="mt-5 d-flex justify-content-center w-100"
+    *ngIf="!params?.enrolledPatients"
+  >
+    <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+  </div>
+  <div class="search-input-card p-2 border mb-3 mt-3">
+    <mat-icon matPrefix class="text-muted">search</mat-icon>
+    <input
+      class="ml-2 w-100 search-input"
+      matInput
+      autocomplete="off"
+      placeholder="Search enrolled clients"
+      (keyup)="onSearchClient($event)"
+    />
+  </div>
+  <div class="w-100 pl-2 pr-2">
+    <div
+      class="w-100 mt-2"
+      style="overflow: auto"
+      *ngIf="params?.enrolledPatients"
+    >
+      <app-render-loaded-clients-list
+        [enrolledPatients]="params?.enrolledPatients"
+        (enrollment)="onViewPatientEnrollment($event)"
+      ></app-render-loaded-clients-list>
+    </div>
+  </div>
+</div>

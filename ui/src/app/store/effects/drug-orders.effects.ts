@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { createEffect, Actions, ofType } from '@ngrx/effects';
+import { Injectable } from "@angular/core";
+import { createEffect, Actions, ofType } from "@ngrx/effects";
 import {
   saveDrugOrder,
   addDrugsOrdered,
@@ -10,28 +10,28 @@ import {
   saveDrugOrderFail,
   loadDrugOrders,
   loadDrugOrdersFail,
-} from '../actions';
+} from "../actions";
 import {
   switchMap,
   map,
   catchError,
   concatMap,
   withLatestFrom,
-} from 'rxjs/operators';
-import { of } from 'rxjs';
+} from "rxjs/operators";
+import { of } from "rxjs";
 import {
   NotificationService,
   Notification,
-} from 'src/app/shared/services/notification.service';
-import { select, Store } from '@ngrx/store';
-import { AppState } from '../reducers';
-import { getProviderDetails } from '../selectors/current-user.selectors';
-import { getCurrentPatient } from '../selectors/current-patient.selectors';
-import { getCurrentLocation, getDrugOrderEncounter } from '../selectors';
-import { getActiveVisit } from '../selectors/visit.selectors';
-import { getEncounterTypeByUuid } from '../selectors/encounter-type.selectors';
-import { ICARE_CONFIG } from 'src/app/shared/resources/config';
-import { DrugOrdersService } from 'src/app/shared/resources/order/services';
+} from "src/app/shared/services/notification.service";
+import { select, Store } from "@ngrx/store";
+import { AppState } from "../reducers";
+import { getProviderDetails } from "../selectors/current-user.selectors";
+import { getCurrentPatient } from "../selectors/current-patient.selectors";
+import { getCurrentLocation, getDrugOrderEncounter } from "../selectors";
+import { getActiveVisit } from "../selectors/visit.selectors";
+import { getEncounterTypeByUuid } from "../selectors/encounter-type.selectors";
+import { ICARE_CONFIG } from "src/app/shared/resources/config";
+import { DrugOrdersService } from "src/app/shared/resources/order/services";
 
 @Injectable()
 export class DrugOrdersEffects {
@@ -62,7 +62,7 @@ export class DrugOrdersEffects {
   //         withLatestFrom(
   //           this.store.select(getProviderDetails),
   //           this.store.pipe(select(getCurrentPatient)),
-  //           this.store.pipe(select(getCurrentLocation)),
+  //           this.store.pipe(select(getCurrentLocation(false))),
   //           this.store.pipe(select(getActiveVisit)),
   //           this.store.pipe(select(getDrugOrderEncounter)),
   //           this.store.pipe(
@@ -166,16 +166,16 @@ export class DrugOrdersEffects {
       switchMap((action) => {
         this.notificationService.show(
           new Notification({
-            message: 'Saving Prescription details...',
-            type: 'LOADING',
+            message: "Saving Prescription details...",
+            type: "LOADING",
           })
         );
         return this.drugOrderService.updateDrugOrder(action.drugOrder).pipe(
           map((response) => {
             this.notificationService.show(
               new Notification({
-                message: 'Prescription saved successfully',
-                type: 'SUCCESS',
+                message: "Prescription saved successfully",
+                type: "SUCCESS",
               })
             );
 
@@ -186,8 +186,8 @@ export class DrugOrdersEffects {
           catchError((error) => {
             this.notificationService.show(
               new Notification({
-                message: 'Error saving prescription',
-                type: 'ERROR',
+                message: "Error saving prescription",
+                type: "ERROR",
                 autoClose: false,
               })
             );
@@ -204,16 +204,16 @@ export class DrugOrdersEffects {
       switchMap(({ drugOrder }) => {
         this.notificationService.show(
           new Notification({
-            message: 'Dispensing prescription...',
-            type: 'LOADING',
+            message: "Dispensing prescription...",
+            type: "LOADING",
           })
         );
-        return this.drugOrderService.saveDrugOrder(drugOrder, 'DISPENSE').pipe(
+        return this.drugOrderService.saveDrugOrder(drugOrder, "DISPENSE").pipe(
           map((res) => {
             this.notificationService.show(
               new Notification({
-                message: 'Prescription dispensed successfully',
-                type: 'SUCCESS',
+                message: "Prescription dispensed successfully",
+                type: "SUCCESS",
               })
             );
 
@@ -222,8 +222,8 @@ export class DrugOrdersEffects {
           catchError((error) => {
             this.notificationService.show(
               new Notification({
-                message: 'Error dispensing prescription',
-                type: 'ERROR',
+                message: "Error dispensing prescription",
+                type: "ERROR",
                 autoClose: false,
               })
             );

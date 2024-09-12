@@ -1,0 +1,49 @@
+<div>
+  <table
+    class="mat-elevation-z2"
+    mat-table
+    [dataSource]="dataSource"
+    style="width: 100%"
+  >
+    <ng-container matColumnDef="sn">
+      <th mat-header-cell *matHeaderCellDef>SN</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.sn }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="mrn">
+      <th mat-header-cell *matHeaderCellDef>MRN</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.mrn }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="names">
+      <th mat-header-cell *matHeaderCellDef>Names</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.names }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef>Gender</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.gender }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="age">
+      <th mat-header-cell *matHeaderCellDef>Age</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.age }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      style="cursor: pointer"
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="getSelectedEnrollment($event, row?.enrollment)"
+    ></tr>
+  </table>
+</div>

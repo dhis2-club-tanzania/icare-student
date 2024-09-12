@@ -32,7 +32,7 @@
             <span>Search From All Patients</span>
           </button> -->
         </div>
-        <div class="w-25">
+        <div class="w-25" *ngIf="params?.visits && params?.visits.length > 0">
           <button
             class="float-right"
             [ngClass]="{ 'active-list-type': isTabularList }"
@@ -143,12 +143,13 @@
           [page]="page"
           (shouldLoadNewList)="onLoadNewList($event)"
         ></app-patients-tabular-list>
+        
       </div>
       <!-- End of Tabular list -->
 
       <div
         class="text-center w-100 mt-5"
-        *ngIf="!params?.visits || !params?.visits?.length > 0"
+        *ngIf="params?.visits && params?.visits?.length === 0"
       >
         <h3 class="text-muted">No patient found</h3>
       </div>

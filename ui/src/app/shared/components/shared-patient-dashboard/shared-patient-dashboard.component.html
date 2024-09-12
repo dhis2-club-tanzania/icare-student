@@ -63,7 +63,6 @@
         >
           <div class="d-flex justify-content-left">
             <button
-              class="float-left mr-4"
               mat-stroked-button
               (click)="clearBills($event)"
               matTooltip="Back to List"
@@ -71,17 +70,20 @@
               <mat-icon>arrow_back</mat-icon>
               Back to Client List
             </button>
-            <ng-container>
+            <a mat-icon-button class="mr-4" (click)="toggleSideBarMenu($event)">
+              <mat-icon>menu</mat-icon>
+            </a>
+            <ng-container *ngIf="!useSideBar">
               <button
                 *ngFor="let form of dashboardParams?.forms"
                 class="mr-2"
                 [ngClass]="{
                   'selected-form':
                     (selectedForm &&
-                      !showRoundDetails &&
+                      !showHistoryDetails &&
                       selectedForm?.uuid === form?.uuid) ||
                     (!selectedForm &&
-                      !showRoundDetails &&
+                      !showHistoryDetails &&
                       dashboardParams?.forms[0] &&
                       dashboardParams?.forms[0]?.uuid === form?.uuid)
                 }"
@@ -90,11 +92,6 @@
               >
                 {{ form?.name }}
               </button>
-              <!-- <button mat-button (click)="onToggleVisibityIcons($event)">
-                <mat-icon *ngIf="showRoundDetails">visibility_off</mat-icon>
-                <mat-icon *ngIf="!showRoundDetails">visibility</mat-icon>
-                Visit Information
-              </button> -->
             </ng-container>
           </div>
 
@@ -160,8 +157,7 @@
               />
             </span>
             <button
-              *ngIf="isInpatient"
-              [disabled]="!activeVisit?.waitingToBeAdmitted"
+              *ngIf="isInpatient && activeVisit?.waitingToBeAdmitted"
               mat-stroked-button
               class="mr-2 float-right"
               (click)="onAssignBed($event)"
@@ -191,7 +187,7 @@
               (click)="
                 onDischargePatient($event, dashboardParams?.patientInvoice)
               "
-              *ngIf="activeVisit?.isAdmitted && isInpatient"
+              *ngIf="activeVisit?.isAdmitted"
               mat-stroked-button
               class="mr-2 float-right"
             >
@@ -199,6 +195,7 @@
             </button>
             <button
               mat-stroked-button
+              [ngClass]="{ 'selected-form': showHistoryDetails }"
               (click)="onToggleVisibityIcons($event)"
               class="mr-2 float-right"
             >
@@ -324,7 +321,6 @@
               ></app-is-first-visit>
             </span>
             <button
-              class="ml-2"
               [disabled]="
                 codedVisitCloseStatus && codedVisitCloseStatus?.display
               "
@@ -370,247 +366,386 @@
           <div class="p-2">
             <div class="row">
               <div
+                class="col-md-2 col-sx-12 col-sm-12 side-bar-menu"
+                *ngIf="useSideBar"
+              >
+                <div class="row">
+                  <ul class="side-menu-bar-list">
+                    <li
+                      class="side-menu-item"
+                      [ngClass]="{
+                        'selected-form':
+                          (selectedForm &&
+                            !showHistoryDetails &&
+                            selectedForm?.uuid === form?.uuid) ||
+                          (!selectedForm &&
+                            !showHistoryDetails &&
+                            dashboardParams?.forms[0] &&
+                            dashboardParams?.forms[0]?.uuid === form?.uuid)
+                      }"
+                      *ngFor="let form of dashboardParams?.forms"
+                      (click)="getSelectedForm($event, form)"
+                    >
+                      {{ form?.name }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                class="col-sm-12 col-sx-12"
                 [ngClass]="{
-                  'col-lg-6 col-md-6 col-sm-12 col-sx-12':
-                    !isInpatient || isTheatre,
-                  'col-lg-8 col-md-8 col-sm-12 col-sx-12 obs-table': isInpatient
+                  'col-md-10': useSideBar,
+                  'col-md-12': !useSideBar
                 }"
               >
-                <div>
-                  <mat-progress-bar
-                    *ngIf="!readyForClinicalNotes"
-                    mode="indeterminate"
-                  >
-                  </mat-progress-bar>
-                  <div class="w-100">
-                    <div class="w-100">
-                      <div class="w-100 mt-2">
-                        <!-- <app-shared-visit-history-summary
-                          *ngIf="showRoundDetails"
-                          [location]="dashboardParams?.currentLocation"
-                          [activeVisit]="activeVisit"
-                        ></app-shared-visit-history-summary> -->
-                        <div class="w-100" *ngIf="showRoundDetails">
-                          <mat-accordion>
-                            <mat-expansion-panel
-                              class="mb-2 border p-0"
-                              [expanded]="true"
-                            >
-                              <mat-expansion-panel-header>
-                                <mat-panel-title
-                                  >Patient History
-                                </mat-panel-title>
-                              </mat-expansion-panel-header>
-                              <app-patient-history
-                                [patient]="
-                                  dashboardParams?.currentPatient?.patient
-                                "
-                                [location]="dashboardParams?.currentLocation"
-                              ></app-patient-history>
-                            </mat-expansion-panel>
-                          </mat-accordion>
+                <div class="row">
+                  <div class="col-lg-7 col-md-7 col-sm-12 col-sx-12">
+                    <div>
+                      <mat-progress-bar
+                        *ngIf="!readyForClinicalNotes"
+                        mode="indeterminate"
+                      >
+                      </mat-progress-bar>
+                      <div class="w-100">
+                        <div class="w-100">
+                          <div class="w-100 mt-2">
+                            <!-- <app-shared-visit-history-summary
+                        *ngIf="showHistoryDetails"
+                        [location]="dashboardParams?.currentLocation"
+                        [activeVisit]="activeVisit"
+                      ></app-shared-visit-history-summary> -->
+                            <div class="w-100" *ngIf="showHistoryDetails">
+                              <mat-accordion>
+                                <mat-expansion-panel
+                                  class="mb-2 border p-0"
+                                  [expanded]="true"
+                                >
+                                  <mat-expansion-panel-header>
+                                    <mat-panel-title
+                                      >Patient History
+                                    </mat-panel-title>
+                                  </mat-expansion-panel-header>
+                                  <app-patient-history
+                                    [patient]="
+                                      dashboardParams?.currentPatient?.patient
+                                    "
+                                    [location]="
+                                      dashboardParams?.currentLocation
+                                    "
+                                  ></app-patient-history>
+                                </mat-expansion-panel>
+                              </mat-accordion>
+                            </div>
+                          </div>
                         </div>
+                      </div>
+                      <app-clinical-notes
+                        *ngIf="
+                          !isInpatient &&
+                          readyForClinicalNotes &&
+                          !dashboardParams.loadingForms &&
+                          dashboardParams.currentPatient &&
+                          dashboardParams?.forms &&
+                          dashboardParams?.forms?.length > 0 &&
+                          !showHistoryDetails
+                        "
+                        [clinicalObservations]="
+                          dashboardParams?.observationsGroupedByConcept
+                        "
+                        [patient]="dashboardParams?.currentPatient"
+                        [location]="dashboardParams?.currentLocation"
+                        [visit]="activeVisit"
+                        [forms]="dashboardParams?.forms"
+                        [shouldUseOwnFormSelection]="false"
+                        [clinicConfigurations]="clinicConfigurations"
+                        [provider]="dashboardParams?.provider"
+                        (updateConsultationOrder)="onUpdateConsultationOrder()"
+                        [selectedForm]="
+                          selectedForm
+                            ? selectedForm
+                            : dashboardParams?.forms[0]
+                        "
+                        (currentFormDetails)="onGetCurrentFormDetails($event)"
+                        (saveObservations)="
+                          reload(dashboardParams?.currentPatient)
+                        "
+                      >
+                      </app-clinical-notes>
+                      <app-patient-observations-chart
+                          *ngIf="
+                            isInpatient &&
+                            !showHistoryDetails &&
+                            !dashboardParams.loadingForms &&
+                            dashboardParams.currentPatient &&
+                            dashboardParams?.forms &&
+                            dashboardParams?.forms?.length > 0 &&
+                            ((selectedForm &&
+                              dashboardParams?.observationChartForm ===
+                                selectedForm?.uuid) ||
+                              (!selectedForm?.uuid &&
+                                dashboardParams?.observationChartForm ===
+                                  dashboardParams?.forms[0].uuid))
+                          "
+                          [clinicalObservations]="
+                            dashboardParams?.observationsGroupedByConcept
+                          "
+                          [patient]="dashboardParams?.currentPatient"
+                          [location]="dashboardParams?.currentLocation"
+                          [visit]="activeVisit"
+                          [forms]="dashboardParams?.forms"
+                          [shouldUseOwnFormSelection]="false"
+                          [obsChartEncounterType]="
+                            dashboardParams?.observationChartEncounterType
+                          "
+                          [provider]="dashboardParams?.provider"
+                          [selectedForm]="
+                            selectedForm &&
+                            dashboardParams?.observationChartForm ===
+                              selectedForm?.uuid
+                              ? selectedForm
+                              : dashboardParams?.forms[0]?.uuid ===
+                                dashboardParams?.observationChartForm
+                              ? dashboardParams?.forms[0]
+                              : {}
+                          "
+                        >
+                        </app-patient-observations-chart>
+                      
+                      <app-ipd-forms
+                        *ngIf="
+                          isInpatient &&
+                          !showHistoryDetails &&
+                          readyForClinicalNotes &&
+                          !dashboardParams.loadingForms &&
+                          dashboardParams.currentPatient &&
+                          dashboardParams?.forms &&
+                          dashboardParams?.forms?.length > 0 &&
+                          ((selectedForm &&
+                            selectedForm?.uuid &&
+                            dashboardParams?.observationChartForm !==
+                              selectedForm?.uuid) ||
+                            (!selectedForm &&
+                              dashboardParams?.observationChartForm !==
+                                dashboardParams?.forms[0]?.uuid))
+                        "
+                        [clinicalObservations]="
+                          dashboardParams?.observationsGroupedByConcept
+                        "
+                        [patient]="dashboardParams?.currentPatient"
+                        [location]="dashboardParams?.currentLocation"
+                        [visit]="activeVisit"
+                        [forms]="dashboardParams?.forms"
+                        [shouldUseOwnFormSelection]="false"
+                        [provider]="dashboardParams?.provider"
+                        [selectedForm]="
+                          selectedForm &&
+                          dashboardParams?.observationChartForm !==
+                            selectedForm?.uuid
+                            ? selectedForm
+                            : dashboardParams?.forms[0]?.uuid !==
+                              dashboardParams?.observationChartForm
+                            ? dashboardParams?.forms[0]
+                            : {}
+                        "
+                        (saveObservations)="reload()"
+                      >
+                      </app-ipd-forms>
+
+                      <div
+                        class="alert alert-warning"
+                        role="alert"
+                        *ngIf="
+                          readyForClinicalNotes &&
+                          !dashboardParams.loadingForms &&
+                          dashboardParams.currentPatient &&
+                          dashboardParams?.forms &&
+                          dashboardParams?.forms?.length === 0
+                        "
+                      >
+                        NO Forms assigned for Location, Contact IT
                       </div>
                     </div>
                   </div>
-                  <app-clinical-notes
-                    *ngIf="
-                      !isInpatient &&
-                      readyForClinicalNotes &&
-                      !dashboardParams.loadingForms &&
-                      dashboardParams.currentPatient &&
-                      dashboardParams?.forms &&
-                      dashboardParams?.forms?.length > 0 &&
-                      !showRoundDetails
-                    "
-                    [clinicalObservations]="
-                      dashboardParams?.observationsGroupedByConcept
-                    "
-                    [patient]="dashboardParams?.currentPatient"
-                    [location]="dashboardParams?.currentLocation"
-                    [visit]="activeVisit"
-                    [forms]="dashboardParams?.forms"
-                    [shouldUseOwnFormSelection]="false"
-                    [provider]="dashboardParams?.provider"
-                    (updateConsultationOrder)="onUpdateConsultationOrder()"
-                    [selectedForm]="
-                      selectedForm ? selectedForm : dashboardParams?.forms[0]
-                    "
-                    (saveObservations)="reload()"
-                  >
-                  </app-clinical-notes>
-                  <app-patient-observations-chart
-                    *ngIf="
-                      isInpatient &&
-                      !showRoundDetails &&
-                      !dashboardParams.loadingForms &&
-                      dashboardParams.currentPatient &&
-                      dashboardParams?.forms &&
-                      dashboardParams?.forms?.length > 0 &&
-                      ((selectedForm &&
-                        dashboardParams?.observationChartForm ===
-                          selectedForm?.uuid) ||
-                        (!selectedForm?.uuid &&
-                          dashboardParams?.observationChartForm ===
-                            dashboardParams?.forms[0].uuid))
-                    "
-                    [clinicalObservations]="
-                      dashboardParams?.observationsGroupedByConcept
-                    "
-                    [patient]="dashboardParams?.currentPatient"
-                    [location]="dashboardParams?.currentLocation"
-                    [visit]="activeVisit"
-                    [forms]="dashboardParams?.forms"
-                    [shouldUseOwnFormSelection]="false"
-                    [obsChartEncounterType]="
-                      dashboardParams?.observationChartEncounterType
-                    "
-                    [provider]="dashboardParams?.provider"
-                    [selectedForm]="
-                      selectedForm &&
-                      dashboardParams?.observationChartForm ===
-                        selectedForm?.uuid
-                        ? selectedForm
-                        : dashboardParams?.forms[0]?.uuid ===
-                          dashboardParams?.observationChartForm
-                        ? dashboardParams?.forms[0]
-                        : {}
-                    "
-                  >
-                  </app-patient-observations-chart>
-                  <app-ipd-forms
-                    *ngIf="
-                      isInpatient &&
-                      !showRoundDetails &&
-                      readyForClinicalNotes &&
-                      !dashboardParams.loadingForms &&
-                      dashboardParams.currentPatient &&
-                      dashboardParams?.forms &&
-                      dashboardParams?.forms?.length > 0 &&
-                      ((selectedForm &&
-                        selectedForm?.uuid &&
-                        dashboardParams?.observationChartForm !==
-                          selectedForm?.uuid) ||
-                        (!selectedForm &&
-                          dashboardParams?.observationChartForm !==
-                            dashboardParams?.forms[0]?.uuid))
-                    "
-                    [clinicalObservations]="
-                      dashboardParams?.observationsGroupedByConcept
-                    "
-                    [patient]="dashboardParams?.currentPatient"
-                    [location]="dashboardParams?.currentLocation"
-                    [visit]="activeVisit"
-                    [forms]="dashboardParams?.forms"
-                    [shouldUseOwnFormSelection]="false"
-                    [provider]="dashboardParams?.provider"
-                    [selectedForm]="
-                      selectedForm &&
-                      dashboardParams?.observationChartForm !==
-                        selectedForm?.uuid
-                        ? selectedForm
-                        : dashboardParams?.forms[0]?.uuid !==
-                          dashboardParams?.observationChartForm
-                        ? dashboardParams?.forms[0]
-                        : {}
-                    "
-                    (saveObservations)="reload()"
-                  >
-                  </app-ipd-forms>
 
-                  <div
-                    class="alert alert-warning"
-                    role="alert"
-                    *ngIf="
-                      readyForClinicalNotes &&
-                      !dashboardParams.loadingForms &&
-                      dashboardParams.currentPatient &&
-                      dashboardParams?.forms &&
-                      dashboardParams?.forms?.length === 0
-                    "
-                  >
-                    NO Forms assigned for Location, Contact IT
-                  </div>
-                </div>
-              </div>
-
-              <div
-                [ngClass]="{
-                  'col-lg-6 col-md-6 col-sm-12 col-sx-12':
-                    !isInpatient || isTheatre,
-                  'col-lg-4 col-md-4 col-sm-12 col-sx-12': isInpatient
-                }"
-              >
-                <mat-accordion *ngIf="isInpatient">
-                  <mat-expansion-panel
-                    class="mb-2 border p-0"
-                    [expanded]="isInpatient ? true : false"
-                  >
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>Medication </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-patient-medication-summary
-                      *ngIf="activeVisit"
-                      [fromDispensing]="false"
-                      [patientVisit]="activeVisit"
-                      [isInpatient]="isInpatient"
-                      (updateConsultationOrder)="onUpdateConsultationOrder()"
-                    ></app-patient-medication-summary>
-                  </mat-expansion-panel>
-                </mat-accordion>
-                <mat-accordion
-                  *ngIf="
-                    userPrivileges['CLINIC_ADD_PROVISIONAL_DIAGNOSIS'] &&
-                    !isInpatient &&
-                    !isTheatre
-                  "
-                >
-                  <mat-expansion-panel
-                    class="mb-2 border p-0"
-                    [expanded]="true"
-                  >
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>Provisional Diagnoses </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <div
-                      *ngIf="dashboardParams?.formEntities['Visit Diagnoses']"
-                    >
-                      <app-patient-diagnoses-summary
-                        [isConfirmedDiagnosis]="false"
-                        [forConsultation]="true"
-                        [diagnosisFormDetails]="
-                          dashboardParams?.formEntities['Visit Diagnoses']
-                        "
-                        [patientVisit]="activeVisit"
-                        [isInpatient]="isInpatient"
-                        (updateConsultationOrder)="onUpdateConsultationOrder()"
-                      ></app-patient-diagnoses-summary>
-                    </div>
-                  </mat-expansion-panel>
-                </mat-accordion>
-                <ng-container *ngIf="tabsToShow?.length">
-                  <ng-container *ngFor="let tabToShow of tabsToShow">
-                    <mat-accordion>
+                  <div class="col-lg-5 col-md-5 col-sm-12 col-sx-12">
+                    <mat-accordion *ngIf="isInpatient">
                       <mat-expansion-panel
-                        *ngIf="
-                          userPrivileges[
-                            'CLINIC_ADD_LABORATORY_INVESTIGATION'
-                          ] ||
-                          userPrivileges[
-                            'CLINIC_ADD_RADIOLOGY_INVESTIGATION'
-                          ] ||
-                          userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']
-                        "
                         class="mb-2 border p-0"
-                        [expanded]="!isTheatre ? false : true"
+                        [expanded]="isInpatient ? true : false"
                       >
                         <mat-expansion-panel-header>
-                          <mat-panel-title>
-                            {{ tabToShow | titlecase }}
+                          <mat-panel-title>Medication </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <app-patient-medication-summary
+                          *ngIf="activeVisit"
+                          [fromDispensing]="false"
+                          [patientVisit]="activeVisit"
+                          [isInpatient]="isInpatient"
+                          (updateConsultationOrder)="
+                            onUpdateConsultationOrder()
+                          "
+                        ></app-patient-medication-summary>
+                      </mat-expansion-panel>
+                    </mat-accordion>
+                    <mat-accordion
+                      *ngIf="
+                        userPrivileges['CLINIC_ADD_PROVISIONAL_DIAGNOSIS'] &&
+                        !isInpatient &&
+                        !isTheatre
+                      "
+                    >
+                      <mat-expansion-panel
+                        class="mb-2 border p-0"
+                        [expanded]="true"
+                      >
+                        <mat-expansion-panel-header>
+                          <mat-panel-title
+                            >Provisional Diagnoses
                           </mat-panel-title>
                         </mat-expansion-panel-header>
+                        <div
+                          *ngIf="
+                            dashboardParams?.formEntities['Visit Diagnoses'] &&
+                            ((currentFormDetails['PROVISIONAL'] &&
+                              currentFormDetails?.requiredFormsHasData) ||
+                              !currentFormDetails['PROVISIONAL'])
+                          "
+                        >
+                          <app-patient-diagnoses-summary
+                            [isConfirmedDiagnosis]="false"
+                            [forConsultation]="true"
+                            [diagnosisFormDetails]="
+                              dashboardParams?.formEntities['Visit Diagnoses']
+                            "
+                            [patientVisit]="activeVisit"
+                            [isInpatient]="isInpatient"
+                            (updateConsultationOrder)="
+                              onUpdateConsultationOrder()
+                            "
+                          ></app-patient-diagnoses-summary>
+                        </div>
+                        <div
+                          class="alert alert-warning"
+                          role="alert"
+                          *ngIf="
+                            currentFormDetails['PROVISIONAL'] &&
+                            !currentFormDetails?.requiredFormsHasData
+                          "
+                        >
+                          Please fill data on
+                          <b>{{ currentFormDetails?.configs?.name }}</b> form to
+                          proceed
+                        </div>
+                      </mat-expansion-panel>
+                    </mat-accordion>
+                    <ng-container *ngIf="tabsToShow?.length > 0">
+                      <ng-container *ngFor="let tabToShow of tabsToShow">
+                        <mat-accordion>
+                          <mat-expansion-panel
+                            *ngIf="
+                              userPrivileges[
+                                'CLINIC_ADD_LABORATORY_INVESTIGATION'
+                              ] ||
+                              userPrivileges[
+                                'CLINIC_ADD_RADIOLOGY_INVESTIGATION'
+                              ] ||
+                              userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']
+                            "
+                            class="mb-2 border p-0"
+                            [expanded]="!isTheatre ? false : true"
+                          >
+                            <mat-expansion-panel-header>
+                              <mat-panel-title>
+                                {{ tabToShow | titlecase }}
+                              </mat-panel-title>
+                            </mat-expansion-panel-header>
 
-                        <ng-template matExpansionPanelContent>
+                            <ng-template matExpansionPanelContent>
+                              <app-patient-investigations-and-procedures
+                                *ngIf="
+                                  activeVisit &&
+                                  dashboardParams?.formEntities[
+                                    'All orderables'
+                                  ] &&
+                                  ((currentFormDetails[tabToShow] &&
+                                    currentFormDetails?.requiredFormsHasData) ||
+                                    !currentFormDetails[tabToShow])
+                                "
+                                [observations]="
+                                  dashboardParams?.observationsGroupedByConcept
+                                "
+                                [investigationAndProceduresFormsDetails]="
+                                  dashboardParams?.formEntities[
+                                    'All orderables'
+                                  ]
+                                "
+                                [patientVisit]="activeVisit"
+                                [isTheatre]="isTheatre"
+                                [forConsultation]="true"
+                                [provider]="dashboardParams?.provider"
+                                [orderTypes]="dashboardParams?.orderTypes"
+                                [iCareGeneralConfigurations]="
+                                  iCareGeneralConfigurations
+                                "
+                                [clinicConfigurations]="clinicConfigurations"
+                                [userPrivileges]="userPrivileges"
+                                [fromConsultation]="true"
+                                [isInpatient]="isInpatient"
+                                [tabToShow]="tabToShow"
+                                (updateConsultationOrder)="
+                                  onUpdateConsultationOrder()
+                                "
+                              ></app-patient-investigations-and-procedures>
+                              
+                              <div
+                                class="alert alert-warning"
+                                role="alert"
+                                *ngIf="
+                                  currentFormDetails[tabToShow] &&
+                                  !currentFormDetails?.requiredFormsHasData
+                                "
+                              >
+                                Please fill data on
+                                <b>{{ currentFormDetails?.configs?.name }}</b>
+                                form to proceed
+                              </div>
+                              <mat-progress-bar
+                                *ngIf="
+                                  dashboardParams?.loadingVisit ||
+                                  !activeVisit ||
+                                  !dashboardParams?.formEntities[
+                                    'All orderables'
+                                  ] ||
+                                  !dashboardParams?.provider ||
+                                  !dashboardParams?.orderTypes
+                                "
+                                mode="indeterminate"
+                              ></mat-progress-bar>
+                            </ng-template>
+                          </mat-expansion-panel>
+                        </mat-accordion>
+                      </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="!tabsToShow?.length">
+                      <mat-accordion>
+                        <mat-expansion-panel
+                          *ngIf="
+                            userPrivileges[
+                              'CLINIC_ADD_LABORATORY_INVESTIGATION'
+                            ] ||
+                            userPrivileges[
+                              'CLINIC_ADD_RADIOLOGY_INVESTIGATION'
+                            ] ||
+                            userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']
+                          "
+                          class="mb-2 border p-0"
+                          [expanded]="!isTheatre ? false : true"
+                        >
+                          <mat-expansion-panel-header>
+                            <mat-panel-title
+                              >Investigation / Procedures
+                            </mat-panel-title>
+                          </mat-expansion-panel-header>
                           <app-patient-investigations-and-procedures
                             *ngIf="
                               activeVisit &&
@@ -634,7 +769,6 @@
                             [userPrivileges]="userPrivileges"
                             [fromConsultation]="true"
                             [isInpatient]="isInpatient"
-                            [tabToShow]="tabToShow"
                             (updateConsultationOrder)="
                               onUpdateConsultationOrder()
                             "
@@ -652,128 +786,98 @@
                             "
                             mode="indeterminate"
                           ></mat-progress-bar>
-                        </ng-template>
+                        </mat-expansion-panel>
+                      </mat-accordion>
+                    </ng-container>
+
+                    <mat-accordion
+                      *ngIf="userPrivileges['CLINIC_ADD_CONFIRMED_DIAGNOSIS']"
+                    >
+                      <mat-expansion-panel
+                        class="mb-2 border p-0"
+                        [expanded]="false"
+                      >
+                        <mat-expansion-panel-header>
+                          <mat-panel-title
+                            >Confirmed Diagnoses
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div
+                          *ngIf="
+                            dashboardParams?.formEntities['Visit Diagnoses'] &&
+                            ((currentFormDetails['CONFIRMED_DIAGNOSIS'] &&
+                              currentFormDetails?.requiredFormsHasData) ||
+                              !currentFormDetails['CONFIRMED_DIAGNOSIS'])
+                          "
+                        >
+                          <app-patient-diagnoses-summary
+                            [isConfirmedDiagnosis]="true"
+                            [forConsultation]="true"
+                            [patientVisit]="activeVisit"
+                            [diagnosisFormDetails]="
+                              dashboardParams?.formEntities['Visit Diagnoses']
+                            "
+                            [isInpatient]="isInpatient"
+                            (updateConsultationOrder)="
+                              onUpdateConsultationOrder()
+                            "
+                            (updateMedicationComponent)="
+                              onUpdateMedicationComponent()
+                            "
+                          ></app-patient-diagnoses-summary>
+                        </div>
+                        <div
+                          class="alert alert-warning"
+                          role="alert"
+                          *ngIf="
+                            currentFormDetails['CONFIRMED_DIAGNOSIS'] &&
+                            !currentFormDetails?.requiredFormsHasData
+                          "
+                        >
+                          Please fill data on
+                          <b>{{ currentFormDetails?.configs?.name }}</b> form to
+                          proceed
+                        </div>
+                        <mat-progress-bar
+                          *ngIf="
+                            !dashboardParams?.formEntities['Visit Diagnoses']
+                          "
+                          mode="indeterminate"
+                        ></mat-progress-bar>
                       </mat-expansion-panel>
                     </mat-accordion>
-                  </ng-container>
-                </ng-container>
-                <ng-container *ngIf="!tabsToShow?.length">
-                  <mat-accordion>
-                    <mat-expansion-panel
+
+                    <mat-accordion
                       *ngIf="
-                        userPrivileges['CLINIC_ADD_LABORATORY_INVESTIGATION'] ||
-                        userPrivileges['CLINIC_ADD_RADIOLOGY_INVESTIGATION'] ||
-                        userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']
+                        userPrivileges['CLINIC_ADD_PRESCRIPTION'] &&
+                        !isInpatient &&
+                        !isTheatre
                       "
-                      class="mb-2 border p-0"
-                      [expanded]="!isTheatre ? false : true"
                     >
-                      <mat-expansion-panel-header>
-                        <mat-panel-title
-                          >Investigation / Procedures
-                        </mat-panel-title>
-                      </mat-expansion-panel-header>
-                      <app-patient-investigations-and-procedures
-                        *ngIf="
-                          activeVisit &&
-                          dashboardParams?.formEntities['All orderables']
-                        "
-                        [observations]="
-                          dashboardParams?.observationsGroupedByConcept
-                        "
-                        [investigationAndProceduresFormsDetails]="
-                          dashboardParams?.formEntities['All orderables']
-                        "
-                        [patientVisit]="activeVisit"
-                        [isTheatre]="isTheatre"
-                        [forConsultation]="true"
-                        [provider]="dashboardParams?.provider"
-                        [orderTypes]="dashboardParams?.orderTypes"
-                        [iCareGeneralConfigurations]="
-                          iCareGeneralConfigurations
-                        "
-                        [clinicConfigurations]="clinicConfigurations"
-                        [userPrivileges]="userPrivileges"
-                        [fromConsultation]="true"
-                        [isInpatient]="isInpatient"
-                        (updateConsultationOrder)="onUpdateConsultationOrder()"
-                      ></app-patient-investigations-and-procedures>
-
-                      <mat-progress-bar
-                        *ngIf="
-                          dashboardParams?.loadingVisit ||
-                          !activeVisit ||
-                          !dashboardParams?.formEntities['All orderables'] ||
-                          !dashboardParams?.provider ||
-                          !dashboardParams?.orderTypes
-                        "
-                        mode="indeterminate"
-                      ></mat-progress-bar>
-                    </mat-expansion-panel>
-                  </mat-accordion>
-                </ng-container>
-
-                <mat-accordion
-                  *ngIf="userPrivileges['CLINIC_ADD_CONFIRMED_DIAGNOSIS']"
-                >
-                  <mat-expansion-panel
-                    class="mb-2 border p-0"
-                    [expanded]="false"
-                  >
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>Confirmed Diagnoses </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <div
-                      *ngIf="dashboardParams?.formEntities['Visit Diagnoses']"
-                    >
-                      <app-patient-diagnoses-summary
-                        [isConfirmedDiagnosis]="true"
-                        [forConsultation]="true"
-                        [patientVisit]="activeVisit"
-                        [diagnosisFormDetails]="
-                          dashboardParams?.formEntities['Visit Diagnoses']
-                        "
-                        [isInpatient]="isInpatient"
-                        (updateConsultationOrder)="onUpdateConsultationOrder()"
-                        (updateMedicationComponent)="
-                          onUpdateMedicationComponent()
-                        "
-                      ></app-patient-diagnoses-summary>
-                    </div>
-                    <mat-progress-bar
-                      *ngIf="!dashboardParams?.formEntities['Visit Diagnoses']"
-                      mode="indeterminate"
-                    ></mat-progress-bar>
-                  </mat-expansion-panel>
-                </mat-accordion>
-
-                <mat-accordion
-                  *ngIf="
-                    userPrivileges['CLINIC_ADD_PRESCRIPTION'] &&
-                    !isInpatient &&
-                    !isTheatre
-                  "
-                >
-                  <mat-expansion-panel
-                    class="mb-2 border p-0"
-                    [expanded]="false"
-                  >
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>Medication </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-patient-medication-summary
-                      *ngIf="activeVisit && updateMedication"
-                      [fromDispensing]="false"
-                      [patientVisit]="activeVisit"
-                      [forConsultation]="true"
-                      [isInpatient]="isInpatient"
-                      (updateConsultationOrder)="onUpdateConsultationOrder()"
-                      (updateMedicationComponent)="
-                        onUpdateMedicationComponent()
-                      "
-                    ></app-patient-medication-summary>
-                  </mat-expansion-panel>
-                </mat-accordion>
+                      <mat-expansion-panel
+                        class="mb-2 border p-0"
+                        [expanded]="false"
+                      >
+                        <mat-expansion-panel-header>
+                          <mat-panel-title>Medication </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <app-patient-medication-summary
+                          *ngIf="activeVisit && updateMedication"
+                          [fromDispensing]="false"
+                          [patientVisit]="activeVisit"
+                          [forConsultation]="true"
+                          [isInpatient]="isInpatient"
+                          (updateConsultationOrder)="
+                            onUpdateConsultationOrder()
+                          "
+                          (updateMedicationComponent)="
+                            onUpdateMedicationComponent()
+                          "
+                        ></app-patient-medication-summary>
+                      </mat-expansion-panel>
+                    </mat-accordion>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -807,11 +911,12 @@
   </div>
   <mat-progress-bar
     *ngIf="
-      dashboardParams?.loadingPaymentStatus ||
-      !dashboardParams?.encounterTypes ||
-      dashboardParams?.billLoadingState ||
-      !dashboardParams?.currentPatient ||
-      dashboardParams?.loadingForms
+      dashboardParams?.hasPatientHavePendingPaymentForTheCurrentVisitType &&
+      (dashboardParams?.loadingPaymentStatus ||
+        !dashboardParams?.encounterTypes ||
+        dashboardParams?.billLoadingState ||
+        !dashboardParams?.currentPatient ||
+        dashboardParams?.loadingForms)
     "
     mode="indeterminate"
   >

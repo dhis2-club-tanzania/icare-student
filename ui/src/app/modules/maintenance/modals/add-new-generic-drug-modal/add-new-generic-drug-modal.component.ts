@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { omit } from "lodash";
 import { Observable } from "rxjs";
 import { ConceptSourcesService } from "src/app/core/services/concept-sources.service";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { ConceptsService } from "src/app/shared/resources/concepts/services/concepts.service";
 import { ConceptCreate } from "src/app/shared/resources/openmrs";
 
@@ -31,6 +32,7 @@ export class AddNewGenericDrugModalComponent implements OnInit {
     private dialogRef: MatDialogRef<AddNewGenericDrugModalComponent>,
     private conceptSourceService: ConceptSourcesService,
     private conceptService: ConceptsService,
+    private googleAnalyticsService: GoogleAnalyticsService,
     @Inject(MAT_DIALOG_DATA) data
   ) {
     this.dialogData = data;
@@ -52,44 +54,98 @@ export class AddNewGenericDrugModalComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  // onSave(event: Event, confirmed?: boolean): void {
+  //   event.stopPropagation();
+  //   this.saving = false;
+  //   if (confirmed) {
+  //     this.saving = true;
+  //     this.shouldConfirm = false;
+  //     this.conceptService
+  //       .searchConcept({ q: this.conceptName, conceptClass: this.conceptClass })
+  //       .subscribe((checkResponse) => {
+  //         if (checkResponse?.length > 0 && !this.conceptUuid) {
+  //           this.saving = false;
+  //           this.alertType = "danger";
+  //           this.savingMessage =
+  //             "Item with name " + this.conceptName + " exists";
+  //           setTimeout(() => {
+  //             this.savingMessage = null;
+  //           }, 4000);
+          
+  //         } else {
+  //           (!this.conceptUuid
+  //             ? this.conceptService.createConcept(this.conceptToCreate)
+  //             : this.conceptService.updateConcept(
+  //                 this.conceptUuid,
+  //                 omit(this.conceptToCreate, "descriptions")
+  //               )
+  //           ).subscribe((response: any) => {
+  //             if (response && !response?.error) {
+  //               this.saving = false;
+  //               this.dialogRef.close(true);
+  //             } else {
+  //               this.saving = false;
+  //               this.alertType = "danger";
+  //             }
+  //           });
+  //         }
+  //       });
+  //   } else {
+  //     this.shouldConfirm = true;
+  //   }
+  //   // this.trackActionForAnalytics(`Generic Drugs: Save`);
+  // }
+
   onSave(event: Event, confirmed?: boolean): void {
     event.stopPropagation();
     this.saving = false;
     if (confirmed) {
-      this.saving = true;
-      this.shouldConfirm = false;
-      this.conceptService
-        .searchConcept({ q: this.conceptName, conceptClass: this.conceptClass })
-        .subscribe((checkResponse) => {
-          if (checkResponse?.length > 0 && !this.conceptUuid) {
-            this.saving = false;
-            this.alertType = "danger";
-            this.savingMessage =
-              "Item with name " + this.conceptName + " exists";
-            setTimeout(() => {
-              this.savingMessage = null;
-            }, 4000);
-          } else {
-            (!this.conceptUuid
-              ? this.conceptService.createConcept(this.conceptToCreate)
-              : this.conceptService.updateConcept(
-                  this.conceptUuid,
-                  omit(this.conceptToCreate, "descriptions")
-                )
-            ).subscribe((response: any) => {
-              if (response && !response?.error) {
-                this.saving = false;
-                this.dialogRef.close(true);
-              } else {
-                this.saving = false;
-                this.alertType = "danger";
-              }
-            });
-          }
-        });
+      this.saveAfterConfirmation();
     } else {
       this.shouldConfirm = true;
     }
+  }
+  
+  private saveAfterConfirmation(): void {
+    this.saving = true;
+    this.shouldConfirm = false;
+    this.conceptService
+      .searchConcept({ q: this.conceptName, conceptClass: this.conceptClass })
+      .subscribe((checkResponse) => {
+        if (checkResponse?.length > 0 && !this.conceptUuid) {
+          this.saving = false;
+          this.alertType = "danger";
+          this.savingMessage =
+            "Item with name " + this.conceptName + " exists";
+          setTimeout(() => {
+            this.savingMessage = null;
+          }, 4000);
+        } else {
+          (!this.conceptUuid
+            ? this.conceptService.createConcept(this.conceptToCreate)
+            : this.conceptService.updateConcept(
+                this.conceptUuid,
+                omit(this.conceptToCreate, "descriptions")
+              )
+          ).subscribe((response: any) => {
+            if (response && !response?.error) {
+              this.saving = false;
+              this.dialogRef.close(true);
+            } else {
+              this.saving = false;
+              this.alertType = "danger";
+            }
+          });
+        }
+      });
+    // Tracking action here
+    this.trackActionForAnalytics('Generic Drugs: Save');
+  }
+  
+  
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Pharmacy',eventname,'Pharmacy')
   }
 
   onGetConceptToCreate(conceptToCreate: any): void {

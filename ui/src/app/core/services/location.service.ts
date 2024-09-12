@@ -87,6 +87,23 @@ export class LocationService {
       );
   }
 
+  getLocationAttributesByLocationUuid(uuid): Observable<any> {
+    return this.httpClient
+      .get(
+        "location/" +
+          uuid +
+          "?v=custom:(uuid,attributes:(attributeType,uuid,value,voided))"
+      )
+      .pipe(
+        map((response) => {
+          return response?.attributes && response?.attributes?.length > 0
+            ? response?.attributes.filter((attribute) => !attribute?.voided)
+            : [];
+        }),
+        catchError((error) => of(error))
+      );
+  }
+
   getLocationByIds(uuids, params?: any): Observable<any> {
     let parameters = [];
     if (params && params?.v) {
@@ -312,5 +329,24 @@ export class LocationService {
       }),
       catchError((error) => of(error))
     );
+  }
+
+  getLocationByAttributeTypeAndValue(parameters: any): Observable<any> {
+    return this.httpClient
+      .get(
+        `icare/location?attributeType=${parameters?.attributeType}&value=${parameters?.attributeValue}`
+      )
+      .pipe(
+        map((response) => {
+          return response?.results && response?.results?.length > 0
+            ? response?.results[0]
+            : {
+                error: {
+                  message: "Code does not found",
+                },
+              };
+        }),
+        catchError((error) => of(error))
+      );
   }
 }

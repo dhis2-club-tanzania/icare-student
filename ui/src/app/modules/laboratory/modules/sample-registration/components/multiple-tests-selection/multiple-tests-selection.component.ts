@@ -30,8 +30,11 @@ export class MultipleTestsSelectionComponent implements OnInit {
       ...this.selectedMembers,
     ];
     this.testSelectionCategory =
-      this.selectedSetMembersItems?.length > 0 ? "by-specimen" : this.setMembersFromSpecimen &&
-      this.setMembersFromSpecimen?.length > 0 ? "by-specimen" : "All";
+      this.selectedSetMembersItems?.length > 0
+        ? "by-specimen"
+        : this.setMembersFromSpecimen && this.setMembersFromSpecimen?.length > 0
+        ? "by-specimen"
+        : "All";
     this.conceptsList$ = !this.setMembersFromSpecimen
       ? this.conceptService.getConceptsBySearchTerm("TEST_ORDERS")
       : of(
@@ -75,6 +78,8 @@ export class MultipleTestsSelectionComponent implements OnInit {
           id: "test" + index,
           key: "test" + index,
           value: item?.uuid,
+          name: item?.name,
+          display: item?.name,
         };
       }),
       "id"

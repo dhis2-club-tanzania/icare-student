@@ -97,7 +97,6 @@ public class DhisEventTransaction extends BaseOpenmrsData implements java.io.Ser
 		newDhisEvent.setEventDate(date);
 		
 		return newDhisEvent;
-		
 	}
 	
 	public Map<String, Object> toMap() {

@@ -95,28 +95,30 @@
                         patientBillingDetails.bills.length > 0
                       "
                     >
-                      <app-print-button
-                        [iconName]="'print'"
-                        [toolTipText]="
-                          'Click to print invoice and receipt in one document'
-                        "
-                        [showText]="'Print All'"
-                        [ElementToBePrinted]="{
-                          Payments: patientBillingDetails?.payments,
-                          Bill: patientBillingDetails.bills,
-                          CurrentPatient: params?.currentPatient,
-                          FacilityDetails: params?.facilityDetails,
-                          Logo: params?.logo
-                        }"
-                        [classesList]="['float-right', 'button']"
-                        (print)="onPrint($event)"
-                      ></app-print-button>
+                      <div class="border-top pt-2">
+                        <app-print-button
+                          [iconName]="'print'"
+                          [toolTipText]="
+                            'Click to print invoice and receipt in one document'
+                          "
+                          [showText]="'Print All'"
+                          [ElementToBePrinted]="{
+                            Payments: patientBillingDetails?.payments,
+                            Bill: patientBillingDetails.bills,
+                            CurrentPatient: params?.currentPatient,
+                            FacilityDetails: params?.facilityDetails,
+                            Logo: params?.logo
+                          }"
+                          [classesList]="['float-right', 'button']"
+                          (print)="onPrint($event)"
+                        ></app-print-button>
+                      </div>
                     </div>
-                    <div *ngIf="patientBillingDetails.bills.length > 0">
+                    <div *ngIf="patientBillingDetails.bills.length > 1">
                       <app-print-button
                         [iconName]="'print'"
-                        [toolTipText]="'Click to print invoice'"
-                        [showText]="'Print Invoice'"
+                        [toolTipText]="'Click to print all invoices'"
+                        [showText]="'Print All Invoices'"
                         [classesList]="['float-right', 'button', 'mr-5']"
                         [ElementToBePrinted]="{
                           Bill: patientBillingDetails.bills,
@@ -282,7 +284,7 @@
                         "
                         [showText]="'Print All'"
                         [ElementToBePrinted]="{
-                          Payments: patientBillingDetails?.payments,
+                          Payments: patientBillingDetails.currentPayments,
                           Bill: patientBillingDetails.bills,
                           CurrentPatient: params?.currentPatient,
                           FacilityDetails: params?.facilityDetails,
@@ -299,7 +301,7 @@
                         [toolTipText]="'Click to print receipt'"
                         [showText]="'Print Receipt'"
                         [ElementToBePrinted]="{
-                          Payments: patientBillingDetails?.payments,
+                          Payments: patientBillingDetails.currentPayments,
                           CurrentPatient: params?.currentPatient,
                           FacilityDetails: params?.facilityDetails,
                           Logo: params?.logo

@@ -10,7 +10,8 @@
     generalMetadataConfigurations: generalMetadataConfigurations$ | async,
     genericPrescriptionOrderType: genericPrescriptionOrderType$ | async,
     genericPrescriptionEncounterType: genericPrescriptionEncounterType$ | async,
-    useGenericPrescription: useGenericPrescription$ | async
+    useGenericPrescription: useGenericPrescription$ | async,
+    provider: provider$ | async
   } as params"
 >
   <button mat-button color="light" (click)="onBack($event)">
@@ -79,7 +80,34 @@
         ></app-patient-generic-drug-order-list>
       </div>
 
-      <div class="border" *ngIf="params?.currentVisitLoadedState">
+      <div
+        class="border w-100"
+        *ngIf="
+          params?.useGenericPrescription === 'true' &&
+          params?.currentVisitLoadedState &&
+          params?.provider &&
+          !params?.patientVisit?.isEnsured
+        "
+      >
+        <app-drugs-list-to-send-for-billing
+          *ngIf="params?.patientVisit"
+          [visit]="params?.patientVisit"
+          [loading]="loading"
+          [loadingError]="loadingError"
+          [provider]="params?.provider"
+          [currentLocation]="params.currentLocation"
+          [currentPatient]="params?.currentPatient"
+          [generalMetadataConfigurations]="
+            params?.generalMetadataConfigurations
+          "
+          (reload)="shouldReloadDrugListForDispensing($event)"
+        ></app-drugs-list-to-send-for-billing>
+      </div>
+
+      <div
+        class="border"
+        *ngIf="params?.currentVisitLoadedState && readyToShow"
+      >
         <app-patient-drug-order-list
           *ngIf="params?.patientVisit"
           [visit]="params?.patientVisit"

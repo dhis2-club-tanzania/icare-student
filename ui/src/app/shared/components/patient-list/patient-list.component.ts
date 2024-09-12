@@ -26,6 +26,7 @@ import { PatientListDialogComponent } from "../../dialogs";
 import { MatDialog } from "@angular/material/dialog";
 import { addCurrentPatient, go } from "src/app/store/actions";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 
 @Component({
   selector: "app-patient-list",
@@ -49,6 +50,7 @@ export class PatientListComponent implements OnInit, OnChanges {
   @Input() orderByDirection: string;
   @Input() doNotUseLocation: boolean;
   @Input() encounterType: string;
+  @Input() includeDeadPatients: boolean;
 
   page: number = 0;
   visits$: Observable<Visit[]>;
@@ -72,7 +74,8 @@ export class PatientListComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
-    private systemSettingsService: SystemSettingsService
+    private systemSettingsService: SystemSettingsService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   ngOnChanges() {}
@@ -94,6 +97,9 @@ export class PatientListComponent implements OnInit, OnChanges {
       this.paymentTypeSelected = this.defaultFilter;
     }
     this.itemsPerPage = this.itemsPerPage ? this.itemsPerPage : 10;
+    // if (this.filterCategory === "billing") {
+    //   this.includeDeadPatients = true;
+    // }
     this.getVisits(this.visits);
   }
 
@@ -121,7 +127,10 @@ export class PatientListComponent implements OnInit, OnChanges {
             this.orderBy ? this.orderBy : "ENCOUNTER",
             this.orderByDirection ? this.orderByDirection : "ASC",
             this.filterBy ? this.filterBy : "",
-            this.encounterType
+            this.encounterType,
+            null,
+            null,
+            this.includeDeadPatients
           )
           .pipe(
             tap((response: any) => {
@@ -176,7 +185,10 @@ export class PatientListComponent implements OnInit, OnChanges {
               this.orderBy ? this.orderBy : "ENCOUNTER",
               this.orderByDirection ? this.orderByDirection : "ASC",
               this.filterBy,
-              this.encounterType
+              this.encounterType,
+              null,
+              null,
+              this.includeDeadPatients
             )
             .pipe(
               tap((response: any) => {
@@ -206,7 +218,10 @@ export class PatientListComponent implements OnInit, OnChanges {
         this.orderBy ? this.orderBy : "ENCOUNTER",
         this.orderByDirection ? this.orderByDirection : "ASC",
         this.filterBy ? this.filterBy : "",
-        this.encounterType
+        this.encounterType,
+        null,
+        null,
+        this.includeDeadPatients
       )
       .pipe(
         tap((response: any) => {
@@ -236,6 +251,13 @@ export class PatientListComponent implements OnInit, OnChanges {
     this.store.dispatch(clearBillItems());
     this.store.dispatch(clearActiveVisit());
     this.selectPatient.emit({ ...visit?.patient, visitUuid: visit?.uuid });
+
+      // this.trackActionForAnalytics(`Active Patient Search: View`)
+  
+  }
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Registration',eventname,'Registration')
   }
 
   togglePatientTypeList(type) {
@@ -281,8 +303,8 @@ export class PatientListComponent implements OnInit, OnChanges {
           );
         }
       });
+      
   }
-
   filterPatientList(event: any) {
     this.loadingPatients = true;
 
@@ -302,7 +324,10 @@ export class PatientListComponent implements OnInit, OnChanges {
         this.orderBy ? this.orderBy : "ENCOUNTER",
         this.orderByDirection ? this.orderByDirection : "ASC",
         this.filterBy,
-        this.encounterType
+        this.encounterType,
+        null,
+        null,
+        this.includeDeadPatients
       )
       .pipe(
         tap((response: any) => {

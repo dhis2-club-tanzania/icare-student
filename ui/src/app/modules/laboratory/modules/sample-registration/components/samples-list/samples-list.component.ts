@@ -9,6 +9,7 @@ import {
   take,
   tap,
 } from "rxjs/operators";
+import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import { SamplesService } from "src/app/shared/services/samples.service";
 
 @Component({
@@ -28,6 +29,10 @@ export class SamplesListComponent implements OnInit {
   pageCounts: any[] = [10, 20, 25, 50, 100, 200];
   searchText: string;
   subject = new Subject<string>();
+  selectedSampleUuid: string = "";
+  startDate: Date;
+  endDate: Date;
+  parameters: any = {};
   constructor(private samplesService: SamplesService) {
     this.subject
       .pipe(debounceTime(2000), distinctUntilChanged())
@@ -37,6 +42,24 @@ export class SamplesListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let endDate = formatDateToYYMMDD(new Date());
+    this.parameters = {
+      ...this.parameters,
+      startDate: formatDateToYYMMDD(
+        new Date(
+          Number(endDate?.split("-")[0]),
+          Number(endDate?.split("-")[1]) - 1,
+          Number(endDate?.split("-")[2]) - 2
+        )
+      ),
+      endDate: formatDateToYYMMDD(
+        new Date(
+          Number(endDate?.split("-")[0]),
+          Number(endDate?.split("-")[1]) - 1,
+          Number(endDate?.split("-")[2])
+        )
+      ),
+    };
     this.page = 1;
     this.pageSize = 10;
     this.getList();
@@ -45,11 +68,31 @@ export class SamplesListComponent implements OnInit {
   searchSamples(): void {
     // this.subject.next()
   }
+
+  onDateChange(reload?: boolean): void {
+    this.parameters = {
+      ...this.parameters,
+      startDate: `${this.startDate.getFullYear()}-${
+        this.startDate.getMonth() + 1
+      }-${this.startDate.getDate()}`,
+      endDate: `${this.endDate.getFullYear()}-${
+        this.endDate.getMonth() + 1
+      }-${this.endDate.getDate()}`,
+    };
+    if (reload) {
+      this.getList();
+    }
+  }
+
+  onViewSampleDetails(sample: any): void {
+    this.selectedSampleUuid = sample?.uuid;
+  }
+
   getList(): void {
     this.samples$ = this.samplesService
       .getSamplesByPaginationDetails(
         { page: this.page, pageSize: this.pageSize },
-        null,
+        this.parameters,
         this.searchText,
         this.departments,
         this.specimenSources,

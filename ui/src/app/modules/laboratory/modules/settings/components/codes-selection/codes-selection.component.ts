@@ -59,9 +59,9 @@ export class CodesSelectionComponent implements OnInit {
 
   onFormUpdateForSource(formValue: FormValue): void {
     const values = formValue.getValues();
+    this.selectedCodingSource = null;
     this.formData = { ...this.formData, ...values };
     this.codedOptions$ = of([]);
-    this.selectedCodingSource = values["source"]?.value;
     if (values["source"]?.value)
       this.conceptReferenceService
         .getReferenceTermsBySource(this.selectedCodingSource)
@@ -78,6 +78,9 @@ export class CodesSelectionComponent implements OnInit {
               };
             })
           );
+          if (response) {
+            this.selectedCodingSource = values["source"]?.value;
+          }
         });
   }
 

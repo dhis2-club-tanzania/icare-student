@@ -42,6 +42,8 @@ import { ObservationService } from "../../resources/observation/services";
 import { Patient } from "../../resources/patient/models/patient.model";
 import { Visit } from "../../resources/visits/models/visit.model";
 import { ConfigsService } from "../../services/configs.service";
+import { getCurrentPatient } from "src/app/store/selectors/current-patient.selectors";
+import { RegistrationService } from "src/app/modules/registration/services/registration.services";
 
 @Component({
   selector: "app-capture-form-data-modal",
@@ -52,7 +54,7 @@ export class CaptureFormDataModalComponent implements OnInit {
   patient: any;
   formUuid: string;
   formLoadingState$: Observable<boolean>;
-  form$: Observable<OpenMRSForm>;
+  form$: Observable<any>;
   formData: any;
   currentEncounterUuid: string;
   currentLocation: any;
@@ -77,13 +79,16 @@ export class CaptureFormDataModalComponent implements OnInit {
   observations: any;
   drugsPrescribed: any[];
   diagnoses$: Observable<any>;
+  causeOfDeathNonCoded: any;
+  causeOfDeath: any;
   constructor(
     private store: Store<AppState>,
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<CaptureFormDataModalComponent>,
     private observationService: ObservationService,
     private systemSettingsService: SystemSettingsService,
-    private configService: ConfigsService
+    private configService: ConfigsService,
+    private registrationService: RegistrationService
   ) {
     this.patient = data?.patient?.patient;
     this.formUuid = data?.form?.formUuid;
@@ -108,9 +113,7 @@ export class CaptureFormDataModalComponent implements OnInit {
       this.systemSettingsService.getSystemSettingsByKey(
         "iCare.clinic.deathRegistry.formUuid"
       );
-    this.form$ = this.store.select(getCustomOpenMRSFormById, {
-      id: this.formUuid,
-    });
+    this.form$ = this.store.select(getCustomOpenMRSFormById(this.formUuid));
     // this.deathRegistryFormUuid$.subscribe((responseFormUuid) => {
     //   if (responseFormUuid) {
     //     this.store
@@ -152,6 +155,7 @@ export class CaptureFormDataModalComponent implements OnInit {
 
   onFormUpdate(formValue: FormValue, form): void {
     this.formData = { ...this.formData, ...formValue.getValues() };
+
     this.isValid =
       (
         Object.keys(this.formData).filter((key) => this.formData[key]?.value) ||
@@ -190,13 +194,17 @@ export class CaptureFormDataModalComponent implements OnInit {
         },
       ],
     };
+    this.causeOfDeathNonCoded =
+      this.formData["37cf2f9d-4e73-46c1-aa60-7088f61b8d85"]?.value;
+    this.causeOfDeath =
+      this.formData["b61962e7-7972-4945-baf9-75074d531cb9"]?.value;
+
     // console.log('OBS', obs);
     // console.log('location', location);
   }
 
   saveCurrentFormData(e: Event, deathRegistryFormUuid: string): void {
     e.stopPropagation();
-    console.log(this.encounterObject);
     this.store.dispatch(
       saveObservationsUsingEncounter({
         data: this.encounterObject,
@@ -206,7 +214,24 @@ export class CaptureFormDataModalComponent implements OnInit {
 
     if (this.formUuid === deathRegistryFormUuid) {
       // TODO: Mark as deceased
+      let patient = {
+        ...this.patient,
+        person: {
+          deathDate: new Date(),
+          dead: true,
+          causeOfDeath: this.causeOfDeath ? this.causeOfDeath : null,
+          causeOfDeathNonCoded: this.causeOfDeath
+            ? null
+            : this.causeOfDeathNonCoded,
+        },
+      };
+      this.registrationService
+        .updatePatient(patient, this.patient?.uuid)
+        .subscribe((data) => {
+          return data;
+        });
     }
+    this.dialogRef.close();
   }
 
   onPrint(e: any) {

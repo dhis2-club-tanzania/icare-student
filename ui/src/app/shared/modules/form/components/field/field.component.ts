@@ -46,22 +46,28 @@ export class FieldComponent implements AfterViewInit {
 
   @Output() fieldUpdate: EventEmitter<FormGroup> =
     new EventEmitter<FormGroup>();
+  @Output() enterKeyPressedFields: EventEmitter<any> = new EventEmitter<any>();
 
   @Output() fileFieldUpdate: EventEmitter<any> = new EventEmitter<any>();
 
   ngAfterViewInit() {
     if (typeof this.field?.value === "object") {
-      this.value = (this.field?.value as any[])?.map((val) => {
-        return {
-          ...val,
-          value: val?.value ? val?.value : val?.uuid,
-        };
-      });
+      this.value =
+        this.field?.value && (this.field?.value as any)?.length > 0
+          ? (this.field?.value as any[])?.map((val) => {
+              return {
+                ...val,
+                value: val?.value ? val?.value : val?.uuid,
+              };
+            })
+          : null;
     }
     if (
       this.field?.searchTerm ||
       this.field?.source ||
-      (this.field?.shouldHaveLiveSearchForDropDownFields && this.field?.value)
+      (this.field?.shouldHaveLiveSearchForDropDownFields &&
+        this.field?.value) ||
+      this.field?.conceptUuid
     ) {
       this.members$ = this.formService.searchItem(
         {
@@ -95,18 +101,40 @@ export class FieldComponent implements AfterViewInit {
     return this.form?.controls[this.field.id]?.valid;
   }
 
+  // get issueWithTheDataField(): string {
+  //   const message = this.form?.controls[this.field.id]?.valid
+  //     ? null
+  //     : !this.form?.controls[this.field.id]?.valid &&
+  //       this.form.controls[this.field.id]?.errors?.minlength
+  //     ? `${this.field?.label} has not reached required number of characters`
+  //     : !this.form?.controls[this.field.id]?.valid &&
+  //       this.form.controls[this.field.id]?.errors?.maxlength
+  //     ? `${this.field?.label} has exceeded required number of characters`
+  //     : !this.form?.controls[this.field.id]?.valid
+  //     ? `${this.field?.label} is required`
+  //     : "";
+  //   return message;
+  // }
+
   get issueWithTheDataField(): string {
-    const message = this.form?.controls[this.field.id]?.valid
-      ? null
-      : !this.form?.controls[this.field.id]?.valid &&
-        this.form.controls[this.field.id]?.errors?.minlength
-      ? `${this.field?.label} has not reached required number of characters`
-      : !this.form?.controls[this.field.id]?.valid &&
-        this.form.controls[this.field.id]?.errors?.maxlength
-      ? `${this.field?.label} has exceeded required number of characters`
-      : !this.form?.controls[this.field.id]?.valid
-      ? `${this.field?.label} is required`
-      : "";
+    const fieldValue = this.form?.controls[this.field.id]?.value;
+    // Check if the field is required
+    const isRequired =
+      this.field.required && (fieldValue === null || fieldValue === "");
+    // Check for custom error messages based on field validity and errors
+    const message =
+      !this.form?.controls[this.field.id]?.valid && isRequired
+        ? `${this.field?.label} is required`
+        : !this.form?.controls[this.field.id]?.valid &&
+          this.form.controls[this.field.id]?.errors?.minlength
+        ? `${this.field?.label} has not reached the required length`
+        : !this.form?.controls[this.field.id]?.valid &&
+          this.form.controls[this.field.id]?.errors?.maxlength
+        ? `${this.field?.label} has exceeded the required length`
+        : this.form.get(this.field?.key)?.errors?.pattern
+        ? `${this.field?.label} is invalid`
+        : "";
+
     return message;
   }
 
@@ -142,9 +170,36 @@ export class FieldComponent implements AfterViewInit {
   get fieldId(): string {
     return this.field?.id;
   }
-
-  onFieldUpdate(): void {
+  onFieldUpdate(event?: KeyboardEvent): void {
     this.fieldUpdate.emit(this.form);
+  }
+
+  onListenKeyEvent(event: KeyboardEvent, fieldtype: any): void {
+    if (fieldtype === "number") {
+      if (
+        event.key === "Backspace" ||
+        event.key === "ArrowLeft" ||
+        event.key === "ArrowRight" ||
+        event.key === "Delete"
+      ) {
+        return;
+      }
+
+      if (
+        event.key.match(/[a-zA-Z]/) ||
+        (event.key.match(/[^0-9]/) && event.key !== ".")
+      ) {
+        event.preventDefault();
+      }
+
+      if (event && event.code === "Enter") {
+        this.enterKeyPressedFields.emit(this.field?.key);
+      }
+    } else {
+      if (event && event.code === "Enter") {
+        this.enterKeyPressedFields.emit(this.field?.key);
+      }
+    }
   }
 
   fileChangeEvent(event, field): void {
@@ -175,7 +230,13 @@ export class FieldComponent implements AfterViewInit {
 
   searchItem(event: any, field?: any): void {
     // event.stopPropagation();
-    const searchingText = event.target.value;
+    const searchingText = (event.target as HTMLInputElement).value;
+    if (!searchingText) {
+      let objectToUpdate = {};
+      objectToUpdate[field?.key] = null;
+      this.form.patchValue(objectToUpdate);
+      this.fieldUpdate.emit(this.form);
+    }
     const parameters = {
       q: searchingText,
       limit: 50,
@@ -200,7 +261,15 @@ export class FieldComponent implements AfterViewInit {
     );
   }
 
-  searchItemFromOptions(event, field): void {
+  onClearValue(event: any, field: any): void {
+    event.stopPropagation();
+    let objectToUpdate: any = {};
+    objectToUpdate[field?.key] = null;
+    this.form.patchValue(objectToUpdate);
+    this.fieldUpdate.emit(this.form);
+  }
+
+  searchItemFromOptions(event: any, field: any): void {
     const searchingText = event.target.value;
     this.members$ = of(
       field?.options?.filter(
@@ -209,17 +278,26 @@ export class FieldComponent implements AfterViewInit {
           -1
       ) || []
     );
+    let objectToUpdate: any = {};
+    if (!searchingText || searchingText?.length === 0) {
+      objectToUpdate[field?.key] = null;
+      this.form.patchValue(objectToUpdate);
+      this.fieldUpdate.emit(this.form);
+    }
   }
 
-  getSelectedItemFromOption(event: Event, item, field): void {
+  getSelectedItemFromOption(event: Event, item: any, field: any): void {
     event.stopPropagation();
-    const value = item?.isDrug
-      ? item?.formattedKey
-      : item?.uuid
-      ? item?.uuid
-      : item?.id
-      ? item?.id
-      : item?.value;
+    const value =
+      field?.searchControlType == "person"
+        ? item?.display
+        : item?.isDrug
+        ? item?.formattedKey
+        : item?.uuid
+        ? item?.uuid
+        : item?.id
+        ? item?.id
+        : item?.value;
     let objectToUpdate = {};
     objectToUpdate[field?.key] =
       field?.searchControlType === "drugStock"
@@ -232,7 +310,7 @@ export class FieldComponent implements AfterViewInit {
     this.fieldUpdate.emit(this.form);
   }
 
-  getStockStatus(option) {
+  getStockStatus(option: any): any {
     const optionName = option?.display ? option?.display : option?.name;
     return optionName.includes("Available, Location") ? true : false;
   }
@@ -245,3 +323,10 @@ export class FieldComponent implements AfterViewInit {
       : undefined;
   }
 }
+// onListenKeyEvent(event?: KeyboardEvent): void {
+//   if (event && event.code === "Enter") {
+//     this.enterKeyPressedFields.emit(this.field?.key);
+//   } else {
+//     // You can add any additional handling here if needed
+//   }
+// }

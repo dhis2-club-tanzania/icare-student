@@ -1,4 +1,4 @@
-import { UserGet } from 'src/app/shared/resources/openmrs';
+import { UserGet } from "src/app/shared/resources/openmrs";
 
 export function formatCurrentUserDetails(userDetails): UserGet {
   return {

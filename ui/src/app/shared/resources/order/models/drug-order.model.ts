@@ -43,6 +43,8 @@ export interface DrugOrderObject {
   action?: string;
   obs?: any;
   formulatedDescription?: string;
+  status?: string;
+  remarks?: string;
 }
 export class DrugOrder {
   constructor(
@@ -256,6 +258,14 @@ export class DrugOrder {
     return this.drugOrder?.provider?.uuid;
   }
 
+  get status(): string {
+    return this.drugOrder?.status;
+  }
+
+  get remarks(): string {
+    return this.drugOrder?.remarks;
+  }
+
   toJson(): DrugOrderObject {
     return {
       id: this.uuid,
@@ -292,6 +302,8 @@ export class DrugOrder {
       dispenseAsWritten: this.dispenseAsWritten,
       action: this.action,
       patient: this.patientUuid,
+      status: this.status,
+      remarks: this.remarks,
     };
   }
 
@@ -333,9 +345,10 @@ export class DrugOrder {
       quantityUnits: order?.doseUnits,
       numRefills: order.numRefills || 1,
       dispenseAsWritten: order.dispenseAsWritten,
+      status: order?.status,
+      remarks: order?.remarks,
+      previousOrder: order?.previousOrder,
     };
-    return includePreviousOrder
-      ? { ...drugOrder, uuid: order?.uuid }
-      : drugOrder;
+    return drugOrder;
   }
 }

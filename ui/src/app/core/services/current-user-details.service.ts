@@ -14,7 +14,17 @@ export class CurrentUserService {
   constructor(private httpClient: OpenmrsHttpClientService, private api: Api) {}
 
   get(uuid: string): Observable<any> {
-    return this.httpClient.get(`user/${uuid}`);
+    return zip(
+      this.httpClient.get(`user/${uuid}`),
+      this.httpClient.get("session")
+    ).pipe(
+      map((responses: any[]) => {
+        return {
+          ...responses[0],
+          privileges: responses[1]?.user?.privileges,
+        };
+      })
+    );
   }
 
   getProviderByUserDetails(userUuid: string): Observable<any> {

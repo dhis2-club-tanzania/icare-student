@@ -5,14 +5,14 @@
     style="max-height: 120; overflow: auto"
   >
     <tbody>
-      <ng-container *ngFor="let item of codedOptions">
+      <ng-container *ngFor="let item of mappings">
         <tr
           [ngClass]="{
             'retired-reference-term': item?.retired
           }"
         >
           <td>
-            {{ item?.display }}
+            {{ item?.conceptReferenceTerm?.display }}
           </td>
           <td>
             <button
@@ -41,7 +41,7 @@
     [fields]="[codesMappingsSourceField]"
     (formUpdate)="onFormUpdateForSource($event)"
   ></app-form>
-  <div *ngIf="codedOptions && codedOptions?.length > 0">
+  <div *ngIf="(codedOptions$ | async) && (codedOptions$ | async)?.length > 0">
     <!-- <app-multiple-items-selection
       *ngIf="codedOptions && codedOptions?.length > 0"
       [items]="codedOptions"
@@ -51,7 +51,7 @@
     ></app-multiple-items-selection> -->
 
     <app-multiple-items-selection
-      [items]="[]"
+      [items]="codedOptions$ | async"
       [itemType]="'conceptReferenceTerm'"
       [source]="selectedCodingSource"
       [selectedItems]="selectedCodes"

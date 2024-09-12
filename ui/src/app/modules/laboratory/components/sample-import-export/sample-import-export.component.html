@@ -1,0 +1,380 @@
+<div
+  class="w-100"
+  *ngIf="{
+    exportTemplateDataReferences: exportTemplateDataReferences$ | async
+  } as params"
+>
+  <mat-radio-group class="registration-category mb-2">
+    <mat-radio-button
+      (change)="getSelectionCategory($event)"
+      class="action-category-btn"
+      [value]="'IMPORT'"
+      [checked]="actionCategory === 'IMPORT'"
+      color="primary"
+    >
+      Import
+    </mat-radio-button>
+    <mat-radio-button
+      (change)="getSelectionCategory($event)"
+      class="action-category-btn ml-2"
+      [value]="'EXPORT'"
+      [checked]="actionCategory === 'EXPORT'"
+      color="primary"
+    >
+      Export exisiting samples
+    </mat-radio-button>
+    <mat-radio-button
+      (change)="getSelectionCategory($event)"
+      class="action-category-btn ml-2"
+      [value]="'TEMPLATE'"
+      [checked]="actionCategory === 'TEMPLATE'"
+      color="primary"
+    >
+      Export template
+    </mat-radio-button>
+  </mat-radio-group>
+  <div class="w-100">
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!params?.exportTemplateDataReferences"
+    ></mat-progress-bar>
+  </div>
+  <div class="w-100 mt-2" *ngIf="actionCategory">
+    <div class="row">
+      <div class="col-12" *ngIf="actionCategory === 'IMPORT'">
+        <div class="w-100 file-selection">
+          <input
+            type="file"
+            style="
+              border: none;
+              background-color: transparent;
+              margin-left: -10px;
+            "
+            class="form-control"
+            name="file"
+            accept=".csv, .xls, .xlsx"
+            id="fileSelector"
+            (change)="fileSelection($event)"
+          />
+        </div>
+        <div class="w-100" *ngIf="exceltoJson?.filename">
+          <mat-tab-group>
+            <mat-tab label="Valid samples">
+              <ng-template matTabContent>
+                <div class="p-3 w-100" style="overflow: auto">
+                  <table class="table table-bordered" id="samples-imported">
+                    <thead>
+                      <tr>
+                        <th rowspan="2" style="width: 40px">SN</th>
+                        <th
+                          [attr.colspan]="rowOneItem?.colspan"
+                          class="text-center"
+                          *ngFor="
+                            let rowOneItem of formulatedHeaders?.rowOneItems
+                          "
+                        >
+                          {{ rowOneItem?.name }}
+                        </th>
+                      </tr>
+                      <tr>
+                        <th
+                          *ngFor="let header of formulatedHeaders?.rowTwoItems"
+                        >
+                          {{ header?.exportKey }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let sample of exceltoJson?.sheet1;
+                          let count = index
+                        "
+                      >
+                        <td>
+                          {{ count + 1 }}
+                        </td>
+                        <td
+                          *ngFor="let header of formulatedHeaders?.rowTwoItems"
+                        >
+                          {{ sample[header?.systemKey] }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Samples with issues">
+              <ng-template matTabContent>
+                <div class="p-3 w-100" style="overflow: auto">
+                  <table class="table table-bordered" id="samples-with-issues">
+                    <thead>
+                      <tr>
+                        <th rowspan="2" style="width: 40px">SN</th>
+                        <th
+                          [attr.colspan]="rowOneItem?.colspan"
+                          class="text-center"
+                          *ngFor="
+                            let rowOneItem of formulatedHeaders?.rowOneItems
+                          "
+                        >
+                          {{ rowOneItem?.name }}
+                        </th>
+                        <th rowspan="2"></th>
+                      </tr>
+                      <tr>
+                        <th
+                          *ngFor="let header of formulatedHeaders?.rowTwoItems"
+                        >
+                          {{ header?.exportKey }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container
+                        *ngFor="
+                          let sample of payloadOfSamplesWithIssues;
+                          let count = index
+                        "
+                      >
+                        <tr>
+                          <td>
+                            {{ count + 1 }}
+                          </td>
+                          <td
+                            *ngFor="
+                              let header of formulatedHeaders?.rowTwoItems
+                            "
+                          >
+                            {{ sample?.data[header?.systemKey] }}
+                          </td>
+                          <td>
+                            <button
+                              [disabled]="
+                                !sample?.error?.error?.globalErrors ||
+                                sample?.error?.error?.globalErrors?.length == 0
+                              "
+                              color="primary"
+                              mat-flat-button
+                              (click)="onProceedWithVisit($event, sample)"
+                            >
+                              Proceed
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="sample?.error">
+                          <td colspan="100%">
+                            <p
+                              class="alert alert-warning"
+                              role="alert"
+                              *ngFor="
+                                let error of sample?.error?.error?.globalErrors
+                              "
+                            >
+                              {{ error?.message }}
+                            </p>
+                            <ng-container
+                              *ngIf="sample?.error?.error?.fieldErrors"
+                            >
+                              <ng-container
+                                *ngFor="
+                                  let header of formulatedHeaders?.rowTwoItems
+                                "
+                              >
+                                <p
+                                  *ngIf="
+                                    sample?.error?.error?.fieldErrors[
+                                      header?.systemKey
+                                    ]
+                                  "
+                                  class="alert alert-warning"
+                                  role="alert"
+                                >
+                                  {{
+                                    sample?.error?.error?.fieldErrors[
+                                      header?.systemKey
+                                    ][0]?.message
+                                  }}
+                                </p>
+                              </ng-container>
+                            </ng-container>
+                            <ng-container
+                              *ngFor="
+                                let header of formulatedHeaders?.rowTwoItems
+                              "
+                            >
+                              <p
+                                *ngIf="
+                                  sample?.data[header?.systemKey] &&
+                                  onTheProcessErrors[
+                                    sample?.data[header?.systemKey]
+                                  ]
+                                "
+                                class="alert alert-warning"
+                                role="alert"
+                              >
+                                {{
+                                  onTheProcessErrors[
+                                    sample?.data[header?.systemKey]
+                                  ]?.error?.message
+                                }}
+                              </p>
+                            </ng-container>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="w-100 d-flex justify-content-between">
+          <div class="w-75 mt-2 d-flex justify-content-left">
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="
+                !file || !params?.exportTemplateDataReferences || importStarted
+              "
+              (click)="onImport($event, params?.exportTemplateDataReferences)"
+            >
+              Import
+            </button>
+
+            <button
+              class="ml-2"
+              mat-flat-button
+              color="primary"
+              [disabled]="
+                !exceltoJson ||
+                !exceltoJson?.sheet1 ||
+                !params?.exportTemplateDataReferences ||
+                importStarted
+              "
+              (click)="
+                onConfirm(
+                  $event,
+                  exceltoJson?.sheet1,
+                  params?.exportTemplateDataReferences
+                )
+              "
+            >
+              Confirm
+            </button>
+            <button
+              class="ml-2"
+              mat-stroked-button
+              [disabled]="
+                !exceltoJson ||
+                !exceltoJson?.sheet1 ||
+                !params?.exportTemplateDataReferences ||
+                !payloadOfSamplesWithIssues ||
+                importStarted
+              "
+              (click)="
+                onDownloadSamplesWithIssues(
+                  $event,
+                  'samples-with-issues',
+                  params?.exportTemplateDataReferences,
+                  'Samples_with_issues_' + file?.name
+                )
+              "
+            >
+              <mat-icon>arrow_drop_down</mat-icon>
+              <span class="ml-2"> Samples with issues </span>
+            </button>
+          </div>
+          <div class="w-25 d-flex justify-content-end">
+            <button
+              mat-icon-button
+              *ngIf="importStarted"
+              (click)="onToggleSystemLogs($event)"
+            >
+              <mat-icon *ngIf="!showImportLogs">keyboard_arrow_down</mat-icon>
+              <mat-icon *ngIf="showImportLogs">keyboard_arrow_up</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div
+          class="w-100 mt-3"
+          style="height: 400px; overflow: auto"
+          *ngIf="showImportLogs && importStarted"
+        >
+          <!-- {{ importLogs | json }} -->
+          <div class="w-100" *ngFor="let log of importLogs">
+            <div
+              *ngIf="log?.type === 'INFO'"
+              class="alert alert-info"
+              role="alert"
+              style="padding: 4px; margin-bottom: 0"
+            >
+              {{ log?.message }}
+            </div>
+            <div
+              style="padding: 4px; margin-bottom: 0"
+              *ngIf="log?.type === 'SUCCESS'"
+              class="alert alert-success"
+              role="alert"
+            >
+              {{ log?.message }}
+            </div>
+            <div
+              style="padding: 4px; margin-bottom: 0"
+              *ngIf="log?.type === 'ERROR'"
+              class="alert alert-danger"
+              role="alert"
+            >
+              {{ log?.message }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="actionCategory === 'EXPORT'">
+        <div class="w-100">
+          <app-samples-to-export
+            [exportTemplateDataReferences]="
+              params?.exportTemplateDataReferences
+            "
+            [unifiedCodingReferenceConceptSourceUuid]="
+              unifiedCodingReferenceConceptSourceUuid
+            "
+            [labSamplesDepartments]="labSamplesDepartments"
+          ></app-samples-to-export>
+        </div>
+        <div class="w-100 mt-2 d-flex justify-content-left">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="
+              onExportDataToImportExportTemplate($event, 'samples-to-export')
+            "
+          >
+            Export
+          </button>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="actionCategory === 'TEMPLATE'">
+        <div class="w-100" id="table-template">
+          <app-sample-template-table
+            [exportTemplateDataReferences]="
+              params?.exportTemplateDataReferences
+            "
+          ></app-sample-template-table>
+        </div>
+        <div class="w-100 mt-2 d-flex justify-content-left">
+          <button
+            mat-flat-button
+            [disabled]="!params?.exportTemplateDataReferences"
+            color="primary"
+            (click)="onDownloadTemplate($event, 'table-template')"
+          >
+            Download template
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

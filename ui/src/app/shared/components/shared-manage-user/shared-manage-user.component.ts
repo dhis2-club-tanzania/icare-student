@@ -1,4 +1,12 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -26,6 +34,7 @@ import { go } from "src/app/store/actions";
 import { MatSelectChange } from "@angular/material/select";
 import { UserService } from "src/app/modules/maintenance/services/users.service";
 import { GlobalEventHandlersEvent } from "src/app/modules/maintenance/models/user.model";
+import { PasswordRegExpressionReferences } from "src/app/core/constants/password-security.constants";
 
 @Component({
   selector: "app-shared-manage-user",
@@ -36,6 +45,8 @@ export class SharedManageUserComponent implements OnInit {
   @Input() user: any;
   @Input() systemModules: any;
   @Input() hideModuleSelection: boolean;
+  @Input() securitySystemSettings: any[];
+  @Output() cancel: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @ViewChild("table", { static: false }) table: MatTable<any>;
   @ViewChild("filter", { static: false }) filter: ElementRef;
@@ -86,6 +97,7 @@ export class SharedManageUserComponent implements OnInit {
 
   passwordIsRequired: boolean = true;
   selectedModules: any[] = [];
+  passwordStrengthMessage: string = "Password should match required settings";
 
   constructor(
     private fb: FormBuilder,
@@ -97,6 +109,7 @@ export class SharedManageUserComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // console.log("securitySystemSettings", this.securitySystemSettings);
     if (this.user && this.user?.uuid) {
       this.selectedModules = this.user?.userProperties?.preferredModules
         ? this.systemModules?.filter(
@@ -235,7 +248,7 @@ export class SharedManageUserComponent implements OnInit {
   generateForm(user: any): any {
     this.selectedRoles = user?.roles;
     return this.fb.group({
-      username: new FormControl(user?.username, Validators.required),
+      username: new FormControl(user?.username, [Validators.required]),
       password: [
         "",
         !user ? [Validators.required, Validators.minLength(8)] : [],
@@ -311,7 +324,7 @@ export class SharedManageUserComponent implements OnInit {
   }
 
   onGetSelectedLocationItems(selected) {
-    console.log(selected);
+    // console.log(selected);
   }
 
   onGetPreferredModule(event: MatSelectChange): void {
@@ -732,13 +745,64 @@ export class SharedManageUserComponent implements OnInit {
     this.passwordFocusOut = true;
     e.stopPropagation();
     if (this.passwordInput.value && this.passwordInput.value !== "") {
-      const strongPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/;
+      const passwordMinLengthSetting = (this.securitySystemSettings?.filter(
+        (setting: any) => setting?.property === "security.passwordMinimumLength"
+      ) || [])[0];
+
+      const minLength = passwordMinLengthSetting?.value
+        ? Number(passwordMinLengthSetting?.value)
+        : 8;
+      const regExpressSetting = (this.securitySystemSettings?.filter(
+        (setting: any) => setting?.property === "security.passwordCustomRegex"
+      ) || [])[0];
+
+      const passwordRequiresUpperAndLowerCaseSetting =
+        (this.securitySystemSettings?.filter(
+          (setting: any) =>
+            setting?.property === "security.passwordRequiresUpperAndLowerCase"
+        ) || [])[0];
+
+      const passwordRequiresNonDigit = (this.securitySystemSettings?.filter(
+        (setting: any) =>
+          setting?.property === "security.passwordRequiresNonDigit"
+      ) || [])[0];
+      const checkLengthRegExp =
+        "\\" +
+        (passwordRequiresNonDigit && passwordRequiresNonDigit?.value === "true"
+          ? "w"
+          : "d") +
+        "{" +
+        minLength +
+        ",}";
+      // const check = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/;
+      const pattern =
+        regExpressSetting && regExpressSetting?.value
+          ? regExpressSetting?.value
+          : PasswordRegExpressionReferences.AT_LEAST_ONE_DIGIT +
+            (passwordRequiresNonDigit &&
+            passwordRequiresNonDigit?.value === "true"
+              ? passwordRequiresUpperAndLowerCaseSetting &&
+                passwordRequiresUpperAndLowerCaseSetting?.value === "true"
+                ? PasswordRegExpressionReferences.AT_LEAST_ONE_LOWER_CASE_CHAR +
+                  PasswordRegExpressionReferences.AT_LEAST_ONE_UPPER_CASE_CHAR
+                : ""
+              : "") +
+            checkLengthRegExp;
+      const strongPassword = new RegExp("^" + pattern + "$");
       const test = strongPassword.test(this.passwordInput.value);
       this.passwordFocusOut = true;
       if (test) {
         this.passwordStrong = true;
+        this.passwordStrengthMessage = "";
       } else {
         this.passwordStrong = false;
+        this.passwordStrengthMessage =
+          "Password should meet the following conditions" +
+          (regExpressSetting && regExpressSetting?.value
+            ? "Pattern: " + regExpressSetting?.value
+            : passwordMinLengthSetting?.value
+            ? "Minimum length should be " + passwordMinLengthSetting?.value
+            : "");
       }
     }
   }
@@ -749,7 +813,6 @@ export class SharedManageUserComponent implements OnInit {
 
   onCancel(event: Event): void {
     event.stopPropagation();
-    if (!this.hideModuleSelection)
-      this.store.dispatch(go({ path: ["/maintenance/users-management"] }));
+    this.cancel.emit(true);
   }
 }

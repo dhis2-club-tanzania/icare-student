@@ -60,12 +60,12 @@ export class MultipleResultsEntryComponent implements OnInit {
   }
 
   setList(list: any[]) {
-    // console.log(list);
     this.list = list;
     const defaultValues =
       this.list?.filter(
         (item) =>
-          (this.value?.filter((val) => val === item?.value) || [])?.length > 0
+          (this.value?.filter((val) => val === (item?.value || item?.id)) || [])
+            ?.length > 0
       ) || [];
     // set default selection
     this.listMultiCtrl.setValue(defaultValues);

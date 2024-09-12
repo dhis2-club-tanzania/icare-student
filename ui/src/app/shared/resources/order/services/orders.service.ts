@@ -3,9 +3,10 @@ import { from, Observable, of, zip } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { OpenmrsHttpClientService } from "../../../modules/openmrs-http-client/services/openmrs-http-client.service";
 import { omit } from "lodash";
-import { Api, EncounterCreate, OrderGetFull } from "../../openmrs";
+import { Api, OrderGetFull } from "../../openmrs";
 import { HttpErrorResponse } from "@angular/common/http";
 import { getDrugOrderPaymentStatus } from "../helpers/getDrugOrderPaymentStatus.helper";
+import { sum } from "lodash";
 
 @Injectable({
   providedIn: "root",
@@ -78,6 +79,7 @@ export class OrdersService {
           return response?.results.map((orderDetails) => {
             return {
               ...orderDetails,
+              drugUuid: orderDetails?.drug?.uuid,
               paid: getDrugOrderPaymentStatus(orderDetails, visit),
             };
           });
@@ -95,19 +97,19 @@ export class OrdersService {
   }): Observable<any> {
     const voidReason =
       order?.voidReason.length > 0 ? order?.voidReason : "No reason";
-    return from(
-      this.openMRSHttpClient.post(`icare/voidorder`, {
+    return this.openMRSHttpClient
+      .post(`icare/voidorder`, {
         uuid: order?.uuid,
         voidReason: voidReason,
       })
-    ).pipe(
-      map((order) => {
-        return order;
-      }),
-      catchError((err) => {
-        return of(err);
-      })
-    );
+      .pipe(
+        map((order) => {
+          return order;
+        }),
+        catchError((err) => {
+          return of(err);
+        })
+      );
   }
 
   createOrdersViaCreatingEncounter(encounter): Observable<any> {
@@ -172,6 +174,24 @@ export class OrdersService {
     );
   }
 
+  createNonDrugOrderWithDispensing(payload: any): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`icare/nondrugorderwithdispensing`, payload)
+      .pipe(
+        map((order) => order),
+        catchError((error) => of(error))
+      );
+  }
+
+  createBillAndDispenseNonDrugOrder(payload: any): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`icare/nondrugorderbillanddispensing`, payload)
+      .pipe(
+        map((order) => order),
+        catchError((error) => of(error))
+      );
+  }
+
   getOrdersFrequencies() {
     return from(
       this.API.orderfrequency.getAllOrderFrequencies({ v: "full" })
@@ -179,5 +199,47 @@ export class OrdersService {
       map((response) => response?.results),
       catchError((error) => of(error))
     );
+  }
+
+  getCommonlyOrderedItems(parameters?: string[]): Observable<any> {
+    return this.openMRSHttpClient
+      .get(`icare/commonlyordereditems?${parameters.join("&")}`)
+      .pipe(
+        map((response) =>
+          response?.results?.map((result: any) => {
+            return {
+              ...result,
+              drug: {
+                ...result?.drug,
+                quantity: sum(
+                  result?.drug?.stock?.map((stock: any) => {
+                    if (stock?.expiryDate > new Date().getTime()) {
+                      return stock?.quantity;
+                    } else {
+                      return 0;
+                    }
+                  })
+                ),
+              },
+            };
+          })
+        ),
+        catchError((error) => of(error))
+      );
+  }
+
+  deductStockAfterSellingOrderedGeneralOrderItem(
+    orderDetails: any
+  ): Observable<any> {
+    return this.openMRSHttpClient
+      .post(`store/generalOrder/${orderDetails?.uuid}/sell`, {
+        location: orderDetails?.location,
+        conceptUuid: orderDetails?.concept?.uuid,
+        quantity: Number(orderDetails?.quantity),
+      })
+      .pipe(
+        map((response) => response),
+        catchError((error) => of(error))
+      );
   }
 }

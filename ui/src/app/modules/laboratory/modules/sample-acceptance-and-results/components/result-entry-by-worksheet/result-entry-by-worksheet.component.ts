@@ -18,6 +18,8 @@ import { AdditionalFieldsModalComponent } from "src/app/modules/laboratory/modal
 })
 export class ResultEntryByWorksheetComponent implements OnInit {
   @Input() worksheetDefinitions: any[];
+  @Input() samples: any[];
+  @Input() forSamples: boolean;
   @Input() isLIS: boolean;
   @Input() conceptNameType: string;
   @Input() multipleResultsAttributeType: string;
@@ -42,6 +44,7 @@ export class ResultEntryByWorksheetComponent implements OnInit {
   associatedFieldsResults: any = {};
   associatedFieldsHasResults: boolean = false;
   fedResultsKeyedByAllocation: any = {};
+
   constructor(
     private worksheetsService: WorkSheetsService,
     private sampleService: SamplesService,
@@ -53,6 +56,13 @@ export class ResultEntryByWorksheetComponent implements OnInit {
 
   ngOnInit(): void {
     this.createWorksheetDefnitionField();
+  }
+
+  getSelection(event: MatRadioChange): void {
+    this.conceptNameType = null;
+    setTimeout(() => {
+      this.conceptNameType = event.value;
+    }, 50);
   }
 
   createWorksheetDefnitionField(): void {
@@ -320,7 +330,7 @@ export class ResultEntryByWorksheetComponent implements OnInit {
                             this.sampleService
                               .saveSampleStatuses([status])
                               .subscribe((response) => {
-                                console.log("response", response);
+                                // console.log("response", response);
                               });
                           }
                           setTimeout(() => {

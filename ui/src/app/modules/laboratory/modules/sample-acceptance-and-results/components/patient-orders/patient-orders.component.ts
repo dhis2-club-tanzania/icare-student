@@ -4,7 +4,7 @@ import { FormControl } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { BarCodeModalComponent } from "../bar-code-modal/bar-code-modal.component";
+import { BarCodeModalComponent } from "../../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component";
 import { AppState } from "src/app/store/reducers";
 import {
   getCollectingLabSampleState,

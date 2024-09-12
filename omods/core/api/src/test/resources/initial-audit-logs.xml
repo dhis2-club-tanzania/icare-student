@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <auditlog_audit_log audit_log_id="1" type="org.openmrs.ConceptNumeric" identifier="5089" action="CREATED" user_id="1" date_created="2012-04-01 00:00:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="4f7d57f0-9077-11e1-aaa4-00248140a5eb" />
+    <auditlog_audit_log audit_log_id="2" type="org.openmrs.ConceptDescription" identifier="3000" action="CREATED" parent_auditlog_id="1" user_id="1" date_created="2012-04-01 00:00:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="5f7d57f0-9077-11e1-aaa4-00248140a5ef" />
+    <auditlog_audit_log audit_log_id="3" type="org.openmrs.ConceptDescription" identifier="3001" action="CREATED" parent_auditlog_id="1" user_id="1" date_created="2012-04-01 00:00:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="6f7d57f0-9077-11e1-aaa4-00248140a5ef" />
+    <auditlog_audit_log audit_log_id="4" type="org.openmrs.ConceptNumeric" identifier="5089" action="UPDATED" user_id="1" date_created="2012-04-01 00:01:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="4f7d57f0-9077-11e1-aaa4-00248140a5ec" />
+    <auditlog_audit_log audit_log_id="5" type="org.openmrs.ConceptNumeric" identifier="2001" action="UPDATED" user_id="501" date_created="2012-04-01 00:03:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="4f7d57f0-9077-11e1-aaa4-00248140a5ed" />
+    <auditlog_audit_log audit_log_id="6" type="org.openmrs.ConceptName" identifier="1001" action="DELETED" user_id="1" date_created="2012-04-01 00:05:00.0" openmrs_version="${openMRSVersion}" module_version="${project.version}" uuid="4f7d57f0-9077-11e1-aaa4-00248140a5ef" />
+</dataset>

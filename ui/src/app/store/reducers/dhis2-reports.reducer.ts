@@ -1,4 +1,4 @@
-import { createReducer, on } from '@ngrx/store';
+import { createReducer, on } from "@ngrx/store";
 import {
   addLoadedReportLogs,
   addLoadedReportLogsHistory,
@@ -17,16 +17,16 @@ import {
   sendDataToDHIS2,
   sendingDataFails,
   setCurrentPeriod,
-} from '../actions';
-import { DHIS2ReportsAdapter, initialDHIS2ReportsState } from '../states';
+} from "../actions";
+import { DHIS2ReportsAdapter, initialDHIS2ReportsState } from "../states";
 import {
   errorBaseState,
   loadedBaseState,
   loadingBaseState,
-} from '../states/base.state';
+} from "../states/base.state";
 
-import { keyBy, groupBy } from 'lodash';
-import { state } from '@angular/animations';
+import { keyBy, groupBy } from "lodash";
+import { state } from "@angular/animations";
 
 const reducer = createReducer(
   initialDHIS2ReportsState,
@@ -61,8 +61,6 @@ const reducer = createReducer(
     DHIS2ReportsAdapter.addOne(report, { ...state, ...loadedBaseState })
   ),
   on(loadingReportsFail, (state, { error }) => {
-    console.log('nnafika? : ', error);
-
     return {
       ...state,
       error,
@@ -121,7 +119,7 @@ const reducer = createReducer(
   })),
   on(addLoadedReportLogs, (state, { reports }) => ({
     ...state,
-    reportLogs: { ...state.reportLogs, ...groupBy(reports, 'report_id') },
+    reportLogs: { ...state.reportLogs, ...groupBy(reports, "report_id") },
     loadingReportLogs: false,
     loadedReportLogs: true,
     loadingReportLogsHasError: false,

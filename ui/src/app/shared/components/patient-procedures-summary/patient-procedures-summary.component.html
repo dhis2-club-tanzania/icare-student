@@ -35,7 +35,8 @@
             [ngClass]="{
               'attended-procedure':
                 params?.observationsKeyedByConcepts[procedure?.concept?.uuid]
-                  ?.latest?.valueObject?.display === 'True'
+                  ?.latest?.valueObject?.display === 'True',
+              'voided-item': procedure?.dateStopped || procedure?.autoExpireDate
             }"
           >
             <td>
@@ -87,9 +88,11 @@
             </td>
             <td>
               <button
-              *ngIf="!params?.observationsKeyedByConcepts[
+                *ngIf="
+                  !params?.observationsKeyedByConcepts[
                     procedure?.concept?.uuid + '-' + procedure?.uuid
-                  ]"
+                  ]
+                "
                 mat-icon-button
                 [matMenuTriggerFor]="menu"
                 aria-label="Options"
@@ -98,6 +101,15 @@
               </button>
               <mat-menu #menu="matMenu">
                 <button
+                  [disabled]="
+                    params?.observationsKeyedByConcepts &&
+                    params?.observationsKeyedByConcepts[
+                      procedure?.concept?.uuid + '-' + procedure?.uuid
+                    ] &&
+                    params?.observationsKeyedByConcepts[
+                      procedure?.concept?.uuid + '-' + procedure?.uuid
+                    ]?.latest?.valueObject?.display === 'True'
+                  "
                   mat-menu-item
                   (click)="onDeleteProcedure($event, procedure)"
                 >
@@ -152,7 +164,7 @@
           <td colspan="5">
             <app-form
               [fields]="formFields"
-              [isFormHorizontal]="true"
+              [isFormHorizontal]="false"
               (formUpdate)="onFormUpdate($event)"
             >
             </app-form>

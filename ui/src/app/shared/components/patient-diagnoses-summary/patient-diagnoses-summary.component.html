@@ -2,7 +2,9 @@
   *ngIf="{
     diagnoses: diagnoses$ | async,
     loadingVisit: loadingVisit$ | async,
-    savingDiagnosisState: savingDiagnosisState$ | async
+    savingDiagnosisState: savingDiagnosisState$ | async,
+    surveillanceDiagnosesConfigurations:
+      surveillanceDiagnosesConfigurations$ | async
   } as params"
 >
   <div *ngIf="!forConsultation">
@@ -16,9 +18,11 @@
       No data
     </div>
     <mat-progress-bar
-      *ngIf="params?.loadingVisit"
+      *ngIf="
+        params?.loadingVisit || !params?.surveillanceDiagnosesConfigurations
+      "
       mode="indeterminate"
-      ></mat-progress-bar>
+    ></mat-progress-bar>
     <table
       class="table"
       *ngIf="
@@ -33,11 +37,12 @@
       </thead>
       <tbody>
         <ng-container
-        *ngFor="
+          *ngFor="
             let diagnosisInfo of params?.diagnoses
               | filterDiagnoses: isConfirmedDiagnosis;
             let count = index
-          ">
+          "
+        >
           <tr
             [ngClass]="{ 'text-danger': diagnosisInfo?.voided }"
             *ngIf="!diagnosisInfo?.voided"
@@ -85,12 +90,13 @@
               ?.length > 0
           "
         >
-        <ng-container 
-        *ngFor="
+          <ng-container
+            *ngFor="
               let diagnosisInfo of params?.diagnoses
                 | filterDiagnoses: isConfirmedDiagnosis;
               let count = index
-            ">
+            "
+          >
             <tr
               [ngClass]="{ 'text-danger': diagnosisInfo?.voided }"
               *ngIf="!diagnosisInfo?.voided"
@@ -144,14 +150,14 @@
                 </mat-menu>
               </td>
             </tr>
-        </ng-container>
+          </ng-container>
         </ng-container>
         <ng-container *ngIf="!isInpatient">
           <tr *ngIf="diagnosisField">
             <td colspan="2">
               <app-form
                 [fields]="[diagnosisField]"
-                [isFormHorizontal]="true"
+                [isFormHorizontal]="false"
                 (formUpdate)="onFormUpdate($event, 'diagnosis')"
               >
               </app-form>
@@ -159,13 +165,22 @@
             <td>
               <app-form
                 [fields]="[diagnosisRankField]"
-                [isFormHorizontal]="true"
+                [isFormHorizontal]="false"
                 (formUpdate)="onFormUpdate($event, 'rank')"
               >
               </app-form>
             </td>
             <td>
-              <button mat-stroked-button (click)="addDiagnosis($event)">
+              <button
+                mat-stroked-button
+                (click)="
+                  addDiagnosis(
+                    $event,
+                    params?.surveillanceDiagnosesConfigurations
+                  )
+                "
+                [disabled]="!params?.surveillanceDiagnosesConfigurations"
+              >
                 Add
               </button>
             </td>

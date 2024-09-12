@@ -49,7 +49,7 @@ export class TheatreOrdersComponent implements OnInit {
   ngOnInit(): void {
     this.provider$ = this.store.select(getProviderDetails);
     this.visit$ = this.store.select(getActiveVisit);
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
     this.patient$ = this.store.pipe(select(getCurrentPatient));
     this.patient$.pipe(take(1)).subscribe((currentPatient: Patient) => {
       if (!currentPatient) {

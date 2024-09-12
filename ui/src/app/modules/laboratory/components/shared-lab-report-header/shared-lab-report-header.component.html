@@ -1,0 +1,48 @@
+<div
+  style="width: 100%"
+  *ngIf="{
+    locationDetails: locationDetails$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.locationDetails"
+  ></mat-progress-bar>
+  <!-- {{ params?.locationDetails | json }} -->
+  <table
+    style="width: 100%; border: 0"
+    data-pdfmake="{'widths':[100,'*','auto']}"
+  >
+    <tbody style="width: 100%">
+      <tr style="width: 100%">
+        <td style="text-align: center; border: 0" colspan="3">
+          <div>
+            <img [src]="params?.locationDetails?.logo" width="90" height="90" />
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="text-align: center; border: 0">
+          {{ params?.locationDetails?.display }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="text-align: center; border: 0">
+          {{ params?.locationDetails?.description }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="text-align: center; border: 0">
+          {{ params?.locationDetails?.postalCode }}
+        </td>
+      </tr>
+      <!-- <tr>
+        <td style="width: 33.3%; border: 0"></td>
+        <td style="width: 33.3%; text-align: center; border: 0">
+          {{ params?.locationDetails?.postalCode }}
+        </td>
+        <td style="width: 33.3%; border: 0"></td>
+      </tr> -->
+    </tbody>
+  </table>
+</div>

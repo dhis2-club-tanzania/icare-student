@@ -56,7 +56,8 @@
     ></mat-progress-bar>
     <div
       *ngIf="params?.clientsList"
-      class="w-75 p-2 mat-elevation-z3 list-from-other-systems"
+      style="width: 80%"
+      class="p-2 mat-elevation-z3 list-from-other-systems"
     >
       <button mat-button class="float-right" (click)="toggleList($event)">
         <mat-icon>close</mat-icon>
@@ -70,9 +71,11 @@
             <td>Middle name</td>
             <td>Last name</td>
             <td>Gender</td>
+            <td>DoB</td>
             <td>Phone number</td>
             <td>Nationality</td>
             <td>Health facility</td>
+            <td>Has Lab Request</td>
             <td>Has results</td>
           </tr>
         </thead>
@@ -91,9 +94,22 @@
           >
             <tr
               [id]="client?.enrollment"
-              style="cursor: pointer"
-              [ngClass]="{ 'client-has-results': client?.hasResults }"
-              (click)="onSelectClient($event, client)"
+              [ngStyle]="{
+                cursor:
+                  client?.hasResults || client?.events?.length === 0
+                    ? 'not-allowed'
+                    : 'pointer'
+              }"
+              [ngClass]="{
+                'client-has-results': client?.hasResults,
+                'client-has-no-lab-request': client?.events?.length === 0
+              }"
+              (click)="
+                onSelectClient(
+                  $event,
+                  client?.events?.length === 0 ? null : client
+                )
+              "
             >
               <td>
                 {{ count + 1 }}
@@ -119,6 +135,9 @@
                 {{ client?.gender }}
               </td>
               <td>
+                {{ client?.dob | date }}
+              </td>
+              <td>
                 {{ client?.phoneNumber }}
               </td>
               <td>
@@ -126,6 +145,9 @@
               </td>
               <td>
                 {{ client?.orgUnitName }}
+              </td>
+              <td>
+                {{ client?.hasLabRequest ? "True" : "False" }}
               </td>
               <td>
                 {{ client?.hasResults ? "True" : "False" }}

@@ -10,6 +10,7 @@
         *ngIf="report"
         [report]="report"
         [additionalKey]="additionalKey"
+        (reloadList)="onGetReloadList($event)"
       ></lib-manage-standard-report>
     </div>
     <div

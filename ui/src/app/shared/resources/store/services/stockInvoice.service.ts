@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { omit } from "lodash";
 import { Observable, zip } from "rxjs";
 import { catchError, map } from "rxjs/operators";
+import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
 
 @Injectable({
@@ -19,7 +20,17 @@ export class StockInvoicesService {
     );
   }
 
-  getStockInvoices(page?: number, pageSize?: number, status?: string, orderByDirection?: string): Observable<any> {
+  getStockInvoices(
+    page?: number,
+    pageSize?: number,
+    status?: string,
+    orderByDirection?: string,
+    otherParameters?: {
+      q: string;
+      startDate: Date;
+      endDate: Date;
+    }
+  ): Observable<any> {
     const pageNumber = page ? `page=${page}` : ``;
     const pageSizeNumber =
       pageSize && page
@@ -39,11 +50,21 @@ export class StockInvoicesService {
         : orderByDirection
         ? `orderByDirection=${orderByDirection}`
         : ``;
-    const pagingArgs =
-      pageNumber ||
-      pageSizeNumber ||
-      filterStatus ||
-      orderByDirectionArg ? `?${pageNumber}${pageSizeNumber}${filterStatus}${orderByDirectionArg}` : '';
+    let pagingArgs =
+      pageNumber || pageSizeNumber || filterStatus || orderByDirectionArg
+        ? `?${pageNumber}${pageSizeNumber}${filterStatus}${orderByDirectionArg}`
+        : "";
+    if (otherParameters?.q) {
+      pagingArgs += `&q=${otherParameters?.q}`;
+    }
+    if (otherParameters?.startDate) {
+      pagingArgs += `&startDate=${formatDateToYYMMDD(
+        otherParameters?.startDate
+      )}`;
+    }
+    if (otherParameters?.endDate) {
+      pagingArgs += `&endDate=${formatDateToYYMMDD(otherParameters?.endDate)}`;
+    }
     return this.httpClient.get(`store/stockinvoices${pagingArgs}`).pipe(
       map((stockInvoiceResponse: any) => {
         return stockInvoiceResponse;
@@ -52,7 +73,7 @@ export class StockInvoicesService {
     );
   }
 
-  updateStockInvoice(invoiceUuid: string, invoiceObject: any): Observable<any>{
+  updateStockInvoice(invoiceUuid: string, invoiceObject: any): Observable<any> {
     return this.httpClient
       .post(`store/stockinvoice/${invoiceUuid}`, invoiceObject)
       .pipe(
@@ -63,10 +84,22 @@ export class StockInvoicesService {
       );
   }
 
+  deleteStockInvoice(invoiceUuid: string): Observable<any> {
+    return this.httpClient
+    .delete(`store/stockinvoice/${invoiceUuid}`)
+    .pipe(
+      map((stockInvoicesResponse: any) => {
+        return stockInvoicesResponse;
+      }),
+      catchError((error: any) => error)
+    );
+
+  }
+
   getStockInvoice(uuid: string): Observable<any> {
     return this.httpClient.get(`store/stockinvoice/${uuid}`).pipe(
       map((stockInvoiceResponse: any) => {
-        return stockInvoiceResponse
+        return stockInvoiceResponse;
       }),
       catchError((error: any) => error)
     );

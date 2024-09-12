@@ -8,6 +8,7 @@ import {
   switchMap,
 } from "rxjs/operators";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
+import { UserGetFull } from "src/app/shared/resources/openmrs";
 
 @Injectable({
   providedIn: "root",
@@ -23,8 +24,8 @@ export class SystemUsersService {
     );
   }
 
-  getUserById(id: string): Observable<any> {
-    const url = `user/${id}?v=custom:(uuid,display,roles,allRoles,username,userProperties,retired,person:(uuid,display,attributes,birthdate,gender,display,preferredName,preferredAddress))`;
+  getUserById(id: string): Observable<UserGetFull> {
+    const url = `user/${id}?v=custom:(uuid,display,privileges,username,userProperties,retired,person:(uuid,display,attributes,birthdate,gender,display,preferredName,preferredAddress))`;
     return this.httpClient.get(url);
   }
 

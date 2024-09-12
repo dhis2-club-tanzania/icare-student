@@ -14,6 +14,7 @@ import { PrivilegesAndRolesComponent } from "./pages/privileges-and-roles/privil
 import { ReportsManagementComponent } from "./pages/reports-management/reports-management.component";
 import { ReportsSettingsComponent } from "./pages/reports-settings/reports-settings.component";
 import { SystemSettingsComponent } from "./pages/system-settings/system-settings.component";
+import { ProgramsManagementComponent } from "./pages/programs-management/programs-management.component";
 
 // TODO: Improve routing, at least include child routing
 const routes: Routes = [
@@ -65,6 +66,10 @@ const routes: Routes = [
       {
         path: "reports-settings",
         component: ReportsSettingsComponent,
+      },
+      {
+        path: "programs",
+        component: ProgramsManagementComponent,
       },
     ],
   },

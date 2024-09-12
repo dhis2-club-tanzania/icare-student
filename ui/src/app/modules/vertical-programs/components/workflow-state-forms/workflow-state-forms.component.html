@@ -1,0 +1,22 @@
+<mat-tab-group *ngIf="forms && forms !== 'none'">
+  <mat-tab
+    *ngFor="let form of forms"
+    label="{{ form?.display ? form?.display : form?.name }}"
+  >
+    <ng-template matTabContent>
+      <div class="p-3">
+        <app-workflow-state-form-data
+          [form]="form"
+          [workflowState]="workflowState"
+          [patientEnrollmentDetails]="patientEnrollmentDetails"
+          [currentLocation]="currentLocation"
+          [provider]="provider"
+          [patientWorkflowState]="patientWorkflowState"
+        ></app-workflow-state-form-data>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
+<div class="alert alert-warning" role="alert" *ngIf="forms && forms == 'none'">
+  There is not attached forms
+</div>

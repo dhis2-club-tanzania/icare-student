@@ -30,16 +30,13 @@ import {
   getSavingLabTestResultsStatusState,
 } from "src/app/store/selectors";
 import { DataService } from "src/app/shared/services/data.service";
-import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/models/lis-configurations.model";
 import { HttpClient } from "@angular/common/http";
-import { ObsCreate } from "src/app/shared/resources/openmrs";
 import { VisitsService } from "src/app/shared/resources/visits/services";
-import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
-import { Textbox } from "src/app/shared/modules/form/models/text-box.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import { TextArea } from "src/app/shared/modules/form/models/text-area.model";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import { MatTabChangeEvent } from "@angular/material/tabs";
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 
 @Component({
   selector: "app-results-feeding-modal",
@@ -76,7 +73,7 @@ export class ResultsFeedingModalComponent implements OnInit {
   testTimeSettings: any;
 
   attach: any = {};
-  LISConfigurations: LISConfigurationsModel;
+  LISConfigurations: iCareConnectConfigurationsModel;
 
   dialogData: any;
 

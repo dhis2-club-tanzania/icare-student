@@ -55,7 +55,6 @@ export class SamplesToAcceptComponent implements OnInit {
 
   onToggleViewSampleDetails(event: Event, sample: any): void {
     event.stopPropagation();
-    console.log(sample);
   }
 
   onGetSelectedSampleDetails(sampleDetails: any, providerDetails: any): void {
@@ -70,7 +69,7 @@ export class SamplesToAcceptComponent implements OnInit {
     let confirmDialog;
     if (this.LISConfigurations?.isLIS) {
       confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-        width: "25%",
+        minWidth: "25%",
         data: {
           modalTitle: `Accept Sample`,
           modalMessage: `Please, provide results compromization remarks if any upon accepting sample. Click confirm to accept the sample!`,

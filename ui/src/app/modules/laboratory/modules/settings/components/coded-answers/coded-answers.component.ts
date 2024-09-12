@@ -9,6 +9,9 @@ import {
   ConceptCreate,
   ConceptGetFull,
 } from "src/app/shared/resources/openmrs";
+import { omit } from "lodash";
+import { MatDialog } from "@angular/material/dialog";
+import { SharedConfirmationDialogComponent } from "src/app/shared/components/shared-confirmation-dialog/shared-confirmation-dialog.component";
 
 @Component({
   selector: "app-coded-answers",
@@ -24,6 +27,8 @@ export class CodedAnswersComponent implements OnInit {
   codedAnswers$: Observable<ConceptGetFull[]>;
   pageSize: number = 10;
   page: number = 1;
+  pageCounts: any[] = [10, 20, 25, 50, 100, 200];
+  searchingText: string;
   isFormValid: boolean = false;
   hasError: boolean = false;
   error: string;
@@ -38,59 +43,31 @@ export class CodedAnswersComponent implements OnInit {
 
   constructor(
     private conceptService: ConceptsService,
-    private conceptSourceService: ConceptSourcesService
+    private conceptSourceService: ConceptSourcesService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.createCodedAnswersFields();
     this.codedAnswers$ = this.conceptService.searchConcept({
       q: "LIS_CODED_ANSWERS",
-      limit: this.pageSize,
+      pageSize: this.pageSize,
       conceptClass: "Coded answer",
-      startIndex: (this.page - 1) * this.pageSize,
+      page: this.page,
       searchTerm: "LIS_CODED_ANSWERS",
     });
     this.conceptSources$ = this.conceptSourceService.getConceptSources();
   }
 
-  getList(event: Event, actionType: string): void {
-    this.page = actionType == "next" ? this.page + 1 : this.page - 1;
+  getList(event: any, actionType?: string): void {
+    this.page = event.pageIndex + 1;
+    this.pageSize = Number(event?.pageSize);
     this.codedAnswers$ = this.conceptService.searchConcept({
       q: "LIS_CODED_ANSWERS",
-      limit: this.pageSize,
+      pageSize: this.pageSize,
+      page: this.page,
       conceptClass: "Coded answer",
-      startIndex: (this.page - 1) * this.pageSize,
       searchTerm: "LIS_CODED_ANSWERS",
     });
-  }
-
-  createCodedAnswersFields(data?: any): void {
-    const shortName =
-      data && data?.names
-        ? (data?.names.filter((name) => name?.conceptNameType === "SHORT") ||
-            [])[0]?.name
-        : null;
-    this.codedAnswersFields = [
-      new Textbox({
-        id: "name",
-        key: "name",
-        label: "Name",
-        value: data && data?.display ? data?.display : null,
-        required: true,
-      }),
-      new Textbox({
-        id: "shortName",
-        key: "shortName",
-        label: "Short name",
-        value: shortName,
-        required: true,
-      }),
-      new Textbox({
-        id: "description",
-        key: "description",
-        label: "Description",
-      }),
-    ];
   }
 
   onFormUpdate(formValue: FormValue): void {
@@ -147,8 +124,8 @@ export class CodedAnswersComponent implements OnInit {
     };
     this.conceptService
       .searchConcept({ q: conceptName, conceptClass: "Coded answer" })
-      .subscribe((response) => {
-        if (response?.length > 0 && !this.conceptBeingEdited) {
+      .subscribe((response: any) => {
+        if (response?.results?.length > 0 && !this.conceptBeingEdited) {
           this.saving = false;
           this.alertMessage = "Answer with name " + conceptName + " exists";
           setTimeout(() => {
@@ -204,33 +181,102 @@ export class CodedAnswersComponent implements OnInit {
         if (response) {
           this.conceptBeingEdited = response;
           this.category = "New";
-          this.createCodedAnswersFields(response);
         }
       });
   }
 
   onDelete(event: Event, concept: any): void {
-    this.conceptService.deleteConcept(concept?.uuid).subscribe((response) => {
-      if (response) {
-        this.page = 1;
-        this.codedAnswers$ = this.conceptService.searchConcept({
-          limit: this.pageSize,
-          conceptClass: "Coded answer",
-          startIndex: (this.page - 1) * this.pageSize,
-          searchTerm: "LIS_CODED_ANSWERS",
-        });
-      }
-    });
+    this.dialog
+      .open(SharedConfirmationDialogComponent, {
+        minWidth: "20%",
+        data: {
+          header: `Are you sure to delete concept <b>${concept?.display}</b>`,
+        },
+      })
+      .afterClosed()
+      .subscribe((shouldConfirm) => {
+        if (shouldConfirm) {
+          this.conceptService
+            .deleteConcept(concept?.uuid)
+            .subscribe((response) => {
+              if (response) {
+                this.page = 1;
+                this.codedAnswers$ = this.conceptService.searchConcept({
+                  pageSize: this.pageSize,
+                  conceptClass: "Coded answer",
+                  page: this.page,
+                  searchTerm: "LIS_CODED_ANSWERS",
+                });
+              }
+            });
+        }
+      });
+  }
+
+  onPermanentDelete(event: Event, concept: any): void {
+    this.dialog
+      .open(SharedConfirmationDialogComponent, {
+        minWidth: "20%",
+        data: {
+          header: `Are you sure to delete concept <b>${concept?.display}</b> permanently?`,
+        },
+      })
+      .afterClosed()
+      .subscribe((shouldConfirm) => {
+        if (shouldConfirm) {
+          this.conceptService
+            .deleteConcept(concept?.uuid, true)
+            .subscribe((response) => {
+              if (response) {
+                this.page = 1;
+                this.codedAnswers$ = this.conceptService.searchConcept({
+                  pageSize: this.pageSize,
+                  conceptClass: "Coded answer",
+                  page: this.page,
+                  searchTerm: "LIS_CODED_ANSWERS",
+                });
+              }
+            });
+        }
+      });
+  }
+
+  onEnable(event: Event, concept: any): void {
+    this.dialog
+      .open(SharedConfirmationDialogComponent, {
+        minWidth: "20%",
+        data: {
+          header: `Are you sure you want to enable concept <b>${concept?.display}</b>?`,
+        },
+      })
+      .afterClosed()
+      .subscribe((shouldConfirm) => {
+        if (shouldConfirm) {
+          this.conceptService
+            .unRetireConcept(concept?.uuid)
+            .subscribe((response) => {
+              if (response) {
+                this.page = 1;
+                this.codedAnswers$ = this.conceptService.searchConcept({
+                  pageSize: this.pageSize,
+                  conceptClass: "Coded answer",
+                  page: this.page,
+                  searchTerm: "LIS_CODED_ANSWERS",
+                });
+              }
+            });
+        }
+      });
   }
 
   searchConcept(event: KeyboardEvent): void {
     this.page = 1;
-    const searchingText = (event.target as HTMLInputElement).value;
+    this.searchingText = (event.target as HTMLInputElement).value;
     this.codedAnswers$ = this.conceptService.searchConcept({
-      q: searchingText,
+      q: this.searchingText,
       conceptClass: "Coded answer",
-      limit: this.pageSize,
-      startIndex: (this.page - 1) * this.pageSize,
+      pageSize: this.pageSize,
+      page: this.page,
       searchTerm: "LIS_CODED_ANSWERS",
     });
   }

@@ -10,6 +10,8 @@ import org.openmrs.module.icare.core.dao.BaseDAO;
 import org.openmrs.module.icare.store.models.Requisition;
 import org.openmrs.module.icare.store.models.RequisitionStatus;
 
+import java.util.Date;
+
 /**
  * Home object for domain model class StRequisition.
  * 
@@ -20,7 +22,8 @@ import org.openmrs.module.icare.store.models.RequisitionStatus;
 public class RequisitionDAO extends BaseDAO<Requisition> {
 	
 	public ListResult<Requisition> getRequisitionsByRequestingLocation(String requestingLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection) {
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date startDate, Date endDate) {
 		DbSession session = this.getSession();
 		String queryStr = "SELECT rq \n"
 		        + "FROM Requisition rq \n"
@@ -40,6 +43,25 @@ public class RequisitionDAO extends BaseDAO<Requisition> {
 			}
 		}
 		
+		if (startDate != null && endDate != null) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND";
+			}
+			queryStr += " (cast(rq.dateCreated as date) BETWEEN :startDate AND :endDate)";
+		}
+		
+		if (q != null) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			
+			queryStr += "lower(rq.code) like lower(:q) ";
+		}
+		
 		if (orderByDirection != null) {
 			if (orderByDirection == Requisition.OrderByDirection.DESC) {
 				queryStr += " ORDER BY  rq.dateCreated DESC";
@@ -56,6 +78,15 @@ public class RequisitionDAO extends BaseDAO<Requisition> {
 			query.setParameter("status", status);
 		}
 		
+		if (startDate != null && endDate != null) {
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+		}
+		
+		if (q != null) {
+			query.setParameter("q", "%" + q.replace(" ", "%") + "%");
+		}
+		
 		if (pager.isAllowed()) {
 			pager.setTotal(query.list().size());
 			//pager.setPageCount(pager.getT);
@@ -70,7 +101,8 @@ public class RequisitionDAO extends BaseDAO<Requisition> {
 	}
 	
 	public ListResult<Requisition> getRequisitionsByRequestedLocation(String requestedLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection) {
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date startDate, Date endDate) {
 		DbSession session = this.getSession();
 		System.out.println(status);
 		String queryStr = "SELECT rq \n"
@@ -92,6 +124,25 @@ public class RequisitionDAO extends BaseDAO<Requisition> {
 			}
 		}
 		
+		if (startDate != null && endDate != null) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND";
+			}
+			queryStr += " (cast(rq.dateCreated as date) BETWEEN :startDate AND :endDate)";
+		}
+		
+		if (q != null) {
+			if (!queryStr.contains("WHERE")) {
+				queryStr += " WHERE ";
+			} else {
+				queryStr += " AND ";
+			}
+			
+			queryStr += "lower(rq.code) like lower(:q) ";
+		}
+		
 		if (orderByDirection != null) {
 			if (orderByDirection == Requisition.OrderByDirection.DESC) {
 				queryStr += " ORDER BY  rq.dateCreated DESC";
@@ -101,11 +152,20 @@ public class RequisitionDAO extends BaseDAO<Requisition> {
 				queryStr += " ORDER BY  rq.dateCreated ASC";
 			}
 		}
-		System.out.println(queryStr);
+		
 		Query query = session.createQuery(queryStr);
 		query.setParameter("requestedLocationUuid", requestedLocationUuid);
 		if (status != null && status != RequisitionStatus.RequisitionStatusCode.PENDING) {
 			query.setParameter("status", status);
+		}
+		
+		if (startDate != null && endDate != null) {
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+		}
+		
+		if (q != null) {
+			query.setParameter("q", "%" + q.replace(" ", "%") + "%");
 		}
 		
 		if (pager.isAllowed()) {

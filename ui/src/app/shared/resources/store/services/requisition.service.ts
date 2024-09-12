@@ -4,6 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { OpenmrsHttpClientService } from 'src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service';
 import { RequisitionInput } from '../models/requisition-input.model';
+import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import {
   Requisition,
   RequisitionIssueInput,
@@ -11,6 +12,7 @@ import {
   RequisitionStatus,
 } from "../models/requisition.model";
 import { orderBy } from "lodash";
+
 
 @Injectable({
   providedIn: "root",
@@ -23,7 +25,12 @@ export class RequisitionService {
     page?: Number,
     pageSize?: number,
     status?: string,
-    orderByDirection?: string
+    orderByDirection?: string,
+    otherParameters?: {
+      q: string;
+      startDate: Date;
+      endDate: Date;
+    }
   ): Observable<any> {
     const pageNumber = page ? `&page=${page}` : ``;
     const pageSizeNumber = pageSize ? `&pageSize=${pageSize}` : ``;
@@ -31,8 +38,20 @@ export class RequisitionService {
     const orderByDirectionArg = orderByDirection
       ? `&orderByDirection=${orderByDirection}`
       : ``;
-    const pagingArgs =
+    let pagingArgs =
       pageNumber + pageSizeNumber + filterStatus + orderByDirectionArg;
+
+      if (otherParameters?.q) {
+        pagingArgs += `&q=${otherParameters?.q}`;
+      }
+      if (otherParameters?.startDate) {
+        pagingArgs += `&startDate=${formatDateToYYMMDD(
+          otherParameters?.startDate
+        )}`;
+      }
+      if (otherParameters?.endDate) {
+        pagingArgs += `&endDate=${formatDateToYYMMDD(otherParameters?.endDate)}`;
+      }  
     return this.httpClient
       .get(`store/requests?requestingLocationUuid=${locationUuid}${pagingArgs}`)
       .pipe(
@@ -92,6 +111,17 @@ export class RequisitionService {
     );
   }
 
+  deleteRequisition(uuid: string): Observable<any>{
+    return this.httpClient
+    .delete(`store/request/${uuid}`)
+    .pipe(
+      map((response) => {
+        return response;
+      }),
+      catchError((error) => error)
+    );
+  }
+
   createRequest(
     requisitionInput: RequisitionInput
   ): Observable<RequisitionObject | any> {
@@ -131,6 +161,17 @@ export class RequisitionService {
       );
   }
 
+  deleteRequisitionItem(uuid: string): Observable<any>{
+    return this.httpClient
+    .delete(`store/requestitem/${uuid}`)
+    .pipe(
+      map((response) =>{
+        return response;
+      }),
+      catchError((error) => error)
+    );
+  }
+
   receiveIssueItem(requisitionObject: any): Observable<any> {
     return this.httpClient.post("store/receive", requisitionObject).pipe(
       map((response) => {
@@ -145,6 +186,7 @@ export class RequisitionService {
   }
 
   createIssueItemStatus(issueItem: any): Observable<any> {
+    // console.log("itemIssue body....................................................",issueItem)
     return this.httpClient
       .post(`store/issueitemstatus/`, issueItem)
       .pipe(
@@ -153,7 +195,7 @@ export class RequisitionService {
         }),
         catchError((error) => error)
       );
-  }
+   }
 
   receiveRequisition(
     requisitionObject: RequisitionObject

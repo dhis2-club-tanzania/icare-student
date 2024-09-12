@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { Observable, of } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { TableColumn } from "src/app/shared/models/table-column.model";
 import { TableConfig } from "src/app/shared/models/table-config.model";
 import { Api } from "src/app/shared/resources/openmrs";
@@ -32,13 +33,15 @@ export class BillingListComponent implements OnInit {
   constructor(
     private api: Api,
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   ngOnInit() {
     this.settingCurrentLocationStatus$ = this.store.select(
       getSettingCurrentLocationStatus
     );
+    this.trackActionForAnalytics("BillingPage");
     this.billingColumns = [
       {
         id: "index",
@@ -76,7 +79,10 @@ export class BillingListComponent implements OnInit {
       })
     );
   }
-
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+    this.googleAnalyticsService.sendAnalytics(`Cashier`,`${eventname}: Open`,`Billing`)
+  }
   onSelectPatient(patient) {
     this.store.dispatch(
       loadCurrentPatient({
@@ -84,6 +90,7 @@ export class BillingListComponent implements OnInit {
         isRegistrationPage: false,
       })
     );
+    this.trackActionForAnalytics("UserBill")
     this.store.dispatch(
       go({ path: [`/billing/${patient?.patient?.uuid}/bills`] })
     );

@@ -106,6 +106,13 @@ export class BillingService {
       .pipe(map(() => new Payment(billPayment)));
   }
 
+  gepgpayBill(payload: any): Observable<Payment> {
+    const url = `gepg/generatecontrolno`;
+    return this.httpClient
+      .post(url, payload)
+      .pipe(map(() => new Payment(payload)));
+  }
+
   discountBill(discountDetails): Observable<any> {
     let discountData = omit(discountDetails, "attachmentDetails");
 

@@ -16,6 +16,7 @@ export function formatLocationsPayLoad(locations): Location[] {
         : null;
     locationPath = "";
     const modules = getLocationModules(location);
+    const forms: string[] = getFormsUuids(location?.attributes);
     return {
       ...location,
       id: location?.uuid,
@@ -62,6 +63,7 @@ export function formatLocationsPayLoad(locations): Location[] {
             ) || [])[0]?.value
           : null,
       modules: modules,
+      forms,
       isMainStore: mainStoreTag ? true : false,
     };
     // }
@@ -166,7 +168,7 @@ function checkIfTheChildAreCabinets(childLocations) {
    */
   return childLocations && childLocations?.length > 0
     ? childLocations[0]?.tags?.some(
-        (tag) => tag?.display === "Mortuary Location"
+        (tag) => tag?.display === "Cabinet Location"
       )
     : false;
 }
@@ -191,4 +193,16 @@ function getPathForTheLocation(location) {
 
 export function getChildrenLocations(location) {
   return location?.childLocations;
+}
+
+function getFormsUuids(locationAttributes: any): string[] {
+  let forms =
+    (
+      locationAttributes?.filter(
+        (locationAttribute: any) =>
+          locationAttribute?.attributeType?.uuid ===
+          "2c266002-2848-4d2b-bf1f-8b59d81e3f29"
+      ) || []
+    )?.map((attribute: any) => attribute?.value) || [];
+  return forms;
 }

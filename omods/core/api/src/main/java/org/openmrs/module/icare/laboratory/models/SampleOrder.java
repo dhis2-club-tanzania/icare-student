@@ -2,10 +2,10 @@ package org.openmrs.module.icare.laboratory.models;
 
 // Generated Oct 7, 2020 12:48:40 PM by Hibernate Tools 5.2.10.Final
 
-import org.apache.xpath.operations.Bool;
-import org.openmrs.Order;
-import org.openmrs.User;
-
+import org.openmrs.*;
+import org.openmrs.api.*;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.icare.ICareConfig;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -82,9 +82,10 @@ public class SampleOrder implements Serializable {
 			sampleOrder.setTechnician(user);
 		}
 		return sampleOrder;
+		
 	}
 	
-	public Map<String, Object> toMap(Boolean excludeAllocations) {
+	public Map<String, Object> toMap(Boolean excludeAllocations) throws Exception {
 		Map<String, Object> sampleOrderObject = new HashMap<String, Object>();
 		
 		Map<String, Object> technicianObject = new HashMap<String, Object>();
@@ -112,6 +113,73 @@ public class SampleOrder implements Serializable {
 		Map<String, Object> concept = new HashMap<String, Object>();
 		concept.put("uuid", this.getOrder().getConcept().getUuid());
 		concept.put("display", this.getOrder().getConcept().getDisplayString());
+
+
+		if(Context.getAuthenticatedUser().hasPrivilege("SAMPLE RECEPTION AND REGISTRATION_SAMPLE_IMPORT_EXPORT")) {
+
+			Map<String, Object> conceptAttributeMap = new HashMap<>();
+			for (ConceptAttribute conceptAttribute : this.getOrder().getConcept().getAttributes()) {
+
+				AdministrationService administrationService = Context.getService(AdministrationService.class);
+				String conceptAttributeTypeUuid = administrationService.getGlobalProperty(ICareConfig.LAB_RELATED_METADATA_ATTRIBUTE_TYPE);
+				if(conceptAttributeTypeUuid == null){
+					throw new Exception("The setting of property "+ICareConfig.LAB_RELATED_METADATA_ATTRIBUTE_TYPE+" is not configured. Please configure ");
+				}
+
+				if (conceptAttribute.getAttributeType().getUuid().equals(conceptAttributeTypeUuid)) {
+					conceptAttributeMap.put("uuid", conceptAttribute.getUuid());
+					conceptAttributeMap.put("value", conceptAttribute.getValue().toString());
+					Concept testMethodConcept = Context.getConceptService().getConceptByUuid(conceptAttribute.getValue().toString());
+					if(testMethodConcept == null){
+						throw new Exception("The concept with uuid "+ conceptAttribute.getValue().toString() +" does not exist");
+					}
+					Map<String, Object> testMethodConceptMap = new HashMap<>();
+					testMethodConceptMap.put("uuid", testMethodConcept.getUuid());
+					testMethodConceptMap.put("display", testMethodConcept.getDisplayString());
+					conceptAttributeMap.put("testMethod", testMethodConceptMap);
+
+					Map<String, Object> testMethodMapping = new HashMap<>();
+					String conceptSourceUuid = administrationService.getGlobalProperty(ICareConfig.LAB_UNIFIED_CODING_REFERENCE_CONCEPT_SOURCE);
+					if(conceptSourceUuid == null){
+						for (ConceptMap conceptMap : testMethodConcept.getConceptMappings()) {
+							if (conceptMap.getConceptReferenceTerm().getConceptSource().getUuid().equals(conceptSourceUuid)) {
+								testMethodMapping.put("code", conceptMap.getConceptReferenceTerm().getCode());
+								testMethodMapping.put("source", conceptMap.getConceptReferenceTerm().getConceptSource().getName());
+								testMethodMapping.put("relationship", conceptMap.getConceptMapType().getName());
+								testMethodConceptMap.put("testMethodMap", testMethodMapping);
+
+							}
+						}
+					}
+
+				}
+			}
+			concept.put("relatedMetadataAttribute", conceptAttributeMap);
+
+			if(this.getTestAllocations().size() > 0) {
+				//System.out.println(this.getTestAllocations());
+				Map<String, Object> allocationConceptMap = new HashMap<>();
+				for (TestAllocation testAllocation : this.getTestAllocations()) {
+					allocationConceptMap.put("uuid", testAllocation.getUuid());
+					allocationConceptMap.put("display", testAllocation.getTestConcept().getDisplayString());
+					Map<String, Object> testAllocationMapping = new HashMap<>();
+					AdministrationService administrationService = Context.getService(AdministrationService.class);
+					String conceptSourceUuid = administrationService.getGlobalProperty(ICareConfig.LAB_UNIFIED_CODING_REFERENCE_CONCEPT_SOURCE);
+					if (conceptSourceUuid != null) {
+						for (ConceptMap conceptMap : testAllocation.getTestConcept().getConceptMappings()) {
+							if (conceptMap.getConceptReferenceTerm().getConceptSource().getUuid().equals(conceptSourceUuid)) {
+								testAllocationMapping.put("code", conceptMap.getConceptReferenceTerm().getCode());
+								testAllocationMapping.put("source", conceptMap.getConceptReferenceTerm().getConceptSource().getName());
+								testAllocationMapping.put("relationship", conceptMap.getConceptMapType().getName());
+								concept.put("testAllocationMap", testAllocationMapping);
+							}
+						}
+					}
+
+				}
+			}
+
+		}
 		orderObject.put("concept", concept);
 		
 		Map<String, Object> ordererObject = new HashMap<String, Object>();
@@ -121,10 +189,10 @@ public class SampleOrder implements Serializable {
 		orderObject.put("voidReason", this.getOrder().getVoidReason());
 		orderObject.put("orderer", ordererObject);
 		
-		Map<String, Object> conceptObject = new HashMap<String, Object>();
-		conceptObject.put("uuid", this.getOrder().getConcept().getUuid());
-		conceptObject.put("display", getOrder().getConcept().getDisplayString());
-		orderObject.put("concept", conceptObject);
+//		Map<String, Object> conceptObject = new HashMap<String, Object>();
+//		conceptObject.put("uuid", this.getOrder().getConcept().getUuid());
+//		conceptObject.put("display", getOrder().getConcept().getDisplayString());
+//		orderObject.put("concept", conceptObject);
 		
 		if (this.getOrder() != null) {
 			if (this.getOrder().getConcept().getShortNameInLocale(new Locale("en")) != null) {

@@ -1,12 +1,12 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ICARE_CONFIG } from '../../resources/config';
-import { VisitsService } from '../../resources/visits/services';
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ICARE_CONFIG } from "../../resources/config";
+import { VisitsService } from "../../resources/visits/services";
 
 @Component({
-  selector: 'app-create-patient-bed-order-modal',
-  templateUrl: './create-patient-bed-order-modal.component.html',
-  styleUrls: ['./create-patient-bed-order-modal.component.scss'],
+  selector: "app-create-patient-bed-order-modal",
+  templateUrl: "./create-patient-bed-order-modal.component.html",
+  styleUrls: ["./create-patient-bed-order-modal.component.scss"],
 })
 export class CreatePatientBedOrderModalComponent implements OnInit {
   visitDetails: any;
@@ -21,18 +21,18 @@ export class CreatePatientBedOrderModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('lastBedOrder', this.visitDetails?.lastBedOrder);
+    // console.log('lastBedOrder', this.visitDetails?.lastBedOrder);
     this.encounterData = {
-      patient: this.visitDetails.patient['uuid'],
+      patient: this.visitDetails.patient["uuid"],
       location: this.visitDetails?.location?.uuid,
       visit: this.visitDetails?.uuid,
       orders: [
         {
           concept: this.visitDetails?.lastBedOrder?.concept?.uuid,
           orderType: this.visitDetails?.lastBedOrder?.orderType?.uuid,
-          patient: this.visitDetails.patient['uuid'],
-          careSetting: 'INPATIENT',
-          type: 'order',
+          patient: this.visitDetails.patient["uuid"],
+          careSetting: "INPATIENT",
+          type: "order",
           orderer: this.visitDetails?.provider?.uuid,
           autoExpireDate: new Date(new Date().getTime() + 60 * 60 * 24 * 1000),
         },

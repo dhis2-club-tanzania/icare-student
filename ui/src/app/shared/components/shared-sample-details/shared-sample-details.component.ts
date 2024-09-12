@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { keyBy } from "lodash";
+import { keyBy, orderBy } from "lodash";
 import { Observable, zip } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { ConceptsService } from "../../resources/concepts/services/concepts.service";
-import { Observation } from "../../resources/observation/models/observation.model";
 import { VisitsService } from "../../resources/visits/services/visits.service";
 import { SamplesService } from "../../services/samples.service";
 
@@ -15,7 +14,7 @@ import { SamplesService } from "../../services/samples.service";
 export class SharedSampleDetailsComponent implements OnInit {
   @Input() sample: any;
   isClinical: boolean;
-  obs$: Observable<any>;
+  encounterInformation$: Observable<any>;
   sampleConditions$: Observable<any>;
   sampleConditionsKeys: any[];
   @Output() visitDetails: EventEmitter<any> = new EventEmitter<any>();
@@ -26,6 +25,7 @@ export class SharedSampleDetailsComponent implements OnInit {
 
   sampleDetails$: Observable<any>;
   externalSystems$: Observable<any[]>;
+  diagnoses$: Observable<any>;
   constructor(
     private visitService: VisitsService,
     private conceptService: ConceptsService,
@@ -44,18 +44,53 @@ export class SharedSampleDetailsComponent implements OnInit {
       this.specimenSources,
       this.codedReasonsForRejection
     );
-    this.obs$ = this.visitService
-      .getVisitObservationsByVisitUuid({
+    this.encounterInformation$ = this.visitService
+      .getVisitEncounterDetailsByVisitUuid({
         uuid: this.sample?.visit?.uuid,
         query: {
-          v: "custom:(uuid,visitType,startDatetime,encounters:(uuid,encounterDatetime,encounterType,location,obs,orders,encounterProviders),stopDatetime,attributes:(uuid,display),location:(uuid,display,tags,parentLocation:(uuid,display)),patient:(uuid,display,identifiers,person,voided)",
+          v: "custom:(uuid,visitType,startDatetime,encounters:(uuid,encounterDatetime,encounterType,form:(uuid,display,formFields:(uuid,fieldNumber,fieldPart,field:(uuid,display,concept:(uuid,display,datatype,setMembers:(uuid,display,datatype))))),location,obs,orders,diagnoses,encounterProviders),stopDatetime,attributes:(uuid,display),location:(uuid,display,tags,parentLocation:(uuid,display)),patient:(uuid,display,identifiers,person,voided)",
         },
       })
       .pipe(
-        map((obs) => {
-          return !obs?.error && obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
-            ? obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
-            : "";
+        map((encounters) => {
+          return encounters?.map((encounter) => {
+            return {
+              ...encounter,
+              form: {
+                ...encounter?.form,
+                formFields: orderBy(
+                  encounter?.form?.formFields?.filter(
+                    (formField) => formField?.fieldNumber
+                  ),
+                  ["fieldNumber"],
+                  ["asc"]
+                )?.map((formField: any) => {
+                  return {
+                    ...formField,
+                    field: {
+                      ...formField?.field,
+                      display: formField?.field?.display?.replace(
+                        "SPECIMEN_SOURCE:",
+                        ""
+                      ),
+                    },
+                  };
+                }),
+              },
+            };
+          });
+        })
+      );
+    this.diagnoses$ = this.visitService
+      .getVisitDiagnosesByVisitUuid({
+        uuid: this.sample?.visit?.uuid,
+        query: {
+          v: "custom:(uuid,startDatetime,encounters:(uuid,encounterDatetime,encounterType,location,diagnoses,encounterProviders),stopDatetime,attributes:(uuid,display),location:(uuid,display,tags,parentLocation:(uuid,display)),patient:(uuid,display,identifiers,person,voided)",
+        },
+      })
+      .pipe(
+        map((visitDetails) => {
+          return visitDetails;
         })
       );
     this.sampleConditions$ = zip(

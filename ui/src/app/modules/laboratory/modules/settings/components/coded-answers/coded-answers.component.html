@@ -48,6 +48,7 @@
           [dataType]="'N/A'"
           [setMembersHeaderName]="''"
           [isSet]="false"
+          [conceptData]="conceptBeingEdited"
           [conceptSources]="params?.conceptSources"
           [saveOnTheComponent]="false"
           [multipleSelectionCompHeight]="'10vh'"
@@ -98,42 +99,67 @@
             <tr>
               <th>SN</th>
               <th>Answer</th>
+              <th>Date created</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngIf="params?.codedAnswers?.length > 0">
+            <ng-container *ngIf="params?.codedAnswers?.results?.length > 0">
               <tr
                 *ngFor="
-                  let codedAnswer of params?.codedAnswers;
+                  let codedAnswer of params?.codedAnswers?.results;
                   let count = index
                 "
+                [ngClass]="{ retired: codedAnswer?.retired }"
               >
-                <td>{{ count + 1 }}</td>
+                <td>{{ count + 1 + (page - 1) * pageSize }}</td>
                 <td>
                   {{ codedAnswer?.display }}
+                </td>
+                <td>
+                  {{ codedAnswer?.dateCreated | date }}
                 </td>
                 <td>
                   <button mat-icon-button [matMenuTriggerFor]="menu">
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="onEdit($event, codedAnswer)">
+                    <button
+                      [disabled]="codedAnswer?.retired"
+                      mat-menu-item
+                      (click)="onEdit($event, codedAnswer)"
+                    >
                       <mat-icon>edit</mat-icon>
                       <span>Edit</span>
                     </button>
                     <button
+                      [disabled]="codedAnswer?.retired"
                       mat-menu-item
                       (click)="onDelete($event, codedAnswer)"
                     >
                       <mat-icon>delete</mat-icon>
+                      <span>Retire (Disable)</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="onPermanentDelete($event, codedAnswer)"
+                    >
+                      <mat-icon>delete_forever</mat-icon>
                       <span>Delete</span>
+                    </button>
+                    <button
+                      [disabled]="!codedAnswer?.retired"
+                      mat-menu-item
+                      (click)="onEnable($event, codedAnswer)"
+                    >
+                      <mat-icon>done</mat-icon>
+                      <span>Enable</span>
                     </button>
                   </mat-menu>
                 </td>
               </tr>
             </ng-container>
-            <ng-container *ngIf="params?.codedAnswers?.length === 0">
+            <ng-container *ngIf="params?.codedAnswers?.results?.length === 0">
               <tr>
                 <td colspan="100%">
                   <div class="alert alert-warning" role="alert">No items</div>
@@ -143,25 +169,15 @@
           </tbody>
         </table>
       </div>
-
-      <div class="w-100 d-flex justify-content-end">
-        <button
-          [disabled]="page <= 1"
-          mat-button
-          (click)="getList($event, 'prev')"
+      <div class="w-100 mt-2">
+        <mat-paginator
+          [hidden]="!pageCounts"
+          [length]="params?.codedAnswers?.pager?.total"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageCounts"
+          (page)="getList($event)"
         >
-          Prev
-        </button>
-        <button
-          [disabled]="
-            params?.codedAnswers && params?.codedAnswers?.length < pageSize
-          "
-          mat-button
-          (click)="getList($event, 'next')"
-          class="ml-2"
-        >
-          Next
-        </button>
+        </mat-paginator>
       </div>
       <mat-progress-bar
         *ngIf="!params?.codedAnswers"

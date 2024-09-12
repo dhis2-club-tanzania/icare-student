@@ -82,7 +82,6 @@
                 fromMaintenance
               "
             >
-              <!-- <div class="col-12 d-flex ml-1"> -->
               <h4 class="w-75">Use existing batch</h4>
               <mat-slide-toggle
                 [color]="'primary'"
@@ -377,6 +376,8 @@
                 params?.batchSampleCodeFormatReference
               "
               [LISConfigurations]="LISConfigurations"
+              [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+              [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
               [batch]="selectedBatch"
             ></app-sample-in-batch-registration>
           </div>

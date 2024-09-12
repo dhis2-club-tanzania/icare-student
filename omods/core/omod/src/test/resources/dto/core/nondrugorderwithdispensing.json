@@ -1,0 +1,17 @@
+{
+  "order": {
+    "encounter": "444395c-dd07-488d-8fd7-a748c9570000",
+    "orderType": "2msir5eb-5345-11e8-9922-40b034c3cfee",
+    "concept": "e7jnec30-5344-11e8-ie7c-40b6etw3cfee",
+    "action": "NEW",
+    "urgency": "ROUTINE",
+    "type": "order",
+    "orderer": "1a61a0b5-d271-4b00-a803-5cef8b06ba8f",
+    "patient": "993c46d2-5007-45e8-9512-969300717761",
+    "orderReason": null,
+    "instructions": null,
+    "careSetting": "Outpatient"
+  },
+  "quantity": 30,
+  "location": "acbc6e4d-7e76-4380-8f91-2df028a25971"
+}

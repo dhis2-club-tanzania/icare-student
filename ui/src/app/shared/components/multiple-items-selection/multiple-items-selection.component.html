@@ -1,4 +1,5 @@
 <div class="w-100 d-flex justify-content-between">
+  <!-- {{ items$ | async | json }} -->
   <div class="custom-selection">
     <div class="h6 text-left multiple-selection-header">Available</div>
     <div class="d-flex justify-content-between w-100 ml-1 mr-1">
@@ -23,16 +24,28 @@
       <ul
         class="w-100 ul-listed-items"
         *ngIf="items"
-        style="height: 270px; overflow: auto"
+        style="height: 250px; overflow: auto"
       >
         <li
           (click)="getSelectedItem($event, item, items)"
           *ngFor="let item of items"
           class="item-in-list"
+          [ngClass]="{ retired: item?.retired }"
         >
           {{ item?.display }}
         </li>
       </ul>
+
+      <div class="w-100 text-center">
+        <button
+          mat-button
+          [disabled]="items.length === 0"
+          style="cursor: pointer"
+          (click)="selectAll($event, items)"
+        >
+          Select all
+        </button>
+      </div>
       <mat-progress-bar
         class="w-100"
         *ngIf="!items"
@@ -61,14 +74,32 @@
   <div style="width: 2%"></div>
   <div class="custom-selection">
     <div class="h6 text-left multiple-selection-header">Selected</div>
-    <ul class="concept-list ul-listed-items" *ngIf="items$ | async as items">
+    <ul
+      cdkDropList
+      [cdkDropListData]="currentSelectedItems"
+      (cdkDropListDropped)="drop($event)"
+      class="concept-list ul-listed-items"
+      *ngIf="items$ | async as items"
+    >
       <li
-        class="item-in-list"
+        cdkDrag
+        class="item-in-list selected-list list-item-dragged-box"
         (click)="removeSelectedItem($event, item, items, itemType)"
         *ngFor="let item of currentSelectedItems"
+        [ngClass]="{ retired: item?.retired }"
       >
         {{ item?.display }}
       </li>
     </ul>
+    <div class="w-100 text-center">
+      <button
+        mat-button
+        [disabled]="currentSelectedItems.length === 0"
+        style="cursor: pointer"
+        (click)="UnSelectAll($event, currentSelectedItems)"
+      >
+        Remove all
+      </button>
+    </div>
   </div>
 </div>

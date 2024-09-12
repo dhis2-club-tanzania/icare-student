@@ -40,7 +40,7 @@ import { ItemPriceInterface } from "../../../modules/maintenance/models/item-pri
 import { PricingItemInterface } from "../../../modules/maintenance/models/pricing-item.model";
 import { ItemPriceService } from "../../services/item-price.service";
 import { PricingService } from "../../services/pricing.service";
-
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 @Component({
   selector: "app-price-list",
   templateUrl: "./price-list.component.html",
@@ -49,6 +49,7 @@ import { PricingService } from "../../services/pricing.service";
 export class PriceListComponent implements OnInit, OnChanges {
   @Input() paymentTypes: PaymentTypeInterface[];
   @Input() departmentId: string;
+  @Input() hideDepartmentsSelection: boolean;
   currentDepartmentId: string;
   priceList: any[];
   priceList$: Observable<any[]>;
@@ -83,11 +84,14 @@ export class PriceListComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private itemPriceService: ItemPriceService,
     private pricingService: PricingService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   ngOnInit() {
     this.currentDepartmentId = this.departmentId;
+    this.isDrug = this.currentDepartmentId == "Drug" ? true : false;
+
     this.loadData();
     this.priceListDepartments$ =
       this.itemPriceService.getDepartmentsByMappingSearchQuery("PRICE_LIST");
@@ -145,11 +149,11 @@ export class PriceListComponent implements OnInit, OnChanges {
   onCreate(e, pricingItems: PricingItemInterface[]): void {
     e.stopPropagation();
     const dialog = this.dialog.open(ManageItemPriceComponent, {
-      width: "50%",
+      minWidth: "50%",
       panelClass: "custom-dialog-container",
       data: { pricingItems },
     });
-
+    this.trackActionForAnalytics('Add Price List: Open');
     // TODO: Find best way in order to stop subscribing here
     dialog.afterClosed().subscribe((results) => {
       if (results) {
@@ -209,6 +213,8 @@ export class PriceListComponent implements OnInit, OnChanges {
                 (pricingItem: PricingItemInterface) => {
                   this.addingPricingItem = false;
                   this.store.dispatch(upsertPricingItem({ pricingItem }));
+
+                
                 },
                 () => {
                   this.addingPricingItem = false;
@@ -274,7 +280,6 @@ export class PriceListComponent implements OnInit, OnChanges {
       price,
     };
   }
-
   onSelectPaymentType(selectionChange: MatSelectChange) {
     if (selectionChange) {
       this.store.dispatch(
@@ -300,7 +305,6 @@ export class PriceListComponent implements OnInit, OnChanges {
       })
     );
   }
-
   onSearch(e: any, departmentId: string): void {
     e.stopPropagation();
     this.itemSearchTerm = e?.target?.value;
@@ -313,19 +317,23 @@ export class PriceListComponent implements OnInit, OnChanges {
         loadPricingItems({
           filterInfo: {
             limit: 25,
-            startIndex: this.currentPage,
+            startIndex: 0,
             searchTerm: this.itemSearchTerm !== "" ? this.itemSearchTerm : null,
             conceptSet: departmentId,
+            isDrug: this.isDrug,
           },
         })
       );
     }
   }
-
   getSelectedDepartment(event: MatSelectChange): void {
     this.selectedPriceListDepartment = event?.value;
     this.isDrug = event?.value == "Drug";
     this.currentDepartmentId = this.selectedPriceListDepartment?.uuid;
     this.loadData();
+  }
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Pharmacy',eventname,'Pharmacy')
   }
 }

@@ -13,6 +13,7 @@ import {
 import {
   addCurrentPatient,
   admitPatient,
+  assignDeadBodyToCabinet,
   failedToAdmitt,
   go,
   loadCurrentPatient,
@@ -27,6 +28,7 @@ import {
   updateVisit,
 } from "../actions/visit.actions";
 import { AppState } from "../reducers";
+import { EncountersService } from "src/app/shared/services/encounters.service";
 
 @Injectable()
 export class PatientEffects {
@@ -70,7 +72,6 @@ export class PatientEffects {
             type: "LOADING",
           })
         );
-        const visitUuid = action.admissionDetails?.visit;
         const visitDetails = {
           location: action.admissionDetails.visitLocation
             ? action.admissionDetails?.visitLocation
@@ -156,11 +157,41 @@ export class PatientEffects {
     )
   );
 
+  deadBodyAssignmentToCabinet$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(assignDeadBodyToCabinet),
+      switchMap((action: any) => {
+        this.notificationService.show(
+          new Notification({
+            message: "Assigning dead body to cabinet",
+            type: "LOADING",
+          })
+        );
+        const visitDetails = {
+          location: action?.deathDetails?.location,
+        };
+        return this.encountersService
+          .createEncounter(action?.deathDetails)
+          .pipe(
+            switchMap((response: any) => {
+              return [
+                updateVisit({
+                  details: visitDetails,
+                  visitUuid: action?.deathDetails?.visit,
+                }),
+              ];
+            })
+          );
+      })
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private visitService: VisitsService,
     private notificationService: NotificationService,
     private patientService: PatientService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private encountersService: EncountersService
   ) {}
 }

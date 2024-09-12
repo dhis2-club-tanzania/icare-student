@@ -7,7 +7,6 @@ import { SamplesService } from "src/app/shared/services/samples.service";
 import { AppState } from "src/app/store/reducers";
 import { getProviderDetails } from "src/app/store/selectors/current-user.selectors";
 import { groupBy } from "lodash";
-import { PrintResultsModalComponent } from "../print-results-modal/print-results-modal.component";
 import { LabSample } from "src/app/modules/laboratory/resources/models";
 
 @Component({
@@ -59,74 +58,9 @@ export class SampleToPrintResultsComponent implements OnInit {
   }
 
   onGetSelectedSampleDetails(sample: any, providerDetails: any): void {
-    this.sampleService
-      .getFormattedSampleByUuid(
-        sample?.uuid,
-        this.labSamplesDepartments,
-        this.sampleTypes,
-        this.codedSampleRejectionReasons
-      )
-      .pipe(
-        map((response) => {
-          const filteredCompletedSamples = [
-            {
-              ...response,
-              mrn: response?.mrn,
-              departmentName: response?.department?.name,
-            },
-          ];
-          const groupedByMRN = groupBy(filteredCompletedSamples, "mrn");
-          return Object.keys(groupedByMRN).map((key) => {
-            const samplesKeyedByDepartments = groupBy(
-              groupedByMRN[key],
-              "departmentName"
-            );
-            return {
-              mrn: key,
-              patient: groupedByMRN[key][0]?.sample?.patient,
-              departments: Object.keys(samplesKeyedByDepartments).map(
-                (depName) => {
-                  return {
-                    departmentName: depName,
-                    samples: samplesKeyedByDepartments[depName].map(
-                      (sampleObject) => {
-                        const sample = new LabSample(
-                          sampleObject,
-                          this.labSamplesDepartments,
-                          this.sampleTypes,
-                          this.codedSampleRejectionReasons
-                        ).toJSon();
-                        return sample;
-                      }
-                    ),
-                  };
-                }
-              ),
-            };
-          });
-        })
-      )
-      .subscribe((response) => {
-        this.dataForPrinting = {
-          patientDetailsAndSamples: response[0],
-          labConfigs: this.labConfigs,
-          LISConfigurations: this.LISConfigurations,
-          user: providerDetails,
-          authorized: true,
-        };
-        this.dataToPrint.emit(this.dataForPrinting);
-        // this.dialog.open(PrintResultsModalComponent, {
-        //   data: {
-        //     patientDetailsAndSamples: response[0],
-        //     labConfigs: this.labConfigs,
-        //     LISConfigurations: this.LISConfigurations,
-        //     user: providerDetails,
-        //     authorized: true,
-        //   },
-        //   width: "60%",
-        //   maxHeight: "85%",
-        //   disableClose: false,
-        // });
-      });
+    this.dataToPrint.emit({
+      ...sample,
+      providerDetails,
+    });
   }
 }

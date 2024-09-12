@@ -1,0 +1,28 @@
+[
+  {
+    "status": "AUTHORIZED",
+    "remarks": "SECOND_APPROVAL",
+    "user": {
+      "uuid": "36b071d8-d5ea-4703-8e56-5b066420b569"
+    },
+    "testResult": {
+      "uuid": "223yyy70-9303-11e3-1221-0sndiu87hsj3"
+    },
+    "testAllocation": {
+      "uuid": "111xxx60-8498-11e3-1111-0sndiu87hsju"
+    }
+  },
+  {
+    "status": "AUTHORIZED",
+    "remarks": "SECOND_APPROVAL",
+    "user": {
+      "uuid": "36b071d8-d5ea-4703-8e56-5b066420b569"
+    },
+    "testResult": {
+      "uuid": "245yyy70-7181-11e3-1221-0sndiu87hsj3"
+    },
+    "testAllocation": {
+      "uuid": "222yyy70-8398-11e3-1221-0sndiu87hsja"
+    }
+  }
+]

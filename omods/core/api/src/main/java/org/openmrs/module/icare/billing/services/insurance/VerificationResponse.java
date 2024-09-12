@@ -13,6 +13,7 @@ import org.openmrs.Concept;
 import org.openmrs.module.icare.billing.services.insurance.nhif.Gender;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class VerificationResponse {
@@ -155,5 +156,71 @@ public class VerificationResponse {
 	
 	public void setPaymentScheme(Concept paymentScheme) {
 		this.paymentScheme = paymentScheme;
+	}
+	
+	public Map<String, Object> toMap(){
+
+		Map<String, Object> verificationResponseMap = new HashMap<>();
+
+		if(this.getId() != null){
+			verificationResponseMap.put("id",this.getId());
+		}
+
+		if(this.getEligibilityStatus() != null){
+			verificationResponseMap.put("elligibilityStatus",this.getEligibilityStatus().toString());
+		}
+
+		if(this.getFirstName() != null){
+			verificationResponseMap.put("firstName", this.getFirstName());
+		}
+
+		if(this.getMiddleName() != null){
+			verificationResponseMap.put("middleName", this.getMiddleName());
+		}
+
+		if(this.getLastName() != null){
+			verificationResponseMap.put("lastName", this.getLastName());
+		}
+
+		if(this.getRemarks() != null){
+			verificationResponseMap.put("remarks", this.getRemarks());
+		}
+
+		if(this.getGender() != null){
+			verificationResponseMap.put("gender", this.getGender());
+		}
+
+		if(this.getDateOfBirth() != null){
+			verificationResponseMap.put("dateOfBirth",this.getDateOfBirth());
+		}
+
+		if(this.getDateOfExpiry() != null){
+			verificationResponseMap.put("dateOfexpiry", this.getDateOfExpiry());
+		}
+
+		if( this.getAuthorizationStatus() != null){
+			verificationResponseMap.put("authorizationStatus", this.getAuthorizationStatus());
+		}
+
+		if(this.getAuthorizationNumber() != null){
+			verificationResponseMap.put("authorizationNumber",this.getAuthorizationNumber());
+		}
+
+		if(this.getOtherData() != null){
+			verificationResponseMap.put("otherData",this.getOtherData());
+		}
+
+		if(this.getComment() != null){
+			verificationResponseMap.put("comment",this.getComment());
+		}
+
+		if(this.getPaymentScheme() != null){
+			Map<String,Object> paymentSchemeMap = new HashMap<>();
+			paymentSchemeMap.put("uuid",this.getPaymentScheme().getUuid());
+			paymentSchemeMap.put("name",this.getPaymentScheme().getName().getName());
+		}
+
+		return verificationResponseMap;
+
 	}
 }

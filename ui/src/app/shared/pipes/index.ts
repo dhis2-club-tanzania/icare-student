@@ -19,6 +19,12 @@ import { FilterResultsByResultGroupPipe } from "./filter-results-by-result-group
 import { FormatLabelCharCountDisplayPipe } from "./format-label-char-count-display.pipe";
 import { FilterOrdersByOrderPipe } from "./filter-orders-by-order.pipe";
 import { GetAssociatedFieldsPipe } from "./get-associated-fields.pipe";
+import { SearchingItemPipe } from "./searching-item.pipe";
+import { GroupParametersByHeadersPipe } from "./group-parameters-by-headers.pipe";
+import { IdentifyParametersWithoutHeadersPipe } from "./identify-parameters-without-headers.pipe";
+import { FilterDrugOrdersPipe } from "./filter-drug-orders.pipe";
+import { TimeConversionPipe } from "./time-conversion.pipe";
+
 
 export const sharedPipes: any[] = [
   FilterByPipe,
@@ -42,4 +48,9 @@ export const sharedPipes: any[] = [
   FormatLabelCharCountDisplayPipe,
   FilterOrdersByOrderPipe,
   GetAssociatedFieldsPipe,
+  SearchingItemPipe,
+  GroupParametersByHeadersPipe,
+  IdentifyParametersWithoutHeadersPipe,
+  FilterDrugOrdersPipe,
+  TimeConversionPipe
 ];

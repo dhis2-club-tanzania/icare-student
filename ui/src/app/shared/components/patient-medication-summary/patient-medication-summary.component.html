@@ -3,7 +3,8 @@
     generalPrescriptionOrderType: generalPrescriptionOrderType$ | async,
     useGeneralPrescription: useGeneralPrescription$ | async,
     currentVisit: currentVisit$ | async,
-    filteredDrugOrders: filteredDrugOrders$ | async
+    filteredDrugOrders: filteredDrugOrders$ | async,
+    drugOrders: drugOrders$ | async
   } as drugParams"
 >
   <mat-progress-bar
@@ -67,6 +68,7 @@
         </div>
       </mat-tab>
       <mat-tab
+        *ngIf="!previous"
         label="{{
           drugParams?.useGeneralPrescription === 'true' && !forHistory
             ? 'To Be Dispensed'
@@ -158,7 +160,7 @@
           </ng-template>
         </div>
       </mat-tab>
-      <mat-tab label="Dispensed">
+      <mat-tab label="Dispensed" *ngIf="!previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
             <table
@@ -197,6 +199,8 @@
                       {{
                         drugOrder?.drugOrder?.instructions
                           ? drugOrder?.drugOrder?.instructions
+                          : drugOrder?.instructions
+                          ? drugOrder?.instructions
                           : "No instructions written"
                       }}
                     </td>
@@ -224,6 +228,82 @@
               *ngIf="
                 drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length ===
                 0
+              "
+            >
+              <tr class="text-center p-3">
+                No drugs dispensed for this patient
+              </tr>
+            </table>
+          </ng-template>
+        </div>
+      </mat-tab>
+      <mat-tab label="Drugs" *ngIf="previous">
+        <div class="mat-tab-container">
+          <ng-template matTabContent>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th style="width: 10px">SN</th>
+                  <th>Drug</th>
+                  <th>Instructions</th>
+                  <th>Prescribed By</th>
+                  <th>Prescribed On</th>
+                  <th>Dispensed?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngIf="drugParams?.drugOrders?.length > 0"
+                  ><ng-container
+                    *ngFor="
+                      let drugOrder of drugParams?.drugOrders;
+                      let count = index
+                    "
+                  >
+                    <tr *ngIf="drugOrder?.statuses?.length > 0">
+                      <td>
+                        {{ count + 1 }}
+                      </td>
+                      <td>
+                        {{
+                          drugOrder?.drug
+                            ? drugOrder?.drug?.display
+                            : drugOrder?.drugOrder?.display
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          drugOrder?.drugOrder?.instructions
+                            ? drugOrder?.drugOrder?.instructions
+                            : "No instructions written"
+                        }}
+                      </td>
+                      <td>
+                        {{ drugOrder?.orderer?.display }}
+                      </td>
+                      <td>
+                        {{ drugOrder?.dateActivated | date: "medium" }}
+                      </td>
+                      <td>
+                        {{ drugOrder?.dispensed ? "Yes" : "No" }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="drugParams?.drugOrders?.length === 0">
+                  <tr>
+                    <td colspan="100%">
+                      No previous visit drugs prescribed for this patient
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+            <table
+              class="table table-striped"
+              *ngIf="
+                !previous &&
+                drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length ===
+                  0
               "
             >
               <tr class="text-center p-3">

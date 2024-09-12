@@ -2,16 +2,35 @@
   <mat-tab-group>
     <mat-tab label="Users">
       <ng-template matTabContent>
-        <div class="p-3">
+        <div
+          class="p-3"
+          *ngIf="
+            currentUser?.userPrivileges['ALL'] ||
+            currentUser?.userPrivileges['MAINTENANCE_USER_MANAGEMENT']
+          "
+        >
           <app-user-management-dashboard></app-user-management-dashboard>
         </div>
       </ng-template>
     </mat-tab>
-    <mat-tab label="user Privileges & Profiles">
+    <mat-tab label="User Privileges & Profiles">
       <ng-template matTabContent>
         <div class="p-3">
-          <div class="privileges-and-roles-management-container">
-            <app-shared-privileges-and-roles-management></app-shared-privileges-and-roles-management>
+          <div
+            class="privileges-and-roles-management-container"
+            *ngIf="
+              currentUser?.userPrivileges['ALL'] ||
+              currentUser?.userPrivileges[
+                'MAINTENANCE_USER_ROLES_MANAGEMENT'
+              ] ||
+              currentUser?.userPrivileges[
+                'MAINTENANCE_USER_PRIVILEGE_MANAGEMENT'
+              ]
+            "
+          >
+            <app-shared-privileges-and-roles-management
+              [currentUser]="currentUser"
+            ></app-shared-privileges-and-roles-management>
           </div>
         </div>
       </ng-template>

@@ -5,7 +5,6 @@ export function formatDiagnosisFormObject(formObject, data?: DiagnosisObject) {
   if (!formObject) {
     return null;
   }
-
   const referenceMapping = {
     "1284AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "diagnosis",
     "161602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA": "diagnosis-non-coded",

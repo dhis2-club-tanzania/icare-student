@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class SharedDashboardContainerComponent implements OnInit {
   @Input() datesParams: any;
+  @Input() dashboardSingleValueDataSetsReferenceKey: string;
   constructor() {}
 
   ngOnInit(): void {}

@@ -21,7 +21,7 @@ import { PrivilegesAndRolesService } from "../../services/privileges-and-roles.s
 export class ManageRolesComponent implements OnInit {
   dialogData: any;
   isFormValid: boolean = false;
-
+  
   formFields: any[];
   formValues: any = {};
 
@@ -38,6 +38,7 @@ export class ManageRolesComponent implements OnInit {
 
   selectedPrivileges: string[] = [];
   selectedRoles: string[] = [];
+  q: string;
   constructor(
     private dialogRef: MatDialogRef<ManageRolesComponent>,
     @Inject(MAT_DIALOG_DATA) data,
@@ -94,6 +95,7 @@ export class ManageRolesComponent implements OnInit {
     this.privileges$ = this.privilegesAndRolesService.getPrivileges({
       limit: this.privilegePageSize,
       startIndex: (this.privilegePage - 1) * this.privilegePageSize,
+      q: (this.q != undefined) ? this.q : null
     });
   }
 
@@ -101,6 +103,7 @@ export class ManageRolesComponent implements OnInit {
     this.roles$ = this.privilegesAndRolesService.getRoles({
       limit: this.rolePageSize,
       startIndex: (this.rolePage - 1) * this.rolePageSize,
+      q: (this.q != undefined) ? this.q : null 
     });
   }
 
@@ -116,6 +119,7 @@ export class ManageRolesComponent implements OnInit {
     this.selectedRoles = event?.checked
       ? [...this.selectedRoles, id]
       : (this.selectedRoles || [])?.filter((role) => role != id) || [];
+
   }
 
   onFormUpdate(formValues: FormValue): void {
@@ -177,5 +181,15 @@ export class ManageRolesComponent implements OnInit {
       actionType === "next" ? this.rolePage + 1 : this.rolePage - 1;
 
     this.getRolesList();
+  }
+
+  searchRoleItem(event: Event):void {
+    this.q = (event.target as HTMLInputElement).value;
+    this.getRolesList();
+  }
+
+  searchPrivilegeItem(event: Event):void {
+    this.q = (event.target as HTMLInputElement).value;
+    this.getPrivilegesList();
   }
 }

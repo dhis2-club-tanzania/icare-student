@@ -44,9 +44,14 @@ export class LoginComponent implements OnInit {
       username: ["", Validators.required],
       password: ["", Validators.required],
     });
-    this.parentLocation$ = this.store.select(getParentLocation).pipe(tap((data) => {
-      this.logo = data?.attributes?.filter((attribute) => attribute?.attributeType?.display?.toLowerCase() === 'logo')[0]?.value
-    }));
+    this.parentLocation$ = this.store.select(getParentLocation).pipe(
+      tap((data) => {
+        this.logo = data?.attributes?.filter(
+          (attribute) =>
+            attribute?.attributeType?.display?.toLowerCase() === "logo"
+        )[0]?.value;
+      })
+    );
     this.authenticationLoading$ = this.store.select(
       getAuthenticationLoadingState
     );

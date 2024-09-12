@@ -13,7 +13,7 @@
               <div class="row">
                 <div
                   class="
-                    col-lg-9 col-md-9 col-sx-12 col-sm-12
+                    col-lg-8 col-md-8 col-sx-12 col-sm-12
                     mb-4
                     border-right-separater
                   "
@@ -184,7 +184,7 @@
                             ></app-form>
                             <div *ngIf="selectedCodingSource">
                               <app-multiple-items-selection
-                                [items]="[]"
+                                [items]="options"
                                 [itemType]="'conceptReferenceTerm'"
                                 [source]="selectedCodingSource"
                                 [selectedItems]="selectedCodeItems"
@@ -217,7 +217,7 @@
 
                 <div
                   class="
-                    col-lg-3 col-md-3 col-sx-12 col-sm-12
+                    col-lg-4 col-md-4 col-sx-12 col-sm-12
                     mb-4
                     border-right-separater
                   "
@@ -227,6 +227,22 @@
                     (selectedParameter)="onGetSelectedParameter($event)"
                   ></app-parameters-list>
                 </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Parameter headers">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <div>
+                <app-standard-concept-creation
+                  [conceptClass]="'Misc'"
+                  [isSet]="true"
+                  [setMembersHeaderName]="'Parameters'"
+                  [conceptDataTypes]=""
+                  [standardSearchTerm]="'PARAMETER_HEADER'"
+                  [setMembersSearchTerm]="'LIS_TEST_PARAMETER'"
+                ></app-standard-concept-creation>
               </div>
             </div>
           </ng-template>

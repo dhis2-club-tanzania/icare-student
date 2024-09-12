@@ -3,18 +3,21 @@
   *ngIf="{
     LISConfigurations: LISConfigurations$ | async,
     labSections: labSections$ | async,
-    provider: provider$ | async
+    provider: provider$ | async,
+    currentUser: currentUser$ | async,
+    sampleRegistrationCategoriesConceptUuid:
+      sampleRegistrationCategoriesConceptUuid$ | async
   } as params"
 >
   <mat-progress-bar
     class="mt-2"
-    *ngIf="!params?.LISConfigurations"
+    *ngIf="!params?.LISConfigurations || !params?.currentUser"
   ></mat-progress-bar>
   <mat-tab-group
-    *ngIf="params?.LISConfigurations"
-    [selectedIndex]="selectedTab.value"
-    (selectedTabChange)="onChangeRoute($event)"
-    (selectedIndexChange)="selectedTab.setValue($event)"
+    *ngIf="params?.LISConfigurations && params?.currentUser"
+    [selectedIndex]="selectedIndex"
+    [animationDuration]="'1300ms'"
+    (selectedTabChange)="onChangeTab($event)"
   >
     <mat-tab
       label="Tests Parameters Management"
@@ -22,14 +25,37 @@
     >
       <ng-template matTabContent>
         <div class="p-3">
-          <app-parameters-dashboard></app-parameters-dashboard>
+          <app-parameters-dashboard
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-parameters-dashboard>
+
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab label="Test methods" *ngIf="params?.LISConfigurations?.isLIS">
       <ng-template matTabContent>
         <div class="p-3">
-          <app-test-methods-dashboard></app-test-methods-dashboard>
+          <app-test-methods-dashboard
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-test-methods-dashboard>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
@@ -39,57 +65,140 @@
     >
       <ng-template matTabContent>
         <div class="p-3">
-          <app-test-orders-management></app-test-orders-management>
+          <app-test-orders-management
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-test-orders-management>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab
-      label="Labs & Sections Management"
+      label="Sections, Labs & Instruments Management"
       *ngIf="params?.LISConfigurations?.isLIS"
     >
       <ng-template matTabContent>
         <div class="p-3">
-          <app-labs-and-sections-management></app-labs-and-sections-management>
+          <app-labs-and-sections-management
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-labs-and-sections-management>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
 
     <mat-tab
       label="Batch Registration Management"
-      *ngIf="
-        params?.LISConfigurations?.isLIS &&
-        params?.labSections &&
-        params?.provider
-      "
+      *ngIf="params?.LISConfigurations?.isLIS"
     >
       <ng-template matTabContent>
-        <div class="p-3">
-          <app-register-sample
-            [provider]="params?.provider"
-            [labSections]="params?.labSections"
-            [LISConfigurations]="params?.LISConfigurations"
-            [fromMaintenance]="true"
-          ></app-register-sample>
+        <div class="p-3" *ngIf="params?.labSections && params?.provider">
+          <ng-container *ngIf="!errors || (errors && errors?.length === 0)">
+            <app-register-sample
+              *ngIf="
+                params?.currentUser &&
+                params?.sampleRegistrationCategoriesConceptUuid &&
+                params?.currentUser?.userPrivileges['ALL']
+              "
+              [provider]="params?.provider"
+              [labSections]="params?.labSections"
+              [LISConfigurations]="params?.LISConfigurations"
+              [fromMaintenance]="true"
+              [sampleRegistrationCategoriesConceptUuid]="
+                params?.sampleRegistrationCategoriesConceptUuid
+              "
+            ></app-register-sample>
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="
+                !params?.currentUser ||
+                !params?.sampleRegistrationCategoriesConceptUuid
+              "
+            >
+            </mat-progress-bar>
+            <div
+              class="alert alert-warning"
+              role="alert"
+              *ngIf="
+                params?.currentUser &&
+                !params?.currentUser?.userPrivileges['ALL']
+              "
+            >
+              Seems you do not have access to view this page
+            </div>
+          </ng-container>
+          <app-shared-error
+            *ngIf="errors && errors?.length > 0"
+            [errors]="errors"
+          ></app-shared-error>
         </div>
       </ng-template>
     </mat-tab>
+
     <mat-tab
       label="Worksheets Management"
       *ngIf="params?.LISConfigurations?.isLIS"
     >
       <ng-template matTabContent>
         <div class="p-3">
-          <app-worksheet-management></app-worksheet-management>
+          <app-worksheet-management
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-worksheet-management>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab
       label="Users, Profiles & Access Control"
-      *ngIf="params?.LISConfigurations?.isLIS"
+      *ngIf="
+        params?.LISConfigurations?.isLIS &&
+        params?.currentUser &&
+        (params?.currentUser?.userPrivileges['ALL'] ||
+          params?.currentUser?.userPrivileges['MAINTENANCE_USER_MANAGEMENT'] ||
+          params?.currentUser?.userPrivileges[
+            'MAINTENANCE_USER_ROLES_MANAGEMENT'
+          ] ||
+          params?.currentUser?.userPrivileges[
+            'MAINTENANCE_USER_PRIVILEGE_MANAGEMENT'
+          ])
+      "
     >
       <ng-template matTabContent>
         <div class="p-3">
-          <app-profiles-and-access-control></app-profiles-and-access-control>
+          <app-profiles-and-access-control
+            *ngIf="params?.currentUser?.userPrivileges['ALL']"
+            [currentUser]="params?.currentUser"
+          ></app-profiles-and-access-control>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
@@ -103,15 +212,27 @@
       <ng-template matTabContent>
         <div class="p-3">
           <app-extended-parameters-settings
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
             [LISConfigurations]="params?.LISConfigurations"
           ></app-extended-parameters-settings>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab label="System Settings">
       <ng-template matTabContent>
-        <div class="p-3">
-          <app-lab-system-settings></app-lab-system-settings>
+        <div class="p-3" *ngIf="params?.currentUser">
+          <app-lab-system-settings
+            [currentUser]="params?.currentUser"
+          ></app-lab-system-settings>
         </div>
       </ng-template>
     </mat-tab>
@@ -119,16 +240,58 @@
       <ng-template matTabContent>
         <div class="p-3">
           <ngx-standard-report
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
             [actionType]="'manage'"
             [additionalKey]="'lis'"
           ></ngx-standard-report>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab label="Other" *ngIf="params?.LISConfigurations?.isLIS">
       <ng-template matTabContent>
         <div class="p-3">
-          <app-other-lab-configurations></app-other-lab-configurations>
+          <app-other-lab-configurations
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-other-lab-configurations>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab
+      label="System & Audit logs"
+      *ngIf="params?.LISConfigurations?.isLIS"
+    >
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-system-logs
+            *ngIf="
+              params?.currentUser && params?.currentUser?.userPrivileges['ALL']
+            "
+          ></app-system-logs>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentUser?.userPrivileges['ALL']"
+          >
+            Seems you do not have access to view this page
+          </div>
         </div>
       </ng-template>
     </mat-tab>

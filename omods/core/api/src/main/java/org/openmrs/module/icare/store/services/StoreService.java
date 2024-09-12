@@ -1,10 +1,13 @@
 package org.openmrs.module.icare.store.services;
 
 import org.openmrs.Location;
+import org.openmrs.Order;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.core.ListResult;
 import org.openmrs.module.icare.core.Pager;
+import org.openmrs.module.icare.core.models.EncounterPatientProgram;
+import org.openmrs.module.icare.core.models.EncounterPatientState;
 import org.openmrs.module.icare.store.models.*;
 import org.openmrs.module.icare.store.util.StockOutException;
 
@@ -39,10 +42,12 @@ public interface StoreService extends OpenmrsService {
 	public List<RequisitionStatus> getRequisitionStatuses();
 	
 	public ListResult<Requisition> getRequestsByRequestingLocation(String requestingLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection);
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date start, Date end);
 	
 	public ListResult<Requisition> getRequestsForRequestedLocation(String requestedLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection);
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date start, Date end);
 	
 	public Requisition getRequestByUuid(String requisitionUuid);
 	
@@ -66,14 +71,16 @@ public interface StoreService extends OpenmrsService {
 	
 	public List<Stock> getAllStockStatusMetrics();
 	
+	public ListResult<Stock> getAllStock(Pager pager);
+	
 	List<OrderStatus> getOrderStatusByOrderUuid(String orderUuid);
 	
 	public List<Stock> getStockByItemAndLocation(String itemUuid, String locationUuid);
 	
-	public List<Stock> getStockByLocation(String locationUuid, String search, Integer startIndex, Integer limit,
-	        String conceptClassName);
+	public ListResult<Stock> getStockByLocation(String locationUuid, Pager pager, String search, Integer startIndex,
+	        Integer limit, String conceptClassName);
 	
-	public List<Item> getStockout();
+	public ListResult<Item> getStockout(Pager pager);
 	
 	public List<Stock> getItemStockMetrics(String itemUuid);
 	
@@ -83,8 +90,7 @@ public interface StoreService extends OpenmrsService {
 	
 	public Issue getIssueByUuid(String issueUuid);
 	
-	List<Item> getStockoutByLocation(String locationUuid, String q, Integer startIndex, Integer limit,
-	        String conceptClassName);
+	ListResult<Item> getStockoutByLocation(String locationUuid, Pager pager, String q, String conceptClassName);
 	
 	Stock saveStock(Stock stock);
 	
@@ -102,15 +108,19 @@ public interface StoreService extends OpenmrsService {
 	
 	OrderStatus dispense(String drugOrderUuid, String locationUuid, String remarks);
 	
+	OrderStatus dispenseNonDrug(Order order, Double quantity, String locationUuid, String remarks);
+	
 	List<OrderStatus> getOrderStatus(String visitUuid);
 	
-	OrderStatus dispenseDrug(String drugOrderUuid, String location, String location1);
+	OrderStatus dispenseDrug(String drugOrderUuid, String drugUuid, Integer quantity, String location, String remarks);
+	
+	OrderStatus setDrugOrderStatus(String orderUuid, String status, String remarks);
 	
 	StockInvoice saveStockInvoice(StockInvoice stockInvoice) throws Exception;
 	
 	public Supplier getSupplierByUuid(String supplierUuid);
 	
-	ListResult<StockInvoice> getStockInvoices(Pager pager, StockInvoiceStatus.Type status);
+	ListResult<StockInvoice> getStockInvoices(Pager pager, StockInvoiceStatus.Type status, String q, Date start, Date end);
 	
 	Supplier saveSupplier(Supplier supplier) throws Exception;
 	
@@ -143,4 +153,36 @@ public interface StoreService extends OpenmrsService {
 	RequisitionItem updateRequisitionItem(RequisitionItem requisitionItem) throws Exception;
 	
 	public IssueItem getIssueItemByUuid(String IssueItemUuid);
+	
+	ListResult<Item> getNearlyStockedOutByLocation(String locationUuid, Pager pager, String q);
+	
+	ListResult<Item> getNearlyExpiredByLocation(String locationUuid, Pager pager, String q);
+	
+	ListResult<Item> getExpiredItemsByLocation(String locationUuid, Pager pager, String q);
+	
+	ReorderLevel updateReorderLevel(ReorderLevel reorderLevel);
+	
+	Boolean isPendingRequisition(String itemUuid, String locationUuid);
+	
+	Requisition deleteRequisition(String requisitionUuid);
+	
+	RequisitionItem deleteRequisitionItem(String requestItemUuid);
+	
+	RequisitionStatus deleteRequisitionStatus(String requestStatusUuid);
+	
+	RequisitionItemStatus deleteRequisitionItemStatus(String requestItemStatusUuid);
+	
+	RequisitionItem getRequisitionItem(String requestItemUuid);
+	
+	StockInvoice deleteStockInvoice(String stockInvoiceUuid);
+	
+	StockInvoiceStatus deleteStockInvoiceStatus(String stockInvoiceStatusUuid);
+	
+	StockInvoiceItem deleteStockInvoiceItem(String stockInvoiceItemUuid);
+	
+	StockInvoiceItemStatus deleteStockInvoiceItemStatus(String stockInvoiceItemStatusUuid);
+	
+	EncounterPatientProgram saveEncounterPatientProgram(EncounterPatientProgram encounterPatientProgram);
+	
+	EncounterPatientState saveEncounterPatientState(EncounterPatientState encounterPatientState);
 }

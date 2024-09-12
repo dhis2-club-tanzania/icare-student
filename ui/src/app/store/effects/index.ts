@@ -32,6 +32,7 @@ import { LabSamplesEffects } from "./lab-samples.effects";
 import { FormPrivilegesConfigsEffects } from "./form-privileges-configs.effects";
 import { ConsultationEffects } from "./consultation.effects";
 import { LISEffects } from "./lis-configurations.effects";
+import { SystemSettingsEffect } from "./selected-system-settings.effects";
 
 export const effects: any[] = [
   RouterEffects,
@@ -68,4 +69,5 @@ export const effects: any[] = [
   FormPrivilegesConfigsEffects,
   ConsultationEffects,
   LISEffects,
+  SystemSettingsEffect,
 ];

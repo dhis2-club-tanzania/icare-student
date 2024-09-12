@@ -14,4 +14,9 @@ import org.springframework.stereotype.Repository;
  */
 public class SampleStatusDAO extends BaseDAO<SampleStatus> {
 	
+	public SampleStatus update(SampleStatus sampleStatus) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'update'");
+	}
+	
 }

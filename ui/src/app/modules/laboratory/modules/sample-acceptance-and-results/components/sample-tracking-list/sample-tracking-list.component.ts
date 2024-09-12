@@ -34,6 +34,8 @@ export class SampleTrackingListComponent implements OnInit {
 
   samplesToViewMoreDetails: any = {};
   saving: boolean = false;
+  tabType : string = "sample-tracking";
+
   constructor(
     private store: Store<AppState>,
     private sampleService: SamplesService
@@ -49,6 +51,8 @@ export class SampleTrackingListComponent implements OnInit {
       "ACCEPTED",
       "YES",
       this.excludeAllocations,
+      this.tabType,
+      null,
       null,
       {
         departments: this.labSamplesDepartments,

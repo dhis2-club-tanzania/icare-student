@@ -6,5 +6,6 @@ export interface PaymentObject {
   paymentType: any;
   referenceNumber: string;
   amount: number;
+  visit: string;
   items: any[];
 }

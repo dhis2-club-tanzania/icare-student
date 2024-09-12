@@ -23,7 +23,7 @@ export class CreateWorksheetComponent implements OnInit {
       new Dropdown({
         id: "instrument",
         key: "instrument",
-        label: "Instrument",
+        label: "Instrument/method",
         required: true,
         options: [],
         conceptClass: "LIS instrument",

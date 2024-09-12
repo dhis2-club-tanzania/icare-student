@@ -17,3 +17,19 @@
 :host ::ng-deep .mat-column-actions div {
   float: right;
 }
+
+.paid {
+  background-color: #d4edda;
+}
+
+.dispensed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.paid td,
+.dispensed td,
+.paid tr,
+.dispensed tr {
+  border: solid 1px #fff !important;
+}

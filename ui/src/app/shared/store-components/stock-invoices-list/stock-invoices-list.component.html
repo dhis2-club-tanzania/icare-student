@@ -1,0 +1,162 @@
+<div
+  class="w-100 p-3"
+  *ngIf="{
+    stockInvoices: stockInvoices$ | async
+  } as params"
+>
+  <div class="row">
+    <div class="col-md-6 col-sx-12 col-sm-12">
+      <app-invoice-filters
+        (searchingText)="onGetSearchingText($event)"
+        (definedEndDate)="onGetEndDate($event)"
+        (definedStartDate)="onGetStartDate($event)"
+      ></app-invoice-filters>
+    </div>
+    <div class="col-md-6 col-sx-12 col-sm-12 d-flex justify-content-end">
+      <mat-paginator
+        [length]="pager?.total"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+      >
+      </mat-paginator>
+    </div>
+  </div>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.stockInvoices?.results?.length && loading"
+  ></mat-progress-bar>
+  <div *ngIf="params?.stockInvoices?.results?.length && !loading">
+    <mat-accordion>
+      <mat-expansion-panel
+        class="border mat-elevation-z0 mt-2"
+        *ngFor="
+          let stockInvoice of params?.stockInvoices?.results;
+          let invoiceIndex = index
+        "
+        [expanded]="
+          viewStockInvoiceItems && viewStockInvoiceItems === stockInvoice?.uuid
+            ? true
+            : invoiceIndex === 0
+            ? true
+            : false
+        "
+      >
+        <mat-expansion-panel-header class="d-flex justify-content-between">
+          <mat-panel-title>
+            <span>INVOICE: {{ stockInvoice?.invoiceNumber }}</span>
+            <span class="ml-4"
+              >SUPPLIER: {{ stockInvoice?.supplier?.name }}</span
+            >
+            <span class="ml-4 text-small"
+              ><i>
+                Received on:
+                {{ stockInvoice?.receivingDate | date: "dd/MM/yyyy" }}
+              </i></span
+            >
+            <span class="ml-4"
+              ><strong>
+                Total Amount: {{ stockInvoice?.totalAmount | number: ".2" }}
+              </strong></span
+            >
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="row mt-2">
+          <div class="col-4"></div>
+          <div class="col-4"></div>
+          <div class="col-4">
+            <div class="float-right">
+              <a
+                *ngIf="status === 'DRAFT'"
+                class="anchor-button"
+                color="primary"
+                (click)="onEditStockInvoice(stockInvoice)"
+                matTooltip="Edit invoice"
+              >
+                <mat-icon>edit</mat-icon>
+              </a>
+              <a
+                class="anchor-button ml-4"
+                color="primary"
+                (click)="onViewStockInvoiceItems(stockInvoice?.uuid)"
+                matTooltip="{{
+                  viewStockInvoiceItems &&
+                  viewStockInvoiceItems !== stockInvoice?.uuid
+                    ? 'View invoice Items'
+                    : 'Hide Invoice Items'
+                }}"
+              >
+                <mat-icon
+                  *ngIf="
+                    viewStockInvoiceItems &&
+                    viewStockInvoiceItems === stockInvoice?.uuid
+                  "
+                  >visibility_off</mat-icon
+                >
+                <mat-icon
+                  *ngIf="
+                    !viewStockInvoiceItems ||
+                    viewStockInvoiceItems !== stockInvoice?.uuid
+                  "
+                  >visibility</mat-icon
+                >
+              </a>
+              <ng-container *ngIf="status === 'DRAFT'">
+                <a
+                  class="anchor-button ml-4"
+                  color="primary"
+                  (click)="onReceiveStockInvoiceItems(stockInvoice)"
+                  matTooltip="Mark this invoice received"
+                >
+                  <mat-icon>check</mat-icon>
+                </a>
+                <a
+                  class="anchor-button ml-4"
+                  color="primary"
+                  (click)="onDeleteStockInvoice(stockInvoice)"
+                  matTooltip="Delete this invoice"
+                >
+                  <mat-icon>delete</mat-icon>
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="
+            viewStockInvoiceItems &&
+            viewStockInvoiceItems === stockInvoice?.uuid &&
+            loading
+          "
+        ></mat-progress-bar>
+        <div
+          class="inv-items-table container-fluid"
+          *ngIf="
+            viewStockInvoiceItems &&
+            viewStockInvoiceItems === stockInvoice?.uuid &&
+            !loading
+          "
+        >
+          <app-stock-invoice-items
+            [stockInvoice]="stockInvoice"
+            [status]="status"
+            [currentLocation]="currentLocation"
+            [unitsOfMeasurementSettings]="unitsOfMeasurementSettings"
+            (reloadList)="onReloadStockInvoiceList($event)"
+          ></app-stock-invoice-items>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <table
+    class="table table-striped"
+    *ngIf="!params?.stockInvoices?.results?.length && !loading"
+  >
+    <tbody>
+      <tr>
+        <h3 class="text-center">No Stock Invoices</h3>
+      </tr>
+    </tbody>
+  </table>
+</div>

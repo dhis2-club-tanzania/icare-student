@@ -1,10 +1,11 @@
 <div
   class="row"
   *ngIf="{
-    obs: obs$ | async,
+    encounterInformation: encounterInformation$ | async,
     sampleConditions: sampleConditions$ | async,
     sampleDetails: sampleDetails$ | async,
-    externalSystems: externalSystems$ | async
+    externalSystems: externalSystems$ | async,
+    diagnoses: diagnoses$ | async
   } as params"
 >
   <ng-container *ngIf="!params?.sampleDetails">
@@ -16,47 +17,128 @@
     </div>
   </ng-container>
   <ng-container *ngIf="params?.sampleDetails">
-    <div [ngClass]="{ 'col-md-6': !hasResults, 'col-md-4': hasResults }">
+    <div class="col-md-8">
       <div class="d-flex">
         <div class="w-50">
-          <p>FileNO: {{ params?.sampleDetails?.mrn }}</p>
+          <p>
+            FileNO:
+            <b>
+              {{ params?.sampleDetails?.mrn }}
+            </b>
+          </p>
           <p>
             Names:
-            {{ sample?.patient?.givenName + " " + sample?.patient?.familyName }}
+            <b>
+              {{
+                sample?.patient?.givenName + " " + sample?.patient?.familyName
+              }}
+            </b>
           </p>
           <p>
-            <span> Gender:{{ sample?.patient?.gender }} </span>
-            <span class="ml-2">
-              Age: {{ sample?.patient?.age }}
-              <span class="text-muted">
-                ({{ sample?.patient?.dob | date }})
-              </span>
+            <span>
+              Gender:<b>
+                {{ sample?.patient?.gender }}
+              </b>
             </span>
-          </p>
-          <p *ngIf="params.sampleConditions?.TRANSPORT_CONDITION">
-            <span
-              >Transport Condition:
-              {{ params.sampleConditions?.TRANSPORT_CONDITION }}</span
-            >
-          </p>
-          <p *ngIf="params.sampleConditions?.TRANSPORT_TEMPERATURE">
-            <span
-              >Transportation Temperature:
-              {{ params.sampleConditions?.TRANSPORT_TEMPERATURE }}</span
-            >
+            <span class="ml-2">
+              Age:
+              <b>
+                {{ sample?.patient?.age }} years
+                <span class="text-muted">
+                  ({{ sample?.patient?.dob | date }})
+                </span>
+              </b>
+            </span>
           </p>
         </div>
         <div class="w-50">
-          <p *ngIf="params.obs">
-            <span
-              >Clinical Information / History: <br />
-              {{ params.obs?.latest?.value }}</span
-            >
-          </p>
+          <div *ngIf="params?.diagnoses">
+            Diagnosis:
+            <p *ngFor="let diagnosis of params?.diagnoses">
+              <b> {{ diagnosis?.display }}</b>
+            </p>
+            <span *ngIf="params?.diagnoses?.length === 0"> - </span>
+          </div>
         </div>
       </div>
+      <div class="row d-flex">
+        <ng-container *ngFor="let encounter of params?.encounterInformation">
+          <div
+            class="col-md-6 col-sm-12 col-sx-12"
+            *ngFor="let formField of encounter?.form?.formFields"
+          >
+            <ng-container
+              *ngIf="formField?.field?.concept?.setMembers?.length === 0"
+            >
+              <p>
+                {{ formField?.field?.display }} :
+                <b>
+                  {{
+                    !encounter?.keyedObs[formField?.field?.concept?.uuid]
+                      ? "-"
+                      : encounter?.keyedObs[formField?.field?.concept?.uuid] &&
+                        encounter?.keyedObs[formField?.field?.concept?.uuid]
+                          ?.latest?.value?.display
+                      ? formField?.field?.concept?.datatype?.display ===
+                          "Datetime" ||
+                        fieldConcept?.datatype?.display === "Date"
+                        ? (encounter?.keyedObs[formField?.field?.concept?.uuid]
+                            ?.latest?.value?.display | date: "medium")
+                        : encounter?.keyedObs[formField?.field?.concept?.uuid]
+                            ?.latest?.value?.display
+                      : formField?.field?.concept?.datatype?.display ===
+                          "Datetime" ||
+                        fieldConcept?.datatype?.display === "Date"
+                      ? (encounter?.keyedObs[formField?.field?.concept?.uuid]
+                          ?.latest?.value | date: "medium")
+                      : encounter?.keyedObs[formField?.field?.concept?.uuid]
+                          ?.latest?.value
+                  }}
+                </b>
+              </p>
+            </ng-container>
+
+            <ng-container
+              *ngIf="formField?.field?.concept?.setMembers?.length > 0"
+            >
+              <b> {{ formField?.field?.display }} : </b>
+              <div
+                class="w-100 ml-4 mr-4"
+                *ngFor="
+                  let fieldConcept of formField?.field?.concept?.setMembers
+                "
+              >
+                <!-- {{ fieldConcept | json }} -->
+                <p>
+                  {{ fieldConcept?.display }}:
+                  <b>
+                    {{
+                      !encounter?.keyedObs[fieldConcept?.uuid]
+                        ? "-"
+                        : encounter?.keyedObs[fieldConcept?.uuid] &&
+                          encounter?.keyedObs[fieldConcept?.uuid]?.latest?.value
+                            ?.display
+                        ? fieldConcept?.datatype?.display === "Datetime" ||
+                          fieldConcept?.datatype?.display === "Date"
+                          ? (encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                              ?.value?.display | date: "medium")
+                          : encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                              ?.value?.display
+                        : fieldConcept?.datatype?.display === "Datetime" ||
+                          fieldConcept?.datatype?.display === "Date"
+                        ? (encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                            ?.value | date: "medium")
+                        : encounter?.keyedObs[fieldConcept?.uuid]?.latest?.value
+                    }}
+                  </b>
+                </p>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
     </div>
-    <div [ngClass]="{ 'col-md-6': !hasResults, 'col-md-4': hasResults }">
+    <div class="col-md-4">
       <!-- {{ sample?.specimen?.specimenName }} -->
       <div class="h6">Test Orders Details</div>
       <div class="order-table">
@@ -69,47 +151,43 @@
               "
             >
               <tr>
-                <td>
+                <!-- <td>
                   {{ count + 1 }}
-                </td>
-                <td>
+                </td> -->
+                <td colspan="3">
                   {{ order?.order?.concept?.display }}
                 </td>
                 <!-- <td>
                   {{ allocation?.concept?.display }}
                 </td> -->
               </tr>
-              <!-- <tr
-                *ngFor="
-                  let allocation of order?.testAllocations;
-                  let countAllocation = index
-                "
-              >
-                <td
-                  *ngIf="countAllocation == 0"
-                  [attr.rowspan]="order?.testAllocations?.length"
+              <ng-container *ngIf="order?.testAllocations">
+                <tr
+                  *ngFor="
+                    let allocation of order?.testAllocations;
+                    let countAllocation = index
+                  "
                 >
-                  {{ count + 1 }}
-                </td>
-                <td
-                  *ngIf="countAllocation == 0"
-                  [attr.rowspan]="order?.testAllocations?.length"
-                >
-                  {{ order?.order?.concept?.display }}
-                </td>
-                <td>
+                  <td>
+                    {{ countAllocation + 1 }}
+                  </td>
+                  <td>
+                    {{ allocation?.concept?.display }}
+                  </td>
+                  <!-- <td>
                   {{ allocation?.concept?.display }}
-                </td>
-                <td>
-                  <app-shared-parameter-results
-                    [order]="order"
-                    [hideParameterLabel]="true"
-                    [parameter]="allocation?.concept"
-                    [count]="0"
-                    [units]=""
-                  ></app-shared-parameter-results>
-                </td>
-              </tr> -->
+                </td> -->
+                  <td>
+                    <app-shared-parameter-results
+                      [order]="order"
+                      [hideParameterLabel]="true"
+                      [parameter]="allocation?.concept"
+                      [count]="0"
+                      [units]=""
+                    ></app-shared-parameter-results>
+                  </td>
+                </tr>
+              </ng-container>
             </ng-container>
           </tbody>
         </table>

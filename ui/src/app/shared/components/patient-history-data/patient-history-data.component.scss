@@ -12,7 +12,9 @@
 ul {
   list-style: none !important;
 }
-
+.buttoncl{
+  margin-bottom: 20px;
+}
 /* Base */
 
 strong {
@@ -40,11 +42,11 @@ strong {
   position: relative;
   line-height: 1.4em;
   font-size: 1.03em;
-  padding: 30px 50px;
+  padding: 10px 0 49px 49px;
   list-style: none;
   text-align: left;
-  max-width: 70%;
-  left: 50px;
+  max-width: 90%;
+  left: 10px;
 
   .event {
     border-bottom: 1px dashed fade(white, 10%);

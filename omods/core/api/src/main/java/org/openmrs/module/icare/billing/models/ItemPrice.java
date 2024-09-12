@@ -4,6 +4,7 @@ package org.openmrs.module.icare.billing.models;
 
 import org.openmrs.Concept;
 import org.openmrs.module.icare.core.Item;
+import org.openmrs.module.icare.core.JSONConverter;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -62,6 +63,10 @@ public class ItemPrice implements java.io.Serializable {
 	@Column(name = "payable", precision = 10, scale = 0)
 	private Double payable;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "payable_payment_mode_id", nullable = true)
+	private Concept payablePaymentMode;
+	
 	public Concept getPaymentType() {
 		return this.id.getPaymentType();
 	}
@@ -112,7 +117,7 @@ public class ItemPrice implements java.io.Serializable {
 	}
 	
 	public Map<String, Object> toMap() {
-		Map<String, Object> itemMap = new HashMap<String, Object>();
+		Map<String, Object> itemMap = new HashMap<>();
 		itemMap.put("price", this.getPrice());
 		itemMap.put("payable", this.getPayable());
 		
@@ -138,6 +143,15 @@ public class ItemPrice implements java.io.Serializable {
 			paymentScheme.put("display", this.getPaymentScheme().getName().getName());
 			itemMap.put("paymentScheme", paymentScheme);
 		}
+
+		HashMap<String, Object> payablePaymentMode = new HashMap<String, Object>();
+		if (this.getPayablePaymentMode() != null) {
+			payablePaymentMode.put("uuid", this.getPayablePaymentMode().getUuid());
+			payablePaymentMode.put("display", this.getPayablePaymentMode().getDisplayString());
+		} else {
+			payablePaymentMode = null;
+		}
+		itemMap.put("payablePaymentMode", payablePaymentMode);
 		return itemMap;
 	}
 	
@@ -148,4 +162,13 @@ public class ItemPrice implements java.io.Serializable {
 	public void setPayable(Double payable) {
 		this.payable = payable;
 	}
+	
+	public Concept getPayablePaymentMode() {
+		return payablePaymentMode;
+	}
+	
+	public void setPayablePaymentMode(Concept payablePaymentMode) {
+		this.payablePaymentMode = payablePaymentMode;
+	}
+	
 }

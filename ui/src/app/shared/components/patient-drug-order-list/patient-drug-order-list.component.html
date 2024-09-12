@@ -2,7 +2,11 @@
   *ngIf="{
     isThereDiagnosisProvided: isThereDiagnosisProvided$ | async,
     visitLoadingState: visitLoadingState$ | async,
-    drugOrders: drugOrders$ | async
+    drugOrders: drugOrders$ | async,
+    currentLocation: currentLocation$ | async,
+    facilityDetails: facilityDetails$ | async,
+    logo: facilityLogo$ | async,
+    currentUser: currentUser$ | async
   } as params"
 >
   <div class="d-flex justify-content-between p-3">
@@ -51,7 +55,7 @@
     *ngIf="!params?.visitLoadingState && actionOptions && params?.drugOrders"
     [columns]="drugOrderColumns"
     [data$]="visit?.dispensingDrugOrderTableList$"
-    [drugOrders]="params?.drugOrders"
+    [drugOrders]="params?.drugOrders | filterDrugOrders: 'EMPTY':[]"
     [loading]="loading"
     [visit]="visit"
     [currentPatient]="currentPatient"
@@ -61,5 +65,13 @@
     [tableConfig]="tableConfig"
     [actionOptions]="actionOptions"
     (selectAction)="onSelectAction($event)"
+    (printPrescriptions)="
+      onPrintPrescriptions($event, {
+        CurrentPatient: currentPatient,
+        FacilityDetails: params?.facilityDetails,
+        Logo: params?.logo,
+        CurrentUser: params?.currentUser
+      })
+    "
   ></app-table>
 </div>

@@ -16,6 +16,8 @@ export class PricingItemComponent implements OnInit {
   @Input() pricingItem: PricingItemInterface;
   @Input() paymentScheme: any;
   @Input() paymentType: any;
+  @Input() paymentTypes: any[];
+  cashPaymentType: any;
 
   showForm: boolean;
   formValue: FormValue;
@@ -52,6 +54,9 @@ export class PricingItemComponent implements OnInit {
   ngOnInit() {
     this.fieldId = `${this.paymentScheme?.concept?.uuid}_${this.pricingItem?.uuid}`;
 
+    this.cashPaymentType = (this.paymentTypes?.filter(
+      (paymentType: any) => paymentType?.display?.toLowerCase() === "cash"
+    ) || [])[0];
     this.pricingItemField = new Textbox({
       id: this.fieldId,
       label: `Price`,
@@ -84,6 +89,9 @@ export class PricingItemComponent implements OnInit {
       paymentScheme: { uuid: this.paymentScheme?.concept?.uuid },
       price: this.priceObject[this.fieldId]?.value,
       payable: this.priceObject[this.fieldId + "-payable"]?.value,
+      payablePaymentMode: {
+        uuid: this.cashPaymentType?.uuid,
+      },
     });
   }
 

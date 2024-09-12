@@ -16,83 +16,132 @@
     >
       {{ params?.patientDrugOrdersStatuses["error"]["error"]["message"] }}
     </p>
-    <table class="table" *ngIf="useNormalTable">
-      <thead>
-        <tr>
-          <th>SN</th>
-          <th>Drug</th>
-          <th>Instructions</th>
-          <th>Prescribed By</th>
-          <th>Date & Time</th>
-          <th>Quanity</th>
-          <th colspan="2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let drugOrder of drugOrders; let count = index">
+    <div class="row" *ngIf="useNormalTable && drugOrders?.length">
+      <div class="col-12">
+        <button
+          class="mr-4 float-right"
+          mat-flat-button
+          color="primary"
+          (click)="onPrintPrescriptions($event, drugOrders)"
+          cdkFocusInitial
+        >
+          <mat-icon>print</mat-icon>
+          Print Verified Prescriptions
+        </button>
+      </div>
+    </div>
+    <div class="p-2">
+      <table class="table" *ngIf="useNormalTable && drugOrders?.length">
+        <thead>
           <tr>
-            <td>{{ count + 1 }}</td>
-            <td>
-              {{ drugOrder?.drug?.display }}
-            </td>
-            <td>
-              {{ drugOrder?.instructions }}
-            </td>
-            <td>{{ drugOrder?.orderer?.display }}</td>
-            <td>{{ drugOrder?.dateActivated | date: "medium" }}</td>
-            <td>{{ drugOrder?.quantity }}</td>
-            <td>
-              <button
-                [disabled]="
-                  (params?.patientDrugOrdersStatuses &&
-                    params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
-                    params?.patientDrugOrdersStatuses[drugOrder?.uuid][
-                      'status'
-                    ] === 'DISPENSED') ||
-                  (!drugOrder?.paid &&
-                    !params?.activeVisit?.isAdmitted &&
-                    !params?.activeVisit?.isEmergency &&
-                    !params?.activeVisit?.isEnsured)
-                "
-                mat-flat-button
-                color="primary"
-                class="mt-1 mb-1 mr-1"
-                (click)="
-                  onSelectAction(
-                    $event,
-                    { actionCode: 'DISPENSE_PRESCRIPTION' },
-                    drugOrder
-                  )
-                "
-              >
-                {{
+            <th>SN</th>
+            <th>Drug</th>
+            <th>Instructions</th>
+            <th>Prescribed By</th>
+            <th>Date & Time</th>
+            <th>Quanity</th>
+            <th>Payment status</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let drugOrder of drugOrders; let count = index">
+            <tr
+              [ngClass]="{
+                dispensed:
                   params?.patientDrugOrdersStatuses &&
                   params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
                   params?.patientDrugOrdersStatuses[drugOrder?.uuid][
-                    "status"
-                  ] === "DISPENSED"
-                    ? "Dispensed"
-                    : "Dispense"
+                    'status'
+                  ] === 'DISPENSED',
+                paid: drugOrder?.paid || params?.activeVisit?.isEnsured
+              }"
+            >
+              <td>{{ count + 1 }}</td>
+              <td>
+                {{ drugOrder?.drug?.display }}
+              </td>
+              <td>
+                {{ drugOrder?.instructions }}
+              </td>
+              <td>{{ drugOrder?.orderer?.display }}</td>
+              <td>{{ drugOrder?.dateActivated | date: "medium" }}</td>
+              <td>{{ drugOrder?.quantity }}</td>
+              <td>
+                {{
+                  drugOrder?.paid || params?.activeVisit?.isEnsured
+                    ? "PAID"
+                    : "NOT PAID/COVERED"
                 }}
-              </button>
-            </td>
-            <td>
-              <button
-                (click)="
-                  onOpenMessageConstruction(
-                    $event,
-                    drugOrder,
-                    currentPatient,
-                    generalMetadataConfigurations
-                  )
-                "
-                mat-stroked-button
-              >
-                SMS
-              </button>
-            </td>
-          </tr>
-        </ng-container>
+              </td>
+              <td>
+                <button
+                  [disabled]="
+                    (params?.patientDrugOrdersStatuses &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                        'status'
+                      ] === 'DISPENSED') ||
+                    (!drugOrder?.paid && !params?.activeVisit?.isEnsured)
+                  "
+                  mat-flat-button
+                  color="primary"
+                  class="mt-1 mb-1 mr-1"
+                  (click)="
+                    onSelectAction(
+                      $event,
+                      { actionCode: 'DISPENSE_PRESCRIPTION' },
+                      drugOrder
+                    )
+                  "
+                >
+                  {{
+                    params?.patientDrugOrdersStatuses &&
+                    params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                    params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                      "status"
+                    ] === "DISPENSED"
+                      ? "Dispensed"
+                      : "Dispense"
+                  }}
+                </button>
+              </td>
+              <td>
+                <button
+                  (click)="
+                    onOpenMessageConstruction(
+                      $event,
+                      drugOrder,
+                      currentPatient,
+                      generalMetadataConfigurations
+                    )
+                  "
+                  [disabled]="
+                    (params?.patientDrugOrdersStatuses &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                        'status'
+                      ] !== 'DISPENSED') ||
+                    (!drugOrder?.paid && !params?.activeVisit?.isEnsured)
+                  "
+                  mat-stroked-button
+                >
+                  SMS
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <table
+      *ngIf="useNormalTable && !drugOrders?.length"
+      class="table table-striped"
+    >
+      <tbody>
+        <tr>
+          <td>No dispensions found</td>
+        </tr>
       </tbody>
     </table>
     <table

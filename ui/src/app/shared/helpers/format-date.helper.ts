@@ -123,3 +123,32 @@ export function toISOStringFormat(options: { date: Date, timezoneOffset: boolean
       options?.timezoneOffset && options.exactTimezoneOffset ? dateTimeWithExactly : dateTimeByDefault;
   
 }
+
+/**
+ * Formats a given date object into a string representation, using a specified format string.
+ * @param date The date object
+ * @param format The format string (default is 'DD-MM-YYYY')
+ * @returns The formatted date string
+ */
+export function formatDateToString(date: Date = new Date(), format: string = 'DD-MM-YYYY'): string {
+  try {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const milliseconds = date.getMilliseconds();
+
+    return format
+      .replace('YYYY', year.toString())
+      .replace('MM', month.toString().padStart(2, '0'))
+      .replace('DD', day.toString().padStart(2, '0'))
+      .replace('hh', hours.toString().padStart(2, '0'))
+      .replace('mm', minutes.toString().padStart(2, '0'))
+      .replace('ss', seconds.toString().padStart(2, '0'))
+      .replace('SSS', milliseconds.toString().padStart(3, '0'));
+  } catch (error) {
+    return '';
+  }
+}

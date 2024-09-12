@@ -60,12 +60,18 @@
               {{ specimenSourceWithOrders.specimenSourceName }}
             </td>
             <td
-              [ngClass]="{ 'text-danger': !order?.paid && !order?.isAdmitted }"
+              [ngClass]="{
+                'text-danger':
+                  !order?.paid && !order?.isAdmitted && !order?.isEnsured
+              }"
             >
               {{ order?.display }}
             </td>
             <td
-              [ngClass]="{ 'text-danger': !order?.paid && !order?.isAdmitted }"
+              [ngClass]="{
+                'text-danger':
+                  !order?.paid && !order?.isAdmitted && !order?.isEnsured
+              }"
             >
               {{ order?.orderNumber }}
             </td>
@@ -86,7 +92,17 @@
               }}
             </td>
             <td>
-              {{ order?.isAdmitted ? 'Admitted' : order?.isEmergency ? 'Emergency' : order?.isEnsured ? 'Insured' : order?.paid ? "Yes" : "No" }}
+              {{
+                order?.isAdmitted
+                  ? "Admitted"
+                  : order?.isEmergency
+                  ? "Emergency"
+                  : order?.isEnsured
+                  ? "Insured"
+                  : order?.paid
+                  ? "Yes"
+                  : "No"
+              }}
             </td>
             <td
               *ngIf="ordersCount === 0"
@@ -132,9 +148,9 @@
               <button
                 [disabled]="
                   !specimenSourceWithOrders?.atLeastOnePaid &&
-                  !specimenSourceWithOrders?.isAdmitted && 
+                  !specimenSourceWithOrders?.isAdmitted &&
                   !specimenSourceWithOrders?.isEmergency &&
-                  !specimenSourceWithOrders?.isEnsured  
+                  !specimenSourceWithOrders?.isEnsured
                 "
                 (click)="
                   generateSampleId(

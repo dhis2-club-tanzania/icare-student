@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { from, Observable, of } from "rxjs";
+import { from, Observable, of, zip } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
 import { SystemSettingsWithKeyDetails } from "../models/system-settings.model";
@@ -28,8 +28,8 @@ export class SystemSettingsService {
     return this.httpClient.get(`systemsetting?q=${key}&v=full`).pipe(
       map((response) => {
         return response?.results && response?.results[0]
-          ? response?.results[0]?.value.indexOf("{") > -1 ||
-            response?.results[0]?.value.indexOf("[") > -1
+          ? response?.results[0]?.value.indexOf("{") === 0 ||
+            response?.results[0]?.value.indexOf("[") === 0
             ? JSON.parse(response?.results[0]?.value)
             : response?.results[0]?.value
           : "none";
@@ -41,8 +41,8 @@ export class SystemSettingsService {
     return from(this.api.systemsetting.getSystemSetting(uuid)).pipe(
       map((response) => {
         return response && response
-          ? response?.value.indexOf("{") > -1 ||
-            response?.value.indexOf("[") > -1
+          ? response?.value.indexOf("{") === 0 ||
+            response?.value.indexOf("[") === 0
             ? JSON.parse(response?.value)
             : response?.value
           : "none";
@@ -61,7 +61,7 @@ export class SystemSettingsService {
   getSystemSettingsMatchingAKey(
     key: string,
     parameters?: { startIndex: number; limit: number }
-  ): Observable<SystemSettingsWithKeyDetails[]> {
+  ): Observable<any[]> {
     // lis.attributes.referringDoctor
     return this.httpClient
       .get(
@@ -71,62 +71,81 @@ export class SystemSettingsService {
       )
       .pipe(
         map((response) => {
-          return response?.results && response?.results?.length > 0
-            ? response?.results.map((result) => {
-                return result?.value.indexOf("{") > -1 ||
-                  result?.value.indexOf("[") > -1
-                  ? {
-                      uuid: result?.uuid,
-                      name: result?.property
-                        .split(".")
-                        [result?.property.split(".").length - 1]?.toUpperCase(),
-                      referenceKeyPart:
-                        result?.property.split(".")[
-                          result?.property.split(".").length - 1
-                        ],
-                      property: result?.property,
-                      description: result?.description,
-                      value: result?.value,
-                      order: Number(
-                        result?.property.split(".")[
-                          result?.property.split(".").length - 1
-                        ]
-                      )
-                        ? Number(
+          return (
+            response?.results && response?.results?.length > 0
+              ? response?.results.map((result) => {
+                  try {
+                    return result?.value &&
+                      (result?.value?.indexOf("{") === 0 ||
+                        result?.value?.indexOf("[") === 0)
+                      ? {
+                          uuid: result?.uuid,
+                          name: result?.property
+                            .split(".")
+                            [
+                              result?.property.split(".").length - 1
+                            ]?.toUpperCase(),
+                          referenceKeyPart:
+                            result?.property.split(".")[
+                              result?.property.split(".").length - 1
+                            ],
+                          property: result?.property,
+                          description: result?.description,
+                          value:
+                            (result?.value?.indexOf("{") === 0 ||
+                              result?.value?.indexOf("[") === 0) &&
+                            JSON.parse(result?.value)
+                              ? JSON.parse(result?.value)
+                              : result?.value,
+                          order: Number(
                             result?.property.split(".")[
                               result?.property.split(".").length - 1
                             ]
                           )
-                        : null,
-                    }
-                  : {
-                      uuid: result?.uuid,
-                      name: capitalize(
-                        result?.property.split(".")[
-                          result?.property.split(".").length - 1
-                        ]
-                      ),
-                      referenceKeyPart:
-                        result?.property.split(".")[
-                          result?.property.split(".").length - 1
-                        ],
-                      property: result?.property,
-                      description: result?.description,
-                      value: result?.value,
-                      order: Number(
-                        result?.property.split(".")[
-                          result?.property.split(".").length - 1
-                        ]
-                      )
-                        ? Number(
+                            ? Number(
+                                result?.property.split(".")[
+                                  result?.property.split(".").length - 1
+                                ]
+                              )
+                            : null,
+                        }
+                      : {
+                          uuid: result?.uuid,
+                          name: capitalize(
                             result?.property.split(".")[
                               result?.property.split(".").length - 1
                             ]
+                          ),
+                          referenceKeyPart:
+                            result?.property.split(".")[
+                              result?.property.split(".").length - 1
+                            ],
+                          property: result?.property,
+                          description: result?.description,
+                          value:
+                            (result?.value?.indexOf("{") === 0 ||
+                              result?.value?.indexOf("[") === 0) &&
+                            JSON.parse(result?.value)
+                              ? JSON.parse(result?.value)
+                              : result?.value,
+                          order: Number(
+                            result?.property?.split(".")[
+                              result?.property?.split(".").length - 1
+                            ]
                           )
-                        : null,
-                    };
-              })
-            : [];
+                            ? Number(
+                                result?.property.split(".")[
+                                  result?.property.split(".").length - 1
+                                ]
+                              )
+                            : null,
+                        };
+                  } catch (e) {
+                    console.warn(e);
+                  }
+                })
+              : []
+          )?.filter((report) => report?.uuid);
         }),
         catchError((error) => of(error))
       );
@@ -136,17 +155,43 @@ export class SystemSettingsService {
     return this.httpClient.get(`systemsetting?q=${key}&v=full`).pipe(
       map((response) => {
         return {
+          ...response?.results[0],
           uuid: response?.results[0]?.uuid,
           description: response?.results[0]?.description,
           key,
           value:
             response?.results && response?.results[0]
-              ? response?.results[0]?.value.indexOf("{") === 0 ||
-                response?.results[0]?.value.indexOf("[") === 0
+              ? response?.results[0]?.value?.indexOf("{") === 0 ||
+                response?.results[0]?.value?.indexOf("[") === 0
                 ? JSON.parse(response?.results[0]?.value)
                 : response?.results[0]?.value
               : "",
         };
+      }),
+      catchError((error) => of(error))
+    );
+  }
+
+  getSystemSettingsDetailsByKeys(keys: string[]): Observable<any> {
+    return zip(
+      ...keys.map((key) => this.httpClient.get(`systemsetting?q=${key}&v=full`))
+    ).pipe(
+      map((responses) => {
+        return responses?.map((response) => {
+          return {
+            ...response?.results[0],
+            uuid: response?.results[0]?.uuid,
+            description: response?.results[0]?.description,
+            key: response?.results[0]?.property,
+            value:
+              response?.results && response?.results[0]
+                ? response?.results[0]?.value?.indexOf("{") === 0 ||
+                  response?.results[0]?.value?.indexOf("[") === 0
+                  ? JSON.parse(response?.results[0]?.value)
+                  : response?.results[0]?.value
+                : "",
+          };
+        });
       }),
       catchError((error) => of(error))
     );

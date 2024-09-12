@@ -200,7 +200,7 @@ export class RegistrationPatientComponent implements OnInit {
 
     this.currentPatient$ = this.store.pipe(select(getCurrentPatient));
 
-    // this.store.select(getCurrentLocation).subscribe((res) => {
+    // this.store.select(getCurrentLocation(false)).subscribe((res) => {
     //   this.currentLocation = res;
     // });
 
@@ -248,7 +248,7 @@ export class RegistrationPatientComponent implements OnInit {
       };
 
       this.visitService.createVisit(visitPayload).subscribe((res) => {
-        console.log("didi i create a visit? :: ", res);
+        // console.log("didi i create a visit? :: ", res);
       });
     } else {
       this.openSnackBar("Error: location is not set", null);

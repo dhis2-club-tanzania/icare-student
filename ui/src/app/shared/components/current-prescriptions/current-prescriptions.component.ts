@@ -91,7 +91,7 @@ export class CurrentPrescriptionComponent implements OnInit {
 
   stopDrugOrder(e: Event, drugOrder: any, drugName: string) {
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: `Stop Medicaton`,
         modalMessage: `You are about to stop ${drugName} for this patient, Click confirm to finish!`,

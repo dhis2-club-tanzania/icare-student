@@ -1,5 +1,14 @@
 package org.openmrs.module.icare.web.controller;
 
+import org.openmrs.User;
+import org.openmrs.UserSessionListener;
+import org.openmrs.module.icare.auditlog.AuditLog;
+import org.openmrs.module.icare.core.ICareService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.transaction.Transactional;
+import java.util.Date;
+
 public class BaseController {
 	
 	/*protected final Log log = LogFactory.getLog(getClass());
@@ -19,4 +28,5 @@ public class BaseController {
 		errorMessage.put("details", sStackTrace);
 		return errorMessage;
 	}*/
+	
 }

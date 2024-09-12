@@ -24,17 +24,21 @@ export class ItemPriceService {
     );
   }
 
-  getItemPrice(pricePayload: { visitUuid: string; drugUuid: string }): Observable<any[]> {
+  getItemPrice(pricePayload: any): Observable<any[]> {
     return this.httpClient
       .get(
-        `icare/itemprice?visitUuid=${pricePayload?.visitUuid}&drugUuid=${pricePayload?.drugUuid}`
+        `icare/itemprice?visitUuid=${pricePayload?.visitUuid}&${
+          pricePayload?.drugUuid
+            ? "drugUuid=" + pricePayload?.drugUuid
+            : "conceptUuid=" + pricePayload?.conceptUuid
+        }`
       )
       .pipe(
         map((response) => {
           return response?.results;
         }),
         catchError((err) => {
-          return err
+          return err;
         })
       );
   }
@@ -122,21 +126,16 @@ export class ItemPriceService {
         ),
         catchError((error) => of(error))
       );
-    }
-    
-  getItem(
-    q?: string,
-    ){
-    return this.httpClient
-      .get(`icare/item?q=${q}`)
-      .pipe(
-        map((response) =>
-          response?.results && response?.results?.length > 0
-            ? response?.results
-            : []
-        ),
-        catchError((error) => of(error))
-      );
+  }
 
+  getItem(q?: string) {
+    return this.httpClient.get(`icare/item?q=${q}`).pipe(
+      map((response) =>
+        response?.results && response?.results?.length > 0
+          ? response?.results
+          : []
+      ),
+      catchError((error) => of(error))
+    );
   }
 }

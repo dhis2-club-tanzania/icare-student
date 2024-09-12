@@ -1,20 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Store } from "@ngrx/store";
-import { uniqBy } from "lodash";
+import { uniqBy, keyBy } from "lodash";
 import { Observable } from "rxjs";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import {
   DrugOrder,
   DrugOrderObject,
 } from "src/app/shared/resources/order/models/drug-order.model";
-import { DrugOrdersService } from "src/app/shared/resources/order/services";
-import { AppState } from "src/app/store/reducers";
 import { Dropdown } from "../../modules/form/models/dropdown.model";
 import { Textbox } from "../../modules/form/models/text-box.model";
 import { ICARE_CONFIG } from "../../resources/config";
 import { DrugsService } from "../../resources/drugs/services/drugs.service";
 import { ObservationService } from "../../resources/observation/services/observation.service";
 import { OrdersService } from "../../resources/order/services/orders.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-general-dispension-form",
@@ -43,6 +41,7 @@ export class GeneralDispensingFormComponent implements OnInit {
   @Input() strengthConceptUuid: any;
   @Input() useSpecificDrugPrescription: any;
   @Input() specificDrugConceptUuid: any;
+  @Input() previousVisit: any;
 
   drugOrder: DrugOrderObject;
 
@@ -78,26 +77,35 @@ export class GeneralDispensingFormComponent implements OnInit {
   conceptFieldsMap: any[];
   errors: any[] = [];
   selectedDrug: any;
+  keyedPreviousVisitDrugOrders$: Observable<any>;
 
   constructor(
-    private drugOrderService: DrugOrdersService,
     private ordersService: OrdersService,
     private observationService: ObservationService,
-    private store: Store<AppState>,
     private drugService: DrugsService
   ) {}
 
   async ngOnInit() {
+    this.keyedPreviousVisitDrugOrders$ = this.ordersService
+      .getOrdersByVisitAndOrderType({
+        visit: this.previousVisit?.uuid,
+        orderType: "iCARESTS-PRES-1111-1111-525400e4297f",
+      })
+      .pipe(
+        map((response) =>
+          keyBy(
+            response?.filter((drugOrder) => drugOrder?.statuses?.length > 0) ||
+              [],
+            "drugUuid"
+          )
+        )
+      );
     this.dosingUnitsSettingsEvent.emit(this.dosingUnitsSettings);
     this.durationUnitsSettingsEvent.emit(this.durationUnitsSettings);
     this.drugRoutesSettingsEvent.emit(this.drugRoutesSettings);
     this.generalPrescriptionFrequencyConceptEvent.emit(
       this.generalPrescriptionFrequencyConcept
     );
-
-    // this.genericPrescriptionConceptUuidsEvent.emit(
-    //   this.genericPrescriptionConceptUuids
-    // );
     this.genericPrescriptionConceptUuidsEvent.emit([
       this.generalPrescriptionDoseConcept,
       this.generalPrescriptionDurationConcept,
@@ -107,11 +115,12 @@ export class GeneralDispensingFormComponent implements OnInit {
       this.useSpecificDrugPrescription === "true" &&
       this.specificDrugConceptUuid
     ) {
-      const drugs = await this.drugOrderService.getAllDrugs("full");
+      // const drugs = await this.drugOrderService.getAllDrugs("full");
+      // TODO: HIGH - Softcode location uuid
       this.drugConceptField = new Dropdown({
         id: "drug",
         key: "drug",
-        options: drugs,
+        options: [],
         label: "Drug",
         required: true,
         locationUuid: "7f65d926-57d6-4402-ae10-a5b3bcbf7986",
@@ -131,34 +140,33 @@ export class GeneralDispensingFormComponent implements OnInit {
         shouldHaveLiveSearchForDropDownFields: true,
       });
     }
-
-    // this.drugDoseField = new Textbox({
-    //   id: "dose",
-    //   key: "dose",
-    //   label: "Dose",
-    //   required: true,
-    //   type: "number",
-    // });
-
-    // this.drugDurationField = new Textbox({
-    //   id: "duration",
-    //   key: "duration",
-    //   label: "Duration",
-    //   required: true,
-    //   type: "number",
-    // });
   }
 
-  onFormUpdate(formValues: FormValue, fieldItem?: string): void {
+  onFormUpdate(
+    formValues: FormValue,
+    fieldItem?: string,
+    keyedPreviousVisitDrugOrders?: any
+  ): void {
+    this.selectedDrug = null;
     this.isFormValid = formValues.isValid;
+
     this.formValues = { ...this.formValues, ...formValues.getValues() };
 
-    if (formValues.getValues()?.drug?.value?.length > 0) {
-      this.selectedDrug = formValues
-        .getValues()
-        ?.drug?.options?.filter(
-          (option) => option?.name === formValues.getValues()?.drug?.value
-        )[0];
+    const doseDataValueKey: any = (Object.keys(this.formValues)?.filter(
+      (key) => this.formValues[key]?.label === "Dose"
+    ) || [])[0];
+    this.isFormValid =
+      this.isFormValid &&
+      this.formValues[doseDataValueKey]?.value?.length > 0 &&
+      this.formValues?.dosingUnit?.value?.length > 0 &&
+      this.formValues?.frequency?.value?.length > 0
+        ? true
+        : false;
+    if (
+      formValues.getValues()?.drug?.value?.length > 0 ||
+      (formValues.getValues()?.drug?.value as any)?.display
+    ) {
+      this.selectedDrug = formValues.getValues()?.drug?.value;
     }
     if (fieldItem == "drug" && !this.specificDrugConceptUuid) {
       this.drugService
@@ -194,7 +202,7 @@ export class GeneralDispensingFormComponent implements OnInit {
 
   saveOrder(e: any, conceptFields: any) {
     if (!this.formValues?.drug?.value) {
-      this.errors = []
+      this.errors = [];
       setTimeout(() => {
         this.errors = [
           ...this.errors,
@@ -205,9 +213,8 @@ export class GeneralDispensingFormComponent implements OnInit {
             },
           },
         ];
-      })
-    }
-    else {
+      });
+    } else {
       this.savingOrder = true;
       let encounterObject = {
         patient: this.currentPatient?.id,

@@ -6,6 +6,7 @@ export interface CurrentUserState extends BaseState {
   authenticated: boolean;
   currentLocation: any;
   loggingIn: boolean;
+  uuid?: string;
   provider: ProviderGet;
   loadingProviderDetails: boolean;
   loadedProviderDetails: boolean;
@@ -14,6 +15,7 @@ export interface CurrentUserState extends BaseState {
   loadingRoles: boolean;
   loadedRoles: boolean;
   shouldReloadCurrentPage: boolean;
+  userPrivileges: any;
 }
 
 export const initialCurrentUserState: CurrentUserState = {
@@ -27,7 +29,9 @@ export const initialCurrentUserState: CurrentUserState = {
   loadedProviderDetails: false,
   userLocations: null,
   roles: [],
+  uuid: null,
   loadingRoles: false,
   loadedRoles: false,
   shouldReloadCurrentPage: false,
+  userPrivileges: {},
 };

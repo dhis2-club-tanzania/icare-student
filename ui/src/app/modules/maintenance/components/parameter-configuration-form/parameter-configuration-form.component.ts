@@ -27,6 +27,6 @@ export class ParameterConfigurationFormComponent implements OnInit {
   }
 
   onFormUpdate(formValue: FormValue): void {
-    console.log(formValue.getValues());
+    // console.log(formValue.getValues());
   }
 }

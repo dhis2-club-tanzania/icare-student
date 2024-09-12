@@ -310,7 +310,7 @@ export class AddUserComponent implements OnInit {
   }
 
   onGetSelectedLocationItems(selected) {
-    console.log(selected);
+    // console.log(selected);
   }
 
   onGetPreferredModule(event: MatSelectChange): void {

@@ -39,7 +39,7 @@ export class ProviderAttributesFormComponent implements OnInit {
   }
 
   onFormUpdate(formResponse: FormValue): void {
-    console.log(formResponse.getValues());
+    // console.log(formResponse.getValues());
     this.formFieldValues.emit(formResponse.getValues());
     this.isFormValid.emit(formResponse.isValid);
   }

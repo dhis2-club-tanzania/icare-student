@@ -8,7 +8,7 @@
     reportGroups: reportGroups$ | async,
     loadedAllRoles: loadedAllRoles$ | async,
     reportsParametersConfigurations: reportsParametersConfigurations$ | async,
-    standardReports: standardReports$ | async
+    currentUser: currentUser$ | async
   } as params"
 >
   <mat-progress-bar
@@ -21,10 +21,11 @@
       !params?.reportGroups ||
       !params?.loadedAllRoles ||
       !params?.reportsParametersConfigurations ||
-      !params?.standardReports
+      !params?.currentUser
     "
   ></mat-progress-bar>
-  <app-reports-generator
+  <div
+    class="w-100"
     *ngIf="
       params?.userPrivileges &&
       params?.reportsAccessConfigurations &&
@@ -33,14 +34,13 @@
       params?.reportGroups &&
       params?.loadedAllRoles &&
       params?.reportsParametersConfigurations &&
-      params?.standardReports
+      params?.currentUser
     "
-    [userPrivileges]="params?.userPrivileges"
-    [reportsAccessConfigurations]="params?.reportsAccessConfigurations"
-    [reportsCategoriesConfigurations]="params?.reportsCategoriesConfigurations"
-    [reportsExtraParams]="params?.reportsExtraParams"
-    [reportGroups]="params?.reportGroups"
-    [reportsParametersConfigurations]="params?.reportsParametersConfigurations"
-    [standardReports]="params?.standardReports"
-  ></app-reports-generator>
+  >
+    <div class="w-100">
+      <app-shared-reports-list
+        [currentUser]="params?.currentUser"
+      ></app-shared-reports-list>
+    </div>
+  </div>
 </div>

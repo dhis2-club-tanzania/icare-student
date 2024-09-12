@@ -19,6 +19,7 @@ import { StartVisitModelComponent } from "../../components/start-visit-model/sta
 import { VisitStatusConfirmationModelComponent } from "../../components/visit-status-confirmation-model/visit-status-confirmation-model.component";
 import { PatientService } from "src/app/shared/services/patient.service";
 import { clearActiveVisit } from "src/app/store/actions/visit.actions";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 
 @Component({
   selector: "app-registration-home",
@@ -55,7 +56,8 @@ export class RegistrationHomeComponent implements OnInit {
     private store: Store<AppState>,
     private visitService: VisitsService,
     private dialog: MatDialog,
-    private patentService: PatientService
+    private patentService: PatientService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {
     this.documentURL = "http://icare.dhis2.udsm.ac.tz/docs/";
   }
@@ -91,9 +93,15 @@ export class RegistrationHomeComponent implements OnInit {
 
   goToAddNewClientPage(event: Event, path: string): void {
     event.stopPropagation();
+    this.trackActionForAnalytics(`Register New Client: View`)
     this.store.dispatch(go({ path: [path] }));
   }
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Registration',eventname,'Registration')
+  }
 
+  
   getAllActiveVisits() {
     this.loadedData = false;
     this.visitService.getAllVisits().subscribe(
@@ -164,6 +172,9 @@ export class RegistrationHomeComponent implements OnInit {
       e.stopPropagation();
     }
     this.store.dispatch(clearActiveVisit());
+  
+      this.trackActionForAnalytics(`Registration Search: View`);
+   
     this.store.dispatch(
       addCurrentPatient({
         patient: { ...patient["patient"], id: patient["patient"]["uuid"] },
@@ -176,6 +187,7 @@ export class RegistrationHomeComponent implements OnInit {
         data: {
           patient: { ...patient["patient"], id: patient["patient"]["uuid"] },
         },
+        disableClose: false,
       })
       .afterClosed()
       .subscribe((visitDetails) => {
@@ -204,6 +216,7 @@ export class RegistrationHomeComponent implements OnInit {
           setTimeout(() => {
             this.loadingData = false;
           }, 100);
+        
         }
       });
   }

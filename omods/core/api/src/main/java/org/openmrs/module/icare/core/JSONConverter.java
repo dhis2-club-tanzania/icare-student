@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface JSONConverter {
 	
-	Map<String, Object> toMap();
+	Map<String, Object> toMap() throws Exception;
 }

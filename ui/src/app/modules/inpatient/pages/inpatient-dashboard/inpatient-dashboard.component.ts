@@ -73,7 +73,7 @@ export class InpatientDashboardComponent implements OnInit {
     private paymentService: PaymentService
   ) {
     this.store.dispatch(loadFormPrivilegesConfigs());
-    this.store.dispatch(loadRolesDetails());
+    // this.store.dispatch(loadRolesDetails());
     this.store.dispatch(loadOrderTypes());
   }
 
@@ -96,7 +96,7 @@ export class InpatientDashboardComponent implements OnInit {
 
     this.activeVisit$ = this.store.select(getActiveVisit);
 
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
     this.patientBillingDetails$ = zip(
       this.visitService.getActiveVisit(patientId, false),
       this.billingService.getPatientBills(patientId),

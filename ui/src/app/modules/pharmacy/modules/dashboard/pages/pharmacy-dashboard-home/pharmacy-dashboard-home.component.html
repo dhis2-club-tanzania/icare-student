@@ -1,0 +1,35 @@
+<div class="w-100">
+  <div class="row">
+    <div class="col-md-9 col-sm-12 col-sx-12"></div>
+    <div class="col-md-3 col-sm-12 col-sx-12 d-flex justify-content-end">
+      <mat-form-field appearance="fill" class="ml-2 mt-1" floatLabel="always">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input
+            matStartDate
+            placeholder="Start date"
+            [(ngModel)]="startDate"
+            (dateInput)="dateRangeSelect()"
+          />
+          <input
+            matEndDate
+            placeholder="End date"
+            [(ngModel)]="endDate"
+            (dateInput)="dateRangeSelect()"
+          />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <app-shared-dashboard-container
+    *ngIf="datesParameters"
+    [datesParams]="datesParameters"
+    [dashboardSingleValueDataSetsReferenceKey]="
+      'iCareConnect.pharmacy.dashboard.settings'
+    "
+  >
+  </app-shared-dashboard-container>
+</div>

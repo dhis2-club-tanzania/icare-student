@@ -174,6 +174,18 @@ export class Patient {
     return this.patient?.person?.preferredAddress?.cityVillage;
   }
 
+  isDead(): boolean {
+    return this.patient?.person?.dead;
+  }
+
+  causeOfDeath(): any {
+    return this.patient?.person?.causeOfDeath;
+  }
+
+  causeOfDeathNonCoded(): any {
+    return this.patient?.person?.causeOfDeathNonCoded;
+  }
+
   getAttributeByTypeName(name): any {
     let attributeObject = _.filter(
       this.patient?.person?.attributes,

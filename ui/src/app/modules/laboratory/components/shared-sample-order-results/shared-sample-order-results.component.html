@@ -1,0 +1,315 @@
+<ng-container
+  *ngIf="{ testOrdersDetails: testOrdersDetails$ | async } as params"
+>
+  <table
+    style="width: 100%; border: 0"
+    data-pdfmake="{'widths':[200,157,38,37,37]}"
+  >
+    <tbody style="width: 100%">
+      <ng-container
+        *ngFor="
+          let orderWithResults of ordersWithResults;
+          let ordersCount = index
+        "
+      >
+        <ng-container
+          *ngIf="
+            (orderWithResults?.testAllocations | groupParametersByHeaders)
+              ?.length > 0
+          "
+        >
+          <ng-container
+            *ngFor="
+              let header of orderWithResults?.testAllocations
+                | groupParametersByHeaders;
+              let count = index
+            "
+          >
+            <tr *ngIf="count === 0 && ordersCount === 0">
+              <td style="text-align: left; width: 50%"></td>
+              <td style="text-align: left; width: 20%">Results</td>
+              <td style="text-align: left; width: 10%">SI Units</td>
+              <td style="text-align: left; width: 10%">Flags</td>
+              <td style="text-align: left; width: 10%">Ref. Ranges</td>
+            </tr>
+            <tr>
+              <th colspan="5" style="text-align: left; background-color: #fff">
+                {{ header?.display }}
+              </th>
+            </tr>
+            <ng-container *ngFor="let allocation of header?.allocations">
+              <ng-container *ngIf="!allocation?.relatedTo">
+                <tr
+                  *ngIf="
+                    allocation?.order?.concept?.uuid !==
+                    allocation?.parameter?.uuid
+                  "
+                >
+                  <td style="text-align: left">
+                    {{ allocation?.parameter?.display }}
+                  </td>
+                  <td style="text-align: left">
+                    <span *ngIf="!allocation?.finalResult?.groups">
+                      {{
+                        allocation?.finalResult?.valueCoded
+                          ? allocation?.finalResult?.valueCoded?.display
+                          : allocation?.finalResult?.valueDateTime
+                          ? allocation?.finalResult?.valueDateTime
+                          : allocation?.finalResult?.valueNumeric
+                          ? allocation?.finalResult?.valueNumeric
+                          : allocation?.finalResult?.valueText
+                          ? allocation?.finalResult?.valueText
+                          : ""
+                      }}
+                    </span>
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.groups &&
+                        allocation?.finalResult?.groups?.length > 0
+                      "
+                    >
+                      <table
+                        style="width: 100%"
+                        data-pdfmake="{'widths':[60,60,60]}"
+                      >
+                        <tr>
+                          <td
+                            style="border: 0"
+                            [ngStyle]="{
+                              width:
+                                100 /
+                                  allocation?.finalResult?.groups[
+                                    allocation?.finalResult?.groups?.length - 1
+                                  ]?.results?.length +
+                                '%'
+                            }"
+                            *ngFor="
+                              let result of allocation?.finalResult?.groups[
+                                allocation?.finalResult?.groups?.length - 1
+                              ]?.results
+                            "
+                          >
+                            {{
+                              result?.valueCoded
+                                ? result?.valueCoded?.display
+                                : result?.valueDateTime
+                                ? result?.valueDateTime
+                                : result?.valueNumeric
+                                ? result?.valueNumeric
+                                : result?.valueText
+                                ? result?.valueText
+                                : ""
+                            }}
+                          </td>
+                        </tr>
+                      </table>
+                    </span>
+                  </td>
+                  <td style="text-align: left">
+                    {{ allocation?.parameter?.units }}
+                  </td>
+                  <td style="text-align: left; color: red">
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.valueNumeric &&
+                        allocation?.finalResult?.valueNumeric <
+                          allocation?.parameter?.lowNormal
+                      "
+                      >L</span
+                    >
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.valueNumeric &&
+                        allocation?.finalResult?.valueNumeric >
+                          allocation?.parameter?.highNormal
+                      "
+                      >H</span
+                    >
+                  </td>
+                  <td style="text-align: left">
+                    {{ allocation?.parameter?.lowNormal }} -
+                    {{ allocation?.parameter?.highNormal }}
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="allocation?.relatedTo">
+                <tr
+                  *ngIf="
+                    allocation?.order?.concept?.uuid !==
+                    allocation?.parameter?.uuid
+                  "
+                >
+                  <td style="text-align: left">
+                    <!-- {{ allocation | json }} -->
+                    {{ allocation?.parameter?.display }}
+                  </td>
+                  <td style="text-align: left">
+                    <span *ngIf="!allocation?.finalResult?.groups">
+                      {{
+                        allocation?.finalResult?.valueCoded
+                          ? allocation?.finalResult?.valueCoded?.display
+                          : allocation?.finalResult?.valueDateTime
+                          ? allocation?.finalResult?.valueDateTime
+                          : allocation?.finalResult?.valueNumeric
+                          ? allocation?.finalResult?.valueNumeric
+                          : allocation?.finalResult?.valueText
+                          ? allocation?.finalResult?.valueText
+                          : ""
+                      }}
+                    </span>
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.groups &&
+                        allocation?.finalResult?.groups?.length > 0
+                      "
+                    >
+                      <app-shared-related-results
+                        [allAllocations]="allTestAllocations"
+                        [allocation]="allocation"
+                      ></app-shared-related-results>
+                    </span>
+                  </td>
+                  <td style="text-align: left">
+                    {{ allocation?.parameter?.units }}
+                  </td>
+                  <td style="text-align: left; color: red">
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.valueNumeric &&
+                        allocation?.finalResult?.valueNumeric <
+                          allocation?.parameter?.lowNormal
+                      "
+                      >L</span
+                    >
+                    <span
+                      *ngIf="
+                        allocation?.finalResult?.valueNumeric &&
+                        allocation?.finalResult?.valueNumeric >
+                          allocation?.parameter?.highNormal
+                      "
+                      >H</span
+                    >
+                  </td>
+                  <td style="text-align: left">
+                    {{ allocation?.parameter?.lowNormal }} -
+                    {{ allocation?.parameter?.highNormal }}
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            (
+              orderWithResults?.testAllocations
+              | identifyParametersWithoutHeaders
+            )?.length > 0
+          "
+        >
+          <tr *ngIf="ordersCount === 0">
+            <td style="text-align: left; width: 50%"></td>
+            <td style="text-align: left; width: 20%">Results</td>
+            <td style="text-align: left; width: 10%">SI Units</td>
+            <td style="text-align: left; width: 10%">Flags</td>
+            <td style="text-align: left; width: 10%">Ref. Ranges</td>
+          </tr>
+          <ng-container
+            *ngFor="let allocation of orderWithResults?.testAllocations"
+          >
+            <tr
+              class="allocations-without-parameter-headers"
+              *ngIf="
+                allocation?.order?.concept?.uuid !== allocation?.parameter?.uuid
+              "
+            >
+              <td style="text-align: left">
+                {{ allocation?.parameter?.display }}
+              </td>
+              <td style="text-align: left">
+                {{
+                  allocation?.finalResult?.valueCoded
+                    ? allocation?.finalResult?.valueCoded?.display
+                    : allocation?.finalResult?.valueDateTime
+                    ? allocation?.finalResult?.valueDateTime
+                    : allocation?.finalResult?.valueNumeric
+                    ? allocation?.finalResult?.valueNumeric
+                    : allocation?.finalResult?.valueText
+                    ? allocation?.finalResult?.valueText
+                    : ""
+                }}
+              </td>
+
+              <td style="text-align: left">
+                {{ allocation?.parameter?.units }}
+              </td>
+              <td style="text-align: left; color: red">
+                <span
+                  *ngIf="
+                    allocation?.finalResult?.valueNumeric &&
+                    allocation?.finalResult?.valueNumeric <
+                      allocation?.parameter?.lowNormal
+                  "
+                  >L</span
+                >
+                <span
+                  *ngIf="
+                    allocation?.finalResult?.valueNumeric &&
+                    allocation?.finalResult?.valueNumeric >
+                      allocation?.parameter?.highNormal
+                  "
+                  >H</span
+                >
+              </td>
+              <td style="text-align: left">
+                {{ allocation?.parameter?.lowNormal }} -
+                {{ allocation?.parameter?.highNormal }}
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="orderWithResults?.testAllocations?.length > 0">
+          <tr>
+            <td colspan="5">
+              <p style="text-align: left">
+                <b>Remarks: </b>
+                {{orderWithResults?.testAllocations?.[0]?.statuses?.[0]?.category === "RESULT_REMARKS" ? orderWithResults?.testAllocations?.[0]?.statuses?.[0]?.remarks : "" }}
+              </p>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            params?.testOrdersDetails &&
+            orderWithResults?.order &&
+            orderWithResults?.order?.concept?.uuid &&
+            params?.testOrdersDetails[orderWithResults?.order?.concept?.uuid]
+          "
+        >
+          <tr>
+            <td colspan="5">
+              <app-test-order-interpretations
+                [descriptions]="
+                  params?.testOrdersDetails[
+                    orderWithResults?.order?.concept?.uuid
+                  ]?.descriptions
+                "
+              ></app-test-order-interpretations>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container>
+          <tr>
+            <td colspan="5">
+              <div style="text-align: left" class="mt-2">
+                <app-shared-sample-result-entry-and-authorization
+                  [orderWithResults]="orderWithResults"
+                ></app-shared-sample-result-entry-and-authorization>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>

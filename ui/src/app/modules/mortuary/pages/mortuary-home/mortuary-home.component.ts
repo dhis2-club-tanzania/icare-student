@@ -1,43 +1,52 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { Location } from 'src/app/core/models';
-import { VisitObject } from 'src/app/shared/resources/visits/models/visit-object.model';
+import { Component, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { select, Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { take, tap } from "rxjs/operators";
+import { Location } from "src/app/core/models";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import {
   go,
   loadLocationById,
   loadLocationsByTagName,
-} from 'src/app/store/actions';
-import { AppState } from 'src/app/store/reducers';
+  loadOrderTypes,
+} from "src/app/store/actions";
+import { AppState } from "src/app/store/reducers";
 import {
-  getAllBedsUnderCurrentWard,
   getAllCabinetsUnderCurrentLocation,
-  getBedsGroupedByTheCurrentLocationChildren,
+  getAllLocationsMortuaryAsFlatArray,
+  getAllLocationsUnderWardAsFlatArray,
   getCurrentLocation,
-} from 'src/app/store/selectors';
-import {
-  getAllAdmittedPatientVisits,
-  getVisitLoadingState,
-} from 'src/app/store/selectors/visit.selectors';
+  getOrderTypesByName,
+} from "src/app/store/selectors";
+import { getVisitLoadingState } from "src/app/store/selectors/visit.selectors";
+import { CabinetOccupancySummaryModalComponent } from "../../modals/cabinet-occupancy-summary-modal/cabinet-occupancy-summary-modal.component";
 
 @Component({
-  selector: 'app-mortuary-home',
-  templateUrl: './mortuary-home.component.html',
-  styleUrls: ['./mortuary-home.component.scss'],
+  selector: "app-mortuary-home",
+  templateUrl: "./mortuary-home.component.html",
+  styleUrls: ["./mortuary-home.component.scss"],
 })
 export class MortuaryHomeComponent implements OnInit {
   currentLocation: Location;
   loadingVisit$: Observable<boolean>;
   cabinetsUnderCurrentLocation$: Observable<Location[]>;
   currentLocation$: Observable<Location>;
+  deathRegistryEncounterTypeUuid$: Observable<string>;
+  errors: any[] = [];
+  cabinets$: Observable<any>;
+  locationsIds$: Observable<any>;
+  orderType$: Observable<any>;
 
-  constructor(private store: Store<AppState>, private dialog: MatDialog) {}
+  constructor(
+    private store: Store<AppState>,
+    private dialog: MatDialog,
+    private systemSettingsService: SystemSettingsService
+  ) {}
 
   ngOnInit(): void {
     this.store
-      .select(getCurrentLocation)
+      .select(getCurrentLocation(false))
       .pipe(take(1))
       .subscribe((location) => {
         /**
@@ -45,21 +54,65 @@ export class MortuaryHomeComponent implements OnInit {
          */
         this.currentLocation = location;
         this.store.dispatch(
-          loadLocationsByTagName({ tagName: 'Mortuary+Location' })
+          loadLocationsByTagName({ tagName: "Cabinet+Location" })
         );
         this.store.dispatch(loadLocationById({ locationUuid: location?.uuid }));
         this.cabinetsUnderCurrentLocation$ = this.store.select(
           getAllCabinetsUnderCurrentLocation,
           {
             id: location?.uuid,
-            tagName: 'Mortuary Location',
+            tagName: "Cabinet Location",
           }
         );
       });
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
+    this.deathRegistryEncounterTypeUuid$ = this.systemSettingsService
+      .getSystemSettingsByKey(`iCare.mortuary.settings.encounterTypeUuid`)
+      .pipe(
+        tap((response: any) => {
+          if (response?.error) {
+            this.errors = [
+              ...this.errors,
+              {
+                error: {
+                  message:
+                    "iCare.mortuary.settings.encounterTypeUuid is not set, contact IT",
+                },
+              },
+            ];
+          }
+          return response;
+        })
+      );
+
+    this.cabinets$ = this.store.select(getAllLocationsMortuaryAsFlatArray, {
+      id: this.currentLocation?.uuid,
+      tagName: "Cabinet Location",
+    });
+    this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
+    this.store.dispatch(loadOrderTypes());
+    this.orderType$ = this.store.select(getOrderTypesByName, {
+      name: "Cabinet Order",
+    });
   }
 
-  onSelectPatient() {
-    this.store.dispatch(go({ path: ['/mortuary/dashboard'] }));
+  onSelectPatient(event: any): void {
+    this.store.dispatch(
+      go({
+        path: [
+          "/mortuary/dashboard/" +
+            event?.patient?.uuid +
+            "/" +
+            event?.visitUuid,
+        ],
+      })
+    );
+  }
+
+  onGetCabinetStatus(cabinetStatus: any): void {
+    this.dialog.open(CabinetOccupancySummaryModalComponent, {
+      minWidth: "30%",
+      data: cabinetStatus,
+    });
   }
 }

@@ -80,7 +80,6 @@ export class Stock {
     if (!ledgerInput) {
       return null;
     }
-
     return {
       batchNo: ledgerInput.batchNo,
       item: { uuid: ledgerInput.itemUuid },
@@ -92,4 +91,5 @@ export class Stock {
       quantity: ledgerInput.quantity,
     };
   }
+  
 }

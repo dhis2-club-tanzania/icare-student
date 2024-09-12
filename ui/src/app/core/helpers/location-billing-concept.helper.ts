@@ -1,4 +1,4 @@
-export function getBillingConceptFromLocation(location) {
+export function getBillingConceptFromLocation(location): any {
   return location?.attributes && location?.attributes?.length > 0
     ? ((
         location?.attributes.filter(

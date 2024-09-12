@@ -39,7 +39,7 @@ export class IssuingEffects {
       ofType(loadIssuings),
       concatMap((action) =>
         of(action).pipe(
-          withLatestFrom(this.store.pipe(select(getCurrentLocation)))
+          withLatestFrom(this.store.pipe(select(getCurrentLocation(false))))
         )
       ),
       switchMap(([{}, currentLocation]) => {

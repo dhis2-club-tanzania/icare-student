@@ -16,9 +16,12 @@
     visitEndingControlStatusesConceptUuid:
       visitEndingControlStatusesConceptUuid$ | async,
     observations: observations$ | async,
-    IPDRoundConceptUuid: IPDRoundConceptUuid$ | async
+    IPDRoundConceptUuid: IPDRoundConceptUuid$ | async,
+    patientBillingDetails: patientBillingDetails$ | async,
+    patient: patient$ | async
   } as params"
 >
+
   <app-shared-patient-dashboard
     *ngIf="
       params?.currentUser &&
@@ -35,7 +38,11 @@
       params?.currentLocation &&
       params?.visitEndingControlStatusesConceptUuid &&
       params?.observations &&
-      params?.IPDRoundConceptUuid
+      params?.IPDRoundConceptUuid &&
+      ((params?.activeVisit?.isAdmitted &&
+        params?.patientBillingDetails &&
+        params?.patient) ||
+        (params?.activeVisit && !params?.activeVisit?.isAdmitted))
     "
     [formPrivilegesConfigs]="params?.privilegesConfigs"
     [currentUser]="params?.currentUser"
@@ -49,6 +56,16 @@
     "
     [observations]="params?.observations"
     [IPDRoundConceptUuid]="params?.IPDRoundConceptUuid"
+    (dichargePatient)="
+      dischargePatient(
+        $event,
+        params?.activeVisit,
+        params?.provider,
+        params?.patientBillingDetails,
+        params?.patient,
+        params?.currentUser
+      )
+    "
   ></app-shared-patient-dashboard>
   <div *ngIf="errors">
     <app-shared-error [errors]="errors"></app-shared-error>

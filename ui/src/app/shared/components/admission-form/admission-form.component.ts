@@ -39,7 +39,7 @@ import { Visit } from "../../resources/visits/models/visit.model";
 export class AdmissionFormComponent implements OnInit {
   patient: Patient;
   formLoadingState$: Observable<boolean>;
-  form$: Observable<OpenMRSForm>;
+  form$: Observable<any>;
   formUuid: any;
   admissionLocations$: Observable<any[]>;
   provider$: Observable<any>;
@@ -81,10 +81,8 @@ export class AdmissionFormComponent implements OnInit {
   ngOnInit(): void {
     this.orderTypes$ = this.store.select(getAllOrderTypes);
     this.formLoadingState$ = this.store.select(getFormsLoadingState);
-    this.form$ = this.store.select(getCustomOpenMRSFormById, {
-      id: this.formUuid,
-    });
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.form$ = this.store.select(getCustomOpenMRSFormById(this.formUuid));
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
     this.admissionStatus$ = this.store.select(
       getAdmissionStatusOfCurrentPatient
     );
@@ -93,7 +91,8 @@ export class AdmissionFormComponent implements OnInit {
     //   tagName: "Admission Location",
     // });
 
-    this.admissionLocations$ = this.locationService.getLocationsByTagName("Admission+Location");
+    this.admissionLocations$ =
+      this.locationService.getLocationsByTagName("Admission+Location");
     this.observationLocations$ = this.locationService.getLocationsByTagName(
       "Observation+Location"
     );

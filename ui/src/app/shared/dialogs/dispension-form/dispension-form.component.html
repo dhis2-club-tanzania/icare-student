@@ -21,7 +21,8 @@
     drugOrderConceptDetails: drugOrderConceptDetails$ | async,
     strengthConceptUuid: strengthConceptUuid$ | async,
     useSpecificDrugPrescription: useSpecificDrugPrescription$ | async,
-    specificDrugConceptUuid: specificDrugConceptUuid$ | async
+    specificDrugConceptUuid: specificDrugConceptUuid$ | async,
+    previousVisit: previousVisit$ | async
   } as params"
 >
   <div class="loading-overlay" *ngIf="savingOrder">
@@ -120,7 +121,8 @@
                 params?.genericPrescriptionConceptUuids &&
                 params?.strengthConceptUuid &&
                 params?.useSpecificDrugPrescription &&
-                params?.specificDrugConceptUuid
+                params?.specificDrugConceptUuid &&
+                params?.previousVisit
               "
             >
               <app-general-dispension-form
@@ -167,6 +169,7 @@
                 "
                 [conceptFields$]="conceptFields$"
                 [strengthConceptUuid]="params?.strengthConceptUuid"
+                [previousVisit]="params?.previousVisit"
                 (updateConsultationOrder)="onUpdateConsultationOrder()"
                 (orderSaved)="onOrderSaved($event, params?.currentVisit)"
               ></app-general-dispension-form>
@@ -213,10 +216,11 @@
                       [drugOrder]="data?.drugOrder"
                       [patient]="data?.patient"
                       [locations]="params?.dispensingLocations"
-                      [fromDispensing]="data.fromDispensing"
+                      [fromDispensing]="data?.fromDispensing"
                       [showAddButton]="false"
                       [hideActionButtons]="true"
                       [encounterUuid]="data?.encounterUuid"
+                      [drugInstructions]="data?.drugInstructions"
                       [dosingUnitsSettings]="params?.dosingUnitsSettings"
                       [durationUnitsSettings]="params?.durationUnitsSettings"
                       [drugRoutesSettings]="params?.drugRoutesSettings"
@@ -238,23 +242,35 @@
                       (cancelForm)="onCancel()"
                       (formUpdate)="onFormUpdate($event)"
                       (getDrugsByConceptUuid)="getDrugsByConceptUuid($event)"
+                      (enterKeyPressedFields)="
+                        onGetEnterKeyResponsedFields(
+                          $event,
+                          params?.specificDrugConceptUuid,
+                          params?.currentVisit?.isEnsured
+                        )
+                      "
                     ></app-drug-order>
 
                     <div>
-                      <span *ngIf="showPrice">
-                        Price: {{ drugPrice }}
-                      </span>
+                      <span *ngIf="showPrice"> Price: {{ drugPrice }} </span>
+
                       <button
                         class="float-right"
                         (click)="
-                          onUpdateOrder($event, params?.specificDrugConceptUuid)
+                          onUpdateOrder(
+                            $event,
+                            params?.specificDrugConceptUuid,
+                            params?.currentVisit?.isEnsured
+                          )
                         "
                         mat-flat-button
+                        type="submit"
                         [color]="savingError ? 'warn' : 'primary'"
                         [disabled]="
                           !params?.specificDrugConceptUuid ||
                           savingOrder ||
-                          countOfDispensingFormFieldsWithValues < 3
+                          countOfDispensingFormFieldsWithValues < 3 ||
+                          !drugOrder?.quantity
                         "
                       >
                         <mat-icon *ngIf="savingError" class="mr-2"

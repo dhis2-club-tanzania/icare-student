@@ -1,0 +1,109 @@
+<ng-container *ngIf="{ visitDetails: visitDetails$ | async } as params">
+  <!-- {{ params?.visitDetails?.obsKeyedByConcept | json }} -->
+  <table
+    style="width: 100%"
+    *ngIf="params?.visitDetails"
+    data-pdfmake="{'widths':[120,120,120,120]}"
+  >
+    <tbody style="width: 100%">
+      <tr style="width: 100%">
+        <td
+          colspan="4"
+          style="width: 100%; text-align: center; font-weight: 600"
+        >
+          {{
+            samplesData[0]?.authorizationInfo?.length == 0
+              ? "Provisional Report"
+              : "Final Report"
+          }}
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Patient File Number:</td>
+        <td style="width: 25%; text-align: left">{{ samplesData[0]?.mrn }}</td>
+        <td style="width: 25%; text-align: left">Collection Date&Time:</td>
+        <td style="width: 25%; text-align: left">
+          <span *ngFor="let key of collectionDateAndTimeUuids">
+            {{
+              params?.visitDetails?.obsKeyedByConcept[key]?.value
+                | date: "medium"
+            }}
+          </span>
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Patient Name:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.patient?.givenName }}
+          {{ samplesData[0]?.patient?.familyName }}
+        </td>
+        <td style="width: 25%; text-align: left">Registered on:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.dateCreated | date: "medium" }}
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Age:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.patient?.age }}
+        </td>
+        <td style="width: 25%; text-align: left">Laboratory Number:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.label }}
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Gender:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.patient?.gender }}
+        </td>
+        <td style="width: 25%; text-align: left">Received Date&Time:</td>
+        <td style="width: 25%; text-align: left">
+          <span *ngFor="let key of receptionDateAndTimeUuids">
+            {{
+              params?.visitDetails?.obsKeyedByConcept[key]?.value
+                | date: "medium"
+            }}
+          </span>
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Facility:</td>
+        <td style="width: 25%; text-align: left">
+          <app-shared-location-display
+            *ngIf="referredHFUuid"
+            [referredHFUuid]="referredHFUuid"
+          ></app-shared-location-display>
+        </td>
+        <td style="width: 25%; text-align: left">Accepted Date&Time:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.acceptedStatus?.timestamp | date: "medium" }}
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Requested by:</td>
+        <td style="width: 25%; text-align: left">
+          <span *ngFor="let key of requestedByUuids">
+            {{ params?.visitDetails?.obsKeyedByConcept[key]?.value }}
+          </span>
+        </td>
+        <td style="width: 25%; text-align: left">Specimen Type:</td>
+        <td style="width: 25%; text-align: left">
+          {{ samplesData[0]?.specimen?.name }}
+        </td>
+      </tr>
+      <tr style="width: 100%">
+        <td style="width: 25%; text-align: left">Clinical Data:</td>
+        <td style="width: 25%; text-align: left" colspan="3">
+          <span *ngFor="let key of clinicalDataUuids">
+            {{ params?.visitDetails?.obsKeyedByConcept[key]?.value }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.visitDetails"
+  ></mat-progress-bar>
+</ng-container>

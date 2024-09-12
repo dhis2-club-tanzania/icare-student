@@ -14,15 +14,22 @@
         </div>
       </div>
     </div>
-    <app-observation-chart-table
-      *ngIf="params?.obsChartEncounterType && params?.activeVisit"
-      [selectedForm]="selectedForm"
-      [obsChartEncounterType]="params?.obsChartEncounterType"
-      [activeVisit]="params?.activeVisit"
-      [patient]="patient"
-      [location]="location"
-      (saveObservation)="onSave($event)"
-    ></app-observation-chart-table>
+    <mat-card class="w-100 elevated-card">
+      <mat-card-content>
+        <div class="observations-chart-table-container">
+          <app-observation-chart-table
+            *ngIf="params?.obsChartEncounterType && params?.activeVisit"
+            [selectedForm]="selectedForm"
+            [obsChartEncounterType]="params?.obsChartEncounterType"
+            [activeVisit]="params?.activeVisit"
+            [patient]="patient"
+            [location]="location"
+            (saveObservation)="onSave($event)"
+          ></app-observation-chart-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
     <mat-progress-loader
       class="mt-2"
       *ngIf="!params?.obsChartEncounterType || !params?.activeVisit"

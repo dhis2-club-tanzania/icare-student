@@ -12,19 +12,12 @@ import { MatRadioChange } from "@angular/material/radio";
 import { RegistrationService } from "src/app/modules/registration/services/registration.services";
 import { FieldComponent } from "src/app/shared/modules/form/components/field/field.component";
 import { FormComponent } from "src/app/shared/modules/form/components/form/form.component";
-import { DateField } from "src/app/shared/modules/form/models/date-field.model";
-import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
-import { PhoneNumber } from "src/app/shared/modules/form/models/phone-number.model";
-import { TextArea } from "src/app/shared/modules/form/models/text-area.model";
-import { Textbox } from "src/app/shared/modules/form/models/text-box.model";
 import * as moment from "moment";
-import { MatDatepickerInputEvent } from "@angular/material/datepicker";
 import { PersonService } from "src/app/core/services/person.service";
 import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { PatientService } from "src/app/shared/services/patient.service";
-import { flatten } from "lodash";
 
 @Component({
   selector: "app-person-details",
@@ -35,6 +28,11 @@ export class PersonDetailsComponent implements OnInit {
   @Input() referFromFacilityVisitAttribute: string;
   @Input() maximumDate: string;
   @Input() allRegistrationFields: any;
+
+  @Input() personEmailAttributeTypeUuid: string;
+  @Input() personPhoneAttributeTypeUuid: string;
+  @Input() labTestRequestProgramStageId: string;
+
   patientIdentifierTypes: any[];
   @Output() personDetails: EventEmitter<any> = new EventEmitter<any>();
   personDetailsCategory: string = "new";
@@ -308,8 +306,7 @@ export class PersonDetailsComponent implements OnInit {
           lastName: personDetails?.preferredName?.familyName,
           mobileNumber: personDetails?.attributes?.filter((attribute) => {
             if (
-              attribute?.attributeType ===
-              "aeb3a16c-f5b6-4848-aa51-d7e3146886d6"
+              attribute?.attributeType === this.personPhoneAttributeTypeUuid
             ) {
               return attribute;
             }
@@ -408,6 +405,9 @@ export class PersonDetailsComponent implements OnInit {
             };
 
             this.setPersonDetails(personDetailsData);
+            const today = moment(new Date());
+            this.age = today.diff(clientRequest?.dob, "years");
+            this.month = Number(today.diff(clientRequest?.dob, "months")) % 12;
             this.setIdentifierFields(
               this.identifierTypes,
               personDetailsData,

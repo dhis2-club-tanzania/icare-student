@@ -27,9 +27,44 @@ export class StockService {
 
   getAvailableStocks(
     locationUuid?: string,
-    params?: { q?: string; limit?: number; startIndex?: number }
+    params?: { q?: string; limit?: number; startIndex?: number },
+    page?: number,
+    pageSize?: number
   ): Observable<any | StockObject[]> {
-    return this._getStocks("store/stock", locationUuid, params);
+    let queryParams = [];
+
+    if (page && !params?.q) {
+      queryParams = [...queryParams, `page=${page}`];
+    }
+    if (pageSize) {
+      queryParams = [...queryParams, `pageSize=${pageSize}`];
+    }
+    if (locationUuid) {
+      queryParams = [...queryParams, `locationUuid=${locationUuid}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `q=${params?.q}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `page=1`];
+    }
+    const args = `?${queryParams.join("&")}`;
+    return this.httpClient.get(`store/stock${args}`)?.pipe(
+      map((response,index) => {
+        const stockBatches: StockBatch[] = (response?.results || []).map(
+          (stockItem) => new StockBatch(stockItem)
+        );
+        const groupedStockBatches =
+          StockBatch.getGroupedStockBatches(stockBatches);
+        return {
+          ...response,
+          results: Object.keys(groupedStockBatches).map((stockItemKey) => {
+            return new Stock(groupedStockBatches[stockItemKey]).toJson();
+          }),
+        };
+      })
+    );
+    // return this._getStocks("store/stock", locationUuid, params);
   }
 
   getAvailableStockOfAnItem(
@@ -72,22 +107,245 @@ export class StockService {
       );
   }
 
-  getStockOuts(locationUuid?: string): Observable<StockObject[]> {
+  getRequisitionStatusOfAnItem(
+    itemUuid: string,
+    locationUuid: string
+  ): Observable<any> {
+    return this.httpClient
+      .get(`store/pendingrequisition?item=${itemUuid}&location=${locationUuid}`)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((e) => of(e))
+      );
+  }
+
+  getStockOuts(
+    locationUuid?: string,
+    params?: { q?: string },
+    page?: number,
+    pageSize?: number
+  ): Observable<any> {
+    // const pageNumber = locationUuid && page ? `&page=${page}` : page ? `page=${page}` : ``;
+    // const pageSizeNumber =
+    //   locationUuid && pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize && page
+    //       ? `&pageSize=${pageSize}`
+    //       : pageSize
+    //         ? `pageSize=${pageSize}` : ``;
+    // const location =
+    //   locationUuid ? `location=${locationUuid}` : '';
+    // const args = `?${location}${pageNumber}${pageSizeNumber}` ;
+
+    let queryParams = [];
+
+    if (page) {
+      queryParams = [...queryParams, `page=${page}`];
+    }
+    if (pageSize) {
+      queryParams = [...queryParams, `pageSize=${pageSize}`];
+    }
+    if (locationUuid) {
+      queryParams = [...queryParams, `location=${locationUuid}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `q=${params?.q}`];
+    }
+
+    const args = `?${queryParams.join("&")}`;
+
+    return this.httpClient.get(`store/stockout${args}`)?.pipe(
+      map((response) => {
+        const stockBatches: StockBatch[] = (response?.results || []).map(
+          (stockItem) => new StockBatch(stockItem)
+        );
+        const groupedStockBatches =
+          StockBatch.getGroupedStockBatches(stockBatches);
+
+        return {
+          ...response,
+          results: Object.keys(groupedStockBatches).map((stockItemKey) => {
+            return new Stock(groupedStockBatches[stockItemKey]).toJson();
+          }),
+        };
+      })
+    );
     return this._getStocks("store/stockout", locationUuid, null, true);
+  }
+  getExpiredItems(
+    locationUuid?: string,
+    params?: { q?: string },
+    page?: number,
+    pageSize?: number
+  ): Observable<any> {
+    // const pageNumber = locationUuid && page ? `&page=${page}` : page ? `page=${page}` : ``;
+    // const pageSizeNumber =
+    //   locationUuid && pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize
+    //     ? `pageSize=${pageSize}` : ``;
+    // const location =
+    //   locationUuid ? `location=${locationUuid}` : '';
+    // const args = `?${location}${pageNumber}${pageSizeNumber}` ;
+
+    let queryParams = [];
+
+    if (page) {
+      queryParams = [...queryParams, `page=${page}`];
+    }
+    if (pageSize) {
+      queryParams = [...queryParams, `pageSize=${pageSize}`];
+    }
+    if (locationUuid) {
+      queryParams = [...queryParams, `location=${locationUuid}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `q=${params?.q}`];
+    }
+
+    const args = `?${queryParams.join("&")}`;
+
+    return this.httpClient.get(`store/expireditems${args}`)?.pipe(
+      map((response) => {
+        const stockBatches: StockBatch[] = (response?.results || []).map(
+          (stockItem) => new StockBatch(stockItem)
+        );
+        const groupedStockBatches =
+          StockBatch.getGroupedStockBatches(stockBatches);
+
+        return {
+          ...response,
+          results: Object.keys(groupedStockBatches).map((stockItemKey) => {
+            return new Stock(groupedStockBatches[stockItemKey]).toJson();
+          }),
+        };
+      })
+    );
+  }
+
+  getNearlyStockedOutItems(
+    locationUuid?: string,
+    params?: { q?: string },
+    page?: number,
+    pageSize?: number
+  ): Observable<any> {
+    // const pageNumber = locationUuid && page ? `&page=${page}` : page ? `page=${page}` : ``;
+    // const pageSizeNumber =
+    //   locationUuid && pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize
+    //     ? `pageSize=${pageSize}` : ``;
+    // const location =
+    //   locationUuid ? `location=${locationUuid}` : '';
+    // const args = `?${location}${pageNumber}${pageSizeNumber}` ;
+
+    let queryParams = [];
+
+    if (page) {
+      queryParams = [...queryParams, `page=${page}`];
+    }
+    if (pageSize) {
+      queryParams = [...queryParams, `pageSize=${pageSize}`];
+    }
+    if (locationUuid) {
+      queryParams = [...queryParams, `location=${locationUuid}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `q=${params?.q}`];
+    }
+
+    const args = `?${queryParams.join("&")}`;
+
+    return this.httpClient.get(`store/nearlystockoutitems${args}`)?.pipe(
+      map((response) => {
+        const stockBatches: StockBatch[] = (response?.results || []).map(
+          (stockItem) => new StockBatch(stockItem)
+        );
+        const groupedStockBatches =
+          StockBatch.getGroupedStockBatches(stockBatches);
+
+        return {
+          ...response,
+          results: Object.keys(groupedStockBatches).map((stockItemKey) => {
+            return new Stock(groupedStockBatches[stockItemKey]).toJson();
+          }),
+        };
+      })
+    );
+  }
+
+  getNearlyExpiredItems(
+    locationUuid?: string,
+    params?: { q?: string },
+    page?: number,
+    pageSize?: number
+  ): Observable<any> {
+    // const pageNumber = locationUuid && page ? `&page=${page}` : page ? `page=${page}` : ``;
+    // const pageSizeNumber =
+    //   locationUuid && pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize && page
+    //     ? `&pageSize=${pageSize}`
+    //     : pageSize
+    //     ? `pageSize=${pageSize}` : ``;
+    // const location =
+    //   locationUuid ? `location=${locationUuid}` : '';
+    // const args = `?${location}${pageNumber}${pageSizeNumber}` ;
+
+    let queryParams = [];
+
+    if (page) {
+      queryParams = [...queryParams, `page=${page}`];
+    }
+    if (pageSize) {
+      queryParams = [...queryParams, `pageSize=${pageSize}`];
+    }
+    if (locationUuid) {
+      queryParams = [...queryParams, `location=${locationUuid}`];
+    }
+    if (params?.q) {
+      queryParams = [...queryParams, `q=${params?.q}`];
+    }
+
+    const args = `?${queryParams.join("&")}`;
+
+    return this.httpClient.get(`store/nearlyexpireditems${args}`)?.pipe(
+      map((response) => {
+        const stockBatches: StockBatch[] = (response?.results || []).map(
+          (stockItem) => new StockBatch(stockItem)
+        );
+        const groupedStockBatches =
+          StockBatch.getGroupedStockBatches(stockBatches);
+
+        return {
+          ...response,
+          results: Object.keys(groupedStockBatches).map((stockItemKey) => {
+            return new Stock(groupedStockBatches[stockItemKey]).toJson();
+          }),
+        };
+      })
+    );
   }
 
   saveStockLedger(ledgerInput: LedgerInput): Observable<any> {
     const storeLedger = Stock.createLedger(ledgerInput);
-
     if (!storeLedger) {
       return throwError({
         message: "Incorrect parameters supplied",
       });
     }
-
     return this.httpClient.post("store/ledger", storeLedger).pipe(
-      map((response) => new StockBatch(response)),
-      catchError((error) => of(error))
+      map((response) => {
+        new StockBatch(response)}),
+        catchError((error) => {
+          return of(error);
+        }),
     );
   }
 

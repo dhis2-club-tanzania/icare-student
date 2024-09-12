@@ -1,0 +1,28 @@
+<div class="w-100">
+  <span>
+    <b>Tested By</b>
+    {{
+      resultReference?.resultsFedBy ? resultReference?.resultsFedBy?.name : "-"
+    }}
+  </span>
+  <span class="ml-2">
+    <b>On: </b> {{ resultReference?.dateCreated | date: "medium" }}
+  </span>
+  <span
+    class="ml-4"
+    *ngIf="sample?.authorizationInfo && sample?.authorizationInfo[0]"
+  >
+    <b>Authorised By: </b>{{ sample?.authorizationInfo[0]?.name }}
+    <b class="ml-2">On: </b
+    >{{ sample?.authorizationInfo[0]?.timestamp | date: "medium" }}
+  </span>
+  <span
+    class="ml-2"
+    *ngIf="
+      !sample?.authorizationInfo ||
+      (sample?.authorizationInfo && !sample?.authorizationInfo[0])
+    "
+  >
+    Un-Authorized
+  </span>
+</div>

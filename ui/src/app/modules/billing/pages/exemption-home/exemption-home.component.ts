@@ -92,7 +92,7 @@ export class ExemptionHomeComponent implements OnInit {
       })
     );
 
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
 
     //Get current location
     this.currentLocation$.subscribe({

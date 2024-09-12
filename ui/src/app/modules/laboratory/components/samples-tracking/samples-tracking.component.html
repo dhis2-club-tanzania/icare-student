@@ -19,9 +19,7 @@
               width="50%"
               *ngIf="expandedRow > 0 && (currentSample$ | async)"
               class="mat-elevation-z1"
-            >
-              
-            </td>
+            ></td>
           </tr>
           <ng-container
             *ngFor="
@@ -49,14 +47,12 @@
                 <span *ngIf="sample?.user && sample?.user?.name">
                   {{ sample?.user?.name }}
                 </span>
-                <span *ngIf="!sample?.user">
-                  No User
-                </span>
+                <span *ngIf="!sample?.user"> No User </span>
               </td>
               <td>
                 <button
                   [disabled]="!sample?.user"
-                  (click)="viewSampleTrackingInfo($event,sample)"
+                  (click)="onViewSampleTrackingInfo($event, sample)"
                   mat-stroked-button
                   class="mr-2"
                 >

@@ -1,0 +1,58 @@
+<ng-container>
+  <mat-toolbar color="primary">
+    <span>Confirmation</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button mat-dialog-close matTooltip="close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <mat-dialog-content class="mat-typography">
+    <div class="mt-2">
+      <p>Are you sure to confirm selling the following items?</p>
+    </div>
+    <div class="w-100" style="overflow: auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width: 40px">SN</th>
+            <th>Item</th>
+            <td style="min-width: 60px">Price</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of data?.selectedItems; let count = index">
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ item?.name }}
+            </td>
+            <td>
+              {{ data?.itemsPrices[item?.itemUuid]?.price }}
+            </td>
+          </tr>
+          <tr>
+            <th colspan="2" style="text-align: right">Total Price</th>
+            <th>
+              {{ data?.itemsPrices["total"] }}
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="m-0 mt-2 mr-4">
+    <button mat-stroked-button [disabled]="true">Print receipt</button>
+    <button class="ml-2" mat-flat-button color="warn" (click)="onClose($event)">
+      Cancel
+    </button>
+    <button
+      class="ml-2 confirm-btn"
+      mat-flat-button
+      color="primary"
+      (click)="onConfirm($event)"
+    >
+      Yes
+    </button>
+  </mat-dialog-actions>
+</ng-container>

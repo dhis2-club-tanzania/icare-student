@@ -26,6 +26,8 @@ export class SamplesRejectedAfterRegistrationComponent implements OnInit {
   selectedDepartment: string;
   searchingText: string;
   excludeAllocations: boolean = true;
+  excludedSampleCategories: string[] = [];
+  tabType: string = "sample-tracking";
 
   page: number = 1;
   pageCount: number = 100;
@@ -50,6 +52,8 @@ export class SamplesRejectedAfterRegistrationComponent implements OnInit {
       "REJECTED",
       "YES",
       this.excludeAllocations,
+      this.tabType,
+      null,
       null,
       {
         departments: this.labSamplesDepartments,
@@ -61,6 +65,6 @@ export class SamplesRejectedAfterRegistrationComponent implements OnInit {
 
   onToggleViewSampleDetails(event: Event, sample: any): void {
     event.stopPropagation();
-    console.log(sample);
+    // console.log(sample);
   }
 }

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/models/lis-configurations.model";
-
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 @Component({
   selector: "app-sample-disposal",
   templateUrl: "./sample-disposal.component.html",
@@ -9,7 +8,7 @@ import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/mod
 export class SampleDisposalComponent implements OnInit {
   @Input() allSamples: any[];
   @Input() externalSystemsReferenceConceptUuid: any;
-  @Input() LISConfigurations: LISConfigurationsModel;
+  @Input() LISConfigurations: iCareConnectConfigurationsModel;
 
   @Output() sampleSearch: EventEmitter<any> = new EventEmitter();
   @Output() dispose: EventEmitter<any> = new EventEmitter();

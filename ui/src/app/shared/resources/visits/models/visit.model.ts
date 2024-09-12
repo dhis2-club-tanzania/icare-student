@@ -128,6 +128,48 @@ export class Visit {
     );
   }
 
+  get waitingToBeGivenCabinet(): boolean {
+    // TODO: Softcode tag name and death registry encounter type uuid
+    return (
+      !this.location?.tags.some((tag) => tag?.name === "Cabinet Location") &&
+      (
+        this.visit.encounters.filter(
+          (encounter) =>
+            encounter?.encounterType?.uuid ===
+            "73d36615-9a4a-46a4-8134-2dca15acacc1"
+        ) || []
+      ).length > 0
+    );
+  }
+
+  get admissionEncounter(): any {
+    return (this.visit.encounters.filter(
+      (encounter) =>
+        encounter?.encounterType?.uuid ===
+        "e22e39fd-7db2-45e7-80f1-60fa0d5a4378"
+    ) || [])[0];
+  }
+
+  get isDead(): boolean {
+    return (
+      (
+        this.visit.encounters.filter(
+          (encounter) =>
+            encounter?.encounterType?.uuid ===
+            "e22e39fd-7db2-45e7-80f1-60fa0d5a4378"
+        ) || []
+      )?.length > 0
+    );
+  }
+
+  get deathEncounter(): any {
+    return (this.visit.encounters.filter(
+      (encounter) =>
+        encounter?.encounterType?.uuid ===
+        "73d36615-9a4a-46a4-8134-2dca15acacc1"
+    ) || [])[0];
+  }
+
   get attributes(): VisitAttribute[] {
     return (this.visit?.attributes || []).map(
       (attribute) => new VisitAttribute(attribute)
@@ -447,6 +489,7 @@ export class Visit {
       stopDate: this.stopDate,
       isAdmitted: this.isAdmitted,
       waitingToBeAdmitted: this.waitingToBeAdmitted,
+      waitingToBeGivenCabinet: this.waitingToBeGivenCabinet,
       radiologyOrders: this.radiologyOrders,
       procedureOrders: this.procedureOrders,
       otherOrders: this.otherOrders,
@@ -463,6 +506,9 @@ export class Visit {
       hasConfirmedDiagnosis: this.hasConfirmedDiagnosis,
       observations: this.observations,
       drugOrders: this.drugOrders,
+      admissionEncounter: this.admissionEncounter,
+      deathEncounter: this.deathEncounter,
+      isDead: this.isDead,
     };
   }
 

@@ -39,7 +39,7 @@ export class InpatientPatientListComponent implements OnInit {
         tagNames: ["Admission+Location", "Bed+Location"],
       })
     );
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
     this.settingCurrentLocationStatus$ = this.store.select(
       getSettingCurrentLocationStatus
     );

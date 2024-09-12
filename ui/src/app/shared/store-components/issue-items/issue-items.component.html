@@ -1,0 +1,95 @@
+<div class="container-fluid" *ngIf="{
+    specificRequisition: specificRequisition$ | async
+} as params">
+   <div class="row">
+    <div class="col-12">
+      <mat-progress-bar mode="indeterminate" *ngIf="!params?.specificRequisition?.items?.length && loadingRequisition"></mat-progress-bar>
+      <table class="table table-hover table-striped" *ngIf="params?.specificRequisition?.items?.length && !loadingRequisition">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Batch</th>
+                <th>Status</th>
+                <th></th>
+                <th>
+                  <section
+                    *ngIf="markAll">
+                    <mat-checkbox color="primary" (change)="selectAll($event, params?.specificRequisition?.items)" [checked]="selectAllItems"></mat-checkbox>
+                  </section>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of params?.specificRequisition?.items; let itemIndex = index">
+                <td>{{ itemIndex + 1 }}</td>
+                <td>{{ item?.item?.display }}</td>
+                <td>{{ item?.quantity }}</td>
+                <td>{{ item?.batch ? item?.batch : " - " }}</td>
+                <td>{{ item?.status }}</td>
+                <td>
+                  <ng-container *ngIf="item?.status === 'PENDING' && issue?.requisitionStatuses[issue?.requisitionStatuses?.length - 1]?.status !== 'CANCELLED'">
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="onIssue($event, item)"
+                    >
+                      Issue
+                    </button>
+                    <button
+                      mat-flat-button
+                      class="ml-2"
+                      color="warn"
+                      (click)="onReject($event, item)"
+                    >
+                      Reject
+                    </button>
+                  </ng-container>
+                </td>
+                <td>
+                  <section *ngIf="item?.status === 'PENDING' && issue?.requisitionStatuses[issue?.requisitionStatuses?.length - 1]?.status !== 'CANCELLED'">
+                    <mat-checkbox
+                      color="primary"
+                      (change)="getSelection($event, item)"
+                      [checked]="selectedItems[item]"
+                      *ngIf="item?.status === 'PENDING'"
+                    ></mat-checkbox>
+                  </section>
+                </td>
+              </tr>
+            </tbody>
+      </table>
+      <table class="table table-hover table-striped" *ngIf="!params?.specificRequisition?.items?.length && !loadingRequisition">
+        <tbody>
+          <tr>
+            <h3 class="text-center">No items to issue</h3>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <table class="table">
+                  <tr>
+                    <td>#</td>
+                    <td>Store</td>
+                    <td>Item</td>
+                    <td>Quantity</td>
+                    <td><span class="float-right">Actions</span></td>
+                  </tr>
+                 
+
+                  <tr
+                    *ngFor="let item of requisition?.items; let itemIndex = index"
+                  >
+                    <td>{{ itemIndex + 1 }}</td>
+                    <td>Test Store {{ itemIndex + 1 }}</td>
+                    <td>Test Item {{ itemIndex + 1 }}</td>
+                    <td>{{item?.quantity}}</td>
+                    <td>
+                      ...
+                    </td>
+                  </tr>
+                </table> -->

@@ -2,22 +2,34 @@
   *ngIf="{
     sampleAllocations: sampleAllocations$ | async,
     multipleResultsAttributeType: multipleResultsAttributeType$ | async,
+    calculatedValueExpressionAttributeType:
+      calculatedValueExpressionAttributeType$ | async,
     visitDetails: visitDetails$ | async,
-    providerDetails: providerDetails$ | async
+    providerDetails: providerDetails$ | async,
+    dataValuesEntities: dataValuesEntities$ | async
   } as params"
 >
-  <mat-toolbar color="primary"
-    >Result entry & Review -
-    <span class="ml-4" *ngIf="!data?.LISConfigurations?.isLIS">
-      <span
-        >Patient:
-        {{ data?.sample?.patient?.givenName }}
-        {{ data?.sample?.patient?.midllename }}
-        {{ data?.sample?.patient?.familyName }} | </span
-      >Gender: <b>{{ data?.sample?.patient?.gender }}</b> | Age:
-      <b>{{ data?.sample?.patient?.age }} Yrs</b>
-    </span>
-    <span class="ml-2"> - {{ data?.sample?.label }} </span>
+  <mat-toolbar color="primary">
+    <div class="w-100 d-flex justify-content-between">
+      <div class="w-50 d-flex justify-content-left">
+        Result entry & Review
+        <span class="ml-4" *ngIf="!data?.LISConfigurations?.isLIS">
+          <span
+            >- Patient:
+            {{ data?.sample?.patient?.givenName }}
+            {{ data?.sample?.patient?.midllename }}
+            {{ data?.sample?.patient?.familyName }} | </span
+          >Gender: <b>{{ data?.sample?.patient?.gender }}</b> | Age:
+          <b>{{ data?.sample?.patient?.age }} Yrs</b>
+        </span>
+        <span class="ml-2"> - {{ data?.sample?.label }} </span>
+      </div>
+      <div class="w-50 d-flex justify-content-end">
+        <button mat-icon-button (click)="onClose($event)">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+    </div>
   </mat-toolbar>
   <div class="p-3" style="z-index: 20">
     <mat-tab-group>
@@ -44,7 +56,7 @@
               </mat-radio-button>
             </mat-radio-group>
           </div>
-          <div style="max-height: 75vh; overflow: auto">
+          <div style="max-height: 60vh; overflow: auto">
             <div class="loading-overlay" *ngIf="saving">
               <div class="text-center">
                 <div>Saving ....</div>
@@ -73,75 +85,250 @@
                         {{ order?.concept?.display }}
                       </td>
                       <td>
-                        <div class="row p-2">
-                          <div
-                            [ngClass]="{
-                              'col-12':
-                                !allocationData?.isSetMember ||
-                                order?.allocations?.length < 2,
-                              'col-6':
-                                (allocationData?.parameter?.datatype?.name ==
-                                  'Numeric' ||
-                                  allocationData?.parameter?.datatype.name ==
-                                    'Coded') &&
-                                allocationData?.isSetMember &&
-                                order?.allocations?.length == 2,
-                              'col-2':
-                                allocationData?.parameter?.datatype.name !=
-                                  'Numeric' &&
-                                allocationData?.parameter?.datatype.name !=
-                                  'Coded' &&
-                                allocationData?.isSetMember
-                            }"
-                            (dblclick)="
-                              toggleSideNavigation($event, allocationData)
-                            "
-                            matTooltip="Double Click to view history"
-                            [matTooltipPosition]="'above'"
-                            class="entry-col"
-                            *ngFor="let allocationData of order?.allocations"
-                          >
+                        <div
+                          class="row p-2"
+                          *ngIf="
+                            (
+                              order?.allocations
+                              | identifyParametersWithoutHeaders
+                            )?.length > 0
+                          "
+                        >
+                          <ng-container>
                             <div
-                              class="w-100"
-                              *ngIf="
-                                order?.concept?.setMembers?.length == 0 ||
-                                (order?.concept?.setMembers?.length > 0 &&
-                                  order?.concept?.uuid !==
-                                    allocationData?.parameter?.uuid)
+                              class="col-12"
+                              *ngIf="order?.allocations?.length >= 5"
+                            >
+                              <mat-form-field
+                                class="w-50 search-input"
+                                style="font-size: 0.9rem"
+                              >
+                                <mat-label>Search</mat-label>
+                                <mat-icon matPrefix>search</mat-icon
+                                ><input
+                                  type="text"
+                                  placeholder="Search"
+                                  matInput
+                                  autocomplete="off"
+                                  [(ngModel)]="
+                                    parametersSearchingText[
+                                      order?.concept?.uuid
+                                    ]
+                                  "
+                                />
+                              </mat-form-field>
+                            </div>
+                            <div
+                              [ngClass]="{
+                                'col-12':
+                                  !allocationData?.isSetMember ||
+                                  order?.allocations?.length < 2,
+                                'col-6':
+                                  (allocationData?.parameter?.datatype?.name ==
+                                    'Numeric' ||
+                                    allocationData?.parameter?.datatype.name ==
+                                      'Coded') &&
+                                  allocationData?.isSetMember &&
+                                  order?.allocations?.length == 2,
+                                'col-2':
+                                  allocationData?.parameter?.datatype.name !=
+                                    'Numeric' &&
+                                  allocationData?.parameter?.datatype.name !=
+                                    'Coded' &&
+                                  allocationData?.isSetMember
+                              }"
+                              (dblclick)="
+                                toggleSideNavigation($event, allocationData)
+                              "
+                              matTooltip="Double Click to view history"
+                              [matTooltipPosition]="'above'"
+                              class="entry-col"
+                              *ngFor="
+                                let allocationData of order?.allocations
+                                  | filterAllocationsByName
+                                    : parametersSearchingText[
+                                        order?.concept?.uuid
+                                      ]
                               "
                             >
-                              <app-test-parameter-entry
-                                *ngIf="preferredName"
-                                [parameterUuid]="
-                                  allocationData?.parameter?.uuid
+                              <div
+                                class="w-100"
+                                *ngIf="
+                                  order?.concept?.setMembers?.length == 0 ||
+                                  (order?.concept?.setMembers?.length > 0 &&
+                                    order?.concept?.uuid !==
+                                      allocationData?.parameter?.uuid)
                                 "
-                                [multipleResultsAttributeType]="
-                                  params?.multipleResultsAttributeType
-                                "
-                                [allocation]="allocationData"
-                                [disabled]="
-                                  data?.actionType === 'review' &&
-                                  !data?.LISConfigurations?.isLIS
-                                "
-                                [finalResult]="allocationData?.finalResult"
-                                [isLIS]="data?.LISConfigurations?.isLIS"
-                                [conceptNameType]="preferredName"
-                                (data)="
-                                  onGetFieldData(
-                                    $event,
-                                    allocationData?.parameter,
-                                    allocationData
-                                  )
-                                "
-                              ></app-test-parameter-entry>
+                              >
+                                <app-test-parameter-entry
+                                  *ngIf="
+                                    preferredName &&
+                                    ((calculatedParameters[
+                                      'allocationData?.parameter?.uuid'
+                                    ] &&
+                                      calculatedParameters[
+                                        'allocationData?.parameter?.uuid'
+                                      ]?.render == true) ||
+                                      !calculatedParameters[
+                                        'allocationData?.parameter?.uuid'
+                                      ])
+                                  "
+                                  [parameterUuid]="
+                                    allocationData?.parameter?.uuid
+                                  "
+                                  [multipleResultsAttributeType]="
+                                    params?.multipleResultsAttributeType
+                                  "
+                                  [allocation]="allocationData"
+                                  [disabled]="
+                                    data?.actionType === 'review' &&
+                                    !data?.LISConfigurations?.isLIS
+                                  "
+                                  [finalResult]="
+                                    calculatedParameters[
+                                      'allocationData?.parameter?.uuid'
+                                    ]
+                                      ? calculatedParameters[
+                                          'allocationData?.parameter?.uuid'
+                                        ]?.value
+                                      : allocationData?.finalResult
+                                  "
+                                  [isLIS]="data?.LISConfigurations?.isLIS"
+                                  [conceptNameType]="preferredName"
+                                  (data)="
+                                    onGetFieldData(
+                                      $event,
+                                      allocationData?.parameter,
+                                      allocationData,
+                                      params?.calculatedValueExpressionAttributeType,
+                                      params?.dataValuesEntities
+                                    )
+                                  "
+                                ></app-test-parameter-entry>
+                              </div>
                             </div>
-                          </div>
+                          </ng-container>
+                        </div>
+                        <div
+                          class="row p-2"
+                          *ngIf="
+                            (order?.allocations | groupParametersByHeaders)
+                              ?.length > 0
+                          "
+                        >
+                          <ng-container
+                            *ngFor="
+                              let header of order?.allocations
+                                | groupParametersByHeaders
+                            "
+                          >
+                            <div class="col-12 h5 text-left text-muted">
+                              {{ header?.display }}
+                            </div>
+                            <div
+                              class="col-12"
+                              *ngIf="header?.allocations?.length >= 5"
+                            >
+                              <mat-form-field
+                                class="w-50 search-input"
+                                style="font-size: 0.9rem"
+                              >
+                                <mat-label>Search</mat-label>
+                                <mat-icon matPrefix>search</mat-icon
+                                ><input
+                                  type="text"
+                                  placeholder="Search"
+                                  matInput
+                                  autocomplete="off"
+                                  [(ngModel)]="
+                                    parametersSearchingText[header?.headerUuid]
+                                  "
+                                />
+                              </mat-form-field>
+                            </div>
+                            <div
+                              [ngClass]="{
+                                'col-12':
+                                  !allocationData?.isSetMember ||
+                                  header?.allocations?.length < 2,
+                                'col-6':
+                                  (allocationData?.parameter?.datatype?.name ==
+                                    'Numeric' ||
+                                    allocationData?.parameter?.datatype.name ==
+                                      'Coded') &&
+                                  allocationData?.isSetMember &&
+                                  header?.allocations?.length == 2,
+                                'col-2':
+                                  allocationData?.parameter?.datatype.name !=
+                                    'Numeric' &&
+                                  allocationData?.parameter?.datatype.name !=
+                                    'Coded' &&
+                                  allocationData?.isSetMember
+                              }"
+                              (dblclick)="
+                                toggleSideNavigation($event, allocationData)
+                              "
+                              matTooltip="Double Click to view history"
+                              [matTooltipPosition]="'above'"
+                              class="entry-col"
+                              *ngFor="
+                                let allocationData of header?.allocations
+                                  | filterAllocationsByName
+                                    : parametersSearchingText[
+                                        header?.headerUuid
+                                      ]
+                              "
+                            >
+                              <div
+                                class="w-100"
+                                *ngIf="
+                                  order?.concept?.setMembers?.length == 0 ||
+                                  (order?.concept?.setMembers?.length > 0 &&
+                                    order?.concept?.uuid !==
+                                      allocationData?.parameter?.uuid)
+                                "
+                              >
+                                <app-test-parameter-entry
+                                  *ngIf="
+                                    preferredName &&
+                                    params.calculatedValueExpressionAttributeType
+                                  "
+                                  [parameterUuid]="
+                                    allocationData?.parameter?.uuid
+                                  "
+                                  [multipleResultsAttributeType]="
+                                    params?.multipleResultsAttributeType
+                                  "
+                                  [allocation]="allocationData"
+                                  [disabled]="
+                                    data?.actionType === 'review' &&
+                                    !data?.LISConfigurations?.isLIS
+                                  "
+                                  [finalResult]="allocationData?.finalResult"
+                                  [calculatedValueExpressionAttributeType]="
+                                    params.calculatedValueExpressionAttributeType
+                                  "
+                                  [isLIS]="data?.LISConfigurations?.isLIS"
+                                  [conceptNameType]="preferredName"
+                                  (data)="
+                                    onGetFieldData(
+                                      $event,
+                                      allocationData?.parameter,
+                                      allocationData,
+                                      params?.calculatedValueExpressionAttributeType,
+                                      params?.dataValuesEntities
+                                    )
+                                  "
+                                ></app-test-parameter-entry>
+                              </div>
+                            </div>
+                          </ng-container>
                         </div>
                       </td>
                       <td rowspan="4" style="width: 100px">
                         <div class="mt-4">
                           <button
-                            *ngIf="data?.actionType !== 'review'"
+                            *ngIf="data?.actionType !== 'authorization'"
                             [disabled]="!isFormValid"
                             mat-flat-button
                             color="primary"
@@ -153,8 +340,42 @@
                               !order?.authorizationIsReady ? "Save" : "Amend"
                             }}
                           </button>
+
+                          <button
+                            class="mt-2"
+                            *ngIf="
+                              data?.actionType !== 'authorization' &&
+                              order?.savedOnce &&
+                              !order?.authorizationIsReady
+                            "
+                            mat-flat-button
+                            color="warn"
+                            (click)="onDeleteResults($event, order)"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            *ngIf="
+                              data?.actionType == 'authorization' &&
+                              order?.authorizationIsReady
+                            "
+                            [disabled]="!isFormValid"
+                            mat-flat-button
+                            color="primary"
+                            (click)="
+                              onSave($event, order, order?.authorizationIsReady)
+                            "
+                          >
+                            Amend
+                          </button>
                         </div>
-                        <div class="mt-4 d-flex justify-content-end">
+                        <div
+                          class="mt-4 d-flex justify-content-end"
+                          *ngIf="
+                            data?.actionType === 'authorization' ||
+                            !data?.LISConfigurations?.isLIS
+                          "
+                        >
                           <button
                             *ngIf="shouldConfirm"
                             class="mr-2"
@@ -166,33 +387,69 @@
                           <button
                             *ngIf="
                               ((!data?.LISConfigurations?.isLIS &&
-                                !order?.authorizationIsReady) ||
+                                (
+                                  order?.authorizationStatuses
+                                  | filterAuthorizationStatuses: ''
+                                )?.length === 0) ||
                                 (data?.LISConfigurations?.isLIS &&
-                                  !order?.authorizationIsReady)) &&
+                                  (
+                                    order?.authorizationStatuses
+                                    | filterAuthorizationStatuses: ''
+                                  )?.length === 0)) &&
                               order?.finalResults?.length > 0
                             "
                             mat-flat-button
+                            [disabled]="
+                              data?.LISConfigurations?.isLIS &&
+                              order?.finalResultsFedBy?.uuid ===
+                                data?.currentUser?.uuid
+                            "
                             color="primary"
                             (click)="onAuthorize($event, order, shouldConfirm)"
                           >
-                            {{ !shouldConfirm ? "Authorize" : "Confirm" }}
+                            {{ !shouldConfirm ? "Authorise" : "Confirm" }}
                           </button>
+                        </div>
+                        <div
+                          *ngIf="
+                            data?.actionType === 'authorization' &&
+                            data?.LISConfigurations?.isLIS &&
+                            order?.finalResultsFedBy?.uuid ===
+                              data?.currentUser?.uuid &&
+                            (
+                              order?.authorizationStatuses
+                              | filterAuthorizationStatuses: ''
+                            )?.length === 0
+                          "
+                          class="alert alert-warning mt-2"
+                          role="alert"
+                        >
+                          You can not authorise results processed by you
                         </div>
                         <div class="mt-2">
                           <p
                             *ngIf="
                               order?.authorizationStatuses?.length > 0 &&
-                              !order?.authorizationIsReady
+                              (
+                                order?.authorizationStatuses
+                                | filterAuthorizationStatuses: ''
+                              )?.length === 0
                             "
+                            validateFormFields
                           >
                             Approved, but waiting another approval
                           </p>
                           <p
                             color="primary"
-                            *ngIf="order?.authorizationIsReady"
+                            *ngIf="
+                              (
+                                order?.authorizationStatuses
+                                | filterAuthorizationStatuses: ''
+                              )?.length > 0
+                            "
                           >
                             <b
-                              >Authorized
+                              >Authorised
                               <span *ngIf="!data?.LISConfigurations?.isLIS"
                                 >(Second Approval)</span
                               ></b
@@ -203,14 +460,25 @@
                     </tr>
                     <tr>
                       <td colspan="100%">
-                        <app-shared-remarks-entry
-                          [order]="order"
-                          [disabled]="
-                            data?.actionType === 'review' &&
-                            !data?.LISConfigurations?.isLIS
-                          "
-                          (remarks)="onGetRemarks($event, order)"
-                        ></app-shared-remarks-entry>
+                        <div class="w-75 ml-2">
+                          <app-shared-tested-by-result-entry-fields
+                            [order]="order"
+                            (selectedTestedByFormFields)="
+                              onGetSelectedTestedBy($event, order)
+                            "
+                          >
+                          </app-shared-tested-by-result-entry-fields>
+                        </div>
+                        <div class="w-100">
+                          <app-shared-remarks-entry
+                            [order]="order"
+                            [disabled]="
+                              data?.actionType === 'review' &&
+                              !data?.LISConfigurations?.isLIS
+                            "
+                            (remarks)="onGetRemarks($event, order)"
+                          ></app-shared-remarks-entry>
+                        </div>
                       </td>
                     </tr>
                     <tr>
@@ -235,7 +503,11 @@
                         class="text-muted test-order-description"
                       >
                         <em>
-                          Ordered By:
+                          {{
+                            data?.LISConfigurations?.isLIS
+                              ? "Registered By "
+                              : "Ordered By:"
+                          }}
                           <b>
                             {{ order?.orderer?.name }}
                           </b>
@@ -275,6 +547,7 @@
                             "
                             [isLIS]="data?.LISConfigurations?.isLIS"
                             [conceptNameType]="preferredName"
+                            [order]="order"
                             (data)="getFedResults($event, order)"
                           ></app-related-test-parameters-entry>
                         </div>
@@ -282,16 +555,50 @@
                       <td rowspan="3">
                         <div class="mt-4">
                           <button
-                            *ngIf="data?.actionType !== 'review'"
-                            [disabled]="relatedResults?.length == 0"
+                            *ngIf="data?.actionType !== 'authorization'"
+                            [disabled]="
+                              relatedResults?.length == 0 &&
+                              multipleResults?.length === 0
+                            "
                             mat-flat-button
                             color="primary"
                             (click)="onSaveRelatedResults($event, order)"
                           >
                             Save
                           </button>
+                          <button
+                            class="mt-2"
+                            *ngIf="
+                              data?.actionType !== 'authorization' &&
+                              order?.savedOnce &&
+                              !order?.authorizationIsReady
+                            "
+                            mat-flat-button
+                            color="warn"
+                            (click)="onDeleteResults($event, order)"
+                          >
+                            Delete
+                          </button>
+                          <button
+                            *ngIf="
+                              data?.actionType === 'authorization' &&
+                              order?.authorizationIsReady
+                            "
+                            [disabled]="
+                              relatedResults?.length == 0 &&
+                              multipleResults?.length === 0
+                            "
+                            mat-flat-button
+                            color="primary"
+                            (click)="onSaveRelatedResults($event, order)"
+                          >
+                            Amend
+                          </button>
                         </div>
-                        <div class="mt-4 d-flex justify-content-end">
+                        <div
+                          class="mt-4 d-flex justify-content-end"
+                          *ngIf="data?.actionType === 'authorization'"
+                        >
                           <button
                             *ngIf="shouldConfirm"
                             class="mr-2"
@@ -309,6 +616,11 @@
                               order?.finalResults?.length > 0
                             "
                             mat-flat-button
+                            [disabled]="
+                              data?.LISConfigurations?.isLIS &&
+                              order?.finalResultsFedBy?.uuid ===
+                                data?.currentUser?.uuid
+                            "
                             color="primary"
                             (click)="
                               onAuthorize(
@@ -320,8 +632,24 @@
                               )
                             "
                           >
-                            {{ !shouldConfirm ? "Authorize" : "Confirm" }}
+                            {{ !shouldConfirm ? "Authorise" : "Confirm" }}
                           </button>
+                        </div>
+                        <div
+                          *ngIf="
+                            data?.actionType === 'authorization' &&
+                            data?.LISConfigurations?.isLIS &&
+                            order?.finalResultsFedBy?.uuid ===
+                              data?.currentUser?.uuid &&
+                            (
+                              order?.authorizationStatuses
+                              | filterAuthorizationStatuses: ''
+                            )?.length === 0
+                          "
+                          class="alert alert-warning mt-2"
+                          role="alert"
+                        >
+                          You can not authorise results processed by you
                         </div>
                         <div class="mt-2">
                           <p
@@ -337,12 +665,36 @@
                             *ngIf="order?.authorizationIsReady"
                           >
                             <b
-                              >Authorized
+                              >Authorised
                               <span *ngIf="!data?.LISConfigurations?.isLIS"
                                 >(Second Approval)</span
                               ></b
                             >
                           </p>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td colspan="100%">
+                        <div class="w-75 ml-2">
+                          <app-shared-tested-by-result-entry-fields
+                            [order]="order"
+                            (selectedTestedByFormFields)="
+                              onGetSelectedTestedBy($event, order)
+                            "
+                          >
+                          </app-shared-tested-by-result-entry-fields>
+                        </div>
+                        <div class="w-100">
+                          <app-shared-remarks-entry
+                            [order]="order"
+                            [disabled]="
+                              data?.actionType === 'review' &&
+                              !data?.LISConfigurations?.isLIS
+                            "
+                            (remarks)="onGetRemarks($event, order)"
+                          ></app-shared-remarks-entry>
                         </div>
                       </td>
                     </tr>
@@ -368,7 +720,11 @@
                         class="text-muted test-order-description"
                       >
                         <em>
-                          Ordered By:
+                          {{
+                            data?.LISConfigurations?.isLIS
+                              ? "Registered By "
+                              : "Ordered By:"
+                          }}
                           <b>
                             {{ order?.orderer?.name }}
                           </b>
@@ -481,7 +837,6 @@
           ></app-related-results-history>
         </div>
       </div>
-      <div></div>
     </div>
   </div>
 </div>

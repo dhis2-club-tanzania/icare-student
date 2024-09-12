@@ -65,12 +65,12 @@ export class QuotationsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     // console.log("************************")
     // console.log(this.patientBillingDetails);
-    // console.log(this.bills)
-    if(this.exemptionOrderType){
-      this.checkOpenExemptionRequest.emit(this.exemptionOrderType?.value)
+    this.bills.reverse();
+    // console.log(this.bills);
+    if (this.exemptionOrderType) {
+      this.checkOpenExemptionRequest.emit(this.exemptionOrderType?.value);
     }
 
     this.columns = [{ id: "orderNumber", label: "Order Number" }];

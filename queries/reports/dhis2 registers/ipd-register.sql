@@ -1,19 +1,19 @@
-SELECT (@row_number:=@row_number+1) AS "Na",`JINA LA MGONJWA`,`NAMBA YA JALADA/KADI`,`JINSIA YA MGONJWA`,UMRI,`MAHALI ANAISHI`,`TAREHE YA KULAZWA`,`DIAGNOSIS KABLA YA KUTHIBITISHWA`,`VIPIMO VILIVYOAGIZWA`,`MATOKEO YA VIPIMO`,`CONFIRMED DIAGNOSIS`,`MATIBABU`,`MATOKEO YA MWISHO`,`TAREHE YA MATOKEO YA MWISHO`,`MALIPO` FROM(
+SELECT (@row_number:=@row_number+1) AS "NA",`JINA_LA_MGONJWA`,`NAMBA_YA_JALADA`,`JINSIA_YA_MGONJWA`,UMRI,`MAHALI_ANAISHI`,`TAREHE_YA_KULAZWA`,`DIAGNOSIS_KABLA_YA_KUTHIBITISHWA`,`VIPIMO_VILIVYOAGIZWA`,`MATOKEO_YA_VIPIMO`,`CONFIRMED_DIAGNOSIS`,`MATIBABU`,`MATOKEO_YA_MWISHO`,`TAREHE_YA_MATOKEO_YA_MWISHO`,`MALIPO` FROM(
 SELECT
 
-	UPPER(CONCAT(pn.given_name,' ',pn.family_name)) AS `JINA LA MGONJWA`,
-	GROUP_CONCAT(DISTINCT CASE WHEN p.gender='M' THEN 'Me'  ELSE 'Ke' END) AS `JINSIA YA MGONJWA`,
-    pi.identifier AS `NAMBA YA JALADA/KADI`,
+	UPPER(CONCAT(pn.given_name,' ',pn.family_name)) AS `JINA_LA_MGONJWA`,
+	GROUP_CONCAT(DISTINCT CASE WHEN p.gender='M' THEN 'Me'  ELSE 'Ke' END) AS `JINSIA_YA_MGONJWA`,
+    pi.identifier AS `NAMBA_YA_JALADA`,
 	DATE_FORMAT(FROM_DAYS(DATEDIFF(v.date_started, p.birthdate)), '%Y') + 0 AS UMRI,
-	CONCAT(pa.city_village,',',pa.state_province,' - ',pa.address1) AS `MAHALI ANAISHI`,
-	DATE_FORMAT(v.date_started, "%d/%m/%Y %h:%i %p") AS `TAREHE YA KULAZWA`,
-	GROUP_CONCAT(DISTINCT diagnosis_concept_name.name) AS `DIAGNOSIS KABLA YA KUTHIBITISHWA`,
-	GROUP_CONCAT(DISTINCT CASE WHEN ot.name='Test Order' THEN test_order_concept_name.name ELSE NULL END) AS `VIPIMO VILIVYOAGIZWA`,
-	GROUP_CONCAT(DISTINCT CASE WHEN test_result_concept_name.name IS NULL THEN ob.value_text ELSE test_result_concept_name.name END)AS `MATOKEO YA VIPIMO`,
-	GROUP_CONCAT(DISTINCT CASE WHEN ed.certainty='CONFIRMED' THEN diagnosis_concept_name.name ELSE NULL END) AS `CONFIRMED DIAGNOSIS`,
+	CONCAT(pa.city_village,',',pa.state_province,' - ',pa.address1) AS `MAHALI_ANAISHI`,
+	DATE_FORMAT(v.date_started, "%d/%m/%Y %h:%i %p") AS `TAREHE_YA_KULAZWA`,
+	GROUP_CONCAT(DISTINCT diagnosis_concept_name.name) AS `DIAGNOSIS_KABLA_YA_KUTHIBITISHWA`,
+	GROUP_CONCAT(DISTINCT CASE WHEN ot.name='Test Order' THEN test_order_concept_name.name ELSE NULL END) AS `VIPIMO_VILIVYOAGIZWA`,
+	GROUP_CONCAT(DISTINCT CASE WHEN test_result_concept_name.name IS NULL THEN ob.value_text ELSE test_result_concept_name.name END)AS `MATOKEO_YA_VIPIMO`,
+	GROUP_CONCAT(DISTINCT CASE WHEN ed.certainty='CONFIRMED' THEN diagnosis_concept_name.name ELSE NULL END) AS `CONFIRMED_DIAGNOSIS`,
 	GROUP_CONCAT(DISTINCT d.name) AS `MATIBABU`,
-	GROUP_CONCAT(DISTINCT result_encounter_type.name) AS `MATOKEO YA MWISHO`,
-	DATE_FORMAT(v.date_stopped,"%d/%m/%Y %h:%i %p") AS `TAREHE YA MATOKEO YA MWISHO`,
+	GROUP_CONCAT(DISTINCT result_encounter_type.name) AS `MATOKEO_YA_MWISHO`,
+	DATE_FORMAT(v.date_stopped,"%d/%m/%Y %h:%i %p") AS `TAREHE_YA_MATOKEO_YA_MWISHO`,
 	GROUP_CONCAT(DISTINCT CASE WHEN vat.name='PaymentCategory' THEN payment_concept_name.name ELSE NULL END)AS `MALIPO`
 	from visit v
 
@@ -63,5 +63,5 @@ INNER JOIN encounter_type visit_encounter_type ON visit_encounter.encounter_type
 LEFT JOIN visit_type vt ON vt.visit_type_id=v.visit_type_id
 
 WHERE (v.date_started BETWEEN :startDate AND :endDate)
-GROUP BY v.visit_id,`JINA LA MGONJWA`,`MAHALI ANAISHI`,`NAMBA YA JALADA/KADI`
+GROUP BY v.visit_id,`JINA_LA_MGONJWA`,`MAHALI_ANAISHI`,`NAMBA_YA_JALADA`
 ORDER BY v.date_started ASC) AS VISITDETAILS, (SELECT @row_number:=0) AS temp

@@ -12,9 +12,11 @@
     </mat-toolbar>
     <!-- patient list -->
 
+    <!-- To include deceased patient in billing, set includeDeadPatients= "true" -->
     <div class="ml-2 mr-2">
       <app-patient-list
         [itemsPerPage]="10"
+        [includeDeadPatients]="false"
         [isTabularList]="true"
         [filterCategory]="'billing'"
         [orderBy]="'ENCOUNTER'"

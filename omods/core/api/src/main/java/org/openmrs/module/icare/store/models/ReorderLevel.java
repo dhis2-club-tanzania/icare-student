@@ -3,6 +3,7 @@ package org.openmrs.module.icare.store.models;
 // Generated Oct 7, 2020 12:48:40 PM by Hibernate Tools 5.2.10.Final
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Location;
 import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.laboratory.models.TestAllocation;
@@ -46,7 +47,7 @@ class ReorderLevelId implements java.io.Serializable {
 
 @Entity
 @Table(name = "st_reorder_level")
-public class ReorderLevel implements java.io.Serializable {
+public class ReorderLevel extends BaseOpenmrsData implements java.io.Serializable {
 	
 	@EmbeddedId
 	@JsonIgnore
@@ -88,15 +89,21 @@ public class ReorderLevel implements java.io.Serializable {
 	public static ReorderLevel fromMap(Map<String, Object> map) {
 		ReorderLevel reorderLevel = new ReorderLevel();
 		
-		Item item = new Item();
-		item.setUuid(((Map) map.get("item")).get("uuid").toString());
-		reorderLevel.setItem(item);
+		if (map.get("item") != null) {
+			Item item = new Item();
+			item.setUuid(((Map) map.get("item")).get("uuid").toString());
+			reorderLevel.setItem(item);
+		}
 		
-		Location location = new Location();
-		location.setUuid(((Map) map.get("location")).get("uuid").toString());
-		reorderLevel.setLocation(location);
+		if (map.get("location") != null) {
+			Location location = new Location();
+			location.setUuid(((Map) map.get("location")).get("uuid").toString());
+			reorderLevel.setLocation(location);
+		}
 		
-		reorderLevel.setQuantity(Double.valueOf(map.get("quantity").toString()));
+		if (map.get("quantity") != null) {
+			reorderLevel.setQuantity(Double.valueOf(map.get("quantity").toString()));
+		}
 		
 		return reorderLevel;
 	}
@@ -104,19 +111,36 @@ public class ReorderLevel implements java.io.Serializable {
 	public Map<String, Object> toMap() {
 		Map<String, Object> reorderLevelObject = new HashMap<String, Object>();
 		
-		Map<String, Object> locationObject = new HashMap<String, Object>();
+		if (this.getLocation() != null) {
+			Map<String, Object> locationObject = new HashMap<String, Object>();
+			
+			locationObject.put("uuid", this.getLocation().getUuid());
+			locationObject.put("display", this.getLocation().getDisplayString());
+			
+			reorderLevelObject.put("location", locationObject);
+		}
 		
-		locationObject.put("uuid", this.getLocation().getUuid());
-		locationObject.put("display", this.getLocation().getDisplayString());
+		if (this.getItem() != null) {
+			reorderLevelObject.put("item", this.getItem().toMap());
+		}
 		
-		reorderLevelObject.put("location", locationObject);
-		
-		reorderLevelObject.put("item", this.getItem().toMap());
-		
-		reorderLevelObject.put("quantity", this.getQuantity());
-		
+		if (this.getQuantity() != null) {
+			reorderLevelObject.put("quantity", this.getQuantity());
+		}
+		if (this.getUuid() != null) {
+			reorderLevelObject.put("uuid", this.getUuid());
+		}
 		return reorderLevelObject;
 		
 	}
 	
+	@Override
+	public Integer getId() {
+		return null;
+	}
+	
+	@Override
+	public void setId(Integer integer) {
+		
+	}
 }

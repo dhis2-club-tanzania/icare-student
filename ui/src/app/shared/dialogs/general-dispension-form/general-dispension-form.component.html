@@ -1,4 +1,10 @@
-<div class="form" *ngIf="conceptFields$ | async as conceptFields">
+<div
+  class="form"
+  *ngIf="{
+    conceptFields: conceptFields$ | async,
+    keyedPreviousVisitDrugOrders: keyedPreviousVisitDrugOrders$ | async
+  } as params"
+>
   <div class="loading-overlay" *ngIf="savingOrder">
     <div class="text-center">
       <div>Saving order details...</div>
@@ -14,30 +20,20 @@
     <div>
       <app-form
         [fields]="[drugConceptField]"
-        (formUpdate)="onFormUpdate($event, 'drug')"
+        (formUpdate)="
+          onFormUpdate($event, 'drug', params?.keyedPreviousVisitDrugOrders)
+        "
       ></app-form>
-      <!-- <app-form
-        *ngIf="strengthFormField"
-        [fields]="[strengthFormField]"
-        (formUpdate)="onFormUpdate($event)"
-      ></app-form> -->
     </div>
-    <!-- <div *ngIf="conceptFields">
-      <app-concepts-form
-        [conceptFields]="conceptFields"
-        (formUpdate)="onFormUpdate($event)"
-      ></app-concepts-form>
-    </div> -->
-    <!-- <div *ngIf="conceptFields">
-    </div> -->
-    <div class="row" *ngIf="conceptFields">
+    <div class="row" *ngIf="params?.conceptFields">
       <div class="col-4">
         <app-concepts-form
-          [conceptFields]="[conceptFields[0]]"
+          [conceptFields]="[params?.conceptFields[0]]"
           [textfield]="true"
           (formUpdate)="onFormUpdate($event)"
         ></app-concepts-form>
-        <app-form *ngIf="!conceptFields"
+        <app-form
+          *ngIf="!params?.conceptFields"
           [fields]="[drugDoseField]"
           (formUpdate)="onFormUpdate($event)"
         ></app-form>
@@ -58,14 +54,15 @@
         ></app-unit-field>
       </div>
     </div>
-    <div class="row" *ngIf="conceptFields">
+    <div class="row" *ngIf="params?.conceptFields">
       <div class="col-5">
         <app-concepts-form
-          [conceptFields]="[conceptFields[1]]"
+          [conceptFields]="[params?.conceptFields[1]]"
           [textfield]="true"
           (formUpdate)="onFormUpdate($event)"
         ></app-concepts-form>
-        <app-form *ngIf="!conceptFields"
+        <app-form
+          *ngIf="!params?.conceptFields"
           [fields]="[drugDurationField]"
           (formUpdate)="onFormUpdate($event)"
         ></app-form>
@@ -85,13 +82,26 @@
         ></app-unit-field>
       </div>
     </div>
-    <div class="float-right">
+    <div
+      *ngIf="
+        selectedDrug &&
+        params?.keyedPreviousVisitDrugOrders &&
+        params?.keyedPreviousVisitDrugOrders[selectedDrug?.uuid]
+      "
+    >
+      <app-shared-drug-dosage-interpretation
+        [prescription]="
+          params?.keyedPreviousVisitDrugOrders[selectedDrug?.uuid]
+        "
+        [showWarningOnly]="true"
+      ></app-shared-drug-dosage-interpretation>
+    </div>
+    <div class="d-flex justify-content-end">
       <button
-        class="float-right"
-        (click)="saveOrder($event, conceptFields)"
+        (click)="saveOrder($event, params?.conceptFields)"
         mat-flat-button
         [color]="savingError ? 'warn' : 'primary'"
-        [disabled]="savingOrder"
+        [disabled]="savingOrder || !isFormValid"
       >
         <mat-icon *ngIf="savingError" class="mr-2">error</mat-icon>
         <mat-spinner
@@ -103,5 +113,6 @@
         <span>{{ savingOrder ? "Saving..." : "Save" }}</span>
       </button>
     </div>
+    <!-- {{ selectedDrug | json }} -->
   </div>
 </div>

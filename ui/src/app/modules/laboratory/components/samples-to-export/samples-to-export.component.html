@@ -1,0 +1,103 @@
+<div class="w-100" *ngIf="{ samples: samples$ | async } as params">
+  <div class="w-100 d-flex justify-content-end">
+    <mat-form-field appearance="fill" floatLabel="always">
+      <mat-label>Select date range</mat-label>
+      <mat-date-range-input [rangePicker]="visitDatePicker">
+        <input
+          matStartDate
+          placeholder="Start date"
+          autocomplete="off"
+          [(ngModel)]="startDate"
+          (dateInput)="onDateChange()"
+        />
+        <input
+          matEndDate
+          placeholder="End date"
+          autocomplete="off"
+          [(ngModel)]="endDate"
+          (dateInput)="onDateChange(true)"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="visitDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-date-range-picker #visitDatePicker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.samples && startDate && endDate"
+  ></mat-progress-bar>
+  <div
+    class="row sample-filters d-flex justify-content-left"
+    *ngIf="startDate && endDate"
+  >
+    <div class="col-md-12 col-sx-12 col-sm-12 d-flex justify-content-left">
+      <mat-form-field class="w-25">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input matInput (keyup)="onSearchSamples($event)" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-50 ml-2">
+        <mat-label>Select Section</mat-label>
+        <mat-select (selectionChange)="onSelectDepartment($event)">
+          <mat-option (click)="setDepartment($event, '')">All</mat-option>
+          <mat-option *ngFor="let dept of labSamplesDepartments" [value]="dept">
+            {{ dept?.display }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <app-form
+        style="margin-top: -4px"
+        class="ml-1"
+        [fields]="[searchingSpecimenSourceField]"
+        (formUpdate)="onSearchBySpecimen($event)"
+      ></app-form>
+      <app-form
+        style="margin-top: -4px"
+        class="ml-1"
+        [fields]="[searchingTestField]"
+        (formUpdate)="onSearchByTest($event)"
+      ></app-form>
+      <app-form
+        style="margin-top: -4px"
+        class="ml-1"
+        [fields]="[searchingEquipmentsField]"
+        (formUpdate)="onSearchByEquipment($event)"
+      ></app-form>
+    </div>
+  </div>
+  <div class="w-100" style="overflow: auto" *ngIf="startDate && endDate">
+    <table
+      class="table table-bordered"
+      *ngIf="params?.samples"
+      id="samples-to-export"
+    >
+      <thead>
+        <tr>
+          <th
+            [attr.colspan]="rowOneItem?.colspan"
+            class="text-center"
+            *ngFor="let rowOneItem of formulatedHeaders?.rowOneItems"
+          >
+            {{ rowOneItem?.name }}
+          </th>
+        </tr>
+        <tr>
+          <th *ngFor="let header of formulatedHeaders?.rowTwoItems">
+            {{ header?.exportKey }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sample of params?.samples?.results">
+          <td *ngFor="let header of formulatedHeaders?.rowTwoItems">
+            {{ sample[header?.systemKey] }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

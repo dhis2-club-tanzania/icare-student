@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { uniqBy, orderBy } from "lodash";
 import { Observable, of } from "rxjs";
 import {
@@ -10,13 +18,19 @@ import {
 import { LocationService } from "src/app/core/services";
 import { ReferenceTermsService } from "src/app/core/services/reference-terms.service";
 import { ConceptsService } from "../../resources/concepts/services/concepts.service";
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from "@angular/cdk/drag-drop";
+import { OpenMRSFormsService } from "../../resources/forms/services/openmrs-forms.services";
 
 @Component({
   selector: "app-multiple-items-selection",
   templateUrl: "./multiple-items-selection.component.html",
   styleUrls: ["./multiple-items-selection.component.scss"],
 })
-export class MultipleItemsSelectionComponent implements OnInit {
+export class MultipleItemsSelectionComponent implements OnInit, OnChanges {
   @Input() items: any[];
   @Input() selectedItems: any[];
   @Input() itemType: string;
@@ -25,6 +39,7 @@ export class MultipleItemsSelectionComponent implements OnInit {
   @Input() source: string;
   @Input() conceptClass: string;
   @Input() multipleSelectionCompHeight: string;
+  @Input() searchTermOfConceptSetToExcludeFromTestOrders: string;
   currentSelectedItems: any[] = [];
   @Output() getSelectedItems: EventEmitter<any[]> = new EventEmitter<any[]>();
   items$: Observable<any[]>;
@@ -33,12 +48,13 @@ export class MultipleItemsSelectionComponent implements OnInit {
   constructor(
     private conceptService: ConceptsService,
     private conceptReferenceService: ReferenceTermsService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private formsService: OpenMRSFormsService
   ) {}
 
   ngOnInit(): void {
-    this.currentSelectedItems =
-      this.selectedItems?.filter((item) => !item?.retired) || [];
+    // console.log(this.source);
+    this.currentSelectedItems = this.selectedItems || [];
     if (
       this.itemType &&
       this.itemType === "concept" &&
@@ -61,14 +77,19 @@ export class MultipleItemsSelectionComponent implements OnInit {
                 };
               })
             )
-          : this.conceptService.searchConcept({
-              q: this.standardSearchTerm,
-              conceptClass: this.conceptClass,
-              limit: this.pageSize,
-              startIndex: (this.page - 1) * this.pageSize,
-              searchTerm: this.standardSearchTerm,
-            });
+          : this.conceptService
+              .searchConcept({
+                q: this.standardSearchTerm,
+                conceptClass: this.conceptClass,
+                pageSize: this.pageSize,
+                page: this.page,
+                searchTerm: this.standardSearchTerm,
+                searchTermOfConceptSetToExclude:
+                  this.searchTermOfConceptSetToExcludeFromTestOrders,
+              })
+              .pipe(map((response: any) => response?.results));
     } else if (this.itemType === "conceptReferenceTerm") {
+      // console.log(":NDANI");
       this.items$ = this.conceptReferenceService
         .getConceptReferenceTermsByParameters({
           q: "",
@@ -78,10 +99,36 @@ export class MultipleItemsSelectionComponent implements OnInit {
           searchTerm: this.standardSearchTerm,
         })
         .pipe(
-          map((response) => {
-            return response?.filter((item) => !item?.retired) || [];
+          map((results) => {
+            return results?.filter((item) => !item?.retired) || [];
           })
         );
+    }
+    if (this.itemType && this.itemType === "form") {
+      this.items$ =
+        this.items?.length > 0
+          ? of(
+              this.items?.map((item) => {
+                return {
+                  ...item,
+                  display:
+                    item?.display?.indexOf(":") > -1
+                      ? item?.display?.split(":")[1]
+                      : item?.display,
+                  name:
+                    item?.display?.indexOf(":") > -1
+                      ? item?.display?.split(":")[1]
+                      : item?.display,
+                };
+              })
+            )
+          : this.formsService
+              .getAllForms([
+                `startIndex=0`,
+                `limit=${this.pageSize}`,
+                `v=custom:(uuid,display,name)`,
+              ])
+              .pipe(map((response: any) => response?.results));
     } else {
       this.items$ = of(
         this.items.filter(
@@ -96,10 +143,14 @@ export class MultipleItemsSelectionComponent implements OnInit {
     }
   }
 
+  ngOnChanges(): void {
+    this.currentSelectedItems = this.selectedItems || [];
+  }
+
   getSelectedItem(event: Event, item: any, items: any[]): void {
     event.stopPropagation();
-    this.currentSelectedItems = uniqBy([...this.selectedItems, item]);
-    this.items = this.items.filter(
+    this.currentSelectedItems = uniqBy([...(this.selectedItems || []), item]);
+    this.items = (this.items || [])?.filter(
       (metadataItem) =>
         (
           this.currentSelectedItems?.filter(
@@ -143,13 +194,15 @@ export class MultipleItemsSelectionComponent implements OnInit {
         debounceTime(1000),
         distinctUntilChanged(),
         switchMap((term) =>
-          this.conceptService.searchConcept({
-            q: term,
-            conceptClass: this.conceptClass,
-            limit: this.pageSize,
-            startIndex: (this.page - 1) * this.pageSize,
-            searchTerm: this.standardSearchTerm,
-          })
+          this.conceptService
+            .searchConcept({
+              q: term,
+              conceptClass: this.conceptClass,
+              pageSize: this.pageSize,
+              page: this.page,
+              searchTerm: this.standardSearchTerm,
+            })
+            .pipe(map((response: any) => response?.results))
         )
       );
     } else if (itemType === "conceptReferenceTerm") {
@@ -176,6 +229,53 @@ export class MultipleItemsSelectionComponent implements OnInit {
             startIndex: (this.page - 1) * this.pageSize,
           })
         )
+      );
+    } else if (itemType === "form") {
+      this.items$ = of(searchingText).pipe(
+        debounceTime(1000),
+        distinctUntilChanged(),
+        switchMap((term) =>
+          this.formsService
+            .getAllForms([
+              `q=${term}`,
+              `startIndex=0`,
+              `limit=${this.pageSize}`,
+              `v=custom:(uuid,display,name)`,
+            ])
+            .pipe(map((response: any) => response?.results))
+        )
+      );
+    } else {
+    }
+  }
+
+  selectAll(event: Event, items: any[]): void {
+    event.stopPropagation();
+    this.currentSelectedItems = uniqBy([...this.selectedItems, ...items]);
+    this.items = [];
+    this.getSelectedItems.emit(this.currentSelectedItems);
+  }
+
+  UnSelectAll(event: Event, items: any[]): void {
+    event.stopPropagation();
+    this.currentSelectedItems = [];
+    this.items = [...this.items, ...items];
+    this.getSelectedItems.emit(this.currentSelectedItems);
+  }
+
+  drop(event: CdkDragDrop<any[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
       );
     }
   }

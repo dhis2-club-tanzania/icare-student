@@ -9,9 +9,16 @@
   <div class="text-center p-3">
     {{
       details?.occupied
-        ? "Occupied by " + details?.visit?.patient?.display
+        ? "Names: " + details?.visit?.patient?.person?.display
         : "Not occupied"
     }}
+    <p class="text-center">
+      Gender: {{ details?.visit?.patient?.person?.gender }}
+    </p>
+    <p class="text-center">
+      Age: {{ details?.visit?.patient?.person?.age }} yrs
+    </p>
+    <p class="text-center">File No: {{ patientPrefferedIdentifier }}</p>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="m-0 p-3">

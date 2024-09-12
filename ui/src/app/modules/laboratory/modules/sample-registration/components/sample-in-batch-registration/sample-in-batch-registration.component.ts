@@ -24,9 +24,9 @@ import { DiagnosisService } from "src/app/shared/resources/diagnosis/services";
 import { ConceptGetFull } from "src/app/shared/resources/openmrs";
 import { VisitsService } from "src/app/shared/resources/visits/services";
 import { SamplesService } from "src/app/shared/services/samples.service";
-import { BarCodeModalComponent } from "../../../sample-acceptance-and-results/components/bar-code-modal/bar-code-modal.component";
+import { BarCodeModalComponent } from "../../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component";
 
-import { uniqBy, keyBy, omit } from "lodash";
+import { uniqBy, keyBy, omit, groupBy } from "lodash";
 import { OrdersService } from "src/app/shared/resources/order/services/orders.service";
 import { SampleRegistrationFinalizationComponent } from "../sample-registration-finalization/sample-registration-finalization.component";
 import { ConceptsService } from "src/app/shared/resources/concepts/services/concepts.service";
@@ -68,6 +68,9 @@ export class SampleInBatchRegistrationComponent
   @Input() barcodeSettings: any;
   @Input() LISConfigurations: any;
   @Input() specimenSources: ConceptGetFull[];
+
+  @Input() personEmailAttributeTypeUuid: string;
+  @Input() personPhoneAttributeTypeUuid: string;
 
   departmentField: any = {};
   specimenDetailsFields: any;
@@ -191,12 +194,10 @@ export class SampleInBatchRegistrationComponent
     this.specimenSourcesKeyedByTestOrders = keySampleTypesByTestOrder(
       this.specimenSources
     );
-    if (
-      localStorage.getItem("batch") &&
-      localStorage.getItem("batchSample")
-    ) {
+    if (localStorage.getItem("batch") && localStorage.getItem("batchSample")) {
       this.dialog
         .open(SharedConfirmationComponent, {
+          minWidth: "40%",
           data: {
             modalTitle: `Last Batch Instance (${localStorage.getItem(
               "batchSampleCode"
@@ -853,12 +854,21 @@ export class SampleInBatchRegistrationComponent
             .getConceptSetsByConceptUuids(orderConceptUuids)
             .subscribe((conceptSetsResponse: any) => {
               if (conceptSetsResponse && !conceptSetsResponse?.error) {
-                // console.log("conceptSetsResponse", conceptSetsResponse);
-                this.groupedTestOrdersByDepartments =
-                  formulateSamplesByDepartments(
-                    conceptSetsResponse,
-                    this.testOrders
-                  );
+                const groupedTestorders = groupBy(
+                  conceptSetsResponse,
+                  "testOrder"
+                );
+                this.groupedTestOrdersByDepartments = [];
+                Object.keys(groupedTestorders).forEach((key: string) => {
+                  let metadata = [];
+                  metadata = groupedTestorders[key];
+                  if (metadata.length > 0) {
+                    this.groupedTestOrdersByDepartments = [
+                      ...this.groupedTestOrdersByDepartments,
+                      metadata,
+                    ];
+                  }
+                });
                 zip(
                   this.registrationService.getPatientIdentifierTypes(),
                   this.locationService.getFacilityCode(),
@@ -915,8 +925,13 @@ export class SampleInBatchRegistrationComponent
                               attributes: [
                                 {
                                   attributeType:
-                                    "aeb3a16c-f5b6-4848-aa51-d7e3146886d6", //TODO: Find a way to softcode this
+                                    this.personPhoneAttributeTypeUuid,
                                   value: this.personDetailsData?.mobileNumber,
+                                },
+                                {
+                                  attributeType:
+                                    this.personEmailAttributeTypeUuid,
+                                  value: this.personDetailsData?.email,
                                 },
                               ],
                             },
@@ -1054,7 +1069,9 @@ export class SampleInBatchRegistrationComponent
                                       {
                                         attributeType:
                                           key.split("attribute-")[1],
-                                        value: this.formData[key]?.value,
+                                        value: this.formData[key]?.value
+                                          ? this.formData[key]?.value
+                                          : "-",
                                       },
                                     ];
                                   });
@@ -1109,26 +1126,24 @@ export class SampleInBatchRegistrationComponent
                                       zip(
                                         ...this.groupedTestOrdersByDepartments.map(
                                           (groupedTestOrders) => {
-                                            const orders =
-                                              groupedTestOrders.map(
-                                                (testOrder) => {
-                                                  // TODO: Remove hard coded order type
-                                                  return {
-                                                    concept: testOrder?.value,
-                                                    orderType:
-                                                      "52a447d3-a64a-11e3-9aeb-50e549534c5e", // TODO: Find a way to soft code this
-                                                    action: "NEW",
-                                                    orderer:
-                                                      this.provider?.uuid,
-                                                    patient:
-                                                      patientResponse?.uuid,
-                                                    careSetting: "OUTPATIENT",
-                                                    urgency: "ROUTINE", // TODO: Change to reflect users input
-                                                    instructions: "",
-                                                    type: "testorder",
-                                                  };
-                                                }
-                                              );
+                                            const orders = uniqBy(
+                                              groupedTestOrders,
+                                              "testOrder"
+                                            ).map((testOrder) => {
+                                              // TODO: Remove hard coded order type
+                                              return {
+                                                concept: testOrder?.testOrder,
+                                                orderType:
+                                                  "52a447d3-a64a-11e3-9aeb-50e549534c5e", // TODO: Find a way to soft code this
+                                                action: "NEW",
+                                                orderer: this.provider?.uuid,
+                                                patient: patientResponse?.uuid,
+                                                careSetting: "OUTPATIENT",
+                                                urgency: "ROUTINE", // TODO: Change to reflect users input
+                                                instructions: "",
+                                                type: "testorder",
+                                              };
+                                            });
 
                                             let obs = [];
                                             if (this.formData["notes"]?.value) {
@@ -1225,11 +1240,19 @@ export class SampleInBatchRegistrationComponent
                                                                       label:
                                                                         sampleLabel,
                                                                       concept: {
-                                                                        uuid: this
-                                                                          .groupedTestOrdersByDepartments[
+                                                                        uuid: (this.groupedTestOrdersByDepartments[
                                                                           index
-                                                                        ][0]
-                                                                          ?.departmentUuid,
+                                                                        ]?.filter(
+                                                                          (
+                                                                            testOrderDepartment
+                                                                          ) =>
+                                                                            testOrderDepartment?.systemName?.indexOf(
+                                                                              "LAB_DEPARTMENT"
+                                                                            ) >
+                                                                            -1
+                                                                        ) ||
+                                                                          [])[0]
+                                                                          ?.uuid,
                                                                       },
                                                                       specimenSource:
                                                                         {
@@ -1494,9 +1517,9 @@ export class SampleInBatchRegistrationComponent
                                                                                           .broughtOnTime
                                                                                       ),
                                                                                 status:
-                                                                                  "BROUGHT_ON",
+                                                                                  "DELIVERED_ON",
                                                                                 category:
-                                                                                  "BROUGHT_ON",
+                                                                                  "DELIVERED_ON",
                                                                               };
                                                                             statuses =
                                                                               [
@@ -2056,11 +2079,19 @@ export class SampleInBatchRegistrationComponent
                                                                                 sampleLabel,
                                                                               concept:
                                                                                 {
-                                                                                  uuid: this
-                                                                                    .groupedTestOrdersByDepartments[
+                                                                                  uuid: (this.groupedTestOrdersByDepartments[
                                                                                     index
-                                                                                  ][0]
-                                                                                    ?.departmentUuid,
+                                                                                  ]?.filter(
+                                                                                    (
+                                                                                      testOrderDepartment
+                                                                                    ) =>
+                                                                                      testOrderDepartment?.systemName?.indexOf(
+                                                                                        "LAB_DEPARTMENT"
+                                                                                      ) >
+                                                                                      -1
+                                                                                  ) ||
+                                                                                    [])[0]
+                                                                                    ?.uuid,
                                                                                 },
                                                                               location:
                                                                                 {
@@ -2314,9 +2345,9 @@ export class SampleInBatchRegistrationComponent
                                                                                                   .broughtOnTime
                                                                                               ),
                                                                                         status:
-                                                                                          "BROUGHT_ON",
+                                                                                          "DELIVERED_ON",
                                                                                         category:
-                                                                                          "BROUGHT_ON",
+                                                                                          "DELIVERED_ON",
                                                                                       };
                                                                                     statuses =
                                                                                       [
@@ -3165,8 +3196,7 @@ export class SampleInBatchRegistrationComponent
           lastName: personDetails?.preferredName?.familyName,
           mobileNumber: personDetails?.attributes?.filter((attribute) => {
             if (
-              attribute?.attributeType ===
-              "aeb3a16c-f5b6-4848-aa51-d7e3146886d6"
+              attribute?.attributeType === this.personPhoneAttributeTypeUuid
             ) {
               return attribute;
             }

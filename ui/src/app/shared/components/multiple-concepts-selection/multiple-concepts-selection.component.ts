@@ -53,6 +53,6 @@ export class MultipleConceptsSelectionComponent implements OnInit {
   }
 
   searchConcept(event): void {
-    console.log(event);
+    // console.log(event);
   }
 }

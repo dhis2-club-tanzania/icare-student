@@ -20,7 +20,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "item")
-public class Item extends BaseOpenmrsData {
+public class Item extends BaseOpenmrsData implements java.io.Serializable, JSONConverter {
 	
 	@Id
 	@GeneratedValue
@@ -112,15 +112,15 @@ public class Item extends BaseOpenmrsData {
 			itemMap.put("concept", concept);
 		}
 		if (this.getDrug() != null) {
+			
 			HashMap<String, Object> drug = new HashMap<String, Object>();
 			drug.put("uuid", this.getDrug().getUuid());
 			drug.put("display", this.getDrug().getDisplayName());
 			
 			Map<String, Object> conceptObject = new HashMap<String, Object>();
-			if (this.getDrug() != null) {
-				conceptObject.put("uuid", this.getDrug().getConcept().getUuid());
-				conceptObject.put("display", this.getDrug().getConcept().getDisplayString());
-			}
+			conceptObject.put("uuid", this.getDrug().getConcept().getUuid());
+			conceptObject.put("display", this.getDrug().getConcept().getDisplayString());
+			
 			drug.put("concept", conceptObject);
 			itemMap.put("drug", drug);
 		}
@@ -136,8 +136,9 @@ public class Item extends BaseOpenmrsData {
 		if (this.getCreator() != null) {
 			creatorObject.put("uuid", this.getCreator().getUuid());
 			creatorObject.put("display", this.getCreator().getDisplayString());
+			itemMap.put("creator", creatorObject);
 		}
-		itemMap.put("creator", creatorObject);
+		
 		Date date = this.getDateCreated();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		itemMap.put("created", dateFormat.format(date));

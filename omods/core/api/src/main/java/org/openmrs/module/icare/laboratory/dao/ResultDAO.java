@@ -42,4 +42,23 @@ public class ResultDAO extends BaseDAO<Result> {
 		}
 	}
 	
+	public List<Concept> getInstrumentsByCode(String code, String conceptClassUuid) {
+		
+		DbSession session = this.getSession();
+		
+		String queryStr = "SELECT DISTINCT c FROM Concept c INNER JOIN c.names cn INNER JOIN c.conceptClass cc"
+		        + " WHERE cc.uuid =:conceptClassUuid AND c IN (" + " SELECT DISTINCT cms.concept FROM ConceptMap cms "
+		        + " WHERE cms.conceptReferenceTerm IN ("
+		        + " SELECT DISTINCT crt FROM ConceptReferenceTerm crt WHERE crt.code =:code" + ")" + ")";
+		Query query = session.createQuery(queryStr);
+		query.setParameter("code", code);
+		query.setParameter("conceptClassUuid", conceptClassUuid);
+		return query.list();
+	}
+	
+	public Result update(Result result) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'update'");
+	}
+	
 }

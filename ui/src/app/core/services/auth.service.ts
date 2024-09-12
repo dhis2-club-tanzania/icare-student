@@ -115,7 +115,7 @@ export class AuthService {
   logout(credetialsToken): Observable<any> {
     const headers = {
       httpHeaders: {
-        Authorization: "Basic " + credetialsToken,
+        // Authorization: "Basic " + credetialsToken,
       },
     };
     return this.httpClient.delete("session", headers).pipe(

@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { Boolean } from "src/app/shared/modules/form/models/boolean.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import { TextArea } from "src/app/shared/modules/form/models/text-area.model";
@@ -24,7 +25,8 @@ export class ManageSystemSettingComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<ManageSystemSettingComponent>,
     @Inject(MAT_DIALOG_DATA) data,
-    private systemSettingsService: SystemSettingsService
+    private systemSettingsService: SystemSettingsService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {
     this.dialogData = data;
   }
@@ -78,8 +80,12 @@ export class ManageSystemSettingComponent implements OnInit {
           : new Textbox({
               id: "value",
               key: "value",
-              required: true,
-              value: this.dialogData?.value ? this.dialogData?.value : null,
+              required: false,
+              value: this.dialogData?.value
+                ? typeof this.dialogData?.value === "object"
+                  ? JSON.stringify(this.dialogData?.value)
+                  : this.dialogData?.value
+                : null,
               placeholder: "Value",
               label: "Value",
             }),
@@ -131,8 +137,14 @@ export class ManageSystemSettingComponent implements OnInit {
           this.savingData = false;
           setTimeout(() => {
             this.dialogRef.close(true);
+            this.trackActionForAnalytics('System Settings: Save');
           }, 2000);
         }
       });
+  }
+
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Pharmacy',eventname,'Pharmacy')
   }
 }

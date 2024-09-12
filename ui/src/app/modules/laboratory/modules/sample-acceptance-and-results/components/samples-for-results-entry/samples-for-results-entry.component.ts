@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatRadioChange } from "@angular/material/radio";
 import { Store } from "@ngrx/store";
@@ -7,6 +7,9 @@ import { SamplesService } from "src/app/shared/services/samples.service";
 import { AppState } from "src/app/store/reducers";
 import { getProviderDetails } from "src/app/store/selectors/current-user.selectors";
 import { SharedResultsEntryAndViewModalComponent } from "../shared-results-entry-and-view-modal/shared-results-entry-and-view-modal.component";
+import { map } from "rxjs/operators";
+import { groupBy } from "lodash";
+import { LabSample } from "src/app/modules/laboratory/resources/models";
 
 @Component({
   selector: "app-samples-for-results-entry",
@@ -42,6 +45,11 @@ export class SamplesForResultsEntryComponent implements OnInit {
   samplesToViewMoreDetails: any = {};
   saving: boolean = false;
   selectedResultEntryCategory: string = "Normal";
+  excludedSampleCategories: string[] = ["HAS_RESULTS"];
+  tabType: string = "result-entry";
+
+  dataForPrinting: any;
+  @Output() dataToPrint: EventEmitter<any> = new EventEmitter<any>();
   constructor(
     private store: Store<AppState>,
     private sampleService: SamplesService,
@@ -63,6 +71,8 @@ export class SamplesForResultsEntryComponent implements OnInit {
         "ACCEPTED",
         "YES",
         this.excludeAllocations,
+        this.tabType,
+        this.excludedSampleCategories,
         null,
         {
           departments: this.labSamplesDepartments,
@@ -87,6 +97,7 @@ export class SamplesForResultsEntryComponent implements OnInit {
           actionType,
         },
         width: "100%",
+        maxHeight: "90vh",
         disableClose: false,
         panelClass: "custom-dialog-container",
       })
@@ -99,5 +110,12 @@ export class SamplesForResultsEntryComponent implements OnInit {
           }, 50);
         }
       });
+  }
+
+  onGetSelectedSampleDetails(sample: any, providerDetails: any): void {
+    this.dataToPrint.emit({
+      ...sample,
+      providerDetails,
+    });
   }
 }

@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
-import { from, of } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { select, Store } from "@ngrx/store";
+import { from, of } from "rxjs";
 import {
   catchError,
   concatMap,
@@ -9,7 +9,7 @@ import {
   sample,
   switchMap,
   withLatestFrom,
-} from 'rxjs/operators';
+} from "rxjs/operators";
 import {
   loadActiveVisitsForSampleManagement,
   loadingActiveVisitsForSamplesFails,
@@ -17,12 +17,12 @@ import {
   updateSample,
   upsertCollectedSamples,
   upsertSample,
-} from '../actions';
+} from "../actions";
 
-import * as _ from 'lodash';
-import { VisitsService } from 'src/app/shared/services/visits.service';
-import { AppState } from '../reducers';
-import { groupAllActiveVisitsLabOrdersBySampleTypes } from 'src/app/shared/helpers/patient.helper';
+import * as _ from "lodash";
+import { VisitsService } from "src/app/shared/services/visits.service";
+import { AppState } from "../reducers";
+import { groupAllActiveVisitsLabOrdersBySampleTypes } from "src/app/shared/helpers/patient.helper";
 
 @Injectable()
 export class SamplesEffects {
@@ -38,8 +38,6 @@ export class SamplesEffects {
       switchMap((action) => {
         return this.visitsService.getEmppty().pipe(
           map((response) => {
-            // console.log('VJSJSJS', action?.visits);
-            // console.log('sampleTypes', action?.sampleTypes);
             const collectedSamples = groupAllActiveVisitsLabOrdersBySampleTypes(
               action.visits,
               action.sampleTypes,
@@ -76,7 +74,7 @@ export class SamplesEffects {
                 formattedOrders = [...formattedOrders, order];
               }
             });
-            formattedOrders = _.orderBy(formattedOrders, ['display'], ['asc']);
+            formattedOrders = _.orderBy(formattedOrders, ["display"], ["asc"]);
             const sample = {
               ...action.sample,
               formattedOrders,

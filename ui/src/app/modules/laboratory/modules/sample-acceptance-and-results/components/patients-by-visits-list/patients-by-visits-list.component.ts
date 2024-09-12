@@ -29,7 +29,7 @@ import {
   getSampleTypesLoadedState,
   getVisitsDetailsLoadedState,
 } from 'src/app/store/selectors';
-import { BarCodeModalComponent } from '../bar-code-modal/bar-code-modal.component';
+import { BarCodeModalComponent } from '../../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component';
 
 @Component({
   selector: 'app-patients-by-visits-list',

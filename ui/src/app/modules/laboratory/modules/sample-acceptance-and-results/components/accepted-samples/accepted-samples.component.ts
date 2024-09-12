@@ -34,6 +34,9 @@ export class AcceptedSamplesComponent implements OnInit {
 
   samplesToViewMoreDetails: any = {};
   saving: boolean = false;
+  excludedSampleCategories : string[] = ['HAS_RESULTS', 'REJECTED'];
+  tabType : string = "accepted-samples";
+
   constructor(
     private store: Store<AppState>,
     private sampleService: SamplesService
@@ -50,6 +53,8 @@ export class AcceptedSamplesComponent implements OnInit {
       "ACCEPTED",
       "YES",
       this.excludeAllocations,
+      this.tabType,
+      this.excludedSampleCategories,
       null,
       {
         departments: this.labSamplesDepartments,

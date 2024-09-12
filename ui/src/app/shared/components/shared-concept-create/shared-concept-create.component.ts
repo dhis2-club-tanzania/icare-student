@@ -15,6 +15,7 @@ import {
 
 import { omit, uniqBy } from "lodash";
 import { Field } from "../../modules/form/models/field.model";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 
 @Component({
   selector: "app-shared-concept-create",
@@ -37,6 +38,8 @@ export class SharedConceptCreateComponent implements OnInit {
   @Input() conceptSources: any[];
   @Input() multipleSelectionCompHeight: string;
   @Input() conceptData: any;
+  @Input() showCodesSection: boolean;
+  @Input() isItemStockable: boolean;
   basicConceptFields: any[];
   dataTypeField: any;
   unitsField: any;
@@ -73,9 +76,11 @@ export class SharedConceptCreateComponent implements OnInit {
   conceptBeingEdited: ConceptGetFull;
 
   errors: any[] = [];
+  currentMappings: any[] = [];
   constructor(
     private conceptService: ConceptsService,
-    private billableItemService: BillableItemsService
+    private billableItemService: BillableItemsService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   ngOnInit(): void {
@@ -140,14 +145,27 @@ export class SharedConceptCreateComponent implements OnInit {
   }
 
   createCodesMappingSourceField(data?: any): void {
+    const conceptSourceUuid =
+      data && data?.mappings?.length > 0
+        ? data?.mappings[0]?.conceptReferenceTerm?.conceptSource?.uuid
+        : null;
+
+    // console.log("conceptSourceUuid", conceptSourceUuid);
+    // console.log(data?.mappings);
+
+    this.currentMappings =
+      data && data?.mappings?.length > 0
+        ? data?.mappings?.filter(
+            (mapping) =>
+              mapping?.conceptReferenceTerm?.conceptSource?.uuid ===
+              conceptSourceUuid
+          ) || []
+        : [];
     this.codesMappingsSourceField = new Dropdown({
       id: "source",
       key: "source",
       label: "Mapping Reference",
-      value:
-        data && data?.length > 0
-          ? data[0]?.conceptReferenceTerm?.conceptSource?.uuid
-          : null,
+      value: conceptSourceUuid,
       options: this.conceptSources.map((source) => {
         return {
           key: source?.uuid,
@@ -258,6 +276,7 @@ export class SharedConceptCreateComponent implements OnInit {
       .subscribe((response) => {
         if (response) {
           this.createBasicConceptFields(response);
+          this.createCodesMappingSourceField(response);
           this.editingSet = true;
           this.readyToCollectCodes = false;
           this.selectedCodingItems =
@@ -425,6 +444,7 @@ export class SharedConceptCreateComponent implements OnInit {
                 const billableItem = {
                   concept: { uuid: response?.uuid },
                   unit: "default",
+                  stockable: this.isItemStockable,
                 };
                 this.billableItemService
                   .createBillableItem(billableItem)
@@ -513,6 +533,7 @@ export class SharedConceptCreateComponent implements OnInit {
                       this.alertType = "success";
                       this.savingMessage =
                         "Successfully created " + conceptName;
+                      this.trackActionForAnalytics(`Non Drugs: Save`);
 
                       setTimeout(() => {
                         this.savingMessage = null;
@@ -534,5 +555,14 @@ export class SharedConceptCreateComponent implements OnInit {
           });
         }
       });
+  }
+
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+    this.googleAnalyticsService.sendAnalytics(
+      "Pharmacy",
+      eventname,
+      "Pharmacy"
+    );
   }
 }

@@ -6,6 +6,7 @@ import { VisitStatusConfirmationModelComponent } from "./visit-status-confirmati
 import { VisitsHistoryForPatientComponent } from "./visits-history-for-patient/visits-history-for-patient.component";
 import { DynamicRegFormComponent } from "./dynamic-reg-form/dynamic-reg-form.component";
 import { RegistrationSummaryCardsComponent } from "./registration-summary-cards/registration-summary-cards/registration-summary-cards.component";
+import { ProgramSelectionComponent } from "./program-selection/program-selection.component";
 
 export const regComponents: any[] = [
   StartVisitModelComponent,
@@ -16,6 +17,7 @@ export const regComponents: any[] = [
   UpdateDoctorsRoomComponent,
   DynamicRegFormComponent,
   RegistrationSummaryCardsComponent,
+  ProgramSelectionComponent,
 ];
 export const entryRegComponents: any[] = [
   StartVisitModelComponent,

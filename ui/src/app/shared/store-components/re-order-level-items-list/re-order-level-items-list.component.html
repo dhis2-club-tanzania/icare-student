@@ -1,0 +1,103 @@
+<div *ngIf="{ reOrderLevelsList: reOrderLevelsList$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.reOrderLevelsList"
+  ></mat-progress-bar>
+  <div
+    style="max-height: 50vh; overflow: auto"
+    *ngIf="params?.reOrderLevelsList"
+  >
+    <table class="table mt-2">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Item</th>
+          <th>Store / Dispensing Unit</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="params?.reOrderLevelsList?.length > 0">
+          <tr
+            *ngFor="
+              let reOrderLevel of params?.reOrderLevelsList;
+              let count = index
+            "
+          >
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ reOrderLevel?.item?.display }}
+            </td>
+            <td>
+              {{ reOrderLevel?.location?.display }}
+            </td>
+            <td>
+              {{ reOrderLevel?.quantity }}
+            </td>
+            <td>
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onUpdate($event, reOrderLevel)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Update</span>
+                </button>
+                <button mat-menu-item (click)="onDelete($event, reOrderLevel)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Remove</span>
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="params?.reOrderLevelsList?.length === 0">
+          <tr>
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">
+                No Re-Order level has been set
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end mt-2">
+    <button
+      (click)="onAddNew($event)"
+      tabindex="0"
+      type="button"
+      title="Add new"
+      class="add-new-general-button"
+    >
+      <div>
+        <div
+          style="
+            transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+            top: 0px;
+          "
+        >
+          <svg
+            class=""
+            viewBox="0 0 24 24"
+            style="
+              display: inline-block;
+              color: rgb(255, 255, 255);
+              fill: rgb(255, 255, 255);
+              height: 56px;
+              width: 24px;
+              user-select: none;
+              transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+              line-height: 56px;
+            "
+          >
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+          </svg>
+        </div>
+      </div>
+    </button>
+  </div>
+</div>

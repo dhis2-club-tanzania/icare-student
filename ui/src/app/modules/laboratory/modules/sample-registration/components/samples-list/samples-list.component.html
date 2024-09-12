@@ -9,7 +9,33 @@
         placeholder="Search"
         [(ngModel)]="searchText"
         (ngModelChange)="this.subject.next($event)"
+      />
+    </mat-form-field>
+  </div>
+  <div class="col-md-8 col-sx-12 col-sm-12 d-flex justify-content-end">
+    <mat-form-field appearance="fill" floatLabel="always">
+      <mat-label>Select a date range</mat-label>
+      <mat-date-range-input [rangePicker]="visitDatePicker">
+        <input
+          matStartDate
+          placeholder="Start date"
+          autocomplete="off"
+          [(ngModel)]="startDate"
+          (dateInput)="onDateChange()"
         />
+        <input
+          matEndDate
+          placeholder="End date"
+          autocomplete="off"
+          [(ngModel)]="endDate"
+          (dateInput)="onDateChange(true)"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="visitDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-date-range-picker #visitDatePicker></mat-date-range-picker>
     </mat-form-field>
   </div>
 </div>
@@ -18,14 +44,14 @@
   <table class="table mt-2">
     <thead>
       <tr>
-        <th>SN</th>
+        <th style="width: 40px">SN</th>
         <th>Label/Lab No.</th>
         <th>Lab</th>
         <th>Patient Name</th>
         <th>File No</th>
         <th>Registered By</th>
         <th>Date Registered</th>
-        <th></th>
+        <th style="width: 40px">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -39,42 +65,68 @@
       <ng-container
         *ngIf="params?.samples && params?.samples?.results?.length > 0"
       >
-        <tr *ngFor="let sample of params?.samples?.results; let count = index">
-          <td>
-            {{
-              (count+1) + ((page-1)*pageSize)
-            }}
-          </td>
-          <td>
-            {{ sample?.label }}
-          </td>
-          <td>
-            {{ sample?.location?.display }}
-          </td>
-          <td>
-            {{ sample?.patient?.givenName?.toUpperCase() }} {{ sample?.patient?.middleName?.length > o ? sample?.patient?.middleName?.toUpperCase() : "" }} {{ sample?.patient?.familyName?.toUpperCase() }}
-          </td>
-          <td>
-            {{ sample?.patient?.identifiers[0]?.id }}
-          </td>
-          <td>
-            {{ sample?.creator?.name }}
-          </td>
-          <td>
-            {{ sample?.dateCreated | date: "medium" }}
-          </td>
-          <td>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item [disabled]="true">
-                <mat-icon>edit</mat-icon>
-                Edit
+        <ng-container
+          *ngFor="let sample of params?.samples?.results; let count = index"
+        >
+          <tr
+            [ngClass]="{
+              'selected-sample': sample?.uuid == selectedSampleUuid
+            }"
+          >
+            <td>
+              {{ count + 1 + (page - 1) * pageSize }}
+            </td>
+            <td>
+              {{ sample?.label }}
+            </td>
+            <td>
+              {{ sample?.location?.display }}
+            </td>
+            <td>
+              {{ sample?.patient?.givenName?.toUpperCase() }}
+              {{
+                sample?.patient?.middleName?.length > o
+                  ? sample?.patient?.middleName?.toUpperCase()
+                  : ""
+              }}
+              {{ sample?.patient?.familyName?.toUpperCase() }}
+            </td>
+            <td>
+              {{ sample?.patient?.identifiers[0]?.id }}
+            </td>
+            <td>
+              {{ sample?.creator?.name }}
+            </td>
+            <td>
+              {{ sample?.dateCreated | date: "medium" }}
+            </td>
+            <td>
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
               </button>
-            </mat-menu>
-          </td>
-        </tr>
+              <mat-menu #menu="matMenu">
+                <button (click)="onViewSampleDetails(sample)" mat-menu-item>
+                  <mat-icon>remove_red_eye</mat-icon>
+                  View details
+                </button>
+                <button mat-menu-item [disabled]="true">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+          <tr
+            *ngIf="sample?.uuid === selectedSampleUuid"
+            class="sample-details-row"
+          >
+            <td colspan="100%">
+              <app-shared-sample-details
+                [sample]="sample"
+              ></app-shared-sample-details>
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
       <ng-container
         *ngIf="params?.samples && params?.samples?.results?.length === 0"
@@ -87,13 +139,12 @@
       </ng-container>
     </tbody>
   </table>
-  <mat-paginator 
+  <mat-paginator
     [hidden]="!pageCounts"
     [length]="params?.samples?.pager?.total"
     [pageSize]=""
     [pageSizeOptions]="pageCounts"
     (page)="onPageChange($event)"
   >
-
   </mat-paginator>
 </div>

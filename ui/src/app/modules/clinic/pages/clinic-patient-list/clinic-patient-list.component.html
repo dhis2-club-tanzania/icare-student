@@ -123,22 +123,6 @@
           <!-- </div> -->
         </mat-tab>
 
-        <mat-tab
-          label="All Patients"
-          *ngIf="params?.showAllPatientsTab?.value === 'true'"
-        >
-          <ng-template matTabContent>
-            <app-patient-list
-              [shouldShowParentLocation]="true"
-              [doNotUseLocation]="true"
-              [isTabularList]="true"
-              [itemsPerPage]="10"
-              [orderType]="'iCARE901-ADMS-11e8-b450-525400e4297f'"
-              (selectPatient)="onSelectPatient($event)"
-            ></app-patient-list>
-          </ng-template>
-        </mat-tab>
-
         <mat-tab label="Admitted Patients">
           <ng-template matTabContent>
             <app-patient-list
@@ -150,7 +134,34 @@
             ></app-patient-list>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Every Patients History" *ngIf="params?.userPrivileges['CLINIC_VIEW_PATIENT_HISTORY_WITHOUT_ACTIVE_VISIT']">
+        
+        <mat-tab
+          label="All Patients"
+          *ngIf="
+            params?.showAllPatientsTab?.value === 'true' &&
+            (params?.userPrivileges['CLINIC_VIEW_ALL_CLIENTS'] ||
+              params?.userPrivileges['ALL'])
+          "
+        >
+          <ng-template matTabContent>
+            <app-patient-list
+              [shouldShowParentLocation]="true"
+              [doNotUseLocation]="true"
+              [isTabularList]="true"
+              [itemsPerPage]="10"
+              [orderType]=""
+              (selectPatient)="onSelectPatient($event)"
+            ></app-patient-list>
+          </ng-template>
+        </mat-tab>
+        <mat-tab
+          label="Every Patients History"
+          *ngIf="
+            params?.userPrivileges[
+              'CLINIC_VIEW_PATIENT_HISTORY_WITHOUT_ACTIVE_VISIT'
+            ] || params?.userPrivileges['ALL']
+          "
+        >
           <ng-template matTabContent>
             <app-patient-search
               (selectPatient)="onOpenHistory($event)"

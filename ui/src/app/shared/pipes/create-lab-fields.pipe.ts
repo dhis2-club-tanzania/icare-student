@@ -13,20 +13,20 @@ export class CreateLabFieldsPipe implements PipeTransform {
           ...allRegistrationFields,
           specimenDetailFields: {
             ...allRegistrationFields.specimenDetailFields,
-            agency: new Dropdown({
-              id: "agency",
-              key: "agency",
-              label: "Urgency/Priority",
-              options: args[1]?.setMembers.map((member) => {
-                return {
-                  key: member?.uuid,
-                  value: member?.display,
-                  label: member?.display,
-                  name: member?.display,
-                };
-              }),
-              shouldHaveLiveSearchForDropDownFields: false,
-            }),
+            // agency: new Dropdown({
+            //   id: "agency",
+            //   key: "agency",
+            //   label: "Urgency/Priority",
+            //   options: args[1]?.setMembers.map((member) => {
+            //     return {
+            //       key: member?.uuid,
+            //       value: member?.display,
+            //       label: member?.display,
+            //       name: member?.display,
+            //     };
+            //   }),
+            //   shouldHaveLiveSearchForDropDownFields: false,
+            // }),
           },
           referringDoctorFields: keyBy(
             args[0]?.map((attribute) => {

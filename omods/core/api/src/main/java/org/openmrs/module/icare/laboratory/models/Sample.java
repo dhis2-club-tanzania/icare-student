@@ -7,6 +7,9 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.hibernate.annotations.DiscriminatorFormula;
 import org.openmrs.*;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.icare.ICareConfig;
 import org.openmrs.module.icare.core.JSONConverter;
 import org.openmrs.module.icare.core.utils.ChildIdOnlyDeserializer;
 import org.openmrs.module.icare.core.utils.ChildIdOnlySerializer;
@@ -76,6 +79,9 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 	@JoinColumn(name = "batch_sample_id")
 	private BatchSample batchSample;
 	
+	@Transient
+	private WorksheetSample worksheetSample;
+	
 	public Sample() {
 	}
 	
@@ -93,7 +99,7 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 		return newSample;
 	}
 	
-	public Map<String, Object> toMap() {
+	public Map<String, Object> toMap() throws Exception {
 		HashMap<String, Object> sampleObject = (new HashMap<String, Object>());
 		sampleObject.put("label", this.getLabel());
 		
@@ -138,6 +144,19 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 		
 		if (this.getLocation() != null) {
 			locationObject.put("uuid", this.getLocation().getUuid());
+			locationObject.put("display", this.getLocation().getDisplayString());
+			List<Map<String, Object>> attributes = new ArrayList<>();
+			if (this.getLocation().getAttributes().size() > 0) {
+				for(LocationAttribute locationAttribute: this.getLocation().getAttributes()) {
+					Map<String, Object> attribute = new HashMap<>();
+					attribute.put("value", locationAttribute.getValue());
+					Map<String, Object> attributeType =  new HashMap<>();
+					attributeType.put("uuid", locationAttribute.getAttributeType().getUuid());
+					attribute.put("attributeType", attributeType);
+					attributes.add(attribute);
+				}
+			}
+			locationObject.put("attributes", attributes);
 		}
 		
 		sampleObject.put("location", locationObject);
@@ -148,6 +167,18 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 		visitObject.put("uuid", this.getVisit().getUuid());
 		visitObject.put("startDateTime", this.getVisit().getStartDatetime());
 		visitObject.put("stopDateTime", this.getVisit().getStopDatetime());
+		List<Map<String, Object>> visitAttributes = new ArrayList<>();
+		if ( this.getVisit().getAttributes().size() > 0) {
+			for(VisitAttribute visitAttribute: this.getVisit().getAttributes()) {
+				Map<String, Object> attribute = new HashMap<>();
+				attribute.put("value", visitAttribute.getValue());
+				Map<String, Object> attributeType =  new HashMap<>();
+				attributeType.put("uuid", visitAttribute.getAttributeType().getUuid());
+				attribute.put("attributeType", attributeType);
+				visitAttributes.add(attribute);
+			}
+		}
+		visitObject.put("attributes", visitAttributes);
 		
 		sampleObject.put("visit", visitObject);
 		
@@ -214,26 +245,84 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 		
 		List<HashMap<String, Object>> patientIdentifiers = new ArrayList<HashMap<String, Object>>();
 		for (PatientIdentifier patientIdentifier : this.getVisit().getPatient().getIdentifiers()) {
-			
 			HashMap<String, Object> patientIdentifierObject = new HashMap<String, Object>();
 			patientIdentifierObject.put("id", patientIdentifier.getIdentifier());
 			patientIdentifierObject.put("name", patientIdentifier.getIdentifierType().getName());
-			
 			patientIdentifiers.add(patientIdentifierObject);
 		}
-		
-		PersonAttribute phoneAttribute = this.getVisit().getPatient().getPerson().getAttribute(51);
-		
-		if (phoneAttribute != null) {
-			patientObject.put("phone", phoneAttribute.getValue());
-		}
+
+//		String phoneNumber = null;
+//		String phoneAttributeTypeUuid = Context.getService(AdministrationService.class).getGlobalProperty(ICareConfig.PHONE_NUMBER_ATTRIBUTE);
+//		if (phoneAttributeTypeUuid != null && Context.getPersonService().getPersonAttributeTypeByUuid(phoneAttributeTypeUuid) != null) {
+//			phoneNumber = this.getVisit().getPatient().getPerson().getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(phoneAttributeTypeUuid)).getValue();
+//		}
+//		patientObject.put("phone", phoneNumber);
+
 		patientObject.put("identifiers", patientIdentifiers);
 		patientObject.put("age", this.getVisit().getPatient().getAge());
 		patientObject.put("familyName", this.getVisit().getPatient().getPersonName().getFamilyName());
 		patientObject.put("middleName", this.getVisit().getPatient().getPersonName().getMiddleName());
 		patientObject.put("givenName", this.getVisit().getPatient().getPersonName().getGivenName());
+		patientObject.put("familyName2", this.getVisit().getPatient().getPersonName().getFamilyName2());
 		patientObject.put("gender", this.getVisit().getPatient().getGender());
 		patientObject.put("uuid", this.getVisit().getPatient().getUuid());
+
+		List<Map<String, Object>> personAttributes = new ArrayList<>();
+		if (this.getVisit().getPatient().getPerson().getAttributes().size() > 0) {
+			for (PersonAttribute personAttribute: this.getVisit().getPatient().getPerson().getAttributes()) {
+				Map<String, Object> attribute = new HashMap<>();
+				Map<String, Object> attributeType = new HashMap<>();
+				attributeType.put("uuid", personAttribute.getAttributeType().getUuid());
+				attributeType.put("name", personAttribute.getAttributeType().getName());
+				attribute.put("attributeType", attributeType);
+				attribute.put("value", personAttribute.getValue());
+				personAttributes.add(attribute);
+			}
+		}
+		patientObject.put("attributes", personAttributes);
+
+		List<Map<String, Object>> addresses = new ArrayList<>();
+		if (this.getVisit().getPatient().getPerson().getAddresses().size() > 0) {
+			for(PersonAddress personAddress: this.getVisit().getPatient().getPerson().getAddresses()) {
+				Map<String, Object> address = new HashMap<>();
+				String address1 = null;
+				String address2 = null;
+				String address3 = null;
+				String address4 = null;
+				String cityVillage = null;
+				String country = null;
+				if (personAddress.getAddress1() != null) {
+					address1 = personAddress.getAddress1().toString();
+				}
+				address.put("address1", address1);
+				if (personAddress.getAddress2() != null) {
+					address2 = personAddress.getAddress2().toString();
+				}
+				address.put("address2", address2);
+
+				if (personAddress.getAddress3() != null) {
+					address3 = personAddress.getAddress3().toString();
+				}
+				address.put("address3", address3);
+
+				if (personAddress.getAddress4() != null) {
+					address4= personAddress.getAddress4().toString();
+				}
+				address.put("address4", address4);
+
+				if (personAddress.getCityVillage() != null) {
+					cityVillage = personAddress.getCityVillage().toString();
+				}
+				address.put("cityVillage", cityVillage);
+
+				if (personAddress.getCountry() != null) {
+					country = personAddress.getCountry().toString();
+				}
+				address.put("country", country);
+				addresses.add(address);
+			}
+		}
+		patientObject.put("addresses", addresses);
 		
 		sampleObject.put("patient", patientObject);
 
@@ -242,6 +331,17 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 			batchObject.put("uuid",this.getBatchSample().getUuid());
 			batchObject.put("display",this.getBatchSample().getCode());
 			sampleObject.put("batchSample",batchObject);
+		}
+
+		if(this.worksheetSample != null){
+			Map<String,Object> worksheetSampleObject = new HashMap<>();
+			worksheetSampleObject.put("uuid", this.getWorksheetSample().getUuid());
+			worksheetSampleObject.put("display", this.getWorksheetSample().getCode());
+			Map<String,Object> worksheetDefinitionObject = new HashMap<>();
+			worksheetDefinitionObject.put("uuid", this.getWorksheetSample().getWorksheetDefinition().getUuid());
+			worksheetDefinitionObject.put("code",this.getWorksheetSample().getWorksheetDefinition().getCode());
+			worksheetSampleObject.put("worksheetDefinition", worksheetDefinitionObject);
+			sampleObject.put("worksheetSample",worksheetSampleObject);
 		}
 		
 		return sampleObject;
@@ -325,5 +425,13 @@ public class Sample extends BaseOpenmrsData implements java.io.Serializable, JSO
 	
 	public BatchSample getBatchSample() {
 		return batchSample;
+	}
+	
+	public WorksheetSample getWorksheetSample() {
+		return worksheetSample;
+	}
+	
+	public void setWorksheetSample(WorksheetSample worksheetSample) {
+		this.worksheetSample = worksheetSample;
 	}
 }

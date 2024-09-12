@@ -104,8 +104,9 @@ public class RequisitionItemStatus extends BaseOpenmrsData implements java.io.Se
 		Map<String,Object> requisitionMap = new HashMap<>();
 		requisitionMap.put("uuid",this.getRequisitionItem().getRequisition().getUuid());
 		requisitionMap.put("display",this.getRequisitionItem().getRequisition().getCode());
-		requisitionStatusMap.put("requisition",requisitionMap);
 
+		requisitionStatusMap.put("requisition",requisitionMap);
+		
         return  requisitionStatusMap;
 
     }

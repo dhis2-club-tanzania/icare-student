@@ -1,0 +1,30 @@
+<div
+  *ngIf="{
+    currentUser: currentUser$ | async,
+    programs: programs$ | async
+  } as params"
+>
+  <div
+    class="mt-6 d-flex justify-content-center w-100"
+    *ngIf="!params?.currentUser || !params?.programs"
+  >
+    <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+  </div>
+  <mat-tab-group *ngIf="params?.currentUser && params?.programs">
+    <mat-tab label="Workflows and forms relation">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-programs-workflows-and-forms-relationship
+            [currentUser]="params?.currentUser"
+            [programs]="params?.programs"
+          ></app-programs-workflows-and-forms-relationship>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Programs">
+      <ng-template matTabContent>
+        <div class="p-3">[Under construction]</div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

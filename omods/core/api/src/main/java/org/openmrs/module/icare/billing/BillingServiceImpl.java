@@ -138,7 +138,7 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 	}
 	
 	@Override
-	public <T extends Order> Order processOrder(OrderMetaData<T> orderMetaData) {
+	public <T extends Order> Order processOrder(OrderMetaData<T> orderMetaData, Double quantity) {
 		
 		List<Invoice> invoices = this.getInvoicesByVisitUuid(orderMetaData.getOrder().getEncounter().getVisit().getUuid());
 		if (invoices.size() == 0) {
@@ -148,7 +148,11 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 				InvoiceItem invoiceItem = getTopUpInvoiceItem(orderMetaData);
 				if (invoiceItem != null && invoiceItem.getQuantity() != 0 && invoiceItem.getPrice() != 0) {
 					Invoice invoice = new Invoice();
-					invoice.setPaymentMode(paymentModeConcept);
+					if (orderMetaData.getItemPrice().getPayablePaymentMode() != null) {
+						invoice.setPaymentMode(orderMetaData.getItemPrice().getPayablePaymentMode());
+					} else {
+						invoice.setPaymentMode(paymentModeConcept);
+					}
 					invoice.setVisit(orderMetaData.getOrder().getEncounter().getVisit());
 					invoiceItem.setInvoice(invoice);
 					List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
@@ -164,6 +168,9 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			invoice.setVisit(orderMetaData.getOrder().getEncounter().getVisit());
 			
 			InvoiceItem invoiceItem = getInvoiceItem(orderMetaData);
+			if (quantity != null) {
+				invoiceItem.setQuantity(quantity);
+			}
 			invoiceItem.setInvoice(invoice);
 			if (invoiceItem != null && invoiceItem.getQuantity() != 0 && invoiceItem.getPrice() != 0) {
 				List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
@@ -201,6 +208,9 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			}
 			if (foundIndex < 0) {
 				InvoiceItem invoiceItem = getInvoiceItem(orderMetaData);
+				if (quantity != null) {
+					invoiceItem.setQuantity(quantity);
+				}
 				if (invoiceItem != null && invoiceItem.getQuantity() != 0 && invoiceItem.getPrice() != 0) {
 					invoiceItem.setInvoice(existingInvoice);
 					existingInvoice.getInvoiceItems().add(invoiceItem);
@@ -208,20 +218,21 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			}
 			
 			//Automatic discount creation for full exempted discounts
-			
 			List<DiscountInvoiceItem> discountInvoiceItems = existingInvoice.getDiscountItems();
-			
 			Boolean isFullExemptedCheck = false;
 			
-			for (DiscountInvoiceItem discountItem : discountInvoiceItems) {
-				if (discountItem.getDiscount().getExempted()) {
-					isFullExemptedCheck = true;
+			if (discountInvoiceItems != null && discountInvoiceItems.size() > 0) {
+				for (DiscountInvoiceItem discountItem : discountInvoiceItems) {
+					if (discountItem.getDiscount() != null) {
+						if (discountItem.getDiscount().getExempted() != null && discountItem.getDiscount().getExempted()) {
+							isFullExemptedCheck = true;
+						}
+					}
 				}
 			}
+			
 			if (isFullExemptedCheck) {
-				
 				for (InvoiceItem invoiceItem : existingInvoice.getInvoiceItems()) {
-					
 					//Find the coresponding discount item
 					boolean found = false;
 					for (DiscountInvoiceItem discountItem : discountInvoiceItems) {
@@ -238,11 +249,8 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 						discountInvoiceItem.setInvoice(invoiceItem.getInvoice());
 						discountInvoiceItems.add(discountInvoiceItem);
 					}
-					
 				}
-				
 			}
-			
 			this.invoiceDAO.save(existingInvoice);
 		}
 		return orderMetaData.getOrder();
@@ -281,6 +289,13 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 	}
 	
 	@Override
+	public Invoice getInvoiceDetailsByUuid(String uuid) {
+		Invoice invoice = this.invoiceDAO.findByUuid(uuid);
+		// TODO: Check for any discounts
+		return invoice;
+	}
+	
+	@Override
 	public List<Payment> getPatientPayments(String patientUuid) {
 		return paymentDAO.findByPatientUuid(patientUuid);
 	}
@@ -295,7 +310,7 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			throw new Exception("Payment Type with id '" + payment.getPaymentType().getUuid() + "' does not exist.");
 		}
 		if (payment.getReferenceNumber() == null) {
-			throw new Exception("Refference number should not be null.");
+			throw new Exception("Reference number should not be null.");
 		}
 		payment.setPaymentType(paymentType);
 		
@@ -639,11 +654,9 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 		OrderService orderService = Context.getService(OrderService.class);
 		
 		List<Visit> visits = dao.getOpenAdmittedVisit();
-		System.out.println(visits.size());
 		
 		for (Visit visit : visits) {
 			Order order = new Order();
-			System.out.println(visit.getId());
 			AdministrationService administrationService = Context.getService(AdministrationService.class);
 			
 			String bedOrderTypeUUID = administrationService.getGlobalProperty(ICareConfig.BED_ORDER_TYPE);
@@ -662,7 +675,6 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			Provider provider = Context.getProviderService().getProvider(1);
 			
 			Concept concept = Context.getConceptService().getConceptByUuid(bedOrderConceptUUID);
-			System.out.println(concept.getUuid());
 			
 			order.setPatient(visit.getPatient());
 			order.setAction(Order.Action.NEW);
@@ -673,13 +685,51 @@ public class BillingServiceImpl extends BaseOpenmrsService implements BillingSer
 			order.setEncounter((Encounter) visit.getEncounters().toArray()[0]);
 			OrderContext orderContext = new OrderContext();
 			orderContext.setCareSetting(orderService.getCareSetting(1));
-			System.out.println(orderContext);
-			System.out.println(order);
-			
 			newOrder = orderService.saveOrder(order, orderContext);
-			
 		}
 		return newOrder;
 		
+	}
+	
+	public Order createOrderForOngoingDeceasedPatients() throws Exception {
+		
+		Order newOrder = new Order();
+		OrderService orderService = Context.getService(OrderService.class);
+		
+		List<Visit> visits = dao.getOpenVisitForDeceasedPatients();
+		
+		for (Visit visit : visits) {
+			Order order = new Order();
+			AdministrationService administrationService = Context.getService(AdministrationService.class);
+			
+			String cabinetOrderTypeUUID = administrationService.getGlobalProperty(ICareConfig.CABINET_ORDER_TYPE);
+			if (cabinetOrderTypeUUID == null) {
+				throw new ConfigurationException("Cabinet Order Type is not configured. Please check "
+				        + ICareConfig.CABINET_ORDER_TYPE + ".");
+			}
+			String cabinetOrderConceptUUID = administrationService.getGlobalProperty(ICareConfig.BED_ORDER_CONCEPT);
+			if (cabinetOrderConceptUUID == null) {
+				throw new ConfigurationException("Bed Order Concept is not configured. Please check "
+				        + ICareConfig.CABINET_ORDER_CONCEPT + ".");
+			}
+			
+			OrderType cabinetOrderOrderType = Context.getOrderService().getOrderTypeByUuid(cabinetOrderTypeUUID);
+			
+			Provider provider = Context.getProviderService().getProvider(1);
+			
+			Concept concept = Context.getConceptService().getConceptByUuid(cabinetOrderConceptUUID);
+			
+			order.setPatient(visit.getPatient());
+			order.setAction(Order.Action.NEW);
+			order.setCareSetting(orderService.getCareSettingByName("Deceasedpatient"));
+			order.setOrderType(cabinetOrderOrderType);
+			order.setConcept(concept);
+			order.setOrderer(provider);
+			order.setEncounter((Encounter) visit.getEncounters().toArray()[0]);
+			OrderContext orderContext = new OrderContext();
+			orderContext.setCareSetting(orderService.getCareSetting(1));
+			newOrder = orderService.saveOrder(order, orderContext);
+		}
+		return newOrder;
 	}
 }

@@ -522,7 +522,7 @@ export class ReportsGeneratorComponent implements OnInit {
 
       str += "{div}</body></html>";
       const link = document.createElement("a");
-      link.download = fileName + ".xls";
+      link.download = fileName + ".xlsx";
       link.href = uri + base64(format(str, ctx));
       link.click();
     }

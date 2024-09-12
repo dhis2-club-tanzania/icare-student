@@ -89,17 +89,35 @@ export class FormEffects {
                   return getSanitizedFormObject(
                     formField?.field?.concept,
                     formField,
-                    action?.causesOfDeathConcepts
+                    action?.causesOfDeathConcepts,
+                    formResponse?.conceptSourceUuid
                   );
                 }),
                 ["fieldNumber"],
                 ["asc"]
               );
 
+              const keyedGroups =
+                formattedFormFields && formattedFormFields?.length > 0
+                  ? _.groupBy(formattedFormFields, "fieldPart") || []
+                  : null;
               const formattedForm = {
                 id: formResponse?.uuid,
                 ...formResponse,
                 formFields: formattedFormFields,
+                groupedFields: keyedGroups
+                  ? Object.keys(keyedGroups)?.map((key) =>
+                      keyedGroups[key]?.map((fieldItem) =>
+                        fieldItem?.formField
+                          ? fieldItem?.formField
+                          : fieldItem?.formFiels
+                      )
+                    )
+                  : null,
+                unGroupedFields:
+                  formattedFormFields?.filter(
+                    (formField: any) => !formField?.formField
+                  ) || [],
                 isForm: true,
               };
               return upsertForms({ forms: [formattedForm] });
@@ -126,27 +144,42 @@ export class FormEffects {
 
                 _.map(formResponse?.formFields, (formField) => {
                   if (formField.fieldNumber) {
-                    formattedFormFields = [
-                      ...formattedFormFields,
-                      getSanitizedFormObject(
-                        formField?.field?.concept,
-                        formField,
-                        action.causesOfDeathConcepts
-                      ),
-                    ];
+                    formattedFormFields = _.orderBy(
+                      [
+                        ...formattedFormFields,
+                        getSanitizedFormObject(
+                          formField?.field?.concept,
+                          formField,
+                          action.causesOfDeathConcepts,
+                          formResponse?.conceptSourceUuid
+                        ),
+                      ],
+                      ["fieldNumber", "fieldPart"],
+                      ["asc", "asc"]
+                    );
                   }
                 });
+
+                const keyedGroups =
+                  formattedFormFields && formattedFormFields?.length > 0
+                    ? _.groupBy(formattedFormFields, "fieldPart") || []
+                    : null;
 
                 forms = [
                   ...forms,
                   {
                     id: formResponse?.uuid,
                     ...formResponse,
-                    formFields: _.orderBy(
-                      formattedFormFields,
-                      ["fieldNumber", "fieldPart"],
-                      ["asc", "asc"]
-                    ),
+                    formFields: formattedFormFields,
+                    groupedFields: keyedGroups
+                      ? Object.keys(keyedGroups)?.map((key) =>
+                          keyedGroups[key]?.map((fieldItem) =>
+                            fieldItem?.formField
+                              ? fieldItem?.formField
+                              : fieldItem
+                          )
+                        )
+                      : null,
                     isForm: true,
                   },
                 ];

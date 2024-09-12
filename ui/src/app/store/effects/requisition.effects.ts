@@ -1,21 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { select, Store } from "@ngrx/store";
+import { of } from "rxjs";
 import {
   catchError,
   concatMap,
   map,
   switchMap,
   withLatestFrom,
-} from 'rxjs/operators';
-import { IssueStatusInput } from 'src/app/shared/resources/store/models/issuing.model';
-import { IssuingService } from 'src/app/shared/resources/store/services/issuing.service';
-import { RequisitionService } from 'src/app/shared/resources/store/services/requisition.service';
+} from "rxjs/operators";
+import { IssueStatusInput } from "src/app/shared/resources/store/models/issuing.model";
+import { IssuingService } from "src/app/shared/resources/store/services/issuing.service";
+import { RequisitionService } from "src/app/shared/resources/store/services/requisition.service";
 import {
   Notification,
   NotificationService,
-} from 'src/app/shared/services/notification.service';
+} from "src/app/shared/services/notification.service";
 import {
   acceptRequisitionIssue,
   acceptRequisitionIssueFail,
@@ -33,9 +33,9 @@ import {
   removeRequisition,
   upsertRequisition,
   upsertRequisitions,
-} from '../actions/requisition.actions';
-import { AppState } from '../reducers';
-import { getCurrentLocation } from '../selectors';
+} from "../actions/requisition.actions";
+import { AppState } from "../reducers";
+import { getCurrentLocation } from "../selectors";
 
 @Injectable()
 export class RequisitionEffects {
@@ -44,7 +44,7 @@ export class RequisitionEffects {
       ofType(loadRequisitions),
       concatMap((action) =>
         of(action).pipe(
-          withLatestFrom(this.store.pipe(select(getCurrentLocation)))
+          withLatestFrom(this.store.pipe(select(getCurrentLocation(false))))
         )
       ),
       switchMap(([{}, currentLocation]) =>
@@ -94,18 +94,18 @@ export class RequisitionEffects {
       switchMap(({ id, reason }) => {
         this.notificationService.show(
           new Notification({
-            message: 'Cancelling Requisition',
-            type: 'LOADING',
+            message: "Cancelling Requisition",
+            type: "LOADING",
           })
         );
         return this.requisitionService
-          .saveRequisitionStatus(id, reason,'CANCELLED')
+          .saveRequisitionStatus(id, reason, "CANCELLED")
           .pipe(
             map(() => {
               this.notificationService.show(
                 new Notification({
-                  message: 'Requisition Successfuly cancelled',
-                  type: 'SUCCESS',
+                  message: "Requisition Successfuly cancelled",
+                  type: "SUCCESS",
                 })
               );
               return removeRequisition({ id });
@@ -113,8 +113,8 @@ export class RequisitionEffects {
             catchError((error) => {
               this.notificationService.show(
                 new Notification({
-                  message: 'Cancelling Requisition Failed',
-                  type: 'ERROR',
+                  message: "Cancelling Requisition Failed",
+                  type: "ERROR",
                 })
               );
               return of(cancelRequisitionFail({ id, error }));
@@ -130,16 +130,16 @@ export class RequisitionEffects {
       switchMap(({ requisition }) => {
         this.notificationService.show(
           new Notification({
-            message: 'Receiving Requisition',
-            type: 'LOADING',
+            message: "Receiving Requisition",
+            type: "LOADING",
           })
         );
         return this.requisitionService.receiveRequisition(requisition).pipe(
           map((receivedRequisition) => {
             this.notificationService.show(
               new Notification({
-                message: 'Requisition Successfuly received',
-                type: 'SUCCESS',
+                message: "Requisition Successfuly received",
+                type: "SUCCESS",
               })
             );
             return upsertRequisition({ requisition: receivedRequisition });
@@ -147,8 +147,8 @@ export class RequisitionEffects {
           catchError((error) => {
             this.notificationService.show(
               new Notification({
-                message: 'Receiving Requisition Failed',
-                type: 'ERROR',
+                message: "Receiving Requisition Failed",
+                type: "ERROR",
               })
             );
             return of(receiveRequisitionFail({ id: requisition.id, error }));
@@ -164,22 +164,22 @@ export class RequisitionEffects {
       switchMap(({ id, issueUuid, rejectionReason }) => {
         this.notificationService.show(
           new Notification({
-            message: 'Rejecting Requisition',
-            type: 'LOADING',
+            message: "Rejecting Requisition",
+            type: "LOADING",
           })
         );
 
         const issueStatusInput: IssueStatusInput = {
           issueUuid,
-          status: 'REJECTED',
+          status: "REJECTED",
           remarks: rejectionReason,
         };
         return this.issuingService.saveIssueStatus(issueStatusInput).pipe(
           map(() => {
             this.notificationService.show(
               new Notification({
-                message: 'Requisition Successfuly cancelled',
-                type: 'SUCCESS',
+                message: "Requisition Successfuly cancelled",
+                type: "SUCCESS",
               })
             );
             return removeRequisition({ id });
@@ -187,8 +187,8 @@ export class RequisitionEffects {
           catchError((error) => {
             this.notificationService.show(
               new Notification({
-                message: 'Rejecting Requisition Failed',
-                type: 'ERROR',
+                message: "Rejecting Requisition Failed",
+                type: "ERROR",
               })
             );
             return of(rejectRequisitionFail({ id, error }));

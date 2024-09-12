@@ -11,6 +11,9 @@ package org.openmrs.module.icare.billing.services.insurance;
  */
 
 import org.openmrs.VisitType;
+import org.openmrs.module.icare.core.utils.StaticHelper;
+
+import java.util.Map;
 
 public class VerificationRequest {
 	
@@ -82,5 +85,42 @@ public class VerificationRequest {
 	
 	public void setPaymentScheme(String paymentScheme) {
 		this.paymentScheme = paymentScheme;
+	}
+	
+	public static VerificationRequest fromMap(Map<String, Object> verificationRequestObject) {
+		VerificationRequest verificationRequest = new VerificationRequest();
+		
+		if (verificationRequestObject.get("id") != null) {
+			verificationRequest.setId(verificationRequestObject.get("id").toString());
+		}
+		
+		if (verificationRequestObject.get("visitType") != null) {
+			VisitType visitType = new VisitType();
+			visitType.setUuid(StaticHelper.getUuid(verificationRequestObject.get("visitType")));
+			verificationRequest.setVisitType(visitType);
+		}
+		
+		if (verificationRequestObject.get("authorizationNumber") != null) {
+			verificationRequest.setAuthorizationNumber(verificationRequestObject.get("authorizationNumber").toString());
+		}
+		
+		if (verificationRequestObject.get("comment") != null) {
+			verificationRequest.setComment(verificationRequestObject.get("comment").toString());
+		}
+		
+		if (verificationRequestObject.get("paymentType") != null) {
+			verificationRequest.setPaymentType(verificationRequestObject.get("paymentType").toString());
+		}
+		
+		if (verificationRequestObject.get("referralNumber") != null) {
+			verificationRequest.setReferralNumber(verificationRequestObject.get("referralNumber").toString());
+		}
+		
+		if (verificationRequestObject.get("paymentScheme") != null) {
+			verificationRequest.setPaymentScheme(verificationRequestObject.get("paymentScheme").toString());
+		}
+		
+		return verificationRequest;
+		
 	}
 }

@@ -62,6 +62,18 @@
       </ng-template>
     </mat-tab>
 
+    <mat-tab label="Sample Dispose Methods">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Misc'"
+            [standardSearchTerm]="'SAMPLE_DISPOSE_METHOD'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
     <mat-tab label="Codes Reference and Coding Sources">
       <ng-template matTabContent>
         <div class="p-3">

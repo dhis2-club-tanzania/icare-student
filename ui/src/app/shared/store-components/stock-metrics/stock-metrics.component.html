@@ -1,0 +1,87 @@
+<!-- stock summary -->
+<div class="row" *ngIf="!(stockMetrics$ | async)">
+  <div class="col p-2">
+    <mat-card class="border p-2">
+      <p>Loading Metrics . . .</p>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card>
+  </div>
+</div>
+
+<div class="row" *ngIf="stockMetrics$ | async as metrics">
+  <div class="col mb-2">
+    <mat-card 
+      class="border p-3"
+      style="cursor: pointer" 
+      (click)="onChangeRoute(
+              $event,
+              'nearly-stocked-out-items/' + currentStore?.uuid,
+              currentStorePage
+            )
+          "
+      >
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Nearly Stocked Out
+      </mat-card-subtitle>
+      <mat-card-title class="h2 text-center">{{
+        metrics?.nearlyStockedOut
+        }}</mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-2">
+    <mat-card 
+      class="border p-3 outstock-card" 
+      style="cursor: pointer" 
+      (click)="onChangeRoute(
+                $event,
+                'stockout-items/' + currentStore?.uuid,
+                currentStorePage
+              )
+            ">
+      <mat-card-subtitle class="mb-3 h5 text-center textstyle">
+        Stocked Out
+      </mat-card-subtitle>
+      <mat-card-title class="h2 text-center">{{
+        metrics?.stockedOut
+        }}</mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-2">
+    <mat-card 
+      class="border p-3 expired-card"
+      style="cursor: pointer" 
+      (click)="onChangeRoute(
+              $event,
+              'expired-items/' + currentStore?.uuid,
+              currentStorePage
+            )
+          "
+      >
+      <mat-card-subtitle class="mb-3 h5 text-center textstyle">
+        Expired
+      </mat-card-subtitle>
+      <mat-card-title class="h2 text-center textstyle">{{
+        metrics?.expired
+        }}</mat-card-title>
+    </mat-card>
+  </div>
+  <div class="col mb-2">
+    <mat-card 
+      class="border p-3"
+      style="cursor: pointer" 
+      (click)="onChangeRoute(
+              $event,
+              'nearly-expired-items/' + currentStore?.uuid,
+              currentStorePage
+            )
+          "
+      >
+      <mat-card-subtitle class="mb-3 h5 text-center">
+        Nearly Expired
+      </mat-card-subtitle>
+      <mat-card-title class="h2 text-center">{{
+        metrics?.nearlyExpired
+        }}</mat-card-title>
+    </mat-card>
+  </div>
+</div>

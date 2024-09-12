@@ -119,7 +119,9 @@ export class SharedAddTestorderToSampleComponent implements OnInit {
       encounterProviders: [
         {
           provider: this.provider?.uuid,
-          encounterRole: ICARE_CONFIG?.encounterRole?.uuid,
+          encounterRole: {
+            uuid: ICARE_CONFIG?.encounterRole?.uuid,
+          },
         },
       ],
       orders: this.valuesToSave?.map((value) => {
@@ -266,7 +268,7 @@ export class SharedAddTestorderToSampleComponent implements OnInit {
     e.stopPropagation();
     this.dialog
       .open(SharedConfirmationComponent, {
-        width: "20%",
+        minWidth: "20%",
         data: {
           modalTitle: `Remove ${order?.order?.concept?.display}`,
           modalMessage: `Confirm that you want to remove ${order?.order?.concept?.display} test from ${order?.sample?.label}`,

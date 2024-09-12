@@ -42,13 +42,17 @@
               color="primary"
               (click)="onSave($event)"
             >
-              <mat-spinner
-                color="primary"
-                *ngIf="savingObservations"
-                [diameter]="20"
-                style="display: inline-block !important; margin-right: 4px"
-              ></mat-spinner>
-              {{ savingObservations ? "Saving ..." : "Save" }}
+              Save
+            </button>
+            <button
+              *ngIf="saveAndExitPath"
+              [disabled]="!isFormValid"
+              mat-flat-button
+              class="ml-2"
+              color="primary"
+              (click)="onSave($event, true)"
+            >
+              Save and go back
             </button>
           </div>
         </div>

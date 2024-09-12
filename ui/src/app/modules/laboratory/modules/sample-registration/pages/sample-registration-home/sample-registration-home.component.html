@@ -1,10 +1,15 @@
 <div
   class="sample-registration-page"
   *ngIf="{
+    currentUser: currentUser$ | async,
     provider: provider$ | async,
     LISConfigurations: LISConfigurations$ | async,
     labSections: labSections$ | async,
-    specimenSources: specimenSources$ | async
+    specimenSources: specimenSources$ | async,
+    personEmailAttributeTypeUuid: personEmailAttributeTypeUuid$ | async,
+    personPhoneAttributeTypeUuid: personPhoneAttributeTypeUuid$ | async,
+    sampleRegistrationCategoriesConceptUuid:
+      sampleRegistrationCategoriesConceptUuid$ | async
   } as params"
 >
   <div
@@ -12,7 +17,11 @@
       params?.provider &&
       params?.LISConfigurations &&
       params?.labSections &&
-      params?.specimenSources
+      params?.specimenSources &&
+      params?.personEmailAttributeTypeUuid &&
+      params?.personPhoneAttributeTypeUuid &&
+      params?.currentUser &&
+      params?.sampleRegistrationCategoriesConceptUuid
     "
   >
     <app-register-sample
@@ -20,6 +29,12 @@
       [labSections]="params?.labSections"
       [LISConfigurations]="params?.LISConfigurations"
       [specimenSources]="params?.specimenSources"
+      [currentUser]="params?.currentUser"
+      [personPhoneAttributeTypeUuid]="params?.personPhoneAttributeTypeUuid"
+      [personEmailAttributeTypeUuid]="params?.personEmailAttributeTypeUuid"
+      [sampleRegistrationCategoriesConceptUuid]="
+        params?.sampleRegistrationCategoriesConceptUuid
+      "
     ></app-register-sample>
   </div>
 
@@ -28,7 +43,11 @@
       !params?.provider ||
       !params?.LISConfigurations ||
       !params?.labSections ||
-      !params?.specimenSources
+      !params?.specimenSources ||
+      !params?.personEmailAttributeTypeUuid ||
+      !params?.personPhoneAttributeTypeUuid ||
+      !params?.currentUser ||
+      !params?.sampleRegistrationCategoriesConceptUuid
     "
     mode="indeterminate"
   ></mat-progress-bar>

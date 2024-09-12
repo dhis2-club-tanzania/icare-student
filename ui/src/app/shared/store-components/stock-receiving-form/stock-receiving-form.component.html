@@ -1,0 +1,78 @@
+<div
+  class="container-fluid"
+  *ngIf="{
+    unitsOfMeasurementsDetails: unitsOfMeasurementsDetails$ | async,
+    suppliers: suppliers$ | async
+  } as params"
+>
+  <div
+    class="row mt-2"
+    *ngIf="!stockInvoice && !loadingInvoice && !stockInvoiceItem"
+  >
+    <div class="col-12">
+      <h2 class="text-left">NEW RECEIVED STOCK INVOICE</h2>
+    </div>
+  </div>
+  <mat-progress-bar
+    class="mt-2"
+    mode="indeterminate"
+    *ngIf="!params?.suppliers || !params?.unitsOfMeasurementsDetails"
+  ></mat-progress-bar>
+  <div class="row">
+    <div
+      [ngClass]="{ 'col-md-5': !hideAddedItems, 'col-md-12': hideAddedItems }"
+      class="col-md-5 col-sm-12 col-sx-12"
+      style="border-right: solid 1px #eee"
+    >
+      <div
+        class="row"
+        *ngIf="
+          (params?.unitsOfMeasurementsDetails && params?.suppliers) ||
+          (stockInvoiceItem && params?.unitsOfMeasurementsDetails)
+        "
+      >
+        <app-stock-receiving-form-fields
+          class="w-100"
+          [suppliers]="params?.suppliers"
+          [unitsOfMeasurements]="
+            params?.unitsOfMeasurementsDetails?.unitsOfMeasurements
+          "
+          [unitsOfMeasurementSettings]="
+            params?.unitsOfMeasurementsDetails?.unitsOfMeasurementSettings
+          "
+          [existingStockInvoice]="stockInvoice"
+          [stockInvoiceItem]="stockInvoiceItem"
+          [currentLocation]="currentLocation"
+          (loadInvoices)="loadInvoices($event)"
+          (closeDialog)="onCloseDialog()"
+        ></app-stock-receiving-form-fields>
+      </div>
+    </div>
+    <div class="col-md-7 col-sm-12 col-sx-12" *ngIf="!hideAddedItems">
+      <div class="row mt-2">
+        <div class="col-12">
+          <mat-accordion>
+            <mat-expansion-panel
+              class="border mat-elevation-z0"
+              [expanded]="true"
+            >
+              <mat-expansion-panel-header
+                class="d-flex justify-content-between"
+              >
+                <mat-panel-title>
+                  <span>Added stock items</span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="inv-items-table container-fluid">
+                <app-stock-invoice-items
+                  [stockInvoice]="stockInvoice"
+                  [updateStockInvoice]="updateStockInvoice"
+                ></app-stock-invoice-items>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

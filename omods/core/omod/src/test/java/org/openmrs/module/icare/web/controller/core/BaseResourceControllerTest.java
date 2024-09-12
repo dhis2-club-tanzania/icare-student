@@ -12,6 +12,7 @@ import org.openmrs.module.AdvicePoint;
 import org.openmrs.module.icare.ICareConfig;
 import org.openmrs.module.icare.billing.VisitInvalidException;
 import org.openmrs.module.icare.billing.aop.OrderBillAdvisor;
+import org.openmrs.module.icare.core.aop.VisitDiagnosisAdvisor;
 import org.openmrs.module.icare.billing.services.insurance.nhif.NHIFConfig;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
 import org.springframework.aop.Advisor;
@@ -30,6 +31,8 @@ public abstract class BaseResourceControllerTest extends MainResourceControllerT
 	Advisor billingAdvisor;
 	
 	OrderBillAdvisor orderAdvisor;
+	
+	VisitDiagnosisAdvisor visitDiagnosisAdvisor;
 	
 	public void startUp() throws ClassNotFoundException {
 		AdministrationService adminService = Context.getService(AdministrationService.class);
@@ -53,6 +56,7 @@ public abstract class BaseResourceControllerTest extends MainResourceControllerT
 		
 		this.initiateVisitAdvice();
 		this.initiateOrderAdvice();
+		this.initiateVisitDiagnosisAdvice();
 	}
 	
 	public Visit getVisit(Patient patient) {
@@ -101,6 +105,14 @@ public abstract class BaseResourceControllerTest extends MainResourceControllerT
 		AdvicePoint advice = new AdvicePoint("org.openmrs.api.Orderervice", adviceClass);
 		orderAdvisor = (OrderBillAdvisor) advice.getClassInstance();
 		Context.addAdvisor(cls, orderAdvisor);
+	}
+	
+	private void initiateVisitDiagnosisAdvice() throws ClassNotFoundException {
+		Class<?> cls = Context.loadClass("org.openmrs.api.DiagnosisService");
+		Class<?> adviceClass = Context.loadClass("org.openmrs.module.icare.core.aop.VisitDiagnosisAdvisor");
+		AdvicePoint advice = new AdvicePoint("org.openmrs.api.DiagnosisService", adviceClass);
+		visitDiagnosisAdvisor = (VisitDiagnosisAdvisor) advice.getClassInstance();
+		Context.addAdvisor(cls, visitDiagnosisAdvisor);
 	}
 	
 	public void shutDownVisitAdvice() throws ClassNotFoundException {

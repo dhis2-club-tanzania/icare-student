@@ -1,6 +1,7 @@
 package org.openmrs.module.icare.store.models;
 
 import org.openmrs.Location;
+import org.openmrs.Order;
 import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.store.util.Stockable;
 
@@ -21,6 +22,8 @@ public class StockableItem implements Stockable {
 	private Location sourceLocation;
 	
 	private Location destinationLocation;
+	
+	private Order order;
 	
 	@Override
 	public Item getItem() {
@@ -57,6 +60,11 @@ public class StockableItem implements Stockable {
 		return destinationLocation;
 	}
 	
+	@Override
+	public Order getOrder() {
+		return order;
+	}
+	
 	public void setItem(Item item) {
 		this.item = item;
 	}
@@ -83,5 +91,9 @@ public class StockableItem implements Stockable {
 	
 	public void setDestinationLocation(Location destinationLocation) {
 		this.destinationLocation = destinationLocation;
+	}
+	
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 }

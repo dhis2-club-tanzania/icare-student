@@ -16,7 +16,13 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+      <div
+        [ngClass]="{
+          'col-lg-6 col-md-6': showCodesSection,
+          'col-lg-12 col-md-12': !showCodesSection
+        }"
+        class="col-sx-12 col-sm-12"
+      >
         <div class="w-100">
           <app-form
             [fields]="basicConceptFields"
@@ -47,7 +53,14 @@
           ></app-multiple-items-selection>
         </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+      <div
+        [ngClass]="{
+          'col-lg-6 col-md-6': showCodesSection,
+          'col-lg-12 col-md-12': !showCodesSection
+        }"
+        class="col-sx-12 col-sm-12"
+        *ngIf="showCodesSection"
+      >
         <fieldset>
           <legend>{{ itemTypeName }} Codes</legend>
           <div>
@@ -55,6 +68,9 @@
               [fields]="[codesMappingsSourceField]"
               (formUpdate)="onFormUpdateForSource($event)"
             ></app-form>
+            <!-- <div *ngFor="let mapping of currentMappings">
+              {{ mapping?.conceptReferenceTerm?.display }}
+            </div> -->
             <app-multiple-items-selection
               *ngIf="selectedCodingSource"
               [items]="[]"

@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import { arrangeDrugDetails } from "./drugs.helper";
+import { formatDateToString } from "./format-date.helper";
 
 export function getEncountersForLabSample(details) {
   let encounters = [];
@@ -233,10 +235,8 @@ export function arrangeVisitDataChronologically(
                               return {
                                 ...ob,
                                 obsDatetime: ob?.obsDatetime || ob?.encounter?.encounterDatetime,
-                                date: getStringDate(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime))
-                                  .date,
-                                time: getStringDate(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime))
-                                  .time,
+                                date: formatDateToString(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime), "DD-MM-YYYY"),
+                                time: formatDateToString(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime), "hh:mm:ss")
                               };
                             })
                           );
@@ -251,8 +251,8 @@ export function arrangeVisitDataChronologically(
                         return {
                           ...ob,
                           obsDatetime: ob?.obsDatetime || ob?.encounter?.encounterDatetime,
-                          date: getStringDate(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime)).date,
-                          time: getStringDate(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime)).time,
+                          date: formatDateToString(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime), "DD-MM-YYYY"),
+                          time: formatDateToString(new Date(ob?.obsDatetime || ob?.encounter?.encounterDatetime), "hh:mm:ss")
                         };
                       })
                     );
@@ -268,8 +268,8 @@ export function arrangeVisitDataChronologically(
             form: observation.form,
             obs: obs[key],
             obsDatetime: obs[key][0]?.obsDatetime,
-            date: getStringDate(new Date(obs[key][0]?.obsDatetime)).date,
-            time: getStringDate(new Date(obs[key][0]?.obsDatetime)).time,
+            date: formatDateToString(new Date(obs[key][0]?.obsDatetime), "DD-MM-YYYY"),
+            time: formatDateToString(new Date(obs[key][0]?.obsDatetime), "hh:mm:ss"),
             provider: obs[key][0]?.provider?.display?.split("-")[1],
             category: "OBSERVATIONS",
           };
@@ -278,59 +278,14 @@ export function arrangeVisitDataChronologically(
       })
     ),
     drugs: visit?.drugs?.map((drugOrder) => {
-      return {
-        ...drugOrder,
-        name: drugOrder.obs[specificDrugConceptUuid]
-          ? drugOrder.obs[specificDrugConceptUuid]?.comment
-          : drugOrder?.display,
-        description: `${
-          drugOrder.obs[prescriptionArrangementFields["1"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["1"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["1"]?.uuid]?.value
-        } (${
-          drugOrder.obs[prescriptionArrangementFields["2"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["2"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["2"]?.uuid]?.value
-        }) ${
-          drugOrder.obs[prescriptionArrangementFields["3"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["3"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["3"]?.uuid]?.value
-        } ${
-          drugOrder.obs[prescriptionArrangementFields["4"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["4"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["4"]?.uuid]?.value
-        } ${
-          drugOrder.obs[prescriptionArrangementFields["5"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["5"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["5"]?.uuid]?.value
-        } ${
-          drugOrder.obs[prescriptionArrangementFields["6"]?.uuid]?.value
-            ?.display
-            ? drugOrder.obs[prescriptionArrangementFields["6"]?.uuid]?.value
-                ?.display
-            : drugOrder.obs[prescriptionArrangementFields["6"]?.uuid]?.value
-        }`,
-        date: getStringDate(new Date(drugOrder.dateActivated)).date,
-        time: getStringDate(new Date(drugOrder.dateActivated)).time,
-        provider: drugOrder?.orderer?.display?.split('-')[1],
-        category: "DRUG_ORDER",
-      };
+      return arrangeDrugDetails(drugOrder, specificDrugConceptUuid, prescriptionArrangementFields);
     }),
     labOrders: visit?.labOrders?.map((order) => {
       return {
         ...order,
-        date: getStringDate(new Date(order?.order?.dateActivated)).date,
-        time: getStringDate(new Date(order?.order?.dateActivated)).time,
+        results: order?.results,
+        date: formatDateToString(new Date(order?.order?.dateActivated), "DD-MM-YYYY"),
+        time: formatDateToString(new Date(order?.order?.dateActivated), "hh:mm:ss"),
         provider: order?.order?.orderer?.display?.split("-")[1],
         category: "LAB_ORDER",
       };
@@ -338,8 +293,9 @@ export function arrangeVisitDataChronologically(
     radiologyOrders: visit?.radiologyOrders?.map((order) => {
       return {
         ...order,
-        date: getStringDate(new Date(order?.order?.dateActivated)).date,
-        time: getStringDate(new Date(order?.order?.dateActivated)).time,
+        results: order?.results,
+        date: formatDateToString(new Date(order?.order?.dateActivated), "DD-MM-YYYY"),
+        time: formatDateToString(new Date(order?.order?.dateActivated), "hh:mm:ss"),
         provider: order?.order?.orderer?.display?.split("-")[1],
         category: "RADIOLOGY_ORDER",
       };
@@ -347,8 +303,9 @@ export function arrangeVisitDataChronologically(
     procedureOrders: visit?.procedureOrders?.map((order) => {
       return {
         ...order?.order,
-        date: getStringDate(new Date(order?.order?.dateActivated)).date,
-        time: getStringDate(new Date(order?.order?.dateActivated)).time,
+        results: order?.results,
+        date: formatDateToString(new Date(order?.order?.dateActivated), "DD-MM-YYYY"),
+        time: formatDateToString(new Date(order?.order?.dateActivated), "hh:mm:ss"),
         provider: order?.order?.orderer?.display?.split("-")[1],
         category: "PROCEDURE_ORDER",
       };
@@ -357,15 +314,15 @@ export function arrangeVisitDataChronologically(
 
   let remadeVisitObject = {
     visitStartDateTime: {
-      date: getStringDate(new Date(visit?.startDatetime)).date,
-      time: getStringDate(new Date(visit?.startDatetime)).time,
+      date: formatDateToString(new Date(visit?.startDatetime), "DD-MM-YYYY"),
+      time: formatDateToString(new Date(visit?.startDatetime), "hh:mm:ss"),
     },
     visitStopDateTime: {
       date: visit?.stopDatetime
-        ? getStringDate(new Date(visit?.stopDatetime)).date
+        ? formatDateToString(new Date(visit?.stopDatetime), "DD-MM-YYYY")
         : null,
       time: visit?.stopDatetime
-        ? getStringDate(new Date(visit?.stopDatetime)).time
+        ? formatDateToString(new Date(visit?.stopDatetime), "hh:mm:ss")
         : null,
     },
     category: "VISIT",
@@ -387,24 +344,3 @@ export function arrangeVisitDataChronologically(
   return remadeVisitObject;
 }
 
-function getStringDate(date: Date, separator?: string) {
-  separator = separator || "-";
-  return {
-    date: `${date.getDate()}${separator}${
-      (date.getMonth() + 1).toString().length > 1
-        ? date.getMonth() + 1
-        : `0${date.getMonth() + 1}`
-    }${separator}${date.getFullYear()}`,
-    time: `${
-      (date.getHours() || 0) < 10 ? "0" + date.getHours() : "" + date.getHours()
-    }:${
-      (date.getMinutes() || 0) < 10
-        ? "0" + date.getMinutes()
-        : "" + date.getMinutes()
-    }:${
-      (date.getSeconds() || 0) < 10
-        ? "0" + date.getSeconds()
-        : "" + date.getSeconds()
-    }`,
-  };
-}

@@ -1,9 +1,8 @@
-import { Component, Inject, Input, OnInit } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Store } from "@ngrx/store";
 import * as _ from "lodash";
 import { Observable } from "rxjs";
-import { catchError, map, sample, tap } from "rxjs/operators";
+import { map, sample, tap } from "rxjs/operators";
 import { LocationService } from "src/app/core/services/location.service";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import { SampleAllocation } from "src/app/shared/resources/sample-allocations/models/allocation.model";
@@ -39,6 +38,10 @@ export class PrintResultsModalComponent implements OnInit {
   phoneNumber$: Observable<any>;
   keyedRemarks: any;
   @Input() data: any;
+  @Input() testRelationshipConceptSourceUuid: string;
+  diagnoses$: Observable<any>;
+  @Output() cancel: EventEmitter<boolean> = new EventEmitter<boolean>();
+  obsData: any;
   constructor(
     private patientService: PatientService,
     private visitService: VisitsService,
@@ -51,6 +54,8 @@ export class PrintResultsModalComponent implements OnInit {
     const data = this.data;
     this.patientDetailsAndSamples = {
       ...data?.patientDetailsAndSamples,
+      patient:
+        data?.patientDetailsAndSamples?.departments[0]?.samples[0]?.patient,
       departments: data?.patientDetailsAndSamples?.departments?.map(
         (department: any) => {
           return {
@@ -87,7 +92,7 @@ export class PrintResultsModalComponent implements OnInit {
                       allocation?.parameter?.mappings?.filter(
                         (mapping: any) =>
                           mapping?.conceptReference?.conceptSource?.uuid ===
-                          "5b5af7e2-cd3d-4dba-8b11-ce6ca8b3d6a5"
+                          this.testRelationshipConceptSourceUuid
                       ) || []
                     )?.length > 0
                 ) || []
@@ -95,7 +100,7 @@ export class PrintResultsModalComponent implements OnInit {
                 const relationshipMapping = (alloc?.parameter?.mappings?.filter(
                   (mapping: any) =>
                     mapping?.conceptReference?.conceptSource?.uuid ===
-                    "5b5af7e2-cd3d-4dba-8b11-ce6ca8b3d6a5"
+                    this.testRelationshipConceptSourceUuid
                 ) || [])[0];
                 const relatedParameteruuid = relationshipMapping
                   ? relationshipMapping?.conceptReference?.code
@@ -160,15 +165,18 @@ export class PrintResultsModalComponent implements OnInit {
     this.LISConfigurations = data?.LISConfigurations;
     this.loadingPatientPhone = true;
     this.errorLoadingPhone = false;
-    this.phoneNumber$ = this.patientService
-      .getPatientPhone(data?.patientDetailsAndSamples?.patient?.uuid)
-      .pipe(
-        tap((response) => {
-          this.errorLoadingPhone = false;
-          this.loadingPatientPhone = false;
-          this.phoneNumber = response;
-        })
-      );
+    // this.phoneNumber$ = this.patientService
+    //   .getPatientPhone(
+    //     data?.patientDetailsAndSamples?.departments[0]?.samples[0]?.patient
+    //       ?.uuid
+    //   )
+    //   .pipe(
+    //     tap((response) => {
+    //       this.errorLoadingPhone = false;
+    //       this.loadingPatientPhone = false;
+    //       this.phoneNumber = response;
+    //     })
+    //   );
     this.labConfigs = data?.labConfigs;
     this.user = data?.user;
     this.facilityDetails$ = this.store.select(getParentLocation).pipe(
@@ -181,7 +189,9 @@ export class PrintResultsModalComponent implements OnInit {
               ? (response?.attributes?.filter(
                   (attribute) =>
                     attribute?.attributeType?.uuid ===
-                    "e935ea8e-5959-458b-a10b-c06446849dc3"
+                      "e935ea8e-5959-458b-a10b-c06446849dc3" ||
+                    attribute?.attributeType?.uuid ===
+                      "09e78d52-d02f-44aa-b055-6bc01c41fa64"
                 ) || [])[0]?.value
               : null,
         };
@@ -203,9 +213,25 @@ export class PrintResultsModalComponent implements OnInit {
       })
       .pipe(
         map((obs) => {
+          this.obsData = obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
+            ? obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
+            : this.obsData;
           return !obs?.error && obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
             ? obs["3a010ff3-6361-4141-9f4e-dd863016db5a"]
             : "";
+        })
+      );
+    this.diagnoses$ = this.visitService
+      .getVisitDiagnosesByVisitUuid({
+        uuid: this.patientDetailsAndSamples?.departments[0]?.samples[0]?.visit
+          ?.uuid,
+        query: {
+          v: "custom:(uuid,startDatetime,encounters:(uuid,encounterDatetime,encounterType,location,diagnoses,encounterProviders),stopDatetime,attributes:(uuid,display),location:(uuid,display,tags,parentLocation:(uuid,display)),patient:(uuid,display,identifiers,person,voided)",
+        },
+      })
+      .pipe(
+        map((visitDetails) => {
+          return visitDetails;
         })
       );
 
@@ -226,24 +252,34 @@ export class PrintResultsModalComponent implements OnInit {
               attributesKeyedByAttributeType: _.keyBy(
                 response?.attributes.map((attribute) => {
                   return {
-                    ...attribute,
-                    attributeTypeUuid: attribute?.attributeType?.uuid,
+                    ...attribute?.visitAttributeDetails,
+                    attributeTypeUuid:
+                      attribute?.visitAttributeDetails?.attributeType?.uuid,
                   };
                 }),
                 "attributeTypeUuid"
               ),
             };
-            this.refferedFromFacility$ = this.locationService
-              .getLocationById(
-                response?.attributesKeyedByAttributeType[
-                  "47da17a9-a910-4382-8149-736de57dab18"
-                ]?.value
-              )
-              .pipe(
-                map((response) => {
-                  return response?.error ? {} : response;
-                })
-              );
+            if (
+              response?.attributesKeyedByAttributeType[
+                "47da17a9-a910-4382-8149-736de57dab18"
+              ] &&
+              response?.attributesKeyedByAttributeType[
+                "47da17a9-a910-4382-8149-736de57dab18"
+              ]?.value
+            ) {
+              this.refferedFromFacility$ = this.locationService
+                .getLocationById(
+                  response?.attributesKeyedByAttributeType[
+                    "47da17a9-a910-4382-8149-736de57dab18"
+                  ]?.value
+                )
+                .pipe(
+                  map((response) => {
+                    return response?.error ? {} : response;
+                  })
+                );
+            }
 
             return response;
           }
@@ -352,7 +388,7 @@ export class PrintResultsModalComponent implements OnInit {
       }, 500);
     }, 500);
 
-    //window.print();
+    // window.print();
   }
 
   getParameterConceptName(parameter, allocations) {
@@ -389,5 +425,10 @@ export class PrintResultsModalComponent implements OnInit {
 
   onGetRemarks(remarks: any): void {
     this.keyedRemarks = remarks;
+  }
+
+  onClose(event: Event): void {
+    event.stopPropagation();
+    this.cancel.emit(true);
   }
 }

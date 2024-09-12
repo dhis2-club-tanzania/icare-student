@@ -38,7 +38,7 @@ import { Visit } from "../../resources/visits/models/visit.model";
 export class TransferWithinComponent implements OnInit {
   patient: Patient;
   formLoadingState$: Observable<boolean>;
-  form$: Observable<OpenMRSForm>;
+  form$: Observable<any>;
   formUuid: any;
   locations$: Observable<any[]>;
   provider$: Observable<any>;
@@ -86,14 +86,12 @@ export class TransferWithinComponent implements OnInit {
         "iCare.clinic.location.serviceAttribute"
       );
     this.formLoadingState$ = this.store.select(getFormsLoadingState);
-    this.form$ = this.store.select(getCustomOpenMRSFormById, {
-      id: this.formUuid,
-    });
+    this.form$ = this.store.select(getCustomOpenMRSFormById(this.formUuid));
     this.transferStatus$ = this.store.select(getTransferStatusOfCurrentPatient);
     this.provider$ = this.store.select(getProviderDetails);
-    this.locations$ = this.store.select(getLocationsByTagName, {
-      tagName: this.locationType,
-    });
+    this.locations$ = this.store.select(
+      getLocationsByTagName(this.locationType)
+    );
     this.currentVisit$ = this.store.select(getActiveVisit);
     this.transferLoadingState$ = this.store.select(getTransferLoadingState);
     this.currentVisitServiceAttributeDetails$ = this.store.select(
