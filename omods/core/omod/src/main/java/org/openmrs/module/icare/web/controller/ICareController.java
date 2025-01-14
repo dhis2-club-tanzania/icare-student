@@ -1,3 +1,4 @@
+
 /**
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -84,7 +85,77 @@ public class ICareController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
+
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ * <p>
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.module.icare.web.controller;
+
+import com.mysql.fabric.xmlrpc.Client;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.azeckoski.reflectutils.transcoders.ObjectEncoder;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.util.JSONPObject;
+import org.json.JSONObject;
+import org.openmrs.*;
+import org.openmrs.api.*;
+import org.openmrs.api.context.Context;
+import org.openmrs.logic.op.In;
+import org.openmrs.module.icare.billing.models.ItemPrice;
+import org.openmrs.module.icare.billing.models.Prescription;
+import org.openmrs.module.icare.billing.services.BillingService;
+import org.openmrs.module.icare.billing.services.insurance.Claim;
+import org.openmrs.module.icare.billing.services.insurance.ClaimResult;
+import org.openmrs.module.icare.core.ICareService;
+import org.openmrs.module.icare.core.Item;
+import org.openmrs.module.icare.core.Message;
+import org.openmrs.module.icare.core.Summary;
+import org.openmrs.module.icare.core.models.PimaCovidLabRequest;
+import org.openmrs.module.icare.core.utils.PatientWrapper;
+import org.openmrs.module.icare.core.utils.VisitWrapper;
+import org.openmrs.module.icare.store.models.OrderStatus;
+import org.openmrs.module.webservices.rest.web.RestConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.naming.ConfigurationException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.*;
+
+/**
+ * This class configured as controller using annotation and mapped with the URL of
+ * 'module/${rootArtifactid}/${rootArtifactid}Link.form'.
+ */
+@Controller
+@RequestMapping(value = "/rest/" + RestConstants.VERSION_1 + "/icare")
+public class ICareController {
 	
+	@Autowired
+	ICareService iCareService;
+	
+	@Autowired
+	BillingService billingService;
+	
+	@Autowired
+	OrderService orderService;
+	
+	@Autowired
+	EncounterService encounterService;
+	
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+
 	@RequestMapping(value = "idgen", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> onGenerateId() {
@@ -94,13 +165,40 @@ public class ICareController {
         return results;
 
     }
-	
+
 	@RequestMapping(value = "codegen", method = RequestMethod.GET)
 	@ResponseBody
 	public List<String> onGenerateCode(@RequestParam(value = "globalProperty", required = true) String globalProperty,
 	        @RequestParam(value = "metadataType", required = true) String metadataType,
 	        @RequestParam(value = "count", defaultValue = "1", required = false) Integer count) throws Exception {
 		
+		List<String> generatedCode = iCareService.generateCode(globalProperty, metadataType, count);
+		return generatedCode;
+	}
+	
+	/**
+	 * Initially called after the getUsers method to get the landing form name
+	 * 
+	 * @return String form view name
+	 */
+	@RequestMapping(value = "summary", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> onGetSummary() {
+		Summary summary = iCareService.getSummary();
+		return summary.toMap();
+	}
+	
+	/**
+	 * Initially called after the getUsers method to get the landing form name
+	 * 
+	 * @return String form view name
+	 */
+
+	@RequestMapping(value = "codegen", method = RequestMethod.GET)
+	@ResponseBody
+	public List<String> onGenerateCode(@RequestParam(value = "globalProperty", required = true) String globalProperty,
+	        @RequestParam(value = "metadataType", required = true) String metadataType,
+	        @RequestParam(value = "count", defaultValue = "1", required = false) Integer count) throws Exception {
 		List<String> generatedCode = iCareService.generateCode(globalProperty, metadataType, count);
 		return generatedCode;
 	}
@@ -133,7 +231,7 @@ public class ICareController {
         results.put("results", items);
         return results;
     }
-	
+
 	@RequestMapping(value = "stockableitems", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> onGetStockableItems(@RequestParam(required = false) String q,
@@ -241,6 +339,34 @@ public class ICareController {
 		return iCareService.saveItem(item);
 	}
 	
+	@RequestMapping(value = "item", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> onPostItemJSON(@RequestBody Item item) {
+		
+		Item newItem = iCareService.saveItem(item);
+		return newItem.toMap();
+	}
+	
+	@RequestMapping(value = "itemByConcept/{conceptUuid}", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> onGetItemByConcept(@PathVariable("conceptUuid") String conceptUuid) {
+		
+		Item newItem = iCareService.getItemByConceptUuid(conceptUuid);
+		return newItem.toMap();
+	}
+	
+	@RequestMapping(value = "itemByDrugConcept/{conceptUuid}", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> onGetItemByDrugConcept(@PathVariable("conceptUuid") String conceptUuid) {
+		
+		Item newItem = iCareService.getItemByDrugConceptUuid(conceptUuid);
+		return newItem.toMap();
+	}
+	
+	public Item onPostItem(Item item) {
+		return iCareService.saveItem(item);
+	}
+
 	@RequestMapping(value = "itemprice", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> onGet(@RequestParam(defaultValue = "100") Integer limit, @RequestParam(defaultValue = "0") Integer startIndex, @RequestParam(required = false) String paymentType, @RequestParam(required = false) String visitUuid, @RequestParam(required = false) String drugUuid , @RequestParam(required = false) String conceptUuid ) throws ConfigurationException {
@@ -277,6 +403,7 @@ public class ICareController {
 
         return results;
     }
+
 	
 	@RequestMapping(value = "itemprice", method = RequestMethod.POST)
 	@ResponseBody
@@ -362,7 +489,71 @@ public class ICareController {
 		message = iCareService.sendMessage(message);
 		return message.toMap();
 	}
+
 	
+	@RequestMapping(value = "itemprice", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> onPostItemPrice(@RequestBody ItemPrice itemPrice) {
+		ItemPrice newItemPrice = iCareService.saveItemPrice(itemPrice);
+		return newItemPrice.toMap();
+	}
+	
+	/**
+	 * This class returns the form backing object. This can be a string, a boolean, or a normal java
+	 * pojo. The bean name defined in the ModelAttribute annotation and the type can be just defined
+	 * by the return type of this method
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	protected List<User> getUsers() throws Exception {
+		
+		// this object will be made available to the jsp page under the variable name
+		// that is defined in the @ModuleAttribute tag
+		return new ArrayList<User>();
+	}
+	
+	@RequestMapping(value = "laborder", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Order onPostLabOrderCreation(@RequestBody Map<String, Object> orderObject) throws Exception {
+		PatientService patientService = Context.getService(PatientService.class);
+		Patient patient = patientService.getPatientByUuid((String) orderObject.get("patient"));
+		
+		TestOrder order = new TestOrder();
+		order.setAction(Order.Action.valueOf((String) orderObject.get("action")));
+		order.setUrgency(Order.Urgency.valueOf((String) orderObject.get("urgency")));
+		order.setPatient(patient);
+		
+		ProviderService providerService = Context.getProviderService();
+		Provider provider = providerService.getProviderByUuid((String) orderObject.get("orderer"));
+		order.setOrderer(provider);
+		
+		Concept concept = new Concept();
+		concept.setUuid((String) orderObject.get("concept"));
+		order.setConcept(Context.getConceptService().getConceptByUuid((String) orderObject.get("concept")));
+		
+		OrderService orderService = Context.getOrderService();
+		order.setCareSetting(orderService.getCareSetting(1));
+		
+		Encounter encounter = new Encounter();
+		encounter.setUuid((String) orderObject.get("encounter"));
+		encounter.setPatient(patient);
+		order.setEncounter(Context.getEncounterService().getEncounterByUuid((String) orderObject.get("encounter")));
+		
+		//Order newOrder = billingService.createLabOrder(order);
+		//return newOrder;
+		return null;
+	}
+	
+	@RequestMapping(value = "message", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Object> sendMessage(@RequestBody Map<String, Object> messageObject) throws Exception {
+		
+		Message message = Message.fromMap(messageObject);
+		message = iCareService.sendMessage(message);
+		return message.toMap();
+	}
+	
+
 	@RequestMapping(value = "messages", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<Map<String, Object>> sendMessages(@RequestBody List<Map<String, Object>> messageList) throws Exception {
@@ -381,6 +572,7 @@ public class ICareController {
         }
         return messageList;
     }
+
 	
 	@RequestMapping(value = "orderstatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -450,6 +642,48 @@ public class ICareController {
 		return prescription.toMap();
 	}
 	
+
+	
+	@RequestMapping(value = "prescription", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Object> onPostDrugOrderCreation(@RequestBody Map<String, Object> orderObject) throws Exception {
+		Prescription prescription = Prescription.fromMap(orderObject);
+		
+		ConceptService conceptService = Context.getConceptService();
+		OrderService orderService = Context.getOrderService();
+		PatientService patientService = Context.getPatientService();
+		
+		prescription.setDoseUnits(conceptService.getConceptByUuid(prescription.getDoseUnits().getUuid()));
+		prescription.setDurationUnits(conceptService.getConceptByUuid(prescription.getDurationUnits().getUuid()));
+		prescription.setRoute(conceptService.getConceptByUuid(prescription.getRoute().getUuid()));
+		prescription.setFrequency(orderService.getOrderFrequencyByUuid(prescription.getFrequency().getUuid()));
+		prescription.setQuantityUnits(conceptService.getConceptByUuid(prescription.getQuantityUnits().getUuid()));
+
+		if (prescription.getDrug().getUuid() != null) {
+			prescription.setDrug(conceptService.getDrugByUuid(prescription.getDrug().getUuid()));
+		}
+		
+		prescription.setPatient(patientService.getPatientByUuid(prescription.getPatient().getUuid()));
+
+		
+		ProviderService providerService = Context.getProviderService();
+		Provider provider = providerService.getProviderByUuid(prescription.getOrderer().getUuid());
+		prescription.setOrderer(provider);
+
+		prescription.setConcept(conceptService.getConceptByUuid(prescription.getConcept().getUuid()));
+		prescription.setCareSetting(orderService.getCareSetting(1));
+		
+		prescription.setEncounter(Context.getEncounterService().getEncounterByUuid(prescription.getEncounter().getUuid()));
+
+		OrderType orderType = Context.getOrderService().getOrderTypeByName("Prescription");
+		if (orderType == null) {
+			throw new ConfigurationException("Prescription Order Type is not configured.");
+		}
+		prescription.setOrderType(orderType);
+		prescription = iCareService.savePrescription(prescription);
+		return prescription.toMap();
+	}
+
 	@RequestMapping(value = "visit", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getPendingVisit(@RequestParam(defaultValue = "100") Integer limit,
@@ -673,7 +907,7 @@ public class ICareController {
 		results.put("results", conceptSetsList);
 		return results;
 	}
-	
+
 	@RequestMapping(value = "location", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> getLocations(@RequestParam(value = "attributeType", required = false) String attributeType,
@@ -692,7 +926,7 @@ public class ICareController {
 		results.put("results", locationList);
 		return results;
 	}
-	
+
 	@RequestMapping(value = "drug", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> getDrugs(@RequestParam(value = "concept", required = false) String concept, @RequestParam(defaultValue = "50") Integer limit, @RequestParam(defaultValue = "0") Integer startIndex) {
@@ -867,6 +1101,7 @@ public class ICareController {
 		}
 		return formattedTrackedEntityInstances;
 	}
+
 	
 	@RequestMapping(value = "externalsystems/labrequest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -992,7 +1227,62 @@ public class ICareController {
 		returnResponse.put("answersCount", changedConcept.getAnswers().size());
 		return returnResponse;
 	}
+
+	@RequestMapping(value = "externalsystems/labrequest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String createLabRequest(@RequestBody Map<String, Object> labRequestObject) throws ParseException {
+		
+		Map<String, Object> labRequest = labRequestObject;
+		String response;
+		try {
+			response = iCareService.createPimaCovidLabRequest(labRequest, "");
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
 	
+	@RequestMapping(value = "externalsystems/labresult", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String saveLabResults(@RequestBody Map<String, Object> labResultObject) throws ParseException {
+		
+		Map<String, Object> labResult = labResultObject;
+		String response;
+		try {
+			response = iCareService.savePimaCovidLabResult(labResult);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "externalsystems/verifycredentials", method = RequestMethod.GET)
+	@ResponseBody
+	public String verifyExternalSystemCredentials(@RequestParam(value = "username", required = true) String username,
+	        @RequestParam(value = "password", required = true) String password,
+	        @RequestParam(value = "systemKey", required = true) String systemKey) throws ParseException {
+		
+		String verificationInfo = new String();
+		try {
+			verificationInfo = iCareService.verifyExternalSystemCredentials(username, password, systemKey);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		return verificationInfo;
+	}
+
 	@RequestMapping(value = "voidorder", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> voidOrder(@RequestBody Map<String, Object> voidObj) {
@@ -1028,6 +1318,7 @@ public class ICareController {
 		returnResponse.put("encounter", voidedEncounter.getUuid());
 		return returnResponse;
 	}
+
 	
 	@RequestMapping(value = "emailsession", method = RequestMethod.GET)
 	@ResponseBody
@@ -1659,3 +1950,4 @@ public class ICareController {
 		return response;
 	}
 }
+

@@ -398,6 +398,7 @@
                   'col-md-12': !useSideBar
                 }"
               >
+
                 <div class="row">
                   <div class="col-lg-7 col-md-7 col-sm-12 col-sx-12">
                     <div>
@@ -451,6 +452,91 @@
                         "
                         [clinicalObservations]="
                           dashboardParams?.observationsGroupedByConcept
+
+                <mat-accordion *ngIf="isInpatient">
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="isInpatient ? true : false"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Medication </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-patient-medication-summary
+                      *ngIf="activeVisit"
+                      [fromDispensing]="false"
+                      [patientVisit]="activeVisit"
+                      [isInpatient]="isInpatient"
+                      (updateConsultationOrder)="onUpdateConsultationOrder()"
+                    ></app-patient-medication-summary>
+                  </mat-expansion-panel>
+                </mat-accordion>
+                <mat-accordion *ngIf="isInpatient">
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="isInpatient ? true : false"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Emergency drugs </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-patient-medication-summary
+                      *ngIf="activeVisit"
+                      [fromDispensing]="false"
+                      [patientVisit]="activeVisit"
+                      [isInpatient]="isInpatient"
+                      (updateConsultationOrder)="onUpdateConsultationOrder()"
+                    ></app-patient-medication-summary>
+                  </mat-expansion-panel>
+                </mat-accordion>
+                <mat-accordion
+                  *ngIf="
+                    userPrivileges['CLINIC_ADD_PRESCRIPTION'] &&
+                    !isInpatient &&
+                    !isTheatre
+                  "
+                >
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="false"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Emergency drugs </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-patient-medication-summary
+                      *ngIf="activeVisit && updateMedication"
+                      [fromDispensing]="false"
+                      [patientVisit]="activeVisit"
+                      [forConsultation]="true"
+                      [isInpatient]="isInpatient"
+                      (updateConsultationOrder)="onUpdateConsultationOrder()"
+                      (updateMedicationComponent)="
+                        onUpdateMedicationComponent()
+                      "
+                    ></app-patient-medication-summary>
+                  </mat-expansion-panel>
+                </mat-accordion>
+                <mat-accordion
+                  *ngIf="
+                    userPrivileges['CLINIC_ADD_PROVISIONAL_DIAGNOSIS'] &&
+                    !isInpatient &&
+                    !isTheatre
+                  "
+                >
+                  <mat-expansion-panel
+                    class="mb-2 border p-0"
+                    [expanded]="true"
+                  >
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>Provisional Diagnoses </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div
+                      *ngIf="dashboardParams?.formEntities['Visit Diagnoses']"
+                    >
+                      <app-patient-diagnoses-summary
+                        [isConfirmedDiagnosis]="false"
+                        [forConsultation]="true"
+                        [diagnosisFormDetails]="
+                          dashboardParams?.formEntities['Visit Diagnoses']
+
                         "
                         [patient]="dashboardParams?.currentPatient"
                         [location]="dashboardParams?.currentLocation"
