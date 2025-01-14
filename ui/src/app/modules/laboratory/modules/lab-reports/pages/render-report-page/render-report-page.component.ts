@@ -9,7 +9,10 @@ import { SystemSettingsService } from "src/app/core/services/system-settings.ser
 import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import { ExportService } from "src/app/shared/services/export.service";
 import { AppState } from "src/app/store/reducers";
-import { getParentLocation } from "src/app/store/selectors";
+import {
+  getLoadedSystemSettingsByKey,
+  getParentLocation,
+} from "src/app/store/selectors";
 import * as moment from "moment";
 
 @Component({
@@ -26,6 +29,7 @@ export class RenderReportPageComponent implements OnInit {
   dateChanged: boolean = false;
   facilityDetails$: Observable<any>;
   selectionDates: any;
+  excelDownloadFormat$: Observable<any>;
   constructor(
     private route: ActivatedRoute,
     private exportService: ExportService,
@@ -35,6 +39,11 @@ export class RenderReportPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.excelDownloadFormat$ = this.store.select(
+      getLoadedSystemSettingsByKey(
+        "lis.systemSettings.others.downloadFileFormat.excel"
+      )
+    );
     this.reportId = this.route.snapshot.params["id"];
     this.report$ = this.systemSettingsService.getSystemSettingsByUuid(
       this.reportId
@@ -96,10 +105,16 @@ export class RenderReportPageComponent implements OnInit {
     this.exportService.exportCSV(currentReport?.description, table);
   }
 
-  onDownloadXLS(e: Event, id: string, fileName: string, type?: string) {
+  onDownloadXLS(
+    e: Event,
+    id: string,
+    fileName: string,
+    type?: string,
+    extension?: string
+  ) {
     e.stopPropagation();
     const table = document.getElementById("export-table");
-    this.exportDataService.downloadTableToExcel(id, fileName, type);
+    this.exportDataService.downloadTableToExcel(id, fileName, type, extension);
   }
 
   onPrint(e) {

@@ -9,6 +9,7 @@ import { PrivilegesAndRolesComponent } from "./privileges-and-roles/privileges-a
 import { DrugManagementComponent } from "./drug-management/drug-management.component";
 import { ReportsManagementComponent } from "./reports-management/reports-management.component";
 import { ReportsSettingsComponent } from "./reports-settings/reports-settings.component";
+import { ProgramsManagementComponent } from "./programs-management/programs-management.component";
 
 export const maintenancePages: any[] = [
   MaintenanceHomeComponent,
@@ -22,6 +23,7 @@ export const maintenancePages: any[] = [
   DrugManagementComponent,
   ReportsManagementComponent,
   ReportsSettingsComponent,
+  ProgramsManagementComponent,
 ];
 
 export {

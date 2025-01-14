@@ -1,4 +1,3 @@
-import { ConsultationService } from './consultation.service';
-import { ProgramsService } from './programs.service';
+import { ConsultationService } from "./consultation.service";
 
-export const programServices: any[] = [ConsultationService, ProgramsService];
+export const programServices: any[] = [ConsultationService];

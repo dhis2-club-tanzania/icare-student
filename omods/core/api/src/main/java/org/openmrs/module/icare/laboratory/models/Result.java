@@ -2,7 +2,10 @@ package org.openmrs.module.icare.laboratory.models;
 
 import org.openmrs.*;
 
+import javax.naming.Context;
 import javax.persistence.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -78,7 +81,16 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "result")
 	private List<AssociatedFieldResult> associatedFieldResults = new ArrayList<>(0);
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "tested_by", nullable = true)
+	private User testedBy;
+
+	@Column(name = "date_tested")
+	private Date testedDate;
+
+	@Transient
+	private String instrumentCode;
 	public Integer getId() {
 		return id;
 	}
@@ -91,8 +103,8 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 		return this.abnormal;
 	}
 	
-	public void setAbnormal(Boolean abormalResults) {
-		this.abnormal = abormalResults;
+	public void setAbnormal(Boolean abnormalResults) {
+		this.abnormal = abnormalResults;
 	}
 	
 	public TestAllocation getTestAllocation() {
@@ -199,9 +211,28 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 		this.associatedFieldResults = associatedFieldResults;
 	}
 
-	public static Result fromMap(Map<String, Object> map) {
+	public void setTestedBy(User testedBy) {
+		this.testedBy = testedBy;
+	}
+
+	public User getTestedBy() {
+		return testedBy;
+	}
+
+	public void setTestedDate(Date testedDate) {
+		this.testedDate = testedDate;
+	}
+
+	public Date getTestedDate() {
+		return testedDate;
+	}
+
+	public static Result fromMap(Map<String, Object> map) throws ParseException {
 		Result result = new Result();
-		
+
+		if ((map.get("uuid")) != null) {
+			result.setUuid((map.get("uuid").toString()));
+		}
 		if ((map.get("valueText")) != null) {
 			result.setValueText((map.get("valueText").toString()));
 		}
@@ -229,9 +260,11 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 		}
 		
 		if ((map.get("valueCoded")) != null) {
-			Concept valueCoded = new Concept();
-			valueCoded.setUuid(((Map) map.get("valueCoded")).get("uuid").toString());
-			result.setValueCoded(valueCoded);
+			if(((Map) map.get("valueCoded")).get("uuid") != null ) {
+				Concept valueCoded = new Concept();
+				valueCoded.setUuid(((Map) map.get("valueCoded")).get("uuid").toString());
+				result.setValueCoded(valueCoded);
+			}
 		}
 		
 		if ((map.get("valueDrug")) != null) {
@@ -245,6 +278,22 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 				result.abnormal = true;
 			} else {
 				result.abnormal = false;
+			}
+		}
+
+		if (map.get("voided") != null) {
+			if ((Boolean) map.get("voided")) {
+				result.setVoided(true);
+				if (map.get("voidReason") != null) {
+					result.setVoidReason(map.get("voidReason").toString());
+				}
+				if (map.get("voidedBy") != null) {
+					User voidedBy = new User();
+					voidedBy.setUuid(map.get("voidedBy").toString());
+					result.setVoidedBy(voidedBy);
+				}
+			} else {
+				result.setVoided(false);
 			}
 		}
 		
@@ -271,6 +320,11 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 			instrument.setUuid(((Map) map.get("instrument")).get("uuid").toString());
 			result.setInstrument(instrument);
 		}
+
+		if (map.get("instrument") != null && ((Map) map.get("instrument")).get("code") != null) {
+			String instrumentCode = instrumentCode = ((Map) map.get("instrument")).get("code").toString();
+			result.setInstrumentCode(instrumentCode);
+		}
 		
 		if (map.get("resultStatus") != null) {
 			result.setResultStatus(map.get("resultStatus").toString());
@@ -288,6 +342,21 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 
 			associatedFieldResultsList.add(associatedFieldResult);
 			result.setAssociatedFieldResults(associatedFieldResultsList);
+		}
+
+		if(map.get("testedBy") != null){
+			User user = new User();
+			user.setUuid(map.get("testedBy").toString());
+			result.setTestedBy(user);
+		}
+
+		if(map.get("testedDate") != null){
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			if (map.get("testedDate").toString().length() == 10) {
+				result.setTestedDate(dateFormat.parse(map.get("testedDate").toString()));
+			} else {
+				result.setTestedDate(dateFormat.parse(map.get("testedDate").toString().substring(0, map.get("testedDate").toString().indexOf("T"))));
+			}
 		}
 		
 		Concept concept = new Concept();
@@ -311,6 +380,32 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 		resultsObject.put("valueComplex", this.getValueComplex());
 		resultsObject.put("valueModifier", this.getValueModifier());
 		resultsObject.put("valueDateTime", this.getValueDatetime());
+		if(this.getTestedBy() != null){
+			Map<String, Object> testedByObject = new HashMap<String, Object>();
+			testedByObject.put("uuid",this.getTestedBy().getUuid());
+			testedByObject.put("name",this.getTestedBy().getDisplayString());
+			resultsObject.put("testedBy", testedByObject);
+		}
+
+		if (this.getTestedDate() != null) {
+			resultsObject.put("testedDate",this.getTestedDate().toString());
+		}
+
+		if (this.getVoided() != null) {
+			resultsObject.put("voided",this.getVoided());
+		}
+		if (this.getVoidedBy() != null) {
+			Map<String, Object> voidedBy = new HashMap<>();
+			voidedBy.put("uuid", this.getVoidedBy().getUuid());
+			voidedBy.put("display", this.getVoidedBy().getDisplayString());
+			resultsObject.put("voidedBy",voidedBy);
+		}
+
+		if (this.getVoidReason() != null) {
+			resultsObject.put("voidReason",this.getVoidReason());
+		}
+
+
 		if (this.getAbnormal() != null) {
 			resultsObject.put("abnormal", this.getAbnormal());
 		} else {
@@ -337,9 +432,14 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 		
 		Map<String, Object> instrument = new HashMap<String, Object>();
 		if (this.getInstrument() != null) {
+			List<String> instrumentsCodes = new ArrayList<>();
+			instrumentsCodes = getCodes();
 			instrument.put("uuid", this.getInstrument().getUuid());
 			instrument.put("display", this.getInstrument().getDisplayString());
-			instrument.put("name", this.getInstrument().getName().getName());
+			if (this.getInstrument().getName() != null && this.getInstrument().getName().getName() != null) {
+				instrument.put("name", this.getInstrument().getName().getName());
+			}
+			instrument.put("instrumentCodes", instrumentsCodes);
 		} else {
 			instrument = null;
 		}
@@ -426,7 +526,26 @@ public class Result extends BaseOpenmrsData implements java.io.Serializable {
 	public void setInstrument(Concept instrument) {
 		this.instrument = instrument;
 	}
-	
+
+	public  String getInstrumentCode() {
+		return  this.instrumentCode;
+	}
+
+	public  void setInstrumentCode(String code) {
+		this.instrumentCode = code;
+	}
+
+	public List<String> getCodes() {
+		List<String> codes = new ArrayList<>();
+		Collection<ConceptMap> conceptMaps = this.instrument.getConceptMappings();
+		if (conceptMaps.size() > 0) {
+			for(ConceptMap conceptMap: conceptMaps){
+				ConceptReferenceTerm conceptReferenceTerm = conceptMap.getConceptReferenceTerm();
+				codes.add(conceptReferenceTerm.getCode().toString());
+			}
+		}
+		return  codes;
+	}
 	/*
 	For statuses passed via results object
 	* */

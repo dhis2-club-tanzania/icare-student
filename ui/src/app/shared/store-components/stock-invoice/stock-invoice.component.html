@@ -1,0 +1,36 @@
+<div class="w-100">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>Draft Invoices</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-stock-invoices-list
+          [currentLocation]="currentLocation"
+          [status]="'DRAFT'"
+        ></app-stock-invoices-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>Received Invoices</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-stock-invoices-list
+          [status]="'RECEIVED'"
+        ></app-stock-invoices-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span>Receive New Items</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-stock-receiving-form
+          [currentLocation]="currentLocation"
+          [reloadForm]="reloadForm()"
+        ></app-stock-receiving-form>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

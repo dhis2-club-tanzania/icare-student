@@ -1,65 +1,79 @@
-<mat-card>
-  <div class="w-100 d-flex justify-content-between mb-2">
-    <div class="h4 font-weight-normal">User Management</div>
-    <button
-      mat-flat-button
-      color="primary"
-      style="height: 40px"
-      (click)="onAddUser($event)"
-    >
-      <mat-icon *ngIf="!addingUserItem">add</mat-icon>
-      <mat-spinner
+<div
+  *ngIf="{ securitySystemSettings: securitySystemSettings$ | async } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.securitySystemSettings"
+  ></mat-progress-bar>
+  <mat-card *ngIf="params?.securitySystemSettings">
+    <div class="w-100 d-flex justify-content-between mb-2">
+      <div class="h4 font-weight-normal">User Management</div>
+      <button
+        mat-flat-button
         color="primary"
-        *ngIf="addingUserItem"
-        [diameter]="20"
-        style="display: inline-block !important; margin-right: 4px"
-      ></mat-spinner>
-      <span>Add User</span>
-    </button>
-  </div>
-
-  <div
-    class="w-100"
-    *ngIf="{
-      users: users$ | async,
-      currentUser: currentUser$ | async
-    } as params"
-  >
-    <mat-form-field
-      appearance="fill"
-      style="margin-bottom: 0px; margin-left: 1px"
-      class="w-100"
-    >
-      <mat-label>Search Users</mat-label>
-      <input
-        autocomplete="off"
-        matInput
-        placeholder="search"
-        type="search"
-        (keyup)="applyFilter($event)"
-      />
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <div class="w-100" *ngIf="params?.users">
-      <lab-users-list
-        [users]="params?.users"
-        [currentUser]="params?.currentUser"
-        [pageCount]="pageCount"
-        [page]="page"
-        (edit)="getRecord($event)"
-      ></lab-users-list>
-      <div class="d-flex justify-content-end mt-2">
-        <button mat-button (click)="getUsersList($event, 'prev')">Prev</button>
-        <button mat-button class="ml-2" (click)="getUsersList($event, 'next')">
-          Next
-        </button>
-      </div>
+        style="height: 40px"
+        (click)="onAddUser($event, params?.securitySystemSettings)"
+      >
+        <mat-icon *ngIf="!addingUserItem">add</mat-icon>
+        <mat-spinner
+          color="primary"
+          *ngIf="addingUserItem"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        <span>Add User</span>
+      </button>
     </div>
-    <!-- loading section -->
-    <mat-progress-bar
-      *ngIf="!params?.users"
-      mode="indeterminate"
-    ></mat-progress-bar>
-    <!-- end of loading section -->
-  </div>
-</mat-card>
+
+    <div
+      class="w-100"
+      *ngIf="{
+        users: users$ | async,
+        currentUser: currentUser$ | async
+      } as params"
+    >
+      <mat-form-field
+        appearance="fill"
+        style="margin-bottom: 0px; margin-left: 1px"
+        class="w-100"
+      >
+        <mat-label>Search Users</mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="search"
+          type="search"
+          (keyup)="applyFilter($event)"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <div class="w-100" *ngIf="params?.users">
+        <lab-users-list
+          [users]="params?.users"
+          [currentUser]="params?.currentUser"
+          [pageCount]="pageCount"
+          [page]="page"
+          (edit)="getRecord($event)"
+        ></lab-users-list>
+        <div class="d-flex justify-content-end mt-2">
+          <button mat-button (click)="getUsersList($event, 'prev')">
+            Prev
+          </button>
+          <button
+            mat-button
+            class="ml-2"
+            (click)="getUsersList($event, 'next')"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      <!-- loading section -->
+      <mat-progress-bar
+        *ngIf="!params?.users"
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <!-- end of loading section -->
+    </div>
+  </mat-card>
+</div>

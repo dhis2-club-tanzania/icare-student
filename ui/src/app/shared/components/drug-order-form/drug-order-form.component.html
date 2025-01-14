@@ -59,15 +59,16 @@
     ></app-form> -->
 
     <app-form
-      *ngIf="fromDispensing && quantityField"
-      [fields]="[quantityField]"
-      (formUpdate)="onFormUpdate('quantity', $event)"
-    ></app-form>
-
-    <app-form
       *ngIf="fromDispensing"
       [fields]="[drugOrderFormsMetadata?.instructionField]"
       (formUpdate)="onFormUpdate('instructions', $event)"
+    ></app-form>
+
+    <app-form
+      *ngIf="fromDispensing && quantityField"
+      [fields]="[quantityField]"
+      (enterKeyPressedFields)="onGetEnterKeyResponsedFields($event)"
+      (formUpdate)="onFormUpdate('quantity', $event)"
     ></app-form>
   </div>
 

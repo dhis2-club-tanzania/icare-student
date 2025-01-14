@@ -87,8 +87,8 @@ export class SharedParameterResultsComponent implements OnInit {
                       ...resultValue,
                       value: resultValue?.valueBoolean
                         ? resultValue?.valueBoolean
-                        : resultValue?.valueTex
-                        ? resultValue?.valueTex
+                        : resultValue?.valueText
+                        ? resultValue?.valueText
                         : resultValue?.valueNumeric
                         ? resultValue?.valueNumeric
                         : resultValue?.valueDateTime

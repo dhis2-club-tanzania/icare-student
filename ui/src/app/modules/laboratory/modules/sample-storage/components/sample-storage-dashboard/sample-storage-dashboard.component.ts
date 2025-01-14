@@ -3,8 +3,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import { orderBy } from "lodash";
 import { Observable, zip } from "rxjs";
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
-import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/models/lis-configurations.model";
 import { OtherClientLevelSystemsService } from "src/app/modules/laboratory/resources/services/other-client-level-systems.service";
 import { SharedConfirmationComponent } from "src/app/shared/components/shared-confirmation/shared-confirmation.component";
 import { SharedSamplesVerificationIntegratedComponent } from "src/app/shared/dialogs/shared-samples-verification-integrated/shared-samples-verification-integrated.component";
@@ -33,7 +33,7 @@ export class SampleStorageDashboardComponent implements OnInit {
   @Input() labSamplesContainers: any;
   @Input() configs: any;
   @Input() codedSampleRejectionReasons: any;
-  @Input() LISConfigurations: LISConfigurationsModel;
+  @Input() LISConfigurations: iCareConnectConfigurationsModel;
   @Input() currentUser: any;
   @Input() privileges: any;
   @Input() providerDetails: any;
@@ -58,6 +58,7 @@ export class SampleStorageDashboardComponent implements OnInit {
   message: any = {};
   testResultsMapping$: Observable<any>;
   externalSystemsReferenceConceptUuid$: Observable<string>;
+  shouldRerenderSamplesList: boolean = false;
   constructor(
     private store: Store<AppState>,
     private dialog: MatDialog,
@@ -140,13 +141,13 @@ export class SampleStorageDashboardComponent implements OnInit {
   }
 
   onDispose(sample: any): void {
-    event.stopPropagation();
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "30%",
       data: {
         modalTitle: `Dispose sample`,
-        modalMessage: `Are you sure to dispose results of ${sample?.label}?`,
+        modalMessage: `Are you sure to dispose ${sample?.label}?`,
         showRemarksInput: true,
+        captureDisposeMethods: true,
       },
       disableClose: false,
       panelClass: "custom-dialog-container",
@@ -154,30 +155,54 @@ export class SampleStorageDashboardComponent implements OnInit {
 
     confirmDialog.afterClosed().subscribe((res) => {
       if (res.confirmed) {
-        const sampleStatus = {
-          sample: {
-            uuid: sample?.uuid,
-          },
-          user: {
-            uuid: this.userUuid,
-          },
-          remarks: res?.remarks,
-          status: "DISPOSED",
-          category: "DISPOSED",
-        };
+        this.shouldRerenderSamplesList = true;
+        setTimeout(() => {
+          let sampleStatuses = [];
+          const sampleStatus = {
+            sample: {
+              uuid: sample?.uuid,
+            },
+            user: {
+              uuid: this.userUuid,
+            },
+            remarks: res?.remarks,
+            status: "DISPOSED",
+            category: "DISPOSED",
+          };
+          sampleStatuses = [...sampleStatuses, sampleStatus];
 
-        this.samplesService
-          .setSampleStatus(sampleStatus)
-          .subscribe((response) => {
-            if (response.error) {
-              // console.log("Error: " + response.error);
-            }
-            if (!response.error) {
-              // console.log("Response: " + response);
-            }
-          });
+          if (res?.disposeMethods && res?.disposeMethods?.length > 0) {
+            sampleStatuses = [
+              ...sampleStatuses,
+              ...res?.disposeMethods?.map((testMethod) => {
+                return {
+                  sample: {
+                    uuid: sample?.uuid,
+                  },
+                  user: {
+                    uuid: this.userUuid,
+                  },
+                  remarks: testMethod?.name,
+                  status: testMethod?.uuid,
+                  category: "DISPOSE_METHOD",
+                };
+              }),
+            ];
+          }
+          this.shouldRerenderSamplesList = false;
+
+          this.samplesService
+            .setMultipleSampleStatuses(sampleStatuses)
+            .subscribe((response) => {
+              if (response.error) {
+                // console.log("Error: " + response.error);
+              }
+              if (!response.error) {
+                // console.log("Response: " + response);
+              }
+            });
+        }, 50);
       }
-      this.getCompletedSamples();
     });
   }
 
@@ -202,6 +227,6 @@ export class SampleStorageDashboardComponent implements OnInit {
   }
 
   onGetSelectedSampleDetails(sample: any): void {
-    console.log(sample);
+    this.onDispose(sample);
   }
 }

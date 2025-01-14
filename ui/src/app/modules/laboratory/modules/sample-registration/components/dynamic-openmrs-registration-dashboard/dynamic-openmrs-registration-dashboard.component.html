@@ -1,0 +1,18 @@
+<div class="w-100" *ngIf="{ formUuids: formUuids$ | async } as params">
+  <mat-progress-bar
+    color="primary"
+    mode="indeterminate"
+    *ngIf="!params?.formUuids"
+  ></mat-progress-bar>
+  <!-- <div *ngIf="errors && errors?.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div> -->
+  <div class="w-100">
+    <app-dynamic-openmrs-registration-form
+      *ngIf="params?.formUuids"
+      [formUuids]="params?.formUuids"
+      (formDataUpdate)="onFormUpdate($event)"
+      (formId)="onGetFormId($event)"
+    ></app-dynamic-openmrs-registration-form>
+  </div>
+</div>

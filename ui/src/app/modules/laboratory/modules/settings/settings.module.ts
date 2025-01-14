@@ -20,6 +20,7 @@ import { ProfilesAndAccessControlComponent } from "./containers/profiles-and-acc
 import { ExtendedParametersSettingsComponent } from "./containers/extended-parameters-settings/extended-parameters-settings.component";
 import { settingsContainers } from "./containers";
 import { SampleRegistrationModule } from "../sample-registration/sample-registration.module";
+import { SharedLabModule } from "../../shared/modules/shared-lab.module";
 
 @NgModule({
   imports: [
@@ -27,6 +28,7 @@ import { SampleRegistrationModule } from "../sample-registration/sample-registra
     SettingsRoutingModule,
     SharedModule,
     SampleRegistrationModule,
+    SharedLabModule,
   ],
   declarations: [
     SettingsComponent,

@@ -14,6 +14,7 @@ export class SharedSystemSettingsListComponent implements OnInit {
   page: number = 1;
   pageSize: number = 10;
   @Input() key: string;
+  @Input() currentUser: any;
   error: any;
 
   saving: boolean = false;
@@ -38,7 +39,7 @@ export class SharedSystemSettingsListComponent implements OnInit {
     event.stopPropagation();
     this.dialog
       .open(ManageSystemSettingComponent, {
-        width: "40%",
+        minWidth: "40%",
         data: {
           ...(!isNew ? data : {}),
           key: this.key,

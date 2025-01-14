@@ -53,6 +53,7 @@ export class TableComponent implements OnInit {
     new EventEmitter<TableSelectAction>();
   @Output() addAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() confirmAction: EventEmitter<any> = new EventEmitter<any>();
+  @Output() printPrescriptions: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -107,6 +108,11 @@ export class TableComponent implements OnInit {
       actionOption,
       data,
     });
+  }
+
+  onPrintPrescriptions(e: any, drugOrders: any) {
+    e?.stopPropagation();
+    this.printPrescriptions.emit(drugOrders);
   }
 
   onOpenMessageConstruction(

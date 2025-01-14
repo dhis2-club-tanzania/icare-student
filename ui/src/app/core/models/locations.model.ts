@@ -1,3 +1,5 @@
+import { LocationAttributeGetFull } from "src/app/shared/resources/openmrs";
+
 export interface Location {
   uuid: string;
   display?: string;
@@ -10,13 +12,7 @@ export interface Location {
   description?: string;
   childLocations?: Location[];
   parentLocation?: Location[];
-  attributes?: {
-    display?: string;
-    uuid?: string;
-    value?: string;
-    voided?: boolean;
-    attributeType?: { uuid?: string; display?: string };
-  }[];
+  attributes?: LocationAttributeGetFull[];
   tags?: any[];
   path: string;
   beds?: Location[];

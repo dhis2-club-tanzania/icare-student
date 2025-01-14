@@ -115,7 +115,7 @@ export class InpatientComponent implements OnInit {
     this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
     this.activeVisit$ = this.store.pipe(select(getActiveVisit));
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
   }
 
   onAssignBed(location, patient, provider, visit, bedOrdersWithBillStatus) {
@@ -215,9 +215,8 @@ export class InpatientComponent implements OnInit {
   }
 
   dischargePatient(event: any, visit, currentPatient, provider, lastBedOrder) {
-    console.log("--------------->", event);
     this.dialog.open(DischargePatientModalComponent, {
-      width: "30%",
+      minWidth: "30%",
       data: {
         ...visit,
         provider,
@@ -232,7 +231,7 @@ export class InpatientComponent implements OnInit {
     event.stopPropagation();
     this.dialog
       .open(CreatePatientBedOrderModalComponent, {
-        width: "30%",
+        minWidth: "30%",
         data: {
           ...visit,
           provider,

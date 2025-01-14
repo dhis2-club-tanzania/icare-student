@@ -3,7 +3,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
 import {
-  getAgeInYearsMontthsDays,
+  getAgeInYearsMonthsDays,
   getDateDifferenceYearsMonthsDays,
 } from "src/app/shared/helpers/date.helpers";
 import {
@@ -45,6 +45,7 @@ import { map, tap } from "rxjs/operators";
 import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { PatientService } from "src/app/shared/resources/patient/services/patients.service";
 import { Field } from "src/app/shared/modules/form/models/field.model";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 @Component({
   selector: "app-registration-add",
   templateUrl: "./registration-add.component.html",
@@ -123,7 +124,8 @@ export class RegistrationAddComponent implements OnInit {
     private systemSettingsService: SystemSettingsService,
     private identifierService: IdentifiersService,
     private conceptService: ConceptsService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {}
 
   get mandatoryFieldsMissing(): boolean {
@@ -274,7 +276,7 @@ export class RegistrationAddComponent implements OnInit {
 
     // let birthdate = new Date(this.patient?.dob);
     // let ageObject = getDateDifferenceYearsMonthsDays(birthdate, new Date());
-    let ageObject = getAgeInYearsMontthsDays(this.patient?.dob);
+    let ageObject = getAgeInYearsMonthsDays(this.patient?.dob);
 
     this.patient.age = {
       ...this.patient.age,
@@ -441,7 +443,7 @@ export class RegistrationAddComponent implements OnInit {
     this.residenceDetailsLocation$ = this.locationService.getLocationById(
       this.residenceDetailsLocationUuid
     );
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
     this.showPatientType$ =
       this.systemSettingsService.getSystemSettingsDetailsByKey(
         `icare.registration.settings.showPatientTypeField`
@@ -600,9 +602,8 @@ export class RegistrationAddComponent implements OnInit {
                   return attribute.attributeType.display === "kinPhone";
                 }
               )[0]?.value;
-            this.residenceField.value = this.residenceField.searchTerm = this
-              ?.patientInformation?.patient?.person?.preferredAddress
-              ?.cityVillage
+            this.residenceField.value = this?.patientInformation?.patient
+              ?.person?.preferredAddress?.cityVillage
               ? this?.patientInformation?.patient?.person?.preferredAddress
                   ?.cityVillage
               : this?.patientInformation?.patient?.person?.preferredAddress
@@ -864,6 +865,7 @@ export class RegistrationAddComponent implements OnInit {
             .subscribe(
               (updatePatientResponse) => {
                 if (!updatePatientResponse?.error) {
+                  this.trackActionForAnalytics(`Save Registration: Edit`);
                   this.notificationService.show(
                     new Notification({
                       message: "Patient details updated succesfully",
@@ -957,6 +959,7 @@ export class RegistrationAddComponent implements OnInit {
                             .open(StartVisitModelComponent, {
                               width: "85%",
                               data: { patient: patientResponse },
+                              disableClose: false,
                             })
                             .afterClosed()
                             .subscribe((visitDetails) => {
@@ -997,6 +1000,17 @@ export class RegistrationAddComponent implements OnInit {
         this.openSnackBar("Error: location is not set", null);
       }
     }
+
+    this.trackActionForAnalytics(`Save Registration: Save`);
+  }
+
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+    this.googleAnalyticsService.sendAnalytics(
+      "Registration",
+      eventname,
+      "Registration"
+    );
   }
 
   openSnackBar(message: string, action: string) {
@@ -1175,7 +1189,7 @@ export class RegistrationAddComponent implements OnInit {
   }
 
   validateNamesInputs(value, key) {
-    var regex = /^[a-zA-Z ]{2,30}$/;
+    var regex = /^[a-zA-Z' ]{2,30}$/;
     this.validatedTexts[key] = regex.test(value) ? "valid" : "invalid";
   }
 

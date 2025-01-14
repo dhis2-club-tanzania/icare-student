@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { Store } from "@ngrx/store";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { map, take } from "rxjs/operators";
@@ -8,6 +8,7 @@ import {
   getAllUSerRoles,
   getCurrentUserInfo,
   getCurrentUserPrivileges,
+  getUserAssignedLocations,
 } from "src/app/store/selectors/current-user.selectors";
 import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import {
@@ -20,12 +21,20 @@ import {
   loadOrderTypes,
   go,
   clearVisitsDatesParameters,
+  setCurrentUserCurrentLocation,
+  loadSystemSettings,
 } from "src/app/store/actions";
 import { loadSpecimenSources } from "./store/actions/specimen-sources-and-tests-management.actions";
-import { getAllSampleTypes, getCurrentLocation } from "src/app/store/selectors";
-import { LISConfigurationsModel } from "./resources/models/lis-configurations.model";
+import {
+  getAllSampleTypes,
+  getCurrentLocation,
+  getLoadedSystemSettingsState,
+} from "src/app/store/selectors";
 import { getLISConfigurations } from "src/app/store/selectors/lis-configurations.selectors";
 import { Title } from "@angular/platform-browser";
+import { LocationService } from "src/app/core/services";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 
 @Component({
   selector: "lab-root",
@@ -68,18 +77,24 @@ export class LaboratoryComponent implements OnInit {
    * 2. iCare.Laboratory.agencyConceptUuid
    */
 
-  LISConfigurations$: Observable<LISConfigurationsModel>;
+  LISConfigurations$: Observable<iCareConnectConfigurationsModel>;
   currentLocation$: Observable<any>;
+  labs$: Observable<any[]>;
+  errors: any[] = [];
+  loadedSystemSettings$: Observable<boolean>;
 
   constructor(
     private store: Store<AppState>,
     private router: Router,
     private route: ActivatedRoute,
-    private titleService: Title
+    private titleService: Title,
+    private locationService: LocationService,
+    private systemSettingsService: SystemSettingsService
   ) {
     this.store.dispatch(loadRolesDetails());
     this.store.dispatch(loadOrderTypes());
     // this.store.dispatch(loadLISConfigurations());
+    this.labs$ = this.store.select(getUserAssignedLocations);
 
     this.LISConfigurations$ = this.store.select(getLISConfigurations);
     router.events.pipe(take(1)).subscribe((currentRoute) => {
@@ -163,6 +178,30 @@ export class LaboratoryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.systemSettingsService
+      .getSystemSettingsByKey(`icare.general.selectedSystemSettings`)
+      .subscribe((response) => {
+        if (response && response !== "none" && !response?.error) {
+          this.store.dispatch(
+            loadSystemSettings({ settingsKeyReferences: response })
+          );
+          this.loadedSystemSettings$ = this.store.select(
+            getLoadedSystemSettingsState
+          );
+        } else {
+          this.errors = [
+            ...this.errors,
+            {
+              error: {
+                error:
+                  "There is missing configuration for icare.general.selectedSystemSettings, contact IT",
+                message:
+                  "There is missing configuration for icare.general.selectedSystemSettings, contact IT",
+              },
+            },
+          ];
+        }
+      });
     this.LISConfigurations$.subscribe((response) => {
       if (response && response?.isLIS) {
         this.titleService.setTitle("NPHL IS");
@@ -237,7 +276,31 @@ export class LaboratoryComponent implements OnInit {
       navigationDetails && navigationDetails?.path[0]
         ? navigationDetails?.path[0]?.replace("/laboratory/", "")
         : "";
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
+  }
+
+  setCurrentLab(location: any): void {
+    this.currentLocation$ = of(null);
+    if (location) {
+      localStorage.setItem("currentLocation", JSON.stringify(location));
+
+      setTimeout(() => {
+        this.currentLocation$ = this.store.select(getCurrentLocation(true));
+      }, 100);
+    } else {
+      localStorage.setItem(
+        "currentLocation",
+        JSON.stringify({ name: "All", display: "All" })
+      );
+
+      setTimeout(() => {
+        this.currentLocation$ = this.store.select(getCurrentLocation(true));
+
+        if (this.currentRoutePath === "sample-registration") {
+          this.changeRoute(null, "sample-acceptance-and-results", true);
+        }
+      }, 100);
+    }
   }
 
   toggleMenuItems(event: Event): void {
@@ -255,7 +318,28 @@ export class LaboratoryComponent implements OnInit {
     showDate: boolean,
     dateRange?: number
   ) {
-    event.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
+    const currentLoc = localStorage.getItem("currentLocation");
+    if (currentLoc && currentLoc.indexOf("{") > -1) {
+    } else {
+      try {
+        const locationUuid = JSON.parse(localStorage.getItem("userLocations"));
+        this.locationService
+          .getLocationById(locationUuid)
+          .subscribe((response: any) => {
+            if (response) {
+              this.store.dispatch(
+                setCurrentUserCurrentLocation({ location: response })
+              );
+              this.store.dispatch(
+                loadLabConfigurations({ periodParameters: this.parameters })
+              );
+            }
+          });
+      } catch (e) {}
+    }
     this.currentRoutePath = routePath;
     this.showDate = showDate;
     if (this.showDate) {

@@ -35,6 +35,9 @@ export class BatchRegistrationComponent implements OnInit {
   @Input() barcodeSettings: any;
   @Input() specimenSources: ConceptGetFull[];
 
+  @Input() personEmailAttributeTypeUuid: string;
+  @Input() personPhoneAttributeTypeUuid: string;
+
   @Output() reloadRegisterSample: EventEmitter<any> = new EventEmitter();
   formData: any;
   useExistingBatchset: boolean = false;
@@ -1079,9 +1082,9 @@ export class BatchRegistrationComponent implements OnInit {
         this.sampleService.createBatch(batches).subscribe((response) => {
           if (!response?.error) {
             this.reloadRegisterSample.emit({ fromKey: "BATCH" });
-            console.log("==> Batch created; ", response);
+            // console.log("==> Batch created; ", response);
           } else {
-            console.log("==> Failed to create batch; ", response);
+            // console.log("==> Failed to create batch; ", response);
           }
         });
       }
@@ -1105,7 +1108,7 @@ export class BatchRegistrationComponent implements OnInit {
                   this.reloadRegisterSample.emit({
                     fromKey: "BATCH",
                   });
-                  console.log("==> Batch created; ", response);
+                  // console.log("==> Batch created; ", response);
                 } else {
                   this.errors = [...this.errors, response?.error];
                 }
@@ -1151,7 +1154,7 @@ export class BatchRegistrationComponent implements OnInit {
             this.reloadRegisterSample.emit({
               fromKey: "BATCH",
             });
-            console.log("==> Batch created; ", response);
+            // console.log("==> Batch created; ", response);
           } else {
             this.errors = [...this.errors, response?.error];
           }

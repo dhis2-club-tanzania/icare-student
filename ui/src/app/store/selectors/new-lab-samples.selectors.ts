@@ -81,8 +81,6 @@ export const getPatientsSamplesToCollect = createSelector(
 export const getPatientCollectedLabSamples = createSelector(
   getAllFormattedLabSamples,
   (samples, props) => {
-    console.log(samples);
-    console.log(props);
     const patientSamples =
       (
         _.filter(samples, {
@@ -90,7 +88,6 @@ export const getPatientCollectedLabSamples = createSelector(
           rejected: false,
         }) || []
       ).filter((sample) => sample?.patient?.uuid === props?.patient_uuid) || [];
-    console.log("patientSamples", patientSamples);
     return patientSamples;
   }
 );

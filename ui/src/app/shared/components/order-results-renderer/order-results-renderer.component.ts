@@ -44,9 +44,9 @@ export class OrderResultsRendererComponent implements OnInit {
   creatingLabOrderState$: Observable<boolean>;
 
   testSetMembersKeyedByConceptUuid: any = {};
-  showParameters: boolean = false;
+  showParameters: any = {};
   currentLabTest: any;
-  showOtherDetails: boolean = false;
+  showOtherDetails: any = {};
   formFields: any[];
   formValuesData: any;
   commonLabTestsFields: any[] = [];
@@ -96,15 +96,21 @@ export class OrderResultsRendererComponent implements OnInit {
     this.voidingLabOrderState$ = this.store.select(getLabOrderVoidingState);
   }
 
-  toggleParametes(event: Event): void {
+  toggleParametes(event: Event, labTest: any): void {
     event.stopPropagation();
-    this.showParameters = !this.showParameters;
+    this.showParameters[labTest?.uuid] = this.showParameters[labTest?.uuid]
+      ? null
+      : labTest;
+      // console.log("after table click toggle ----------------------------",this.showParameters[labTest?.uuid]);
+      // console.log("also visit ---------------------------------------->",this.visit);
   }
 
   setCurrentOrderedItemForOtherDetailsView(event: Event, labTest) {
     event.stopPropagation();
     this.currentLabTest = labTest;
-    this.showOtherDetails = !this.showOtherDetails;
+    this.showOtherDetails[labTest?.uuid] = this.showOtherDetails[labTest?.uuid]
+      ? null
+      : labTest;
   }
 
   onFormUpdate(formValues: FormValue): void {
@@ -179,7 +185,7 @@ export class OrderResultsRendererComponent implements OnInit {
     e.stopPropagation();
     // this.store.dispatch(deleteLabOrder({ uuid: labOrder?.uuid }));
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: `Delete ${labOrder?.concept?.display}`,
         modalMessage: `You are about to delete ${labOrder?.concept?.display} for this patient, Click confirm to delete!`,

@@ -58,7 +58,7 @@ public class BatchSample extends BaseOpenmrsData implements java.io.Serializable
 		this.samples = samples;
 	}
 	
-	public Map<String,Object> toMap(){
+	public Map<String,Object> toMap() throws Exception {
 
         Map<String,Object> newBatchSampleObject = new HashMap<>();
         newBatchSampleObject.put("code",this.getCode());

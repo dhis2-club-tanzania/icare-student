@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/models/lis-configurations.model";
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 
 @Component({
   selector: "app-extended-parameters-settings",
@@ -7,7 +7,7 @@ import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/mod
   styleUrls: ["./extended-parameters-settings.component.scss"],
 })
 export class ExtendedParametersSettingsComponent implements OnInit {
-  @Input() LISConfigurations: LISConfigurationsModel;
+  @Input() LISConfigurations: iCareConnectConfigurationsModel;
   constructor() {}
 
   ngOnInit(): void {}

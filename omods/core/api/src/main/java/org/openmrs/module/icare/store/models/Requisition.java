@@ -173,11 +173,11 @@ public class Requisition extends BaseOpenmrsData implements java.io.Serializable
 		}
 		requisitionObject.put("issues", requisitionIssues);
 		
-		List<Map<String, Object>> requisitionItems = new ArrayList<Map<String, Object>>();
-		for (RequisitionItem requisitionItem : this.getRequisitionItems()) {
-			requisitionItems.add(requisitionItem.toMap());
-		}
-		requisitionObject.put("requisitionItems", requisitionItems);
+		//		List<Map<String, Object>> requisitionItems = new ArrayList<Map<String, Object>>();
+		//		for (RequisitionItem requisitionItem : this.getRequisitionItems()) {
+		//			requisitionItems.add(requisitionItem.toMap());
+		//		}
+		//		requisitionObject.put("requisitionItems", requisitionItems);
 		
 		if (this.getCreator() != null) {
 			Map<String, Object> creatorObject = new HashMap<String, Object>();
@@ -200,5 +200,21 @@ public class Requisition extends BaseOpenmrsData implements java.io.Serializable
 		}
 		
 		return requisitionObject;
+	}
+	
+	public Map<String, Object> toMapWithItems() {
+		
+		Map<String, Object> requisitionObject = this.toMap();
+		
+		if (this.getRequisitionItems() != null) {
+			List<Map<String, Object>> requisitionItems = new ArrayList<Map<String, Object>>();
+			for (RequisitionItem requisitionItem : this.getRequisitionItems()) {
+				requisitionItems.add(requisitionItem.toMap());
+			}
+			requisitionObject.put("requisitionItems", requisitionItems);
+		}
+		
+		return requisitionObject;
+		
 	}
 }

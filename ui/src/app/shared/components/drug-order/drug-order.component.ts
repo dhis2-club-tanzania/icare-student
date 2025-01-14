@@ -34,6 +34,7 @@ export class DrugOrderComponent implements OnInit, AfterViewInit {
   @Input() showAddButton: boolean;
   @Input() hideActionButtons: boolean;
   @Input() encounterUuid: string;
+  @Input() drugInstructions: string;
   @Input() patient: Patient;
   @Input() isFromDoctor: boolean;
   @Input() locations: any[];
@@ -68,6 +69,8 @@ export class DrugOrderComponent implements OnInit, AfterViewInit {
   provider$: Observable<ProviderGet>;
   dispensingLocations$: Observable<any>;
   errors: any[] = [];
+
+  @Output() enterKeyPressedFields: EventEmitter<any> = new EventEmitter<any>();
   constructor(
     private drugOrderService: DrugOrdersService,
     private store: Store<AppState>
@@ -107,6 +110,7 @@ export class DrugOrderComponent implements OnInit, AfterViewInit {
             this.generalPrescriptionFrequencyConcept,
           specificDrugConceptUuid: this.specicDrugConceptUuid,
           fromDispensing: this.fromDispensing,
+          drugInstructions: this.drugInstructions || "",
         }
       )
       .pipe(
@@ -185,5 +189,9 @@ export class DrugOrderComponent implements OnInit, AfterViewInit {
   onCancel(e) {
     e.stopPropagation();
     this.cancelForm.emit();
+  }
+
+  onGetEnterKeyResponsedFields(keys: Event): void {
+    this.enterKeyPressedFields.emit(keys);
   }
 }

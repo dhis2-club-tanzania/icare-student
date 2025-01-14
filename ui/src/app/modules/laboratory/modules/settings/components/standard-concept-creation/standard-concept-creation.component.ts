@@ -14,6 +14,8 @@ import {
 } from "src/app/shared/resources/openmrs";
 
 import { omit, uniqBy } from "lodash";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-standard-concept-creation",
@@ -31,6 +33,7 @@ export class StandardConceptCreationComponent implements OnInit {
   @Input() setMembersHeaderName: string;
   @Input() conceptDataTypes: ConceptdatatypeGet[];
   @Input() inheritProperties: boolean;
+  @Input() searchTermOfConceptSetToExcludeFromTestOrders: string;
   basicConceptFields: any[];
   dataTypeField: any;
   unitsField: any;
@@ -40,6 +43,7 @@ export class StandardConceptCreationComponent implements OnInit {
   selectedCodingItems: any[] = [];
   mappings: any[] = [];
   readyToCollectCodes: boolean = false;
+  interpretationsReady: boolean = false;
 
   @Output() conceptCreated: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -48,7 +52,6 @@ export class StandardConceptCreationComponent implements OnInit {
   conceptUuid: string;
 
   selectedSetMembers: ConceptGetFull[] = [];
-
   testMethodField: any;
   testMethodSelected: boolean = false;
   selectedTestMethodDetails$: Observable<ConceptGetFull[]>;
@@ -63,13 +66,21 @@ export class StandardConceptCreationComponent implements OnInit {
 
   testMethodUuid: string;
   conceptBeingEdited: ConceptGetFull;
+  setMembersReadySet: boolean = true;
+  relatedMetadataAttributeUuid$: Observable<string>;
+  errors: any[];
+  attributesValues: any[] = [];
+  interpretations: any[] = [];
+  showList: boolean = true;
   constructor(
     private conceptService: ConceptsService,
     private billableItemService: BillableItemsService,
-    private conceptSourceService: ConceptSourcesService
+    private conceptSourceService: ConceptSourcesService,
+    private systemSettingsService: SystemSettingsService
   ) {}
 
   ngOnInit(): void {
+    this.errors = null;
     this.createBasicConceptFields();
     if (this.searchTermForTestMethod) {
       this.createTestMethodField();
@@ -86,9 +97,22 @@ export class StandardConceptCreationComponent implements OnInit {
     }
 
     this.conceptSources$ = this.conceptSourceService.getConceptSources();
+    this.relatedMetadataAttributeUuid$ = this.systemSettingsService
+      .getSystemSettingsByKey(
+        "icare.laboratory.concept.relatedMetadata.attributeUuid"
+      )
+      .pipe(
+        map((response: any) => {
+          if (response && !response?.error) {
+            return response;
+          } else {
+            this.errors = [...this.errors, response?.error];
+          }
+        })
+      );
   }
 
-  createTestMethodField(): void {
+  createTestMethodField(data?: any): void {
     this.testMethodField = new Dropdown({
       id: "testmethod",
       key: "testmethod",
@@ -96,6 +120,7 @@ export class StandardConceptCreationComponent implements OnInit {
       searchTerm: "TEST_METHODS",
       required: true,
       options: [],
+      value: data?.uuid,
       conceptClass: "Test",
       searchControlType: "concept",
       shouldHaveLiveSearchForDropDownFields: true,
@@ -139,12 +164,19 @@ export class StandardConceptCreationComponent implements OnInit {
   }
 
   createBasicConceptFields(data?: any): void {
-    const shortNameDetails = (data?.names.filter(
+    const shortNameDetails = (data?.names?.filter(
       (name) => name?.conceptNameType === "SHORT"
     ) || [])[0];
     // Add support to support multiple languages
-    const descriptionsDetails = data?.descriptions[0];
+    const descriptionsDetails =
+      data?.descriptions?.length > 0
+        ? (data?.descriptions?.filter(
+            (description: any) =>
+              description?.description?.indexOf("INTERPRETATION") === -1
+          ) || [])[0]
+        : null;
     this.readyToCollectCodes = true;
+    this.interpretationsReady = true;
     this.basicConceptFields = [
       new Textbox({
         id: "name",
@@ -190,7 +222,7 @@ export class StandardConceptCreationComponent implements OnInit {
         this.conceptService.getConceptDetailsByUuid(methodUuid, "full");
 
       this.selectedTestMethodDetails$.subscribe((response: any) => {
-        if (response) {
+        if (response && !this.conceptBeingEdited) {
           this.createBasicConceptFields(response);
         }
       });
@@ -201,10 +233,15 @@ export class StandardConceptCreationComponent implements OnInit {
     this.selectedSetMembers = selectedSetMembers;
   }
 
+  onGetInterpretations(interpretations: any[]): void {
+    this.interpretations = interpretations;
+  }
+
   onCancel(event: Event): void {
     event.stopPropagation();
     this.createBasicConceptFields();
     this.editingSet = true;
+    this.conceptBeingEdited = null;
     setTimeout(() => {
       this.editingSet = false;
       this.conceptUuid = null;
@@ -212,19 +249,45 @@ export class StandardConceptCreationComponent implements OnInit {
     }, 200);
   }
 
-  onConceptEdit(concept: ConceptGetFull): void {
+  onConceptEdit(
+    concept: ConceptGetFull,
+    relatedMetadataAttributeUuid: string
+  ): void {
     this.conceptUuid = concept?.uuid;
     // First get concept details
     this.conceptService
       .getConceptDetailsByUuid(
         concept?.uuid,
-        "custom:(uuid,display,datatype,set,retired,descriptions,name,names,setMembers:(uuid,display),conceptClass:(uuid,display),answers:(uuid,display),mappings:(uuid,conceptReferenceTerm:(uuid,display,conceptSource:(uuid,display))))"
+        "custom:(uuid,display,datatype,attributes,set,retired,descriptions,name,names,setMembers:(uuid,display),conceptClass:(uuid,display),answers:(uuid,display),mappings:(uuid,conceptReferenceTerm:(uuid,display,conceptSource:(uuid,display))))"
       )
       .subscribe((response) => {
         if (response) {
+          this.conceptBeingEdited = response;
           this.createBasicConceptFields(response);
+          this.attributesValues = response?.attributes;
+          const relatedConceptUuid = (response?.attributes?.filter(
+            (attribute: any) =>
+              attribute?.attributeType?.uuid === relatedMetadataAttributeUuid
+          ) || [])[0]?.value;
+          if (relatedConceptUuid) {
+            this.testMethodUuid = relatedConceptUuid;
+            this.selectedTestMethodDetails$ =
+              this.conceptService.getConceptDetailsByUuid(
+                relatedConceptUuid,
+                "custom:(uuid,display,datatype,set,retired,descriptions,name,setMembers:(uuid,display),conceptClass:(uuid,display))"
+              );
+
+            this.selectedTestMethodDetails$.subscribe((response: any) => {
+              if (response) {
+                this.createTestMethodField(response);
+              }
+            });
+          }
+
           this.editingSet = true;
           this.readyToCollectCodes = false;
+
+          this.interpretationsReady = false;
           this.selectedCodingItems =
             response?.mappings.map((mapping) => {
               return {
@@ -234,9 +297,12 @@ export class StandardConceptCreationComponent implements OnInit {
               };
             }) || [];
           this.mappings = response?.mappings;
+          // this.setMembersReadySet = false;
           setTimeout(() => {
             this.editingSet = false;
+            this.setMembersReadySet = true;
             this.readyToCollectCodes = true;
+            this.interpretationsReady = true;
             this.selectedSetMembers = response?.setMembers;
           }, 200);
         }
@@ -247,8 +313,13 @@ export class StandardConceptCreationComponent implements OnInit {
     this.selectedCodes = selectedCodes;
   }
 
-  onSave(event: Event, selectedTestMethodDetails?: any): void {
+  onSave(
+    event: Event,
+    selectedTestMethodDetails?: any,
+    relatedMetadataAttributeUuid?: string
+  ): void {
     event.stopPropagation();
+    this.interpretationsReady = false;
     const conceptName =
       (this.standardSearchTerm ? this.standardSearchTerm + ":" : "") +
       this.formData["name"]?.value;
@@ -332,6 +403,24 @@ export class StandardConceptCreationComponent implements OnInit {
       );
     }
 
+    const attributesValuesData =
+      !this.attributesValues || this.attributesValues?.length === 0
+        ? [
+            {
+              attributeType: relatedMetadataAttributeUuid,
+              value: selectedTestMethodDetails?.uuid,
+            },
+          ]
+        : this.attributesValues?.filter(
+            (attributesValue) =>
+              attributesValue?.attributeType?.uuid !==
+              relatedMetadataAttributeUuid
+          ) || [];
+
+    const relatedMetadataAttributeToUpdate = (this.attributesValues?.filter(
+      (attributesValue) =>
+        attributesValue?.attributeType?.uuid === relatedMetadataAttributeUuid
+    ) || [])[0];
     let concept = {
       names: names,
       descriptions: [
@@ -339,7 +428,17 @@ export class StandardConceptCreationComponent implements OnInit {
           description: this.formData["description"]?.value,
           locale: "en",
         },
-      ],
+        ...this.interpretations.map((interpretation: any) => {
+          return {
+            description:
+              "INTERPRETATION:" +
+              interpretation?.label?.value +
+              "::" +
+              interpretation?.interpretation?.value,
+            locale: "en",
+          };
+        }),
+      ]?.filter((description: any) => description?.description),
       datatype: this.dataType
         ? this.dataType
         : this.formData["datatype"]?.value
@@ -362,6 +461,7 @@ export class StandardConceptCreationComponent implements OnInit {
           ? this.formData["precision"]?.value
           : null,
       mappings: uniqBy(mappings, "conceptReferenceTerm"),
+      attributes: attributesValuesData?.filter((attr) => attr?.value) || [],
     };
 
     const keys: any[] = Object.keys(concept);
@@ -376,8 +476,11 @@ export class StandardConceptCreationComponent implements OnInit {
     // Check if concept exists
     this.conceptService
       .searchConcept({ q: conceptName, conceptClass: this.conceptClass })
-      .subscribe((checkResponse) => {
-        if (checkResponse?.length > 0 && !this.conceptUuid) {
+      .subscribe((checkResponse: any) => {
+        if (
+          checkResponse?.results?.length > 0 &&
+          !this.conceptBeingEdited?.uuid
+        ) {
           this.saving = false;
           this.alertType = "danger";
           this.savingMessage = "Item with name " + conceptName + " exists";
@@ -387,12 +490,31 @@ export class StandardConceptCreationComponent implements OnInit {
         } else {
           (!this.conceptUuid
             ? this.conceptService.createConcept(concept)
-            : this.conceptService.updateConcept(this.conceptUuid, concept)
+            : this.conceptService.updateConcept(
+                this.conceptBeingEdited?.uuid,
+                concept
+              )
           ).subscribe((response: any) => {
             if (response) {
+              // Update attribute if exists
+              this.interpretationsReady = false;
+              this.conceptService
+                .updateConceptAttribute(
+                  response?.uuid,
+                  relatedMetadataAttributeToUpdate
+                )
+                .subscribe((attributeUpdateResponse: any) => {
+                  if (
+                    attributeUpdateResponse &&
+                    !attributeUpdateResponse?.error
+                  ) {
+                  } else {
+                    this.errors = [...this.errors, attributeUpdateResponse];
+                  }
+                });
               // If it is test order create as a billable item
               if (
-                !this.conceptUuid &&
+                !this.conceptBeingEdited?.uuid &&
                 this.standardSearchTerm === "TEST_ORDERS"
               ) {
                 const billableItem = {
@@ -446,6 +568,7 @@ export class StandardConceptCreationComponent implements OnInit {
                             .subscribe((conceptNameResponse) => {
                               if (conceptNameResponse) {
                                 this.saving = false;
+                                this.conceptBeingEdited = null;
                                 this.conceptUuid = null;
                                 this.savingMessage =
                                   "Successfully created " + conceptName;
@@ -471,6 +594,7 @@ export class StandardConceptCreationComponent implements OnInit {
                   .subscribe((conceptNameResponse) => {
                     if (conceptNameResponse) {
                       this.saving = false;
+                      this.conceptBeingEdited = null;
                       this.alertType = "success";
                       this.savingMessage =
                         "Successfully created " + conceptName;
@@ -482,6 +606,7 @@ export class StandardConceptCreationComponent implements OnInit {
                       this.conceptCreated.emit(true);
                       this.selectedSetMembers = [];
                       this.createBasicConceptFields();
+                      this.createTestMethodField();
                     }
                   });
               }
@@ -489,5 +614,10 @@ export class StandardConceptCreationComponent implements OnInit {
           });
         }
       });
+  }
+
+  toggleItemsList(event: Event): void {
+    event.stopPropagation();
+    this.showList = !this.showList;
   }
 }

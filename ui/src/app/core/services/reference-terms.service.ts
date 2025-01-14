@@ -24,6 +24,7 @@ export class ReferenceTermsService {
       catchError((error) => of(error))
     );
   }
+
   getConceptReferenceTermsByParameters(parameters: any): Observable<any> {
     let queryParams = "";
     if (parameters?.q) {
@@ -46,6 +47,8 @@ export class ReferenceTermsService {
         (queryParams?.length > 0 ? "&" : "") + "source=" + parameters?.source;
     }
 
+    console.log("queryParams", queryParams);
+    // return of([]);
     return this.httpClient
       .get(`icare/conceptreferenceterm?${queryParams}`)
       .pipe(

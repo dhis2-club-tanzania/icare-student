@@ -67,7 +67,7 @@ export class LoginFormComponent implements OnInit {
         userLocations,
       }) => {
         if (authenticated) {
-          sessionStorage.setItem("JSESSIONID", loginResponse?.sessionId);
+          // sessionStorage.setItem("JSESSIONID", loginResponse?.sessionId);
           localStorage.setItem("credentialsToken", credentialsToken);
           localStorage.setItem("userUuid", user.uuid);
           this.store.dispatch(
@@ -79,7 +79,7 @@ export class LoginFormComponent implements OnInit {
               userDetails: formatCurrentUserDetails(authenticatedUser),
             })
           );
-          this.store.dispatch(loadRolesDetails());
+          // this.store.dispatch(loadRolesDetails());
           this.closeLogin.emit();
         } else {
           authenticateUserFail({

@@ -1,0 +1,12 @@
+<ng-container *ngIf="{ testOrders: testOrders$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.testOrders"
+  ></mat-progress-bar>
+  <app-multiple-results-entry
+    *ngIf="params?.testOrders"
+    [options]="params?.testOrders"
+    [value]="selectedOrders"
+    (selectedList)="onGetSelectedOrders($event)"
+  ></app-multiple-results-entry>
+</ng-container>

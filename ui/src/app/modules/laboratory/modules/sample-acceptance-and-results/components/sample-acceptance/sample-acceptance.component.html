@@ -14,21 +14,42 @@
     acceptedSamples: acceptedSamples$ | async,
     samplesWithResults: samplesWithResults$ | async,
     patientsWithResults: patientsWithResults$ | async,
-    samplesLoadedState: samplesLoadedState$ | async
+    samplesLoadedState: samplesLoadedState$ | async,
+    testRelationshipConceptSourceUuid:
+      testRelationshipConceptSourceUuid$ | async,
+    dataToPrint: dataToPrint$ | async,
+    formUuidsReferencesForSampleReportDisplay:
+      formUuidsReferencesForSampleReportDisplay$ | async
   } as sampleParams"
 >
-  <div class="loading-overlay" *ngIf="saving">
+  <div class="loading-overlay" *ngIf="saving || savingPrintInformation">
     <div class="text-center">
-      <div>Saving ....</div>
+      <div>
+        {{ !savingPrintInformation ? "Saving" : "Capturing print information" }}
+        ....
+      </div>
       <div class="mt-3 d-flex justify-content-center w-100">
         <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
       </div>
     </div>
   </div>
-  <mat-tab-group (selectedTabChange)="onOpenNewTab($event)">
-    <mat-tab label="Sample Acceptance">
+  <mat-tab-group
+    [selectedIndex]="selectedIndex"
+    [animationDuration]="'2000ms'"
+    (selectedTabChange)="onOpenNewTab($event)"
+  >
+    <mat-tab
+      label="Sample Acceptance"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_SAMPLE ACCEPTANCE_VIEW_LIST'
+          ])
+      "
+    >
       <ng-template matTabContent>
-        <div class="p-2">
+        <div class="p-2" style="min-height: 200px">
           <app-samples-to-accept
             [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
             [labConfigs]="labConfigs"
@@ -43,7 +64,16 @@
         </div>
       </ng-template>
     </mat-tab>
-    <mat-tab label="Accepted Samples">
+    <mat-tab
+      label="Accepted Samples"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_ACCEPTED SAMPLES_VIEW_LIST'
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <app-accepted-samples
@@ -60,24 +90,16 @@
         </div>
       </ng-template>
     </mat-tab>
-    <mat-tab label="Rejected at Registration">
-      <ng-template matTabContent>
-        <div class="p-2">
-          <app-rejected-samples
-            [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
-            [labConfigs]="labConfigs"
-            [datesParameters]="datesParameters"
-            [LISConfigurations]="LISConfigurations"
-            [patients]="patients"
-            [sampleTypes]="sampleTypes"
-            [labSamplesDepartments]="labSamplesDepartments"
-            [labSamplesContainers]="labSamplesContainers"
-            [userUuid]="userUuid"
-          ></app-rejected-samples>
-        </div>
-      </ng-template>
-    </mat-tab>
-    <mat-tab label="Rejected at Laboratory">
+    <mat-tab
+      label="Rejected Samples"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_REJECTED_SAMPLES_VIEW_LIST'
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <app-samples-rejected-after-registration
@@ -95,7 +117,19 @@
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="Worklist">
+    <mat-tab
+      label="Workload"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_WORKLIST_VIEW_LIST' ||
+              currentUser?.userPrivileges[
+                'SAMPLE TESTING AND RESULTS_WORKLOAD_VIEW_LIST'
+              ]
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <app-worklist
@@ -113,7 +147,16 @@
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="Worksheets" *ngIf="LISConfigurations?.isLIS">
+    <mat-tab
+      label="Worksheets"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_ADD_WORKSHEET'
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-3">
           <app-worksheets [datesParameters]="datesParameters"></app-worksheets>
@@ -122,10 +165,21 @@
     </mat-tab>
     <mat-tab
       label="Results Entry {{ !LISConfigurations?.isLIS ? '& Approval' : '' }}"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULT_ENTRY_VIEW_LIST'
+          ] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULT_ENTRY_ADD RESULT'
+          ])
+      "
     >
       <ng-template matTabContent>
         <div class="p-2">
           <app-samples-for-results-entry
+            *ngIf="!showPrintingPage"
             [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
             [labConfigs]="labConfigs"
             [datesParameters]="datesParameters"
@@ -138,35 +192,151 @@
             [labSamplesContainers]="labSamplesContainers"
             [userUuid]="userUuid"
             [viewType]="'entry'"
+            (dataToPrint)="onGetDataToPrint($event)"
           ></app-samples-for-results-entry>
+
+          <div class="w-100" *ngIf="showPrintingPage">
+            <div class="d-flex justify-content-left mb-2">
+              <button
+                class="ml-3"
+                mat-flat-button
+                color="primary"
+                (click)="togglePrintAndList($event)"
+                matTooltip="Back to list"
+              >
+                <mat-icon>arrow_back</mat-icon>
+                Back to List
+              </button>
+            </div>
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="!sampleParams?.dataToPrint"
+            ></mat-progress-bar>
+            <app-print-results-page
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                !LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+              (cancel)="onCancelFromResultsPage($event)"
+            ></app-print-results-page>
+            <app-shared-print-results-dashboard
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint &&
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [formUuidsReferencesForSampleReportDisplay]="
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+            ></app-shared-print-results-dashboard>
+          </div>
         </div>
       </ng-template>
     </mat-tab>
     <mat-tab
       label="Results Review & Authorization"
-      *ngIf="LISConfigurations?.isLIS"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULTS REVIEW & AUTHORIZATION_VIEW_LIST'
+          ] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULTS REVIEW & AUTHORIZATION_VIEW_RESULTS'
+          ] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULTS REVIEW & AUTHORIZATION_AMEND_RESULTS'
+          ] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULTS REVIEW & AUTHORIZATION_AUTHORIZE_RESULTS'
+          ])
+      "
     >
       <ng-template matTabContent>
         <div class="p-2">
-          <app-samples-for-results-entry
-            [tabType]="'REVIEW_AND_AUTHORIZATION'"
+          <app-samples-for-results-review
+            *ngIf="!showPrintingPage"
+            [tabType]="'authorization'"
             [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
             [labConfigs]="labConfigs"
             [datesParameters]="datesParameters"
             [LISConfigurations]="LISConfigurations"
             [category]="'HAS_RESULTS'"
             [hasStatus]="'YES'"
+            [currentUser]="currentUser"
             [patients]="patients"
             [sampleTypes]="sampleTypes"
             [labSamplesDepartments]="labSamplesDepartments"
             [labSamplesContainers]="labSamplesContainers"
             [userUuid]="userUuid"
             [viewType]="'authorization'"
-          ></app-samples-for-results-entry>
+            (dataToPrint)="onGetDataToPrint($event)"
+          ></app-samples-for-results-review>
+
+          <div class="w-100" *ngIf="showPrintingPage">
+            <div class="d-flex justify-content-left mb-2">
+              <button
+                class="ml-3"
+                mat-flat-button
+                color="primary"
+                (click)="togglePrintAndList($event)"
+                matTooltip="Back to list"
+              >
+                <mat-icon>arrow_back</mat-icon>
+                Back to List
+              </button>
+            </div>
+
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="!sampleParams?.dataToPrint"
+            ></mat-progress-bar>
+
+            <app-print-results-page
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                !LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+              (cancel)="onCancelFromResultsPage($event)"
+            ></app-print-results-page>
+            <app-shared-print-results-dashboard
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint &&
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [formUuidsReferencesForSampleReportDisplay]="
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+            ></app-shared-print-results-dashboard>
+          </div>
         </div>
       </ng-template>
     </mat-tab>
-    <mat-tab label="Results" *ngIf="LISConfigurations?.isLIS">
+    <mat-tab
+      *ngIf="LISConfigurations?.isLIS === '1'"
+      label="Authorised Results"
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <div *ngIf="!showPrintingPage">
@@ -216,15 +386,53 @@
                 Back to List
               </button>
             </div>
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngI="!sampleParams?.dataToPrint"
+            ></mat-progress-bar>
             <app-print-results-page
-              [data]="dataToPrint"
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                !LISConfigurations?.isLIS
+              "
+              (cancel)="onCancelFromResultsPage($event)"
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [data]="sampleParams?.dataToPrint[0]"
             ></app-print-results-page>
+            <app-shared-print-results-dashboard
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint &&
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [formUuidsReferencesForSampleReportDisplay]="
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+            ></app-shared-print-results-dashboard>
           </div>
         </div>
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="Completed Samples">
+    <mat-tab
+      label="{{
+        LISConfigurations?.isLIS ? 'Authorised Results' : 'Completed Samples'
+      }}"
+      *ngIf="
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_RESULTS_PRINT_RESULTS'
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <div *ngIf="!showPrintingPage">
@@ -250,20 +458,58 @@
                 mat-flat-button
                 color="primary"
                 (click)="togglePrintAndList($event)"
-                matTooltip="Back to lis"
+                matTooltip="Back to list"
               >
                 <mat-icon>arrow_back</mat-icon>
                 Back to List
               </button>
             </div>
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="!sampleParams?.dataToPrint"
+            ></mat-progress-bar>
             <app-print-results-page
-              [data]="dataToPrint"
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                !LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+              (cancel)="onCancelFromResultsPage($event)"
             ></app-print-results-page>
+            <app-shared-print-results-dashboard
+              *ngIf="
+                sampleParams?.testRelationshipConceptSourceUuid &&
+                LISConfigurations?.isLIS &&
+                sampleParams?.dataToPrint &&
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [testRelationshipConceptSourceUuid]="
+                sampleParams?.testRelationshipConceptSourceUuid
+              "
+              [formUuidsReferencesForSampleReportDisplay]="
+                sampleParams?.formUuidsReferencesForSampleReportDisplay
+              "
+              [data]="sampleParams?.dataToPrint[0]"
+            ></app-shared-print-results-dashboard>
           </div>
         </div>
       </ng-template>
     </mat-tab>
-    <mat-tab label="Sample Tracking" *ngIf="!LISConfigurations?.isLIS">
+    <mat-tab
+      label="Sample Tracking"
+      *ngIf="
+        !LISConfigurations?.isLIS &&
+        currentUser &&
+        (currentUser?.userPrivileges['ALL'] ||
+          currentUser?.userPrivileges[
+            'SAMPLE TESTING AND RESULTS_SAMPLE_TRACKING'
+          ])
+      "
+    >
       <ng-template matTabContent>
         <div class="p-2">
           <app-sample-tracking-list

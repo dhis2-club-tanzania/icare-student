@@ -541,8 +541,6 @@ export const getAllFullCompletedLabSamples = createSelector(
 export const getAllFullCompletedLabSamplesGroupedByMRN = createSelector(
   getAllLabSamples,
   (samples, props) => {
-    console.log("SELECTOR SAMPLES ::", samples);
-
     const completedSamples =
       _.filter(samples, (sample) => {
         if (

@@ -1,0 +1,36 @@
+<div>
+  <app-shared-batch-samples-list-entry
+    *ngIf="!addingSample"
+    [category]="category"
+  ></app-shared-batch-samples-list-entry>
+</div>
+<div class="loading-overlay" *ngIf="addingSample">
+  <div class="text-center">
+    <div>Saving addition of new sample ....</div>
+    <div class="mt-3 d-flex justify-content-center w-100">
+      <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-11" style="overflow: auto">
+    <table class="table" *ngIf="!addingSample">
+      <tbody>
+        <tr>
+          <td *ngFor="let dynamicField of dynamicFields">
+            <app-form
+              [fields]="[dynamicField]"
+              [isFormHorizontal]="true"
+              (formUpdate)="onFormUpdate($event)"
+            ></app-form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-1 d-flex justify-content-end">
+    <button mat-icon-button (click)="onAddSample($event)">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>

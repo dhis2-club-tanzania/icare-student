@@ -39,8 +39,8 @@ export class CurrentUserEffects implements OnInitEffects {
             this.store.dispatch(
               setCurrentUserCurrentLocation({
                 location: localStorage.getItem("currentLocation")
-                    ? JSON.parse(localStorage.getItem("currentLocation"))
-                    : null,
+                  ? JSON.parse(localStorage.getItem("currentLocation"))
+                  : null,
               })
             );
           }
@@ -69,7 +69,13 @@ export class CurrentUserEffects implements OnInitEffects {
         ofType(loadCurrentUserDetails),
         withLatestFrom(this.store.select(getCurrentUserDetails)),
         tap(([{ uuid }, user]: [any, any]) => {
-          if (!user && uuid !== "") {
+          if (
+            (!user ||
+              (user &&
+                user?.privileges &&
+                Object.keys(user?.privileges)?.length == 0)) &&
+            uuid !== ""
+          ) {
             this.currentUserService.get(uuid).subscribe((userDetails) => {
               this.store.dispatch(
                 addLoadedUserDetails({

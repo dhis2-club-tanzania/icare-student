@@ -16,6 +16,7 @@
           <th>Order</th>
           <th>Orderer</th>
           <th>Instructions</th>
+          <th>Status</th>
           <th>Upload</th>
           <th>Remarks</th>
           <td>Action</td>
@@ -23,13 +24,15 @@
       </thead>
       <tbody>
         <tr
-          *ngFor="let order of orders; let count = index"
+          *ngFor="let order of formattedOrders; let count = index"
           [ngClass]="{
             'attended-radiology-order':
               obsKeyedByConcepts[order?.concept?.uuid]?.uri,
-            'no-mouse-event': !order?.paid
+            'no-mouse-event': !order?.paid && !order?.isAdmitted,
+            'order-not-to-attend': !order?.paid && !order?.isAdmitted
           }"
         >
+        <!-- !order?.canBeAttended -->
           <td>
             {{ count + 1 }}
           </td>
@@ -46,16 +49,36 @@
             {{ order?.instructions }}
           </td>
           <td>
-            <div>
+            {{
+              order?.paid
+                ? "Paid"
+                : !order?.paid && order?.isAdmitted
+                ? "Not paid but Admitted"
+                : !order?.paid && order?.isEmergency
+                ? "Not paid but has emergency"
+                : "Not paid"
+            }}
+          </td>
+          <td>
+            <div class="d-flex justify-content-left">
               <input
                 type="file"
                 style="border: none; background-color: transparent"
                 class="form-control"
                 name="file"
-                accept=".pdf,.png,.jpg,.jpeg,.doc,.xls,.docx"
+                accept=".pdf"
                 id="file-selector-{{ order?.concept?.uuid }}"
                 (change)="fileSelection($event, order)"
               />
+
+              <button
+                *ngIf="file"
+                class="ml-2"
+                mat-button
+                (click)="previewUploadPDF($event, base64FileData, 'embed')"
+              >
+                Preview
+              </button>
             </div>
 
             <div
@@ -70,6 +93,20 @@
                 />
                 Download
               </a>
+              <button
+                *ngIf="obsKeyedByConcepts[order?.concept?.uuid]?.uri"
+                class="ml-2"
+                mat-button
+                (click)="
+                  previewUploadPDF(
+                    $event,
+                    obsKeyedByConcepts[order?.concept?.uuid]?.uri,
+                    'iframe'
+                  )
+                "
+              >
+                Preview
+              </button>
             </div>
           </td>
           <td>

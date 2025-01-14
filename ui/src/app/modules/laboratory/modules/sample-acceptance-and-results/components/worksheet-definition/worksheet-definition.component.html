@@ -39,18 +39,31 @@
     <div class="w-100" *ngIf="currentWorksheetDefinition">
       <div class="w-100 d-flex">
         <div class="w-50 d-flex justify-content-left">
-          <button mat-button (click)="printPDF($event)">
+          <button
+            [disabled]="true"
+            mat-stroked-button
+            (click)="printPDF($event)"
+          >
             <mat-icon>print</mat-icon>
             Print
           </button>
+          <button
+            class="ml-2"
+            mat-stroked-button
+            [disabled]="!isComplete"
+            (click)="downloadToExcel($event, 'wsdefntable', 'Worksheet_')"
+          >
+            <mat-icon>excel</mat-icon>
+            Excel
+          </button>
         </div>
         <div class="w-50 d-flex justify-content-end" *ngIf="isComplete">
-          <button mat-button (click)="changeLabelCount($event, 'prev')">
+          <button mat-icon-button (click)="changeLabelCount($event, 'prev')">
             <mat-icon>arrow_backward</mat-icon>
           </button>
           <button
             (click)="changeLabelCount($event, 'next')"
-            mat-button
+            mat-icon-button
             class="ml-2"
           >
             <mat-icon>arrow_forward</mat-icon>
@@ -244,12 +257,12 @@
         [(ngModel)]="searchingText"
       />
     </mat-form-field>
-    <section class="example-section">
+    <section>
       <mat-checkbox
         color="primary"
         (change)="setExpirationDate($event)"
         [checked]="expirationDateChecked"
-        >Include Expiration Date</mat-checkbox
+        >Include Expiration Date filter</mat-checkbox
       >
     </section>
     <table class="table mt-2">

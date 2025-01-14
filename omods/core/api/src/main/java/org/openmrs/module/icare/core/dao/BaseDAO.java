@@ -5,6 +5,7 @@ package org.openmrs.module.icare.core.dao;
 import org.hibernate.Query;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.icare.core.utils.OutgoingSMS;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -56,12 +57,5 @@ public abstract class BaseDAO<T> {
 	protected String getType() {
 		Type type = ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 		return type.toString().replace("class ", "");
-	}
-	
-	public <S extends T> S update(S entity) {
-		DbSession session = getSession();
-		session.saveOrUpdate(this.getType(), entity);
-		session.flush();
-		return entity;
 	}
 }

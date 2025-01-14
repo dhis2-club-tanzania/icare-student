@@ -30,6 +30,7 @@
         ></app-sample-disposal> -->
 
         <app-shared-samples-list
+          *ngIf="!shouldRerenderSamplesList"
           [tabType]="'sample-disposal'"
           [LISConfigurations]="LISConfigurations"
           [labSamplesDepartments]="labSamplesDepartments"
@@ -46,7 +47,7 @@
         ></app-shared-samples-list>
       </div>
     </mat-tab>
-    <mat-tab label="Sample Storage">
+    <!-- <mat-tab label="Sample Storage">
       <div
         class="mt-2"
         *ngIf="{
@@ -54,11 +55,6 @@
             externalSystemsReferenceConceptUuid$ | async
         } as sampleParams"
       >
-        <!-- <mat-progress-bar
-          *ngIf="!sampleParams?.externalSystemsReferenceConceptUuid"
-          mode="indeterminate"
-        ></mat-progress-bar> -->
-
         <div class="loading-overlay" *ngIf="saving">
           <div class="text-center">
             <div>Saving data</div>
@@ -83,6 +79,6 @@
           (selectedSampleDetails)="onGetSelectedSampleDetails($event)"
         ></app-shared-samples-list>
       </div>
-    </mat-tab>
+    </mat-tab> -->
   </mat-tab-group>
 </div>

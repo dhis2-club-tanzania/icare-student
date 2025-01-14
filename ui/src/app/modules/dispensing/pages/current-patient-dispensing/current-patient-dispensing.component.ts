@@ -30,6 +30,7 @@ import {
   getVisitLoadingState,
 } from "src/app/store/selectors/visit.selectors";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { getProviderDetails } from "src/app/store/selectors/current-user.selectors";
 
 @Component({
   selector: "app-current-patient-dispensing",
@@ -53,6 +54,8 @@ export class CurrentPatientDispensingComponent implements OnInit {
   genericPrescriptionOrderType$: Observable<any>;
   useGenericPrescription$: Observable<any>;
   errors: any[] = [];
+  provider$: Observable<any>;
+  readyToShow: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private systemSettingsService: SystemSettingsService,
@@ -63,25 +66,23 @@ export class CurrentPatientDispensingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.readyToShow = true;
     this.patientId = this.route?.snapshot?.params?.id;
     this.store.dispatch(removeCurrentPatient());
     this.store.dispatch(loadCurrentPatient({ uuid: this.patientId }));
     this.currentVisitLoadingState$ = this.store.select(getVisitLoadingState);
     this.currentVisitLoadedState$ = this.store.select(getVisitLoadedState);
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
     this.currentPatient$ = this.store.select(getCurrentPatient);
-    this.generalMetadataConfigurations$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.GeneralMetadata.Configurations"
-      ).pipe(
+    this.provider$ = this.store.select(getProviderDetails);
+    this.generalMetadataConfigurations$ = this.systemSettingsService
+      .getSystemSettingsByKey("iCare.GeneralMetadata.Configurations")
+      .pipe(
         map((response) => {
-          if(response?.error){
-            this.errors = [
-              ...this.errors,
-              response?.error
-            ]
+          if (response?.error) {
+            this.errors = [...this.errors, response?.error];
           }
-          if(response === ''){
+          if (response === "") {
             this.errors = [
               ...this.errors,
               {
@@ -96,44 +97,32 @@ export class CurrentPatientDispensingComponent implements OnInit {
           return response;
         })
       );
-    this.genericPrescriptionEncounterType$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.genericprescription.encounterType"
-      ).pipe(
+    this.genericPrescriptionEncounterType$ = this.systemSettingsService
+      .getSystemSettingsByKey("iCare.clinic.genericprescription.encounterType")
+      .pipe(
         map((response) => {
-          if(response?.error){
-            this.errors = [
-              ...this.errors,
-              response?.error
-            ]
+          if (response?.error) {
+            this.errors = [...this.errors, response?.error];
           }
           return response;
         })
       );
-    this.genericPrescriptionOrderType$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.genericprescription.orderType"
-      ).pipe(
+    this.genericPrescriptionOrderType$ = this.systemSettingsService
+      .getSystemSettingsByKey("iCare.clinic.genericprescription.orderType")
+      .pipe(
         map((response) => {
-          if(response?.error){
-            this.errors = [
-              ...this.errors,
-              response?.error
-            ]
+          if (response?.error) {
+            this.errors = [...this.errors, response?.error];
           }
           return response;
         })
       );
-    this.useGenericPrescription$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.useGeneralPrescription"
-      ).pipe(
+    this.useGenericPrescription$ = this.systemSettingsService
+      .getSystemSettingsByKey("iCare.clinic.useGeneralPrescription")
+      .pipe(
         map((response) => {
-          if(response?.error){
-            this.errors = [
-              ...this.errors,
-              response?.error
-            ]
+          if (response?.error) {
+            this.errors = [...this.errors, response?.error];
           }
           return response;
         })
@@ -164,12 +153,9 @@ export class CurrentPatientDispensingComponent implements OnInit {
       .pipe(
         map((response) => {
           this.loading = false;
-          if(response?.error){
+          if (response?.error) {
             this.loadingError = response?.error;
-            this.errors = [
-              ...this.errors,
-              response?.errors
-            ]
+            this.errors = [...this.errors, response?.errors];
           }
           return response;
         })
@@ -222,6 +208,8 @@ export class CurrentPatientDispensingComponent implements OnInit {
             location: JSON.parse(localStorage.getItem("currentLocation"))[
               "uuid"
             ],
+            drug: data?.drug,
+            quantity: data?.quantity?.toFixed(1),
           };
           this.response$ = this.drugOrderService.dispenseOrderedDrugOrder(
             drugOrderDispenseDetails
@@ -239,6 +227,15 @@ export class CurrentPatientDispensingComponent implements OnInit {
         default:
           break;
       }
+    }
+  }
+
+  shouldReloadDrugListForDispensing(reload: boolean): void {
+    if (reload) {
+      this.readyToShow = false;
+      setTimeout(() => {
+        this.readyToShow = true;
+      }, 200);
     }
   }
 }

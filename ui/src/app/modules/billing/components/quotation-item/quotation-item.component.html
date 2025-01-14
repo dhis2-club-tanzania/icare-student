@@ -11,6 +11,10 @@
             >Total Amount:
             {{ bill.totalPaymentAmount | currency: "TZS":"":".0" }}</span
           >
+
+          <span style="color: #2a8fd1" *ngIf="bill?.billDetails?.created">
+            (On: {{ bill?.billDetails?.created | date }})
+          </span>
           <span class="ml-4" *ngIf="bill?.discount > 0"
             >Discount {{ bill?.discount | currency: "TZS":"":".0" }}</span
           >
@@ -22,7 +26,8 @@
           </small>
         </div>
         <span *ngIf="totalPayableBill"
-          >Payable Amount: {{ totalPayableBill | currency: "TZS":"":".0" }}</span
+          >Payable Amount:
+          {{ totalPayableBill | currency: "TZS":"":".0" }}</span
         >
       </mat-panel-title>
     </mat-expansion-panel-header>
@@ -41,7 +46,7 @@
           }}
         </td>
       </ng-container>
-  
+
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
           <div class="table__action-options" *ngIf="!disableControls">
@@ -72,7 +77,27 @@
         class="table__row"
       ></tr>
     </table>
-  
+    <!-- 
+    <div *ngIf="patientBillingDetails.bills.length > 0"> -->
+    <div class="mt-3">
+      <app-print-button
+        [iconName]="'print'"
+        [toolTipText]="'Click to print this invoice'"
+        [showText]="'Print This Invoice'"
+        [classesList]="['float-right', 'button', 'mr-5']"
+        [ElementToBePrinted]="{
+          Bill: billItems,
+          CurrentPatient: currentPatient,
+          FacilityDetails: facilityDetails,
+          Logo: logo
+        }"
+        [currentPatient]="currentPatient"
+        [facilityDetails]="facilityDetails"
+        [logo]="logo"
+        (print)="onPrint($event)"
+      ></app-print-button>
+    </div>
+
     <div class="row mt-5" *ngIf="totalPayableBill as payableAmount">
       <div class="col-sm-8">
         <div class="card p-3">
@@ -104,9 +129,11 @@
               }}</span>
             </td>
           </tr>
-  
+
           <tr>
-            <td><span class="h5 font-weight-normal float-right">TOTAL</span></td>
+            <td>
+              <span class="h5 font-weight-normal float-right">TOTAL</span>
+            </td>
             <td>
               <span class="h5 font-weight-normal float-right">{{
                 totalPayableBill | currency: "TZS":"":".0"
@@ -116,7 +143,7 @@
         </table>
       </div>
     </div>
-  
+
     <div class="row" *ngIf="canConfirmBill">
       <div class="col-sm-12">
         <div>
@@ -155,7 +182,7 @@
             class="mr-2 mb-1"
             (click)="getControlNumber($event, params?.gepgConceptUuid)"
           >
-            Confirm With Control Number
+            Generate Control Number
           </button>
           <!-- <button
             mat-stroked-button

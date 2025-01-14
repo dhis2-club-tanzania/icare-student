@@ -20,8 +20,8 @@ export function getFormFieldOptions(conceptAnswers: any[]): DropdownOption[] {
       return {
         key: uuid,
         value: uuid,
-        label: display,
-        name: display,
+        label: display?.indexOf(":") > -1 ? display?.split(":")[1] : display,
+        name: display?.indexOf(":") > -1 ? display?.split(":")[1] : display,
       };
     })
     .filter((option) => option);

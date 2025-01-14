@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { Field } from "src/app/shared/modules/form/models/field.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
@@ -29,12 +30,14 @@ export class ManageDrugModalComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<ManageDrugModalComponent>,
     @Inject(MAT_DIALOG_DATA) data,
-    private drugService: DrugsService
+    private drugService: DrugsService,
+    private googleAnalyticsService: GoogleAnalyticsService
   ) {
     this.dialogData = data;
   }
 
   ngOnInit(): void {
+    // console.log(this.dialogData);
     this.createGenericDrugField(this.dialogData);
     this.createDrugsFormField(this.dialogData);
   }
@@ -96,6 +99,7 @@ export class ManageDrugModalComponent implements OnInit {
         combination: false,
         description: this.formData?.description?.value,
       };
+      // console.log("data", data);
       (this.dialogData?.uuid
         ? this.drugService.updateDrug(drug?.uuid, { uuid: drug?.uuid, ...data })
         : this.drugService.createDrug(data)
@@ -106,6 +110,7 @@ export class ManageDrugModalComponent implements OnInit {
           setTimeout(() => {
             this.dialogRef.close(true);
           }, 200);
+          this.trackActionForAnalytics(`Drugs: Save`);
         } else {
           this.saving = false;
           this.errors = [response];
@@ -115,14 +120,17 @@ export class ManageDrugModalComponent implements OnInit {
       this.shouldConfirm = true;
     }
   }
-
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Pharmacy',eventname,'Pharmacy')
+  }
   onFormUpdate(formValue: FormValue): void {
-    this.formData = formValue.getValues();
+    this.formData = { ...this.formData, ...formValue.getValues() };
     this.isFormValid = formValue.isValid;
   }
 
   onFormUpdateForGenericDrug(formValue: FormValue): void {
-    this.formData = formValue.getValues();
+    this.formData = { ...this.formData, ...formValue.getValues() };
     this.isFormValid = formValue.isValid;
     this.drugsAvailable$ = this.drugService
       .getDrugsUsingConceptUuid(this.formData?.genericDrug?.value)

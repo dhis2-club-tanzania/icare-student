@@ -1,0 +1,5 @@
+<app-multiple-results-entry
+  [options]="fieldsAsOptions | filterFields: fieldsToFilter1:fieldsToFilter2"
+  [value]="selectedFields"
+  (selectedList)="onGetSelectedFields($event)"
+></app-multiple-results-entry>

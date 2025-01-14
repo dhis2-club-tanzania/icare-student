@@ -1,7 +1,10 @@
 <div
   [formGroup]="form"
   *ngIf="
-    isCommonField && !isReport && !field?.shouldHaveLiveSearchForDropDownFields
+    isCommonField &&
+    !isReport &&
+    !field?.shouldHaveLiveSearchForDropDownFields &&
+    !isDateTime
   "
 >
   <mat-form-field
@@ -45,7 +48,7 @@
         [formControlName]="field?.key"
         (keyup)="fileChangeEvent($event, field)"
         multiple="multiple"
-        accept=".pdf,.png,.jpeg,.jpg,.doc,.xls,.docx"
+        accept=".pdf,.png,.jpeg,.jpg,.doc,.xls,.xlsx,.docx"
       />
     </div>
     <!-- End of File upload for default complex -->
@@ -60,14 +63,36 @@
       [disabled]="shouldDisable || field?.disabled"
       [placeholder]="field?.placeholder"
       class="{{ fieldClass || 'field-input' }}"
-      [type]="field?.type"
+      [type]="field?.type === 'number' ? 'text' : field?.type"
       [required]="field?.required"
       matInput
+      step="any"
       autocomplete="off"
-      (keyup)="onFieldUpdate()"
+      (keyup)="onFieldUpdate($event)"
+      (keydown)="onListenKeyEvent($event, field?.type)"
     />
+    <!-- <input
+    *ngSwitchCase="'textbox'"
+    [formControlName]="field?.key"
+    [id]="field?.key"
+    [min]="field?.type === 'number' ? 0 : null"
+    [max]="field?.max"
+    [disabled]="shouldDisable || field?.disabled"
+    [placeholder]="field?.placeholder"
+    class="{{ fieldClass || 'field-input' }}"
+    [type]="field?.type"
+    [required]="field?.required"
+    matInput
+    autocomplete="off"
+    (input)="onInput($event)"
+    (keyup)="onFieldUpdate($event)"
+    (keydown)="onListenKeyEvent($event)"
+/> -->
+
     <!-- end of textbox -->
 
+    <!-- (input)="onInput($event)"
+    (blur)="onBlur($event)" -->
     <!-- dropdown -->
 
     <ng-container *ngIf="!field?.multiple">
@@ -86,10 +111,28 @@
         [matAutocomplete]="auto"
       />
       <span
-        style="position: relative; float: right; margin-top: -30px"
+        style="
+          position: relative;
+          float: right;
+          margin-top: -30px;
+          margin-right: 16px;
+        "
         *ngIf="field?.options?.length > 0"
       >
         <mat-icon>arrow_drop_down</mat-icon>
+      </span>
+      <span
+        *ngIf="field?.value && field?.options?.length > 0"
+        style="
+          position: relative;
+          float: right;
+          margin-top: -30px;
+          font-size: 0.7rem;
+        "
+      >
+        <mat-icon class="text-muted" (click)="onClearValue($event, field)"
+          >clear</mat-icon
+        >
       </span>
 
       <mat-autocomplete
@@ -195,7 +238,6 @@
       (keyup)="onFieldUpdate()"
     ></textarea>
     <!-- end of text area field -->
-
     <mat-error *ngIf="issueWithTheDataField">
       {{ issueWithTheDataField }}
     </mat-error>
@@ -221,7 +263,10 @@
       [required]="field?.required"
       matInput
       [value]="
-        field?.value && (members$ | async)?.length == 1
+        field?.value &&
+        (members$ | async) &&
+        (members$ | async)?.length == 1 &&
+        (members$ | async)[0]
           ? (members$ | async)[0]?.display
           : ''
       "
@@ -323,7 +368,6 @@
     </mat-checkbox>
   </section>
 </div>
-
 <div [formGroup]="form" *ngIf="isDateTime && !isReport">
   <mat-form-field
     [hidden]="field?.hidden"

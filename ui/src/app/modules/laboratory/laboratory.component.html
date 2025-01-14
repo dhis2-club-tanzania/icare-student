@@ -1,4 +1,4 @@
-<div class="laboratory-home-container">
+<div class="laboratory-home-container no-print">
   <ng-container
     *ngIf="{
       sampleTypes: sampleTypes$ | async,
@@ -7,7 +7,9 @@
       userRoles: userRoles$ | async,
       LISConfigurations: LISConfigurations$ | async,
       currentUser: currentUser$ | async,
-      currentLocation: currentLocation$ | async
+      currentLocation: currentLocation$ | async,
+      labs: labs$ | async,
+      loadedSystemSettings: loadedSystemSettings$ | async
     } as params"
   >
     <div
@@ -17,7 +19,8 @@
         !params?.privileges ||
         !params?.userRoles ||
         (params?.userRoles && params?.userRoles.length == 0) ||
-        !params?.LISConfigurations
+        !params?.LISConfigurations ||
+        (errors.length == 0 && !params?.loadedSystemSettings)
       "
     >
       <div class="col-12 text-center mt-5 mb-2">
@@ -27,7 +30,9 @@
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       </div>
     </div>
-
+    <div *ngIf="errors.length > 0">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
     <div
       class="row"
       *ngIf="
@@ -35,7 +40,8 @@
         params?.privileges &&
         params?.userRoles &&
         params?.userRoles.length > 0 &&
-        params?.LISConfigurations
+        params?.LISConfigurations &&
+        params?.loadedSystemSettings
       "
     >
       <div
@@ -68,10 +74,20 @@
             class="w-100 pl-3 pt-1 pb-2"
             *ngIf="params?.LISConfigurations?.isLIS"
           >
-            <button mat-button>
+            <button mat-button [matMenuTriggerFor]="labs">
               <mat-icon color="primary">location_on</mat-icon
               >{{ params?.currentLocation?.display }}
             </button>
+            <mat-menu #labs="matMenu">
+              <button mat-menu-item (click)="setCurrentLab(null)">All</button>
+              <button
+                mat-menu-item
+                (click)="setCurrentLab(lab)"
+                *ngFor="let lab of params?.labs"
+              >
+                {{ lab?.name }}
+              </button>
+            </mat-menu>
             <p class="ml-4">
               {{ params?.currentUser?.person?.display }}
               <em>({{ params?.currentUser?.username }})</em>
@@ -100,7 +116,8 @@
             *ngIf="
               params?.privileges &&
               params?.privileges['Laboratory Orders'] &&
-              params?.LISConfigurations?.isLIS
+              params?.LISConfigurations?.isLIS &&
+              params?.currentLocation?.name !== 'All'
             "
             (click)="changeRoute($event, 'sample-registration', false)"
             routerLinkActive="active-route"
@@ -125,6 +142,7 @@
           >
             Diagnostic Orders/Services
           </mat-chip>
+          
           <mat-chip
             class="w-20"
             *ngIf="
@@ -195,17 +213,6 @@
           <mat-chip
             class="w-20"
             routerLinkActive="active-route"
-            (click)="changeRoute($event, 'settings', true)"
-            [ngClass]="{
-              'active-route': currentRoutePath === 'settings'
-            }"
-            *ngIf="params?.privileges && params?.privileges['Tests Settings']"
-          >
-            Maintenance
-          </mat-chip>
-          <mat-chip
-            class="w-20"
-            routerLinkActive="active-route"
             (click)="changeRoute($event, 'reports', false)"
             [ngClass]="{
               'active-route': currentRoutePath === 'reports'
@@ -215,6 +222,17 @@
             "
           >
             Reports
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'settings', true)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'settings'
+            }"
+            *ngIf="params?.privileges && params?.privileges['Tests Settings']"
+          >
+            Maintenance
           </mat-chip>
         </mat-chip-list>
       </div>

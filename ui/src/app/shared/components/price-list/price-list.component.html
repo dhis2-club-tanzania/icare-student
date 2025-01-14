@@ -39,17 +39,19 @@
     *ngIf="params?.priceListDepartments"
     class="w-100 d-flex justify-content-between mt-3"
   >
-    <mat-form-field class="w-25">
-      <mat-label>Depatments</mat-label>
-      <mat-select (selectionChange)="getSelectedDepartment($event)">
-        <mat-option [value]="'Drug'">Drugs</mat-option>
-        <mat-option
-          *ngFor="let department of params?.priceListDepartments"
-          [value]="department"
-          >{{ department?.display }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
+    <div class="w-25">
+      <mat-form-field *ngIf="!hideDepartmentsSelection">
+        <mat-label>Depatments</mat-label>
+        <mat-select (selectionChange)="getSelectedDepartment($event)">
+          <mat-option [value]="'Drug'">Drugs</mat-option>
+          <mat-option
+            *ngFor="let department of params?.priceListDepartments"
+            [value]="department"
+            >{{ department?.display }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </div>
     <div class="w-75">
       <div class="d-flex justify-content-end mb-2">
         <button
@@ -79,7 +81,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th rowspan="2">#</th>
+          <th rowspan="2" style="width: 30px">#</th>
           <th rowspan="2" class="pb-0">
             <mat-form-field class="w-100" appearance="fill">
               <mat-label>{{
@@ -123,14 +125,13 @@
             class="pricing-item-tr"
             id="{{ pricingItem?.htmlDisplay }}"
           >
-            <td width="2%">
+            <td>
               {{ currentPage * 25 + priceItemIndex + 1 }}
             </td>
-            <td width="10%">
+            <td>
               {{ pricingItem?.display }}
             </td>
             <td
-              width="10%"
               class="item-price"
               *ngFor="let paymentScheme of paymentTypesAndSchemes"
             >
@@ -140,6 +141,7 @@
                 [pricingItem]="pricingItem"
                 [paymentScheme]="paymentScheme"
                 [paymentType]="paymentScheme?.paymentType"
+                [paymentTypes]="paymentTypes"
                 (saveItemPrice)="onSaveItem($event)"
               >
               </app-pricing-item>

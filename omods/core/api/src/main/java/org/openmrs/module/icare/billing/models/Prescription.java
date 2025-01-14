@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openmrs.*;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.icare.ICareConfig;
 import org.openmrs.module.icare.billing.services.BillingService;
 import org.openmrs.module.icare.core.PrescriptionDosingInstruction;
 import org.openmrs.module.icare.core.utils.StaticHelper;
@@ -133,12 +134,12 @@ public class Prescription extends Order {
 		this.durationUnits = durationUnits;
 	}
 	
-	public String toString() {
-		String prefix = Order.Action.DISCONTINUE == this.getAction() ? "DC " : "";
-		return prefix + "Prescription(ID:" + this.getId() + "|" + this.getDose() + this.getDoseUnits() + " of "
-		        + (this.getDrug() != null ? this.getDrug().getName() : "[no drug]") + " from " + this.getDateActivated()
-		        + " to " + (this.isDiscontinuedRightNow() ? this.getDateStopped() : this.getAutoExpireDate()) + ")";
-	}
+	//	public String toString() {
+	//		String prefix = Order.Action.DISCONTINUE == this.getAction() ? "DC " : "";
+	//		return prefix + "Prescription(ID:" + this.getId() + "|" + this.getDose() + this.getDoseUnits() + " of "
+	//		        + (this.getDrug() != null ? this.getDrug().getName() : "[no drug]") + " from " + this.getDateActivated()
+	//		        + " to " + (this.isDiscontinuedRightNow() ? this.getDateStopped() : this.getAutoExpireDate()) + ")";
+	//	}
 	
 	public void setDosing(PrescriptionDosingInstruction di) {
 		di.setDosingInstructions(this);
@@ -164,6 +165,10 @@ public class Prescription extends Order {
 		Map<String,Object> drugMap = new HashMap<>();
 		drugMap.put("uuid",this.getDrug().getUuid());
 		drugMap.put("display",this.getDrug().getDisplayName());
+		Map<String, Object> drugConceptMap = new HashMap<>();
+		drugConceptMap.put("uuid", this.getDrug().getConcept().getUuid());
+		drugConceptMap.put("display", this.getDrug().getConcept().getDisplayString());
+		drugMap.put("concept", drugConceptMap);
 		result.put("drug", drugMap);
 
 		Map<String,Object> orderTypeMap = new HashMap<>();
@@ -190,6 +195,55 @@ public class Prescription extends Order {
 			orderStatusesMap.add(orderStatusMap);
 		}
 		result.put("statuses", orderStatusesMap);
+
+		if (this.getDose() != null) {
+			result.put("dose", this.getDose().floatValue());
+		}
+
+		if (this.getDuration() != null) {
+			result.put("duration", this.getDuration().floatValue());
+		}
+
+		Map<String, Object> durationUnits = new HashMap<>();
+		if (this.getDurationUnits() != null) {
+			durationUnits.put("uuid", this.getDurationUnits().getUuid());
+			durationUnits.put("display", this.getDurationUnits().getDisplayString());
+			if (this.getDurationUnits().getConceptMappings().size() > 0) {
+				// Get mapping source for referencing the equivalency
+				String conceptSourceUuid = Context.getAdministrationService().getGlobalProperty(ICareConfig.DRUG_DURATION_UNITS_EQUIVALENCE_CONCEPT_SOURCE);
+				for (ConceptMap conceptMap: this.getDurationUnits().getConceptMappings()) {
+					if (conceptMap.getConceptReferenceTerm().getConceptSource().getUuid().toString().equals(conceptSourceUuid)) {
+						durationUnits.put("secondsPerUnitEquivalence", conceptMap.getConceptReferenceTerm().getCode());
+					}
+				}
+			}
+		}
+		result.put("durationUnits", durationUnits);
+
+		Map<String, Object> frequency = new HashMap<>();
+		if (this.getFrequency() != null) {
+			frequency.put("uuid", this.getFrequency().getUuid());
+			frequency.put("display", this.getFrequency().getName().toString());
+			if (this.getFrequency().getConcept().getConceptMappings().size() > 0) {
+				// Get mapping source for referencing the equivalency
+				String conceptSourceUuid = Context.getAdministrationService().getGlobalProperty(ICareConfig.DRUG_FREQUENCY_EQUIVALENCE_CONCEPT_SOURCE);
+				for (ConceptMap conceptMap: this.getFrequency().getConcept().getConceptMappings()) {
+					if (conceptMap.getConceptReferenceTerm().getConceptSource().getUuid().toString().equals(conceptSourceUuid)) {
+						frequency.put("daysPerUnitEquivalence", conceptMap.getConceptReferenceTerm().getCode());
+					}
+				}
+			}
+		}
+		result.put("frequency", frequency);
+
+		Map<String, Object> previousOrder = new HashMap<>();
+		if (this.getPreviousOrder() != null) {
+			previousOrder.put("uuid", this.getPreviousOrder().getUuid());
+			if (this.getPreviousOrder().getInstructions() != null) {
+				previousOrder.put("instructions", this.getPreviousOrder().getInstructions().toString());
+			}
+		}
+		result.put("previousOrder", previousOrder);
 		return result;
 	}
 	
@@ -267,7 +321,6 @@ public class Prescription extends Order {
 		encounter.setPatient(patient);
 		encounter.setUuid((String) orderObject.get("encounter"));
 		order.setEncounter(encounter);
-		
 		return order;
 	}
 	

@@ -6,6 +6,7 @@
     referringDoctorAttributes: referringDoctorAttributes$ | async,
     refferedFromFacility: refferedFromFacility$ | async,
     obs: obs$ | async,
+    diagnoses: diagnoses$ | async,
     phoneNumber: phoneNumber$ | async
   } as params"
 >
@@ -36,12 +37,11 @@
           id="{{ samplesGroupedByDepartment?.departmentName }}"
         >
           <div class="row">
-            <div class="col-2" style="display: inline-block; width: 16.67%">
-              <img [src]="params?.facility?.logo" height="90" />
-            </div>
-            <div class="col-8" style="display: inline-block; width: 66.67%">
+            <div class="col-12" style="width: 100%">
               <h4 style="text-align: center">
                 <b>
+                  <img [src]="params?.facility?.logo" height="90" />
+                  <br />
                   {{ params?.facility?.display }}
                   <br />
                   <span *ngIf="params?.facility?.display">
@@ -76,7 +76,6 @@
                   padding: 10px 4px;
                 "
               >
-                {{ samplesGroupedByDepartment?.departmentName }}
                 {{
                   samplesGroupedByDepartment["samples"][0] &&
                   samplesGroupedByDepartment["samples"][0]?.authorizationInfo
@@ -124,7 +123,7 @@
                       </td>
                     </ng-container>
                   </tr>
-                  <!-- <tr *ngIf="LISConfigurations?.isLIS">
+                  <tr *ngIf="LISConfigurations?.isLIS">
                     <td></td>
                     <td></td>
                     <td>
@@ -136,7 +135,7 @@
                           | date: "medium"
                       }}
                     </td>
-                  </tr> -->
+                  </tr>
                   <tr>
                     <td>
                       <b> Patient Name </b>
@@ -287,6 +286,22 @@
                         {{ params?.refferedFromFacility?.display }}
                       </span>
                     </td>
+                    <td>
+                      <span>
+                        <b> Specimen type </b>
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        <span
+                          *ngFor="
+                            let sample of samplesGroupedByDepartment?.samples
+                          "
+                        >
+                          {{ sample?.specimenSource?.name }} </span
+                        >,
+                      </span>
+                    </td>
                   </tr>
                   <tr *ngIf="LISConfigurations?.isLIS">
                     <td>
@@ -295,20 +310,37 @@
                       </span>
                     </td>
                     <td>
-                      <span *ngIf="params?.referringDoctorAttributes">
-                        {{
+                      <span
+                        *ngIf="
+                          params?.referringDoctorAttributes &&
+                          params?.referringDoctorAttributes?.length > 0 &&
+                          params?.visit?.attributesKeyedByAttributeType &&
                           params?.visit?.attributesKeyedByAttributeType[
                             params?.referringDoctorAttributes[1].value
                           ]
+                        "
+                      >
+                        {{
+                          params?.referringDoctorAttributes[1].value &&
+                          params?.visit?.attributesKeyedByAttributeType[
+                            params?.referringDoctorAttributes[1].value
+                          ] &&
+                          params?.visit?.attributesKeyedByAttributeType[
+                            params?.referringDoctorAttributes[1].value
+                          ].value != "NONE"
                             ? params?.visit?.attributesKeyedByAttributeType[
                                 params?.referringDoctorAttributes[1].value
                               ].value
                             : " - "
                         }}
                         {{
-                          params?.visit?.attributes[
+                          params?.referringDoctorAttributes[2].value &&
+                          params?.visit?.attributesKeyedByAttributeType[
                             params?.referringDoctorAttributes[2].value
-                          ]
+                          ] &&
+                          params?.visit?.attributesKeyedByAttributeType[
+                            params?.referringDoctorAttributes[2].value
+                          ].value != "NONE"
                             ? "(" +
                               params?.visit?.attributesKeyedByAttributeType[
                                 params?.referringDoctorAttributes[2].value
@@ -318,9 +350,13 @@
                         }}
 
                         {{
-                          params?.visit?.attributes[
+                          params?.referringDoctorAttributes[0].value &&
+                          params?.visit?.attributesKeyedByAttributeType[
                             params?.referringDoctorAttributes[0].value
-                          ]
+                          ] &&
+                          params?.visit?.attributesKeyedByAttributeType[
+                            params?.referringDoctorAttributes[0].value
+                          ].value != "NONE"
                             ? "(" +
                               params?.visit?.attributesKeyedByAttributeType[
                                 params?.referringDoctorAttributes[0].value
@@ -338,9 +374,27 @@
                       </span>
                     </td>
                     <td>
-                      <span *ngIf="params.obs && LISConfigurations?.isLIS">
-                        {{ params.obs?.latest?.value }}
-                      </span>
+                      <div
+                        class="w-100"
+                        *ngIf="params?.diagnoses && LISConfigurations?.isLIS"
+                      >
+                        <ng-container *ngIf="params?.diagnoses?.length > 0">
+                          <p
+                            style="font-size: 0.6rem; margin-bottom: -8px"
+                            *ngFor="let diagnosis of params?.diagnoses"
+                          >
+                            <b *ngIf="diagnosis?.display">
+                              Diagnosis: {{ diagnosis?.display }}
+                            </b>
+                          </p>
+                        </ng-container>
+                        <p
+                          style="font-size: 0.6rem"
+                          *ngIf="obsData && LISConfigurations?.isLIS"
+                        >
+                          {{ obsData?.latest?.display }}
+                        </p>
+                      </div>
                     </td>
                     <td *ngIf="!LISConfigurations?.isLIS">
                       <b> Sample Accepted By </b>
@@ -359,13 +413,13 @@
                       <b>Results Fed By</b>
                     </td>
                     <td>
-                      <!-- {{
+                      {{
                         samplesGroupedByDepartment?.samples[0]?.orders[0]
                           ?.testAllocations[0]?.results[
                           samplesGroupedByDepartment?.samples[0]?.orders[0]
                             ?.testAllocations[0]?.results?.length - 1
                         ]?.resultsFedBy?.name
-                      }} -->
+                      }}
                     </td>
                   </tr>
 
@@ -376,13 +430,23 @@
                       <b>Results Fed At</b>
                     </td>
                     <td>
-                      <!-- {{
+                      {{
+                        samplesGroupedByDepartment?.samples[0] &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0] &&
                         samplesGroupedByDepartment?.samples[0]?.orders[0]
-                          ?.testAllocations[0]?.resultsCommentsStatuses[
-                          samplesGroupedByDepartment?.samples[0]?.orders[0]
-                            ?.testAllocations[0]?.results?.length - 1
-                        ]?.timestamp | date: "medium"
-                      }} -->
+                          ?.testAllocations[0] &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0]
+                          ?.testAllocations[0]?.resultsCommentsStatuses &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0]
+                          ?.testAllocations[0]?.resultsCommentsStatuses
+                          ?.length > 0
+                          ? (samplesGroupedByDepartment?.samples[0]?.orders[0]
+                              ?.testAllocations[0]?.resultsCommentsStatuses[
+                              samplesGroupedByDepartment?.samples[0]?.orders[0]
+                                ?.testAllocations[0]?.results?.length - 1
+                            ]?.timestamp | date: "medium")
+                          : "-"
+                      }}
                     </td>
                   </tr>
                   <tr *ngIf="!LISConfigurations?.isLIS">
@@ -392,13 +456,23 @@
                       <b>Requested By</b>
                     </td>
                     <td>
-                      <!-- {{
+                      {{
+                        samplesGroupedByDepartment?.samples[0] &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0] &&
                         samplesGroupedByDepartment?.samples[0]?.orders[0]
-                          ?.testAllocations[0]?.resultsCommentsStatuses[
-                          samplesGroupedByDepartment?.samples[0]?.orders[0]
-                            ?.testAllocations[0]?.results?.length - 1
-                        ]?.timestamp | date: "medium"
-                      }} -->
+                          ?.testAllocations[0] &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0]
+                          ?.testAllocations[0]?.resultsCommentsStatuses &&
+                        samplesGroupedByDepartment?.samples[0]?.orders[0]
+                          ?.testAllocations[0]?.resultsCommentsStatuses
+                          ?.length > 0
+                          ? (samplesGroupedByDepartment?.samples[0]?.orders[0]
+                              ?.testAllocations[0]?.resultsCommentsStatuses[
+                              samplesGroupedByDepartment?.samples[0]?.orders[0]
+                                ?.testAllocations[0]?.results?.length - 1
+                            ]?.timestamp | date: "medium")
+                          : "-"
+                      }}
                     </td>
                   </tr>
                 </table>
@@ -410,7 +484,6 @@
                   <table class="table" style="width: 100%">
                     <thead>
                       <tr>
-                        <th colspan="1">Specimen</th>
                         <th colspan="4">Tests Details</th>
                       </tr>
                     </thead>
@@ -424,9 +497,6 @@
                           border-bottom: 1px solid gray;
                         "
                       >
-                        <td colspan="1">
-                          {{ sample?.specimen?.specimenName }}
-                        </td>
                         <td colspan="4">
                           <div class="my-2 mx-2">
                             <table
@@ -439,16 +509,20 @@
                               "
                             >
                               <tr>
-                                <th style="width: 15px">SN</th>
+                                <!-- <th style="width: 15px">SN</th>
                                 <th *ngIf="!LISConfigurations?.isLIS">
                                   Test #
-                                </th>
+                                </th> -->
                                 <th>Test Order</th>
-                                <th>Parameter</th>
-                                <th>Results</th>
-                                <!-- <td>SI Units</td> -->
-                                <th *ngIf="!LISConfigurations?.isLIS">LL</th>
-                                <th *ngIf="!LISConfigurations?.isLIS">UL</th>
+                                <th class="w-50">
+                                  <div class="row">
+                                    <div class="col-md-6">Parameter</div>
+                                    <div class="col-md-3">Results</div>
+                                    <div class="col-md-1">Units</div>
+                                    <div class="col-md-1">LL</div>
+                                    <div class="col-md-1">UL</div>
+                                  </div>
+                                </th>
                                 <th>Remarks</th>
                                 <th *ngIf="!LISConfigurations?.isLIS">
                                   Order date & Time
@@ -472,12 +546,12 @@
                                       'row-alternated': count % 2 !== 0
                                     }"
                                   >
-                                    <td rowspan="2">
+                                    <!-- <td rowspan="2">
                                       {{ count + 1 }}
                                     </td>
                                     <td *ngIf="!LISConfigurations?.isLIS">
                                       {{ order?.order?.orderNumber }}
-                                    </td>
+                                    </td> -->
                                     <td>
                                       {{ order?.order?.concept?.display }}
                                       <br />
@@ -500,112 +574,6 @@
                                             [allocation]="allocation"
                                             [count]="count"
                                             [whatToShow]="'parameter'"
-                                            [parameter]="allocation?.parameter"
-                                            [units]="
-                                              allocation?.parameter?.units
-                                            "
-                                            (remarksData)="onGetRemarks($event)"
-                                          ></app-shared-parameter-results>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        class="w-100"
-                                        *ngIf="
-                                          order?.order?.concept?.setMembers
-                                            ?.length == 0
-                                        "
-                                      >
-                                        <span
-                                          *ngIf="
-                                            order?.testAllocations[0]
-                                              ?.secondSignOff &&
-                                            order?.order?.concept?.lowNormal &&
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.order?.concept?.lowNormal >
-                                              order?.testAllocations[0]
-                                                ?.results[
-                                                order?.testAllocations[0]
-                                                  ?.results?.length - 1
-                                              ]?.valueNumeric
-                                          "
-                                          ><img
-                                            src="assets/images/arrowdownred.png"
-                                            height="8px"
-                                        /></span>
-                                        <span
-                                          *ngIf="
-                                            order?.testAllocations[0]
-                                              ?.secondSignOff &&
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.order?.concept?.hiNormal &&
-                                            order?.testAllocations[0]?.results[
-                                              order?.testAllocations[0]?.results
-                                                ?.length - 1
-                                            ]?.valueNumeric >
-                                              order?.concept?.hiNormal
-                                          "
-                                          ><img
-                                            src="assets/images/arrowupred.png"
-                                            height="8px"
-                                        /></span>
-
-                                        <span
-                                          *ngIf="
-                                            order?.order?.concept?.setMembers
-                                              ?.length == 0 &&
-                                            order?.testAllocations[0]
-                                              ?.results[0]?.value
-                                          "
-                                        >
-                                          {{
-                                            order?.order?.concept?.answers
-                                              ?.length == 0
-                                              ? order?.testAllocations[0]
-                                                  ?.results[
-                                                  order?.testAllocations[0]
-                                                    ?.results?.length - 1
-                                                ]?.value
-                                              : order?.order?.concept
-                                                  ?.keyedAnswers[
-                                                  order?.testAllocations[0]
-                                                    ?.results[
-                                                    order?.testAllocations[0]
-                                                      ?.results?.length - 1
-                                                  ]?.value
-                                                ]?.display
-                                          }}
-                                        </span>
-                                        <span
-                                          class="text-warning"
-                                          *ngIf="
-                                            !order?.testAllocations[0]
-                                              ?.results[0]?.value
-                                          "
-                                        >
-                                          Processing ..
-                                        </span>
-                                      </div>
-                                      <div
-                                        class="w-100"
-                                        *ngIf="
-                                          order?.testAllocations?.length > 0
-                                        "
-                                      >
-                                        <div
-                                          *ngFor="
-                                            let allocation of order?.testAllocations;
-                                            let count = index
-                                          "
-                                        >
-                                          <app-shared-parameter-results
-                                            [order]="order"
-                                            [allocation]="allocation"
-                                            [whatToShow]="'result'"
-                                            [count]="count"
                                             [parameter]="allocation?.parameter"
                                             [units]="
                                               allocation?.parameter?.units
@@ -772,35 +740,16 @@
                                     }"
                                   >
                                     <td colspan="100%">
-                                      <div
-                                        *ngIf="
-                                          sample?.authorizationInfo &&
-                                          sample?.authorizationInfo[0]
-                                        "
-                                      >
-                                        <b>Authorised By: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]?.name
-                                        }}
-                                        <b class="ml-4">On: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]
-                                            ?.timestamp | date: "medium"
-                                        }}
-                                      </div>
-                                      <div
-                                        *ngIf="
-                                          !sample?.authorizationInfo ||
-                                          (sample?.authorizationInfo &&
-                                            !sample?.authorizationInfo[0])
-                                        "
-                                      >
-                                        Un-Authorized
-                                      </div>
+                                      <app-authorization-and-result-entry-action-summary
+                                        [sample]="sample"
+                                        [order]="order"
+                                      ></app-authorization-and-result-entry-action-summary>
                                     </td>
                                   </tr>
                                 </ng-container>
-
+                                <!-- {{
+                                  order?.allocationsWithDataRelationship | json
+                                }} -->
                                 <ng-container
                                   *ngIf="
                                     order?.allocationsWithDataRelationship
@@ -1079,38 +1028,21 @@
                                     }"
                                   >
                                     <td colspan="100%">
-                                      <div
-                                        *ngIf="
-                                          sample?.authorizationInfo &&
-                                          sample?.authorizationInfo[0]
-                                        "
-                                      >
-                                        <b>Authorised By: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]?.name
-                                        }}
-                                        <b class="ml-4">On: </b
-                                        >{{
-                                          sample?.authorizationInfo[0]
-                                            ?.timestamp | date: "medium"
-                                        }}
-                                      </div>
-                                      <div
-                                        *ngIf="
-                                          !sample?.authorizationInfo ||
-                                          (sample?.authorizationInfo &&
-                                            !sample?.authorizationInfo[0])
-                                        "
-                                      >
-                                        Un-Authorized
-                                      </div>
+                                      <app-authorization-and-result-entry-action-summary
+                                        [sample]="sample"
+                                        [order]="order"
+                                      ></app-authorization-and-result-entry-action-summary>
                                     </td>
                                   </tr>
                                 </ng-container>
                               </ng-container>
+
+                              
                             </table>
                           </div>
                         </td>
+
+                        
                       </tr>
                     </tbody>
                   </table>
@@ -1180,16 +1112,6 @@
                   </span>
                 </div> -->
                 <div
-                  style="text-align: left; padding: 6px 0; margin: 5vh 0 0 0"
-                  class="providers-details"
-                >
-                  <span>
-                    <b>Printed By :</b>{{ user?.person?.display }},
-                    <b>Printed At :</b>
-                    {{ currentDateTime }}
-                  </span>
-                </div>
-                <div
                   style="text-align: center; margin: 2vh 0 0 0"
                   class="providers-details"
                 >
@@ -1198,6 +1120,16 @@
                       >----------------------------- END OF LABORATORY REPORT
                       -----------------------------</b
                     >
+                  </span>
+                </div>
+                <div
+                  style="text-align: left; padding: 6px 0; margin: 5vh 0 0 0"
+                  class="providers-details"
+                >
+                  <span>
+                    <b>Printed By :</b>{{ user?.person?.display }},
+                    <b>Printed At :</b>
+                    {{ currentDateTime }}
                   </span>
                 </div>
               </div>

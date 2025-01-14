@@ -1,0 +1,14 @@
+<div style="width: 100%">
+  <table style="width: 100%; border: 0">
+    <tbody>
+      <tr style="width: 100%; border: 0">
+        <td style="width: 100%; text-align: left; border: 0">
+          <span style="font-weight: 600"> <b>Tests Ordered:</b> </span>
+          <span *ngFor="let order of samplesData[0]?.orders">
+            {{ order?.order?.concept?.display }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

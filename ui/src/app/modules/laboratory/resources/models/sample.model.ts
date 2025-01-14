@@ -332,13 +332,23 @@ export class LabSample {
   }
 
   get department(): any {
-    return this.keyedDepartments[this.sample?.orders[0]?.order?.concept?.uuid];
+    return {
+      ...this.sample?.department,
+      name:
+        this.sample?.department?.display?.indexOf(":") > -1
+          ? this.sample?.department?.display?.split(":")[1]
+          : this.sample?.department?.display,
+    };
   }
 
   get specimenSource(): any {
-    return this.keyedSpecimenSources[
-      this.sample?.orders[0]?.order?.concept?.uuid
-    ];
+    return {
+      ...this.sample?.specimenSource,
+      name:
+        this.sample?.specimenSource?.display?.indexOf(":") > -1
+          ? this.sample?.specimenSource?.display?.split(":")[1]
+          : this.sample?.specimenSource?.display,
+    };
   }
 
   get integrationStatus(): any {
@@ -481,8 +491,8 @@ export class LabSample {
       (status) =>
         status?.category === "COLLECTED_ON" ||
         status?.status === "COLLECTED_ON" ||
-        status?.category === "BROUGHT_ON" ||
-        status?.status === "BROUGHT_ON"
+        status?.category === "DELIVERED_ON" ||
+        status?.status === "DELIVERED_ON"
     ) || [])[0];
   }
 
@@ -491,8 +501,8 @@ export class LabSample {
       (status) =>
         status?.category === "RECEIVED_BY" ||
         status?.status === "RECEIVED_BY" ||
-        status?.category === "BROUGHT_ON" ||
-        status?.status === "BROUGHT_ON"
+        status?.category === "DELIVERED_ON" ||
+        status?.status === "DELIVERED_ON"
     ) || [])[0];
   }
 
@@ -519,7 +529,7 @@ export class LabSample {
   get hasResults(): boolean {
     return (
       this.sample?.statuses?.filter(
-        (status) => status?.category === "HAS_RESULTS"
+        (status) => status?.category === "HAS_RESULTS" && !status?.retired
       ) || []
     )?.length > 0
       ? true

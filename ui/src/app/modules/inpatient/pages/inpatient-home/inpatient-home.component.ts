@@ -51,7 +51,7 @@ export class InpatientHomeComponent implements OnInit {
     private route: ActivatedRoute,
     private locationService: LocationService
   ) {
-    this.store.dispatch(loadRolesDetails());
+    // this.store.dispatch(loadRolesDetails());
   }
 
   ngOnInit(): void {
@@ -65,7 +65,7 @@ export class InpatientHomeComponent implements OnInit {
      */
 
     // this.store
-    //   .select(getCurrentLocation)
+    //   .select(getCurrentLocation(false))
     //   .subscribe((response) => {
     //     this.currentLocation = response;
     //     // localStorage.setItem(
@@ -119,7 +119,7 @@ export class InpatientHomeComponent implements OnInit {
     this.store.dispatch(go({ path: ["/"] }));
   }
 
-  onGetBedStatus(status, orderType) {
+  onGetBedStatus(status: any, orderType: any): void {
     this.dialog.open(OccupiedLocationStatusModalComponent, {
       minWidth: "20%",
       minHeight: "200px",

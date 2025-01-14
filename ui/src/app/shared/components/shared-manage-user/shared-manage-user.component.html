@@ -1,17 +1,21 @@
 <mat-card>
   <div class="d-flex justify-content-between mb-2">
     <div class="h4 font-weight-normal">
-      <button mat-flat-button style="height: 10px" (click)="onCancel($event)">
+      <button mat-icon-button color="primary" (click)="onCancel($event)">
         <mat-icon>keyboard_backspace</mat-icon>
+        {{ user && user?.uuid ? "Update User" : "Add User" }}
       </button>
-      {{ user && user?.uuid ? "Update User" : "Add User" }}
     </div>
   </div>
 
   <!-- loading section -->
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
   <!-- end of loading section -->
-  <div class="table-responsive p-3" *ngIf="!loading && userForm">
+  <div
+    class="table-responsive p-3 w-100"
+    style="max-height: 550px; overflow: auto"
+    *ngIf="!loading && userForm"
+  >
     <form [formGroup]="userForm">
       <ng-container>
         <div class="row">
@@ -30,6 +34,7 @@
                 formControlName="username"
                 (keyup)="search($event)"
                 autocomplete="off"
+                [readonly]="user?.selfUpdate"
               />
             </mat-form-field>
             <span
@@ -62,6 +67,9 @@
               <mat-hint *ngIf="!passwordInput.value"
                 >Enter your password</mat-hint
               >
+              <mat-hint class="text-danger" *ngIf="!passwordStrong">{{
+                passwordStrengthMessage
+              }}</mat-hint>
               <mat-icon matSuffix (click)="hide = !hide">{{
                 hide ? "visibility_off" : "visibility"
               }}</mat-icon>
@@ -265,7 +273,7 @@
               />
             </mat-form-field>
           </div>
-          <div class="col-12">
+          <div class="col-12" *ngIf="!user?.selfUpdate">
             <p>
               <mat-checkbox
                 #checkbox
@@ -275,7 +283,10 @@
               >
             </p>
           </div>
-          <div class="col-12 mt-2" *ngIf="shouldCreateProvider">
+          <div
+            class="col-12 mt-2"
+            *ngIf="shouldCreateProvider && !user?.selfUpdate"
+          >
             <div class="row">
               <div class="col-3">
                 <mat-form-field
@@ -326,7 +337,7 @@
             </div>
           </div>
 
-          <div class="col-6">
+          <div class="col-6" *ngIf="!user?.selfUpdate">
             <ng-container *ngIf="shouldCreateProvider"> </ng-container>
             <h4 style="margin-top: 14px">Locations</h4>
             <mat-form-field class="w-100" appearance="fill" autocomplete="off">
@@ -404,7 +415,7 @@
               </div>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-6" *ngIf="!user?.selfUpdate">
             <div>
               <h4 style="margin-top: 14px">Roles</h4>
             </div>
@@ -552,7 +563,7 @@
         </div>
       </ng-container>
 
-      <div *ngIf="!hideModuleSelection">
+      <div *ngIf="!hideModuleSelection && !user?.selfUpdate">
         <!-- systemModules -->
         <h4 class="mt-2">Others</h4>
         <mat-form-field class="w-25 mt-2">
@@ -585,7 +596,7 @@
           color="primary"
           style="max-width: 100px"
           (click)="saveData($event, user)"
-          [disabled]="!userForm.valid || saving"
+          [disabled]="(!user?.selfUpdate && !userForm.valid) || saving"
         >
           <ng-container *ngIf="saving">
             <span class="ml-2">Saving</span>

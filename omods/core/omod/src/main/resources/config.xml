@@ -27,6 +27,14 @@
 		<point>org.openmrs.api.OrderService</point>
 		<class>org.openmrs.module.icare.billing.aop.OrderBillAdvisor</class>
 	</advice>
+	<advice>
+		<point>org.openmrs.api.UserService</point>
+		<class>org.openmrs.module.icare.core.aop.PasswordChangeAdvisor</class>
+	</advice>
+	<advice>
+		<point>org.openmrs.api.DiagnosisService</point>
+		<class>org.openmrs.module.icare.core.aop.VisitDiagnosisAdvisor</class>
+	</advice>
 	<globalProperty>
 		<property>icare.billing.serviceAttribute</property>
 		<defaultValue>SERVICE0IIIIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
@@ -91,7 +99,254 @@
 			UUID for the Insurance Authorization Attribute.
 		</description>
 	</globalProperty>
-	
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgramMappings</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance mappings
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgram.uuid</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance Program
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgramStage.uuid</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance program stage
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.captureDiagnosisData</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			Check for should capture immediate diagnoses when doctor prescribe
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.immediate.icdCodedDiagnoses</property>
+		<defaultValue>["A00"]</defaultValue>
+		<description>
+			List of immediate coded diagnoses
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.location.general.systemSettings.formsAttributeTypeUuid</property>
+		<defaultValue>2c266002-2848-4d2b-bf1f-8b59d81e3f29</defaultValue>
+		<description>
+			For location attributes containing form references/uuids
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.visits.types.verticalProgram.uuid</property>
+		<defaultValue>2msir5eb-5ww5-11e8-5555-40b034c3cfee</defaultValue>
+		<description>
+			For vertical program visit type reference
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.mediators.list</property>
+		<defaultValue>[{"mediatorKey":"dhis2","mediatorUrlPath":"","authenticationType":"basic","mediatorMappingReferenceKey":"iCare.interoperability.settings.surveillance.dhis2.eventProgramMappings","isActive":true}]</defaultValue>
+		<description>
+			List of mediators to push data to
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.general.systemSettings.groups</property>
+		<defaultValue></defaultValue>
+		<description>
+			Settings references
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>iCare.GePG.settings.authentication.authSignature</property>
+		<defaultValue>GePGAUthenticationCertificateKey</defaultValue>
+		<description>
+			For GePG Authentication
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.mappings.GFSCODEConceptSource.uuid</property>
+		<defaultValue>GFSCODE_CONCEPT_SOURCE_UUID</defaultValue>
+		<description>
+			For GFSCODE Mapping reference
+		</description>
+	</globalProperty>
+	<!-- Envaya SMS starts-->
+	<globalProperty>
+		<property>iCare.sms.settings.incoming</property>
+		<defaultValue>incoming</defaultValue>
+		<description>
+			Incoming Status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.outgoing</property>
+		<defaultValue>outgoing</defaultValue>
+		<description>
+			Outgoing Status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.queued</property>
+		<defaultValue>queued</defaultValue>
+		<description>
+			Queued Status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.sent</property>
+		<defaultValue>sent</defaultValue>
+		<description>
+			Sent Status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.forward.sent</property>
+		<defaultValue>forward sent</defaultValue>
+		<description>
+			forward sent
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.send.status</property>
+		<defaultValue>send status</defaultValue>
+		<description>
+			send status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.device.status</property>
+		<defaultValue>device status</defaultValue>
+		<description>
+			device status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.failed</property>
+		<defaultValue>failed</defaultValue>
+		<description>
+			failed status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.cancelled</property>
+		<defaultValue>cancelled</defaultValue>
+		<description>
+			cancelled status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.test</property>
+		<defaultValue>test</defaultValue>
+		<description>
+			test status 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.amqp.started</property>
+		<defaultValue>amqp started</defaultValue>
+		<description>
+			amqp started status 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.cancel.all</property>
+		<defaultValue>cancel all</defaultValue>
+		<description>
+			cancel all status 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.cancel</property>
+		<defaultValue>cancel</defaultValue>
+		<description>
+			cancel status 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.log</property>
+		<defaultValue>log</defaultValue>
+		<description>
+			log of Envaya 
+		</description>
+	</globalProperty>
+    <globalProperty>
+		<property>iCare.sms.settings.settings</property>
+		<defaultValue>settings</defaultValue>
+		<description>
+			settings of Envaya 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.power.connected</property>
+		<defaultValue>power connected</defaultValue>
+		<description>
+			power connected status 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.power.disconnected</property>
+		<defaultValue>power disconnected</defaultValue>
+		<description>
+			power disconnected 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.battery.low</property>
+		<defaultValue>battery low</defaultValue>
+		<description>
+			battery low status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.battery.okay</property>
+		<defaultValue>battery okay</defaultValue>
+		<description>
+			battery okay status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.send.limit.exceed</property>
+		<defaultValue>send limit exceed</defaultValue>
+		<description>
+			send limit exceed status
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.sms</property>
+		<defaultValue>sms</defaultValue>
+		<description>
+			service type sms
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.mms</property>
+		<defaultValue>mms</defaultValue>
+		<description>
+			service type mms
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.sms.settings.call</property>
+		<defaultValue>call</defaultValue>
+		<description>
+			service type call
+		</description>
+	</globalProperty>
+	<!-- Envaya SMS ends -->
+	<globalProperty>
+		<property>iCare.billing.orderTypes.skipBillingOrderAdvisor</property>
+		<defaultValue></defaultValue>
+		<description>
+			For order type to be skipped when Billing advisor for order is being executed
+		</description>
+	</globalProperty>
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>

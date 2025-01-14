@@ -2,12 +2,13 @@
   class="w-100"
   *ngIf="{
     report: report$ | async,
-    facilityDetails: facilityDetails$ | async
+    facilityDetails: facilityDetails$ | async,
+    excelDownloadFormat: excelDownloadFormat$ | async
   } as params"
 >
   <mat-progress-bar
     mode="indeterminate"
-    *ngIf="!params?.report"
+    *ngIf="!params?.report || !params?.excelDownloadFormat"
   ></mat-progress-bar>
   <div class="w-100" *ngIf="params?.report">
     <div class="w-100 d-flex justify-content-between">
@@ -68,12 +69,14 @@
               ? 'iframe_id'
               : 'report-to-download',
             params?.report?.name,
-            params?.report?.renderAs
+            params?.report?.renderAs,
+            params?.excelDownloadFormat?.value
           )
         "
         [disabled]="
-          (!selectionDates || !dateChanged) &&
-          params?.report?.useDefaultPeFilter
+          ((!selectionDates || !dateChanged) &&
+            params?.report?.useDefaultPeFilter) ||
+          !params?.excelDownloadFormat
         "
         mat-flat-button
         color="primary"

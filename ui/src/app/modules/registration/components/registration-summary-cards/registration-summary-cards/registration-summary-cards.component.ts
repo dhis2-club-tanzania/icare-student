@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Store } from "@ngrx/store";
+import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { go } from "src/app/store/actions";
 import { AppState } from "src/app/store/reducers";
 
@@ -13,7 +14,12 @@ export class RegistrationSummaryCardsComponent implements OnInit {
   @Input() location: any;
   @Input() totalActivePatients: number;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>,
+    private googleAnalyticsService: GoogleAnalyticsService
+  ) {
+
+    
+  }
 
   ngOnInit(): void {}
 
@@ -22,5 +28,13 @@ export class RegistrationSummaryCardsComponent implements OnInit {
     this.store.dispatch(
       go({ path: [`/registration/patients-list/location/${location?.uuid}`] })
     );
+
+    this.trackActionForAnalytics(`Active Patient: View`)
+  }
+
+
+  trackActionForAnalytics(eventname: any) {
+    // Send data to Google Analytics
+   this.googleAnalyticsService.sendAnalytics('Registration',eventname,'Registration')
   }
 }

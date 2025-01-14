@@ -42,7 +42,7 @@
           <tr *ngIf="!labTest?.voided">
             <td
               [attr.rowspan]="
-                showParameters
+                showParameters[labTest?.uuid]
                   ? testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid][
                       'members'
                     ]?.length + 1
@@ -55,41 +55,22 @@
               {{ labTest?.concept?.display }}
             </td>
             <td>
-              <a (click)="toggleParametes($event)">
+              <a (click)="toggleParametes($event, labTest)">
                 <img
                   height="20"
                   class="text-muted"
-                  *ngIf="!showParameters"
+                  *ngIf="!showParameters[labTest?.uuid]"
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
                 />
                 <img
                   height="20"
                   class="text-muted"
-                  *ngIf="showParameters"
+                  *ngIf="showParameters[labTest?.uuid]"
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
                 />
               </a>
             </td>
             <td>
-              <!-- <a
-                  style="display: table-cell; vertical-align: bottom"
-                  (click)="
-                    setCurrentOrderedItemForOtherDetailsView($event, labTest)
-                  "
-                >
-                  <img
-                    height="10"
-                    class="text-muted"
-                    *ngIf="!showOtherDetails"
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
-                  />
-                  <img
-                    height="10"
-                    class="text-muted"
-                    *ngIf="showOtherDetails"
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
-                  />
-                </a> -->
               <button
                 *ngIf="!isInpatient"
                 mat-icon-button
@@ -108,13 +89,13 @@
                   <img
                     height="10"
                     class="text-muted"
-                    *ngIf="!showOtherDetails"
+                    *ngIf="!showOtherDetails[labTest?.concept?.uuid]"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
                   />
                   <img
                     height="10"
                     class="text-muted"
-                    *ngIf="showOtherDetails"
+                    *ngIf="showOtherDetails[labTest?.concept?.uuid]"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
                   />
                   <span>More details</span>
@@ -132,7 +113,7 @@
           <tr
             *ngIf="
               currentLabTest?.orderNumber === labTest?.orderNumber &&
-              showOtherDetails
+              showOtherDetails[labTest?.uuid]
             "
           >
             <td colspan="100%" style="padding: 0 !important">
@@ -152,7 +133,7 @@
               </p>
             </td>
           </tr>
-          <ng-container *ngIf="showParameters">
+          <ng-container *ngIf="showParameters[labTest?.uuid]">
             <tr
               style="padding: 0 !important; margin: 0 !important"
               *ngFor="
@@ -234,13 +215,13 @@
                   <img
                     height="10"
                     class="text-muted"
-                    *ngIf="!showOtherDetails"
+                    *ngIf="!showOtherDetails[labTest?.uuid]"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
                   />
                   <img
                     height="10"
                     class="text-muted"
-                    *ngIf="showOtherDetails"
+                    *ngIf="showOtherDetails[labTest?.uuid]"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
                   />
                   <span>More details</span>
@@ -258,7 +239,7 @@
           <tr
             *ngIf="
               currentLabTest?.orderNumber === labTest?.orderNumber &&
-              showOtherDetails
+              showOtherDetails[labTest?.uuid]
             "
           >
             <td colspan="100%" style="padding: 0">
@@ -286,12 +267,13 @@
           <td colspan="3">
             <app-form
               [fields]="formFields"
-              [isFormHorizontal]="true"
+              [isFormHorizontal]="false"
               (formUpdate)="onFormUpdate($event)"
             >
             </app-form>
             <a
               class="float-right"
+              style="cursor: pointer"
               (click)="
                 onToggleCommonLabTests(
                   $event,

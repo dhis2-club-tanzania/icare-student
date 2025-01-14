@@ -11,7 +11,10 @@
     paymentsCategories: paymentsCategories$ | async,
     admissionLocations: admissionLocations$ | async,
     insuranceSchemes: insuranceSchemes$ | async,
-    userPrivileges: userPrivileges$ | async
+    userPrivileges: userPrivileges$ | async,
+    verticalPrograms: verticalPrograms$ | async,
+    verticalProgramUuid: verticalProgramUuid$ | async,
+    selectedService: selectedService$ | async
   } as params"
 >
   <!-- <div class="centered-container" *ngIf="!params?.currentPatient">
@@ -262,7 +265,13 @@
                 <mat-chip-list aria-label="Visit types" *ngIf="visitTypes">
                   <mat-chip
                     *ngFor="let visitType of applicableVisitTypes"
-                    (click)="setVisitTypeOption(visitType, isEmergencyVisit)"
+                    (click)="
+                      setVisitTypeOption(
+                        visitType,
+                        params?.verticalProgramUuid,
+                        isEmergencyVisit
+                      )
+                    "
                     color="{{
                       visitType.uuid == currentVisitType?.uuid ? 'primary' : ''
                     }}"
@@ -296,6 +305,35 @@
                     </mat-chip-list>
                   </div>
                 </div>
+                <div
+                  class="mt-3"
+                  *ngIf="isVerticalProgram && currentVisitService"
+                >
+                  <mat-progress-bar
+                    mode="indeterminate"
+                    *ngIf="
+                      !params?.selectedService || !params?.verticalPrograms
+                    "
+                  ></mat-progress-bar>
+                  <app-program-selection
+                    *ngIf="params?.selectedService && params?.verticalPrograms"
+                    [programs]="params?.verticalPrograms"
+                    [programConcepts]="params?.selectedService?.setMembers"
+                    (selectedProgram)="onGetSelectedProgram($event)"
+                  ></app-program-selection>
+                </div>
+                <!-- alert.component.html -->
+                <div
+                  *ngIf="visible"
+                  class="alert alert-info alert-dismissible w-100 mt-2"
+                >
+                  <button type="button" class="close" (click)="dismissAlert()">
+                    <span>&times;</span>
+                  </button>
+                  patient is already enrolled in this program
+                </div>
+                <!-- end of visit form -->
+
                 <div
                   class="w-100 rooms-status-container"
                   *ngIf="
@@ -635,6 +673,7 @@
                     />
                   </mat-form-field>
                   <mat-checkbox
+                    color="primary"
                     (change)="toggleAuthorizationNumberInputActive($event)"
                     >Tick if you can NOT authorize now</mat-checkbox
                   >
@@ -745,6 +784,7 @@
               Edit Patient
             </button>
             <button
+              *ngIf="!isVerticalProgram"
               id="btn-start-visit"
               class="ml-2"
               mat-flat-button
@@ -776,6 +816,41 @@
                 style="display: inline-block !important; margin-right: 4px"
               ></mat-spinner>
               {{ params?.loadingVisit ? "Starting visit..." : "Start Visit" }}
+            </button>
+            <button
+              *ngIf="isVerticalProgram"
+              id="btn-start-visit"
+              class="ml-2"
+              mat-flat-button
+              color="primary"
+              (click)="enrollToProgam($event)"
+              [disabled]="
+                visible ||
+                !(
+                  (!editMode &&
+                    visitDetails?.visitType?.uuid &&
+                    visitDetails?.Payment &&
+                    visitDetails?.service?.display &&
+                    (visitDetails?.Cash ||
+                      (visitDetails?.Insurance && visitDetails?.InsuranceID)) &&
+                    visitDetails?.RoomName) ||
+                  (editMode && visitDetails?.RoomName)
+                ) ||
+                params.loadingVisit ||
+                (authorizationNumberAvailable &&
+                  !visitDetails['InsuranceAuthNo'] &&
+                  visitDetails?.Insurance &&
+                  visitDetails?.InsuranceID &&
+                  !visitDetails?.Cash)
+              "
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="params.loadingVisit"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Enroll To Program
             </button>
           </div>
         </div>

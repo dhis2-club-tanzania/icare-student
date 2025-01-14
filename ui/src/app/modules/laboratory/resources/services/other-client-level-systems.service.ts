@@ -12,6 +12,7 @@ export class OtherClientLevelSystemsService {
   getClientsFromOtherSystems(parameters: {
     identifier: string;
     identifierReference: string;
+    labTestRequestProgramStageId: string;
   }): Observable<any> {
     return this.httpClientService
       .get(
@@ -19,9 +20,22 @@ export class OtherClientLevelSystemsService {
       )
       .pipe(
         map((response) => {
-          return response?.filter(
-            (responseItem) => responseItem?.events?.length > 0
-          );
+          return response?.map((responseItem) => {
+            return {
+              ...responseItem,
+              hasLabRequest:
+                response?.events?.length > 0
+                  ? (
+                      response?.events?.filter(
+                        (event) =>
+                          parameters?.labTestRequestProgramStageId &&
+                          event?.programStage ==
+                            parameters?.labTestRequestProgramStageId
+                      ) || []
+                    )?.length > 0
+                  : false,
+            };
+          });
         })
       );
   }

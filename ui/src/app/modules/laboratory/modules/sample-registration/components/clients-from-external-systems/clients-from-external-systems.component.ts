@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Observable } from "rxjs";
 import { DHIS2BasedSystems } from "src/app/core/constants/external-dhis2-based-systems.constants";
 import { OtherClientLevelSystemsService } from "src/app/modules/laboratory/resources/services/other-client-level-systems.service";
@@ -9,6 +9,7 @@ import { OtherClientLevelSystemsService } from "src/app/modules/laboratory/resou
   styleUrls: ["./clients-from-external-systems.component.scss"],
 })
 export class ClientsFromExternalSystemsComponent implements OnInit {
+  @Input() labTestRequestProgramStageId: string;
   systems: any[] = DHIS2BasedSystems;
   selectedSystem: any;
   selectedSearchCriteria: any;
@@ -42,6 +43,7 @@ export class ClientsFromExternalSystemsComponent implements OnInit {
       this.otherClientLevelSystemsService.getClientsFromOtherSystems({
         identifier: this.searchingText,
         identifierReference: this.selectedSearchCriteria?.referenceKey,
+        labTestRequestProgramStageId: this.labTestRequestProgramStageId,
       });
     this.showClientsList = true;
   }

@@ -10,39 +10,44 @@ export class FieldControlService {
   toFormGroup(fields: Field<string>[], fieldsData?: FieldsData): FormGroup {
     const group: any = {};
     fields?.forEach((field) => {
-      const fieldData = fieldsData ? fieldsData[field.id]?.latest : null;
+      const fieldData =
+        fieldsData && fieldsData[field.id]?.latest
+          ? fieldsData[field.id]?.latest
+          : fieldsData && !fieldsData[field.id]?.latest
+          ? fieldsData[field.id]
+          : null;
       if (field?.key) {
-        group[field.key] = field.required
-          ? new FormControl(
-              {
-                value: fieldData?.value || field.value || "",
-                disabled: field?.disabled,
-              },
-              [
-                Validators.required,
-                field?.controlType === "phoneNumber"
-                  ? Validators.minLength(10)
-                  : null,
-                field?.controlType === "phoneNumber"
-                  ? Validators.maxLength(10)
-                  : null,
-              ].filter((validator) => validator)
-            )
-          : new FormControl(
-              {
-                value: fieldData?.value || field.value || "",
-                disabled: field?.disabled,
-              },
-
-              [
-                field?.controlType === "phoneNumber"
-                  ? Validators.minLength(10)
-                  : null,
-                field?.controlType === "phoneNumber"
-                  ? Validators.maxLength(10)
-                  : null,
-              ].filter((validator) => validator)
-            );
+        group[field.key] = new FormControl(
+          {
+            value:
+              (!fieldData?.value?.uuid
+                ? fieldData?.value
+                : fieldData?.value?.uuid) ||
+              field.value ||
+              "",
+            disabled: field?.disabled,
+          },
+          [
+            field?.required ? Validators.required : null,
+            field?.controlType === "phoneNumber"
+              ? Validators.minLength(10)
+              : null,
+            field?.controlType === "phoneNumber"
+              ? Validators.maxLength(10)
+              : null,
+            field?.type === "phonenumber"
+              ? Validators.pattern(
+                  /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+                )
+              : null,
+            field?.type === "number"
+              ? Validators.pattern(/[0-9]*\.?[0-9]*/)
+              : null,
+            field?.type === "email"
+              ? Validators.pattern(/(.+)@(.+){2,}\.(.+){2,}/)
+              : null,
+          ].filter((validator) => validator)
+        );
       }
     });
 

@@ -267,6 +267,7 @@ export class SamplesEffects {
               // console.log("allSamples", allSamples);
               let samples = [];
               let samplesToCollect = [];
+              // console.log("action.paidItems", action.paidItems);
               // TODO: Add a way to handle emergency visit and IPD through configurations
               _.forEach(allSamples, (sample) => {
                 if (sample.hasOwnProperty("id")) {
@@ -278,13 +279,10 @@ export class SamplesEffects {
                       ...formattedOrders,
                       {
                         ...order,
-                        paid:
-                          action.paidItems[order?.concept?.display]
-                            ? true
-                            : false,
+                        paid: action.paidItems[order?.uuid] ? true : false,
                         isEnsured: action.visit.isEnsured,
                         isEmergency: action.visit.isEmergency,
-                        isAdmitted: action.visit.isAdmitted
+                        isAdmitted: action.visit.isAdmitted,
                       },
                     ];
                   });

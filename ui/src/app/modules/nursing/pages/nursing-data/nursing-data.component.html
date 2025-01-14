@@ -20,7 +20,16 @@
     *ngIf="params?.patient"
     [currentPatient]="params?.patient"
   ></app-new-patient-profile>
+  {{ params?.savingObservations }}
   <div>
+    <div class="loading-overlay" *ngIf="params?.savingObservations">
+      <div class="text-center">
+        <div>Saving ....</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-4 col-sm-12 col-sx-12 back-to-client-list">
         <button
@@ -161,7 +170,9 @@
               [forms]="params?.forms"
               [observations]="params?.observations"
               [useSideBar]="true"
+              [saveAndExitPath]="saveAndExitPath"
               [savingObservations]="params?.savingObservations"
+              (exitAfterSave)="onExitAfterSave($event)"
               (saveObservations)="onSaveObservations($event, params?.patient)"
             ></app-capture-data>
           </div>

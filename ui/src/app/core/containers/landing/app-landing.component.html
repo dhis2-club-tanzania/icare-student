@@ -8,8 +8,12 @@
   <app-menu></app-menu>
   <div
     [ngClass]="{
-      contents: !params?.LISConfigurations?.isLIS,
-      'lis-contents': params?.LISConfigurations?.isLIS
+      contents:
+        !params?.LISConfigurations?.isLIS &&
+        !params?.LISConfigurations?.isPharmacy,
+      'lis-contents':
+        params?.LISConfigurations?.isLIS ||
+        params?.LISConfigurations?.isPharmacy
     }"
   >
     <router-outlet></router-outlet>

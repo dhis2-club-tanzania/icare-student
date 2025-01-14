@@ -3,7 +3,11 @@
     isThereDiagnosisProvided: isThereDiagnosisProvided$ | async,
     visitLoadingState: visitLoadingState$ | async,
     genericPrescriptionConceptUuids: genericPrescriptionConceptUuids$ | async,
-    specificDrugConceptUuid: specificDrugConceptUuid$ | async
+    specificDrugConceptUuid: specificDrugConceptUuid$ | async,
+    prescriptionArrangementFields: prescriptionArrangementFields$ | async,
+    facilityDetails: facilityDetails$ | async,
+    logo: facilityLogo$ | async,
+    currentUser: currentUser$ | async
   } as params"
 >
   <div class="d-flex justify-content-between p-3">
@@ -37,6 +41,43 @@
         *ngIf="!params?.isThereDiagnosisProvided && !params?.visitLoadingState"
       >
         No diagnosis provided, hence you can not do prescription
+      </div>
+    </div>
+    <div
+      class="row"
+      *ngIf="
+        params?.specificDrugConceptUuid &&
+        params?.prescriptionArrangementFields &&
+        drugOrders?.length &&
+        params?.facilityDetails &&
+        params?.currentUser &&
+        params?.logo
+      "
+    >
+      <div class="col-12">
+        <button
+          class="mr-4 float-right"
+          mat-flat-button
+          color="primary"
+          (click)="
+            onPrintPrescriptions(
+              $event,
+              drugOrders,
+              params?.specificDrugConceptUuid,
+              params?.prescriptionArrangementFields,
+              {
+                CurrentPatient: currentPatient,
+                FacilityDetails: params?.facilityDetails,
+                Logo: params?.logo,
+                CurrentUser: params?.currentUser
+              }
+            )
+          "
+          cdkFocusInitial
+        >
+          <mat-icon>print</mat-icon>
+          Print Prescriptions
+        </button>
       </div>
     </div>
   </div>
@@ -78,21 +119,82 @@
               }}
             </td>
             <td>
-              <ng-container
+              <ng-container *ngIf="params?.prescriptionArrangementFields">
+                <span>
+                  {{
+                    drugOrder.obs[
+                      params?.prescriptionArrangementFields["2"]?.uuid
+                    ]?.value?.display
+                      ? "( " +
+                        drugOrder.obs[
+                          params?.prescriptionArrangementFields["2"]?.uuid
+                        ]?.value?.display +
+                        ")"
+                      : drugOrder.obs[
+                          params?.prescriptionArrangementFields["2"]?.uuid
+                        ]?.value
+                  }}
+                  {{
+                    drugOrder.obs[
+                      params?.prescriptionArrangementFields["3"]?.uuid
+                    ]?.value?.display
+                      ? drugOrder.obs[
+                          params?.prescriptionArrangementFields["3"]?.uuid
+                        ]?.value?.display
+                      : drugOrder.obs[
+                          params?.prescriptionArrangementFields["3"]?.uuid
+                        ]?.value
+                  }}
+                  {{
+                    drugOrder.obs[
+                      params?.prescriptionArrangementFields["4"]?.uuid
+                    ]?.value?.display
+                      ? drugOrder.obs[
+                          params?.prescriptionArrangementFields["4"]?.uuid
+                        ]?.value?.display
+                      : drugOrder.obs[
+                          params?.prescriptionArrangementFields["4"]?.uuid
+                        ]?.value
+                  }}
+                  {{
+                    drugOrder.obs[
+                      params?.prescriptionArrangementFields["5"]?.uuid
+                    ]?.value?.display
+                      ? drugOrder.obs[
+                          params?.prescriptionArrangementFields["5"]?.uuid
+                        ]?.value?.display
+                      : drugOrder.obs[
+                          params?.prescriptionArrangementFields["5"]?.uuid
+                        ]?.value
+                  }}
+                  {{
+                    drugOrder.obs[
+                      params?.prescriptionArrangementFields["6"]?.uuid
+                    ]?.value?.display
+                      ? drugOrder.obs[
+                          params?.prescriptionArrangementFields["6"]?.uuid
+                        ]?.value?.display
+                      : drugOrder.obs[
+                          params?.prescriptionArrangementFields["6"]?.uuid
+                        ]?.value
+                  }}
+                </span>
+              </ng-container>
+              <!-- <ng-container
                 *ngFor="
                   let conceptSetting of params?.genericPrescriptionConceptUuids
                 "
               >
-                <!-- <span
+                <span
                   >{{
                     drugOrder?.obs[conceptSetting?.value]?.value?.display
                       ? drugOrder?.obs[conceptSetting?.value]?.value?.display
                       : drugOrder?.obs[conceptSetting?.value]?.value
                   }}
                 </span>
-                <br /> -->
+                <br />
                 {{ drugOrder?.instructions }}
-              </ng-container>
+              </ng-container> -->
             </td>
             <td>
               {{ drugOrder?.orderer?.display }}
@@ -104,7 +206,16 @@
               {{ drugOrder?.careSetting?.display }}
             </td>
             <td>
-              <button class="btn colored-button" (click)="onVerify(drugOrder)">
+              <button
+                class="btn colored-button"
+                (click)="
+                  onVerify(
+                    drugOrder,
+                    params?.specificDrugConceptUuid,
+                    params?.prescriptionArrangementFields
+                  )
+                "
+              >
                 Verify
               </button>
             </td>

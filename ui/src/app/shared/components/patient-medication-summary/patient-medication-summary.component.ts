@@ -53,24 +53,34 @@ export class PatientMedicationSummaryComponent implements OnInit {
       this.systemSettingsService.getSystemSettingsByKey(
         "iCare.clinic.useGeneralPrescription"
       );
-    if (!this.forHistory) {
+    if (this.previous) {
+      this.currentVisit$ = of(new Visit(this.patientVisit));
+    } else if (!this.previous && !this.forHistory) {
       this.loadVisit();
     } else {
       this.currentVisit$ = of(this.patientVisit);
     }
     if (this.patientVisit) {
-      this.drugOrders$ = (
-        !this.forHistory
-          ? this.ordersService.getOrdersByVisitAndOrderType({
-              visit: this.patientVisit?.uuid,
-              orderType: "iCARESTS-PRES-1111-1111-525400e4297f", // TODO: This has to be softcoded
-            })
-          : of(this.patientVisit?.drugOrders)
-      ).pipe(
-        map((response) => {
-          return response;
+      this.drugOrders$ = this.ordersService
+        .getOrdersByVisitAndOrderType({
+          visit: this.patientVisit?.uuid,
+          orderType: "iCARESTS-PRES-1111-1111-525400e4297f", // TODO: This has to be softcoded
         })
-      );
+        .pipe(
+          map((response) => {
+            return response?.map((drugOrder) => {
+              return {
+                ...drugOrder,
+                dispensed:
+                  (
+                    drugOrder?.statuses?.filter(
+                      (status) => status?.status === "DISPENSED"
+                    ) || []
+                  ).length > 0,
+              };
+            });
+          })
+        );
       this.patientDrugOrdersStatuses$ = this.drugOrderService
         .getDrugOrderStatus(this.patientVisit?.uuid)
         .pipe(

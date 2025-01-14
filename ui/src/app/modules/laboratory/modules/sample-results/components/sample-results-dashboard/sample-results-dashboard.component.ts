@@ -3,8 +3,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import { orderBy } from "lodash";
 import { Observable, zip } from "rxjs";
+import { iCareConnectConfigurationsModel } from "src/app/core/models/lis-configurations.model";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
-import { LISConfigurationsModel } from "src/app/modules/laboratory/resources/models/lis-configurations.model";
 import { OtherClientLevelSystemsService } from "src/app/modules/laboratory/resources/services/other-client-level-systems.service";
 import { SharedConfirmationComponent } from "src/app/shared/components/shared-confirmation/shared-confirmation.component";
 import { SharedSamplesVerificationIntegratedComponent } from "src/app/shared/dialogs/shared-samples-verification-integrated/shared-samples-verification-integrated.component";
@@ -35,10 +35,11 @@ export class SampleResultsDashboardComponent implements OnInit {
   @Input() labSamplesContainers: any;
   @Input() configs: any;
   @Input() codedSampleRejectionReasons: any;
-  @Input() LISConfigurations: LISConfigurationsModel;
+  @Input() LISConfigurations: iCareConnectConfigurationsModel;
   @Input() currentUser: any;
   @Input() privileges: any;
   @Input() providerDetails: any;
+  @Input() labTestRequestProgramStageId: string;
 
   labConfigs$: Observable<any>;
   privileges$: Observable<any>;
@@ -100,7 +101,7 @@ export class SampleResultsDashboardComponent implements OnInit {
           (this.externalSystemPayload
             ? this.dialog
                 .open(SharedConfirmationComponent, {
-                  width: "30%",
+                  minWidth: "30%",
                   data: {
                     modalTitle: `Send results for ${this.selectedSample?.label}`,
                     modalMessage: `Are you sure to send data to Pima COVID?`,
@@ -110,10 +111,12 @@ export class SampleResultsDashboardComponent implements OnInit {
                 .afterClosed()
             : this.dialog
                 .open(SharedSamplesVerificationIntegratedComponent, {
-                  width: "30%",
+                  minWidth: "30%",
                   data: {
                     ...this.selectedSample,
                     externalSystemsReferenceConceptUuid,
+                    labTestRequestProgramStageId:
+                      this.labTestRequestProgramStageId,
                   },
                 })
                 .afterClosed()
@@ -194,7 +197,7 @@ export class SampleResultsDashboardComponent implements OnInit {
   onUpdateStatus(event: Event, sample: any, key: string): void {
     event.stopPropagation();
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: `${key} sample results`,
         modalMessage: `Are you sure to ${key} results of ${sample?.label} for external use?`,
@@ -396,10 +399,11 @@ export class SampleResultsDashboardComponent implements OnInit {
     event.stopPropagation();
     this.dialog
       .open(SharedSamplesVerificationIntegratedComponent, {
-        width: "50%",
+        minWidth: "50%",
         data: {
           ...sample,
           externalSystemsReferenceConceptUuid,
+          labTestRequestProgramStageId: this.labTestRequestProgramStageId,
         },
       })
       .afterClosed()

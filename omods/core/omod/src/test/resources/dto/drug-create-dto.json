@@ -5,7 +5,7 @@
   "drug": "05ec820a-d297-44e3-be6e-698531d9dd3f",
   "action": "NEW",
   "urgency": "ROUTINE",
-  "type": "drugorder",
+  "type": null,
   "duration": null,
   "durationUnits": "e10ffe54-5184-4efe-8960-cd565ec1cdf8",
   "orderer": "449390a0-d338-4ff2-9b3f-61dc1617c2fe",
@@ -18,5 +18,6 @@
   "quantity": 100,
   "careSetting": "OUTPATIENT",
   "quantityUnits": "557b9699-68a3-11e3-bd76-0800271c1b75",
-  "numRefills": 1
+  "numRefills": 1,
+  "previousOrder": null
 }

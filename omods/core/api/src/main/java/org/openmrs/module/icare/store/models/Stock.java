@@ -4,6 +4,7 @@ package org.openmrs.module.icare.store.models;
 
 import org.openmrs.Location;
 import org.openmrs.module.icare.core.Item;
+import org.openmrs.module.icare.core.JSONConverter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,7 +19,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "st_stock")
-public class Stock implements java.io.Serializable {
+public class Stock implements java.io.Serializable, JSONConverter {
 	
 	@Id
 	@GeneratedValue(strategy = IDENTITY)

@@ -205,8 +205,23 @@ export class ConceptsService {
   }
 
   updateConcept(uuid: string, data: any): Observable<ConceptCreateFull> {
-    const dataToUpdate = omit(data, "answers");
-    return from(this.api.concept.updateConcept(uuid, dataToUpdate)).pipe(
+    return zip(
+      from(this.api.concept.updateConcept(uuid, omit(data, "answers"))),
+      data?.answers?.length > 0
+        ? this.httpClient.post(`icare/concept/${uuid}/answers`, data?.answers)
+        : of(null)
+    ).pipe(
+      map((responses) => responses[0]),
+      catchError((error) => {
+        return of(error);
+      })
+    );
+  }
+
+  updateConceptAttribute(conceptUuid: string, data: any): Observable<any> {
+    return from(
+      this.api.concept.updateConceptAttribute(conceptUuid, data?.uuid, data)
+    ).pipe(
       map((response) => response),
       catchError((error) => {
         return of(error);
@@ -231,6 +246,19 @@ export class ConceptsService {
         parameters?.startIndex;
     }
 
+    if (parameters?.page) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") + "page=" + parameters?.page;
+    }
+
+    if (parameters?.pageSize) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "pageSize=" +
+        parameters?.pageSize;
+      queryParams += (queryParams?.length > 0 ? "&" : "") + "paging=true";
+    }
+
     if (parameters?.conceptClass) {
       queryParams +=
         (queryParams?.length > 0 ? "&" : "") +
@@ -243,30 +271,69 @@ export class ConceptsService {
         "searchTerm=" +
         parameters?.searchTerm;
     }
+
+    if (parameters?.searchTermOfConceptSetToExclude) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "searchTermOfConceptSetToExclude=" +
+        parameters?.searchTermOfConceptSetToExclude;
+    }
+
+    if (parameters?.conceptSource) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "conceptSource=" +
+        parameters?.conceptSource;
+    }
+
+    if (parameters?.referenceTermCode) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "referenceTermCode=" +
+        parameters?.referenceTermCode;
+    }
+
+    if (parameters?.attributeType) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "attributeType=" +
+        parameters?.attributeType;
+    }
+
+    if (parameters?.attributeValue) {
+      queryParams +=
+        (queryParams?.length > 0 ? "&" : "") +
+        "attributeValue=" +
+        parameters?.attributeValue;
+    }
+
     return this.httpClient.get(`icare/concept?${queryParams}`).pipe(
-      map((response) => {
-        return response?.results.map((result) => {
-          return {
-            ...result,
-            display:
-              result?.display?.indexOf(":") > -1
-                ? result?.display?.split(":")[1]
-                : result?.display,
-            name:
-              result?.display?.indexOf(":") > -1
-                ? result?.display?.split(":")[1]
-                : result?.display,
-            names: result?.names?.filter((name) => {
-              return {
-                ...name,
-                display:
-                  name?.display?.indexOf(":") > -1
-                    ? name?.display?.split(":")[1]
-                    : name?.display,
-              };
-            }),
-          };
-        });
+      map((response: any) => {
+        return {
+          ...response,
+          results: response?.results.map((result) => {
+            return {
+              ...result,
+              display:
+                result?.display?.indexOf(":") > -1
+                  ? result?.display?.split(":")[1]
+                  : result?.display,
+              name:
+                result?.display?.indexOf(":") > -1
+                  ? result?.display?.split(":")[1]
+                  : result?.display,
+              names: result?.names?.filter((name) => {
+                return {
+                  ...name,
+                  display:
+                    name?.display?.indexOf(":") > -1
+                      ? name?.display?.split(":")[1]
+                      : name?.display,
+                };
+              }),
+            };
+          }),
+        };
       }),
       catchError((error) => {
         return of(error);
@@ -421,6 +488,21 @@ export class ConceptsService {
     );
   }
 
+  unRetireConcept(id: string): Observable<ConceptGetFull> {
+    return this.httpClient
+      .post(`icare/concept/${id}/retire`, { retire: false })
+      .pipe(
+        map((response) => response),
+        catchError((error) => {
+          return of(error);
+        })
+      );
+  }
+
+  createBillable(uuid: any) {
+    throw new Error("Method not implemented.");
+  }
+
   getConceptSetsByConceptUuids(uuids: string[]): Observable<ConceptGetFull[]> {
     return zip(
       ...uuids.map((uuid) =>
@@ -439,6 +521,7 @@ export class ConceptsService {
                       ? result?.display?.split(":")[1]
                       : result?.display,
                   concept: uuid,
+                  testOrder: uuid,
                   setMembers: [
                     {
                       uuid,
@@ -469,16 +552,41 @@ export class ConceptsService {
     );
   }
 
-  getConceptByMappingSource(source: string, fields?: string){
-   return from(
+  getConceptByMappingSource(source: string, fields?: string) {
+    return from(
       this.api.concept.getAllConcepts({
         source: source,
         v: !fields
           ? "custom:(uuid,display,names,descriptions,setMembers:(uuid,display,datatype,attributes:(uuid,display,value,attributeType:(uuid,display)),answers:(uuid,display),setMembers:(uuid,display,attributes:(uuid,display,value,attributeType:(uuid,display)),datatype,answers:(uuid,display))))"
           : fields,
-      })).pipe(
+      })
+    ).pipe(
       map((data) => {
         return data;
+      }),
+      catchError((error) => {
+        return of(error);
+      })
+    );
+  }
+
+  getConceptsWithItemsDetails(parameters?: any): Observable<any> {
+    return this.httpClient
+      .get(`icare/conceptswithitems?${parameters ? parameters.join("&") : ""}`)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error) => {
+          return of(error);
+        })
+      );
+  }
+
+  updateItemStockableStatus(payload): Observable<any> {
+    return this.httpClient.put(`icare/item`, payload).pipe(
+      map((response) => {
+        return response;
       }),
       catchError((error) => {
         return of(error);

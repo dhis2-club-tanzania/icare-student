@@ -37,7 +37,7 @@ export class InvestigationProcedureService {
   }
 
   discontinueOrder(order): Observable<any> {
-    console.log(order);
+    // console.log(order);
     return this.httpClientService
       .post(`order/${order?.encounter?.uuid}`, {
         uuid: order?.encounter?.uuid,

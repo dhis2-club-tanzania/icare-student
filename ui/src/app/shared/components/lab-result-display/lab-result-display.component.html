@@ -63,6 +63,62 @@
     }}
   </span>
   <span
+    style="font-size: 0.8rem; margin-left: 6px"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.hiNormal
+    "
+    >(
+    {{
+      observationsKeyedByConcept &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+          ?.latest &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+          ?.concept?.lowNormal
+    }}
+    -
+    {{
+      observationsKeyedByConcept &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+          ?.latest &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+          ?.concept?.hiNormal
+    }}
+    )</span
+  >
+
+  <span
+    class="ml-4 text-danger"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.hiNormal &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.value >
+        observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+          ?.concept?.hiNormal
+    "
+    ><b><mat-icon style="font-size: 16px">arrow_upward</mat-icon></b></span
+  >
+  <span
+    class="ml-4 text-danger"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.lowNormal &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.value <
+        observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+          ?.concept?.lowNormal
+    "
+    ><b><mat-icon style="font-size: 16px">arrow_downward</mat-icon></b></span
+  >
+
+  <span
     *ngIf="observationsKeyedByConcept[concept?.uuid]?.latest?.value?.links?.uri"
   >
     <a
@@ -86,12 +142,12 @@
           concept?.uuid
         ]?.latest?.value?.links?.uri.split('openmrs').length == 2
       "
-      href="{{
+      [href]="
         '/openmrs' +
-          observationsKeyedByConcept[
-            concept?.uuid
-          ]?.latest?.value?.links?.uri.split('openmrs')[1]
-      }}"
+        observationsKeyedByConcept[
+          concept?.uuid
+        ]?.latest?.value?.links?.uri.split('openmrs')[1]
+      "
     >
       Download Results
     </a>

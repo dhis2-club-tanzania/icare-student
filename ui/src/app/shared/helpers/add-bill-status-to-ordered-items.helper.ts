@@ -1,4 +1,4 @@
-import { flatten,groupBy, omit } from "lodash";
+import { flatten, keyBy } from "lodash";
 
 export function addBillStatusToOrderedItems(items, bills, encounters, visit) {
   return items?.length > 0
@@ -45,37 +45,51 @@ export function addBillStatusToOrderedItems(items, bills, encounters, visit) {
         };
       })
     : [];
-} 
+}
 
-
-export function addBillStatusToOrders(orders, bills, visit){
-    bills = bills?.map((bill) => {
-      return {
-        ...bill,
-        items: bill?.items?.map((item) => {
-          return item?.billItem;
-        }),
-      };
-    });
-  
-    return orders?.map((order) => {
-      if (bills?.length === 0 || visit?.isEnsured || visit?.isEmergency || !visit?.isAdmitted){
-        return {
-          ...order,
-          paid: true
-        }
-      }
-      
-      let tempOrder = order
+export function addBillStatusToOrders(orders, bills, visit) {
+  const billedItems = flatten(
+    (
       bills?.map((bill) => {
-        bill?.items?.map((item) => {
-          tempOrder = {
-            ...order,
-            paid: item?.item?.concept?.uuid !== order?.concept?.uuid ? true : false
-          }
-        })
-      })
+        return {
+          ...bill,
+          items: bill?.items?.map((item) => {
+            return item?.billItem;
+          }),
+        };
+      }) || []
+    ).map((bill) => bill?.items)
+  );
 
-      return tempOrder
-    })
+  return orders?.map((order) => {
+    if (billedItems?.length === 0) {
+      return {
+        ...order,
+        isAdmitted: visit?.isAdmitted,
+        isEmergency: visit?.isEmergency,
+        paid: true,
+      };
+    }
+
+    const billItemsKeyedByOrderUuid = keyBy(
+      billedItems?.map((billItem) => {
+        return {
+          ...billItem,
+          orderUuid: billItem?.order?.uuid,
+        };
+      }),
+      "orderUuid"
+    );
+
+    return {
+      ...order,
+      paid: billItemsKeyedByOrderUuid[order?.uuid] ? false : true,
+      isAdmitted: visit?.isAdmitted,
+      isEmergency: visit?.isEmergency,
+      canBeAttended:
+        !billItemsKeyedByOrderUuid[order?.uuid] ||
+        visit?.isAdmitted ||
+        visit?.isEmergency,
+    };
+  });
 }

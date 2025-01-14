@@ -137,10 +137,12 @@ export class DrugOrdersService {
     );
   }
 
-  dispenseOrderedDrugOrder(dispenseDetails): Observable<any> {
+  dispenseOrderedDrugOrder(dispenseDetails: any): Observable<any> {
     return this.openmrsService
       .post(`store/drugOrder/${dispenseDetails?.uuid}/dispense`, {
         location: dispenseDetails?.location,
+        drugUuid: dispenseDetails?.drug?.uuid,
+        quantity: Number(dispenseDetails?.quantity),
       })
       .pipe(
         map((response) => response),
@@ -155,6 +157,8 @@ export class DrugOrdersService {
     location?: string,
     provider?: string
   ): Observable<any> {
+    // console.log(order);
+    // return of(null);
     return this.openmrsService.post("icare/prescription", order);
     return this.getDrugOrderEncounter(
       {
@@ -540,7 +544,7 @@ export class DrugOrdersService {
         });
 
         const instructionField = new Textbox({
-          value: drugOrder?.instructions,
+          value: drugOrder?.instructions || metadataConfigs?.drugInstructions,
           key: "instructions",
           id: "instructions",
           label: "Instructions",
@@ -584,6 +588,13 @@ export class DrugOrdersService {
       catchError((error) => {
         return of(error);
       })
+    );
+  }
+
+  createDrugOrdersWithEncounter(encounterObject: any): Observable<any> {
+    return this.openmrsService.post("encounter", encounterObject).pipe(
+      map((response) => response),
+      catchError((error: any) => of(error))
     );
   }
 }

@@ -41,6 +41,72 @@ export class VisitsService {
     );
   }
 
+  getVisitEncounterDetailsByVisitUuid(parameters): Observable<any> {
+    return from(
+      this.api.visit.getVisit(parameters?.uuid, parameters?.query)
+    ).pipe(
+      map((response) => {
+        return response.encounters.map((encounter: any) => {
+          let formattedObs = [];
+          const encounterProvider = encounter?.encounterProviders[0];
+          formattedObs = [
+            ...formattedObs,
+            ...encounter?.obs.map((observation) => {
+              return {
+                ...observation,
+                value: !observation?.value?.uuid
+                  ? observation?.value
+                  : {
+                      ...observation?.value,
+                      display:
+                        observation?.value?.display?.indexOf(":") > -1
+                          ? observation?.value?.display.split(":")[1]
+                          : observation?.value?.display,
+                    },
+                encounterProvider: {
+                  ...encounterProvider?.provider,
+                  name:
+                    encounterProvider?.provider &&
+                    encounterProvider?.provider?.display?.indexOf(":") > -1
+                      ? encounterProvider?.provider?.display?.split(":")[0]
+                      : encounterProvider?.provider?.display?.split("- ")[1],
+                },
+                encounterType: encounter.encounterType,
+                conceptUuid: observation?.concept?.uuid || observation?.uuid,
+              };
+            }),
+          ];
+
+          const groupedObsByConcept = groupBy(formattedObs, "conceptUuid");
+          const obs = Object.keys(groupedObsByConcept).map((key) => {
+            return {
+              uuid: key,
+              history: orderBy(
+                groupedObsByConcept[key],
+                ["obsDatetime"],
+                ["asc"]
+              ),
+              latest: orderBy(
+                groupedObsByConcept[key],
+                ["obsDatetime"],
+                ["desc"]
+              )[0],
+            };
+          });
+
+          return {
+            ...encounter,
+            attributes: response?.attributes,
+            keyedObs: keyBy(obs, "uuid"),
+          };
+        });
+      }),
+      catchError((error) => {
+        return of(error);
+      })
+    );
+  }
+
   getVisitObservationsByVisitUuid(parameters): Observable<any> {
     return from(
       this.api.visit.getVisit(parameters?.uuid, parameters?.query)
@@ -92,6 +158,40 @@ export class VisitsService {
     );
   }
 
+  getVisitDiagnosesByVisitUuid(parameters: any): Observable<any> {
+    return from(
+      this.api.visit.getVisit(parameters?.uuid, parameters?.query)
+    ).pipe(
+      map((response) => {
+        let formattedDiagnoses = [];
+        response.encounters.map((encounter: any) => {
+          const encounterProvider = encounter?.encounterProviders[0];
+          formattedDiagnoses = [
+            ...formattedDiagnoses,
+            ...encounter?.diagnoses.map((diagnosis) => {
+              return {
+                ...diagnosis,
+                encounterProvider: {
+                  ...encounterProvider?.provider,
+                  name:
+                    encounterProvider?.provider &&
+                    encounterProvider?.provider?.display?.indexOf(":") > -1
+                      ? encounterProvider?.provider?.display?.split(":")[0]
+                      : encounterProvider?.provider?.display?.split("- ")[1],
+                },
+                encounterType: encounter.encounterType,
+              };
+            }),
+          ];
+        });
+        return formattedDiagnoses;
+      }),
+      catchError((error) => {
+        return of(error);
+      })
+    );
+  }
+
   updateVisitExisting(visitPayload): Observable<any> {
     let url = `visit/${visitPayload?.uuid}`;
 
@@ -104,7 +204,7 @@ export class VisitsService {
   }
 
   getLabVisits(
-    queryParam?: string,
+    queryParams?: any,
     startIndex?: number,
     limit?: number
   ): Observable<Visit[]> {
@@ -138,13 +238,16 @@ export class VisitsService {
         })
       );
   }
-  getAdmittedPatientsVisitsByEncounterType(
+  getPatientsVisitsByEncounterType(
     encounterTypeUuid: string
   ): Observable<any[]> {
     return this.httpClient
-      .get(`icare/visit?encounterTypeUuid=${encounterTypeUuid}`)
+      .get(
+        `icare/visit?encounterTypeUuid=${encounterTypeUuid}&includeDeadPatients=true`
+      )
       .pipe(
         map((visitResults: any) => {
+          console;
           return visitResults?.results.map((result) => {
             return {
               ...result,
@@ -193,15 +296,18 @@ export class VisitsService {
     includeInactive?: boolean,
     onlyInsurance?: boolean,
     queryParam?: string,
-    startIndex?: number,
-    limit?: number,
+    startIndex: number= 0,
+    limit: number = 10,
     orderType?: string,
     orderStatus?: string,
     orderStatusCode?: string,
     orderBy?: string,
     orderByDirection?: string,
     filterBy?: string,
-    encounterType?: string
+    encounterType?: string,
+    sampleCategory?: string,
+    excludedSampleCategories?: string[],
+    includeDeadPatients?: boolean
   ): Observable<any> {
     const locationUuids: any = isArray(location)
       ? location
@@ -229,6 +335,10 @@ export class VisitsService {
     if (queryParam) {
       parametersString += `&q=${queryParam}`;
     }
+
+    if (sampleCategory) {
+      parametersString += `&sampleCategory=${sampleCategory}`;
+    }
     if (filterBy) {
       parametersString += filterBy;
     }
@@ -236,6 +346,14 @@ export class VisitsService {
     if (encounterType) {
       parametersString += `&encounterTypeUuid=${encounterType}`;
     }
+
+    if (excludedSampleCategories && excludedSampleCategories?.length > 0) {
+      parametersString += `&exclude=${excludedSampleCategories.join(",")}`;
+    }
+    if (includeDeadPatients && includeDeadPatients === true) {
+      parametersString += `&includeDeadPatients=true`;
+    }
+    console.log('Constructed Query Parameters:', parametersString);
     //
     return (
       locationUuids?.length > 0
@@ -516,9 +634,9 @@ export class VisitsService {
       })
     );
   }
-  
-  deleteVisit(uuid, purge: boolean  =  false): Observable<any> {
-    return from(this.api.visit.deleteVisit(uuid, { purge: purge})).pipe(
+
+  deleteVisit(uuid, purge: boolean = false): Observable<any> {
+    return from(this.api.visit.deleteVisit(uuid, { purge: purge })).pipe(
       map((response) => {
         return response;
       }),
@@ -654,7 +772,7 @@ export class VisitsService {
         this.api.visit.getAllVisits({
           includeInactive: includeInactive,
           patient: patient,
-          v: `custom:(uuid,visitType,location:(uuid,display,tags,parentLocation:(uuid,display)),startDatetime,attributes,stopDatetime,patient:(uuid,display,identifiers,person,voided),encounters:(uuid,form,location,obs:(accessionNumber,comment,concept:(uuid,display,units),display,encounter,groupMembers,order,person,uuid,value,valueCodedName,valueModifier,voided),orders,diagnoses,encounterProviders,encounterDatetime,encounterType))`,
+          v: `custom:(uuid,visitType,location:(uuid,display,tags,parentLocation:(uuid,display)),startDatetime,attributes,stopDatetime,patient:(uuid,display,identifiers,person,voided),encounters:(uuid,form,location,obs:(accessionNumber,obsDatetime,comment,concept:(uuid,display,units,lowNormal,hiNormal),display,encounter,groupMembers,order,person,uuid,value,valueCodedName,valueModifier,voided),orders,diagnoses,encounterProviders,encounterDatetime,encounterType))`,
         } as any)
       )
     ).pipe(
@@ -733,7 +851,7 @@ export class VisitsService {
         this.api.visit.getAllVisits({
           includeInactive: includeInactive,
           patient,
-          v: `custom:(uuid,visitType,location:(uuid,display,tags,parentLocation:(uuid,display)),startDatetime,attributes,stopDatetime,patient:(uuid,display,identifiers,person,voided),encounters:(uuid,form,location,obs:(accessionNumber,comment,concept:(uuid,display,units,setMembers:(uuid,display,units)),display,encounter,groupMembers,order,person,uuid,value,valueCodedName,valueModifier,voided),orders,diagnoses,encounterProviders,encounterDatetime,encounterType,voided,voidReason))`,
+          v: `custom:(uuid,visitType,location:(uuid,display,tags,parentLocation:(uuid,display)),startDatetime,attributes,stopDatetime,patient:(uuid,display,identifiers,person,voided),encounters:(uuid,form,location,obs:(accessionNumber,obsDatetime,comment,concept:(uuid,display,units,lowNormal,hiNormal,setMembers:(uuid,display,units,lowNormal,hiNormal)),display,encounter,groupMembers,order,person,uuid,value,valueCodedName,valueModifier,voided),orders,diagnoses,encounterProviders,encounterDatetime,encounterType,voided,voidReason))`,
         } as any)
       ),
       shouldNotLoadNonVisitItems
@@ -920,5 +1038,56 @@ export class VisitsService {
       }),
       catchError((error) => of(error))
     );
+  }
+
+  getSamplesByVisitUuid(visitUuid: string, parameters: any): Observable<any[]> {
+    let queryParams = [];
+    Object.keys(parameters)?.map((key) => {
+      queryParams = [...queryParams, key + "=" + parameters[key]];
+    });
+    return this.httpClient
+      .get("lab/samples?visit=" + visitUuid + "&" + queryParams.join("&"))
+      ?.pipe(
+        map((response) => {
+          return (response?.results ? response?.results : response)?.map(
+            (sample) => {
+              return {
+                ...sample,
+                accepted:
+                  (
+                    sample?.statuses?.filter(
+                      (status) => status?.category?.toLowerCase() === "accepted"
+                    ) || []
+                  )?.length > 0,
+                rejected:
+                  (
+                    sample?.statuses?.filter(
+                      (status) => status?.category?.toLowerCase() === "rejected"
+                    ) || []
+                  )?.length > 0,
+                hasResults:
+                  (
+                    sample?.statuses?.filter(
+                      (status) =>
+                        status?.category?.toLowerCase() === "has_results"
+                    ) || []
+                  )?.length > 0,
+                authorized:
+                  (
+                    sample?.statuses?.filter(
+                      (status) => status?.status?.toLowerCase() === "authorized"
+                    ) || []
+                  )?.length > 0,
+                approved:
+                  (
+                    sample?.statuses?.filter(
+                      (status) => status?.status?.toLowerCase() === "approved"
+                    ) || []
+                  )?.length > 0,
+              };
+            }
+          );
+        })
+      );
   }
 }

@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
     private store: Store<AppState>,
     private dialog: MatDialog,
     private auth: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {

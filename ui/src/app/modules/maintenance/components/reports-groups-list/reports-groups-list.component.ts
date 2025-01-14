@@ -29,8 +29,8 @@ export class ReportsGroupsListComponent implements OnInit {
       ? this.standardReports?.map((report) => {
           return {
             ...report,
-            dataSetUuid: JSON.parse(report?.value)?.id,
-            value: JSON.parse(report?.value),
+            dataSetUuid: report?.value?.id,
+            value: report?.value,
           };
         })
       : [];

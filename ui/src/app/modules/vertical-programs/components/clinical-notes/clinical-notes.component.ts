@@ -1,16 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Location } from 'src/app/core/models';
-import { FormValue } from 'src/app/shared/modules/form/models/form-value.model';
-import { ICAREForm } from 'src/app/shared/modules/form/models/form.model';
-import { ObservationObject } from 'src/app/shared/resources/observation/models/obsevation-object.model';
-import { Patient } from 'src/app/shared/resources/patient/models/patient.model';
-import { VisitObject } from 'src/app/shared/resources/visits/models/visit-object.model';
-import { getObservationsFromForm } from '../../helpers/get-observations-from-form.helper';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Location } from "src/app/core/models";
+import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
+import { ICAREForm } from "src/app/shared/modules/form/models/form.model";
+import { ObservationObject } from "src/app/shared/resources/observation/models/obsevation-object.model";
+import { Patient } from "src/app/shared/resources/patient/models/patient.model";
+import { VisitObject } from "src/app/shared/resources/visits/models/visit-object.model";
+import { getObservationsFromForm } from "../../helpers/get-observations-from-form.helper";
 
 @Component({
-  selector: 'app-clinical-notes',
-  templateUrl: './clinical-notes.component.html',
-  styleUrls: ['./clinical-notes.component.scss'],
+  selector: "app-clinical-notes",
+  templateUrl: "./clinical-notes.component.html",
+  styleUrls: ["./clinical-notes.component.scss"],
 })
 export class ClinicalNotesComponent implements OnInit {
   @Input() clinicalForm: ICAREForm;
@@ -30,7 +30,7 @@ export class ClinicalNotesComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log('this.clinicalForm?.setMembers', this.forms);
+    // console.log('this.clinicalForm?.setMembers', this.forms);
     this.clinicalForms = this.clinicalForm?.setMembers || [];
     this.formData = {};
     this.currentForm = this.clinicalForms[0];
@@ -48,7 +48,7 @@ export class ClinicalNotesComponent implements OnInit {
   }
 
   onFormUpdate(formValue: FormValue | any, isRawValue?: boolean): void {
-    console.log('vvdvd', formValue.getValues());
+    // console.log("vvdvd", formValue.getValues());
     this.formData[this.currentForm.id] = {
       ...(this.formData[this.currentForm.id] || {}),
       ...(isRawValue ? formValue : formValue.getValues()),

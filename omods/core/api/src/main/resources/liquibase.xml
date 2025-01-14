@@ -357,7 +357,24 @@
                 referencedTableName="item"
                 referencedColumnNames="item_id"/>
     </changeSet>
-
+    <changeSet id="add_columns_to_bl_item_price" author="josephat-mwakyusa" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="payable_payment_mode_id" tableName="bl_item_price"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="bl_item_price" >
+            <column name="payable_payment_mode_id" type="INTEGER">
+                <constraints nullable="true"></constraints>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint
+                baseColumnNames="payable_payment_mode_id"
+                baseTableName="bl_item_price"
+                constraintName="bl_item_price_payable_payment_mode_id_concept_id"
+                referencedColumnNames="concept_id"
+                referencedTableName="concept"/>
+    </changeSet>
     <changeSet id="create_bl_invoice_item_payment" author="jesse-justin" dbms="mysql">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -5195,4 +5212,306 @@
             ALTER TABLE st_issue_item_status MODIFY COLUMN batch_no VARCHAR(32)
         </sql>
     </changeSet>
+
+    <changeSet id="update_st_stock_invoice_modify_invoice_number_supplier_unique" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE st_stock_invoice
+            ADD CONSTRAINT invoice_number_supplier_unique UNIQUE (invoice_number,supplier_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="add_columns_to_st_reorder_level" author="dennis-kibahila" dbms="mysql">
+        <addColumn tableName="st_reorder_level" >
+            <column name="creator" type="INTEGER"/>
+            <column name="date_created"  type="DATETIME"/>
+            <column name="changed_by" type="INTEGER"/>
+            <column name="date_changed" type="DATETIME"/>
+            <column name="voided" defaultValueBoolean="false" type="BOOLEAN"/>
+            <column name="date_voided" type="DATETIME"/>
+            <column name="voided_by" type="INTEGER"/>
+            <column name="void_reason" type="TEXT"/>
+            <column name="uuid"  type="char(38)" >
+                <constraints nullable="true"  unique="true"></constraints>
+            </column>
+
+        </addColumn>
+        <addForeignKeyConstraint
+                baseColumnNames="changed_by"
+                baseTableName="st_reorder_level"
+                constraintName="st_reorder_level_changed_by_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="creator"
+                baseTableName="st_reorder_level"
+                constraintName="st_reorder_level_creator_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+    </changeSet>
+
+    <changeSet id="add_related_allocation_column_to_lb_test_allocation" author="dennis-kibahila" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="related_allocation_uuid" tableName="lb_test_allocation"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="lb_test_allocation" >
+            <column name="related_allocation_uuid" type="char(38)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="create_audit_log" author="dennis-kibahila" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="audit_log" /></not>
+        </preConditions>
+        <comment>Adding audit_log table</comment>
+        <createTable tableName="audit_log">
+            <column name="audit_log_id" type="int" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="type" type="varchar(512)"><constraints nullable="false" /></column>
+            <column name="action" type="TEXT"><constraints nullable="false" /></column>
+            <column name="user_id" type="int" />
+            <column name="serialized_data" type="longblob" />
+            <column name="date_created" type="DATETIME"><constraints nullable="false" /></column>
+            <column name="parent_auditlog_id" type="int" />
+            <column name="uuid" type="varchar(38)"><constraints nullable="false" unique="true" /></column>
+        </createTable>
+        <addForeignKeyConstraint
+                constraintName="authenticated_user"
+                baseTableName="audit_log" baseColumnNames="user_id"
+                referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="update_st_transaction_add_order_column" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE st_transaction
+            ADD COLUMN order_id INT NULL AFTER transaction_id,
+            ADD FOREIGN KEY(order_id) REFERENCES orders(order_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="create_password_history" author="dennis-kibahila" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="password_history" /></not>
+        </preConditions>
+        <comment>Adding password_history table</comment>
+        <createTable tableName="password_history">
+            <column name="password_history_id" type="int" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="user_id" type="int" />
+            <column name="password" type="varchar(128)"><constraints nullable="true" /></column>
+            <column name="change_date" type="DATETIME"><constraints nullable="false" /></column>
+        </createTable>
+        <addForeignKeyConstraint
+                constraintName="user_id"
+                baseTableName="password_history" baseColumnNames="user_id"
+                referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+
+    <changeSet id="update_lb_test_result_add_column_tested_by" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_result
+            ADD COLUMN tested_by INT NULL AFTER creator,
+            ADD FOREIGN KEY(tested_by) REFERENCES users(user_id);
+        </sql>
+    </changeSet>
+    <changeSet id="update_lb_test_result_add_column_tested_date" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_result
+            ADD COLUMN date_tested DATETIME NULL AFTER tested_by;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update_lb_test_time_configuration" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_time_configuration
+            ADD CONSTRAINT concept_id UNIQUE (concept_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="update_lb_test_time_configuration_add_columns" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_time_configuration
+            ADD COLUMN referral_tat BIGINT NULL AFTER urgent_tat,
+            MODIFY COLUMN standard_tat BIGINT,
+            MODIFY COLUMN urgent_tat BIGINT,
+            ADD COLUMN config_type VARCHAR(20) NULL AFTER additional_request_time_limit;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update_lb_test_time_configuration_add_tat_column" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_time_configuration
+            ADD COLUMN routine_config_type VARCHAR(20) NULL AFTER config_type,
+            ADD COLUMN referral_config_type VARCHAR(20) NULL AFTER routine_config_type;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update_lb_test_time_config_rename_config_type" author="dennis-kibahila" dbms="mysql">
+        <sql>
+            ALTER TABLE lb_test_time_configuration
+            CHANGE config_type urgent_config_type  VARCHAR(20);
+        </sql>
+    </changeSet>
+
+    <changeSet id="create_encounter_patient_state" author="dennis-kibahila" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="encounter_patient_state"/>
+            </not>
+        </preConditions>
+        <comment>Creating openmrs encounter_patient_state table</comment>
+        <createTable tableName="encounter_patient_state">
+            <column name="encounter_patient_state_id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="encounter_patient_state_id_pk"/>
+            </column>
+            <column name="encounter_id" type="INTEGER"/>
+            <column name="patient_state_id" type="INTEGER"/>
+            <column name="creator" type="INTEGER"/>
+            <column name="date_created" type="DATE">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="changed_by" type="INTEGER"/>
+            <column name="date_changed" type="DATE"/>
+            <column name="voided" type="BOOLEAN">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="date_voided" type="DATE"/>
+            <column name="voided_by" type="INTEGER"/>
+            <column name="void_reason" type="TEXT"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseColumnNames="changed_by"
+                baseTableName="encounter_patient_state"
+                constraintName="encounter_state_changed_by_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="creator"
+                baseTableName="encounter_patient_state"
+                constraintName="encounter_state_creator_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="encounter_id"
+                baseTableName="encounter_patient_state"
+                constraintName="encounter_state_encounter_id_encounter_fk"
+                referencedColumnNames="encounter_id"
+                referencedTableName="encounter"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="patient_state_id"
+                baseTableName="encounter_patient_state"
+                constraintName="state_state_id_patient_state_fk"
+                referencedColumnNames="patient_state_id"
+                referencedTableName="patient_state"/>
+
+    </changeSet>
+
+    <changeSet id="create_encounter_patient_program" author="dennis-kibahila" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="encounter_patient_program"/>
+            </not>
+        </preConditions>
+        <comment>Creating openmrs encounter_patient_program table</comment>
+        <createTable tableName="encounter_patient_program">
+            <column name="encounter_patient_program_id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="encounter_patient_program_id_pk"/>
+            </column>
+            <column name="encounter_id" type="INTEGER"/>
+            <column name="patient_program_id" type="INTEGER"/>
+            <column name="creator" type="INTEGER"/>
+            <column name="date_created" type="DATE">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="changed_by" type="INTEGER"/>
+            <column name="date_changed" type="DATE"/>
+            <column name="voided" type="BOOLEAN">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="date_voided" type="DATE"/>
+            <column name="voided_by" type="INTEGER"/>
+            <column name="void_reason" type="TEXT"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseColumnNames="changed_by"
+                baseTableName="encounter_patient_program"
+                constraintName="encounter_program_changed_by_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="creator"
+                baseTableName="encounter_patient_program"
+                constraintName="encounter_program_creator_users_user_id_fk"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="encounter_id"
+                baseTableName="encounter_patient_program"
+                constraintName="encounter_program_encounter_id_encounter_fk"
+                referencedColumnNames="encounter_id"
+                referencedTableName="encounter"/>
+
+        <addForeignKeyConstraint
+                baseColumnNames="patient_program_id"
+                baseTableName="encounter_patient_program"
+                constraintName="program_program_id_patient_program_fk"
+                referencedColumnNames="patient_program_id"
+                referencedTableName="patient_program"/>
+
+    </changeSet>
+
+
+    <!--EnvayaSMS Database Structure-->
+    <changeSet id="create_outgoing_sms" author="muddy-ramadhan" dbms="mysql">
+      <preConditions onFail="MARK_RAN">
+        <not>
+          <tableExists tableName="outgoing_sms"/>
+        </not>
+      </preConditions>
+      <comment>Creating openmrs outgoing_sms table for --EnvayaSMS</comment>
+      <createTable tableName="outgoing_sms">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="id_pk"/>
+            </column>
+            <column name="recipient" type="TEXT"/>
+            <column name="message" type="TEXT"/>
+            <column name="status" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_incoming_sms" author="muddy-ramadhan" dbms="mysql">
+      <preConditions onFail="MARK_RAN">
+        <not>
+          <tableExists tableName="incoming_sms"/>
+        </not>
+      </preConditions>
+      <comment>Creating openmrs incoming_sms table for --EnvayaSMS</comment>
+      <createTable tableName="incoming_sms">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="id_pk"/>
+            </column>
+            <column name="sender" type="TEXT"/>
+            <column name="message_content" type="TEXT"/>
+            <column name="message_type" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

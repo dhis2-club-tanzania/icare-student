@@ -54,6 +54,9 @@ export class PaymentReceiptComponent implements OnInit {
   }
 
   onPrint(e): void {
+    const mrn = this.data?.currentPatient?.identifier;
+    const truncatedMRN = mrn ? mrn.replace("MRN = ", "") : "";
+
     var contents = document.getElementById("dialog-bill-receipt").innerHTML;
     const frame1: any = document.createElement("iframe");
     frame1.name = "frame3";
@@ -137,8 +140,10 @@ export class PaymentReceiptComponent implements OnInit {
 
     // Change image from base64 then replace some text with empty string to get an image
     let image = "";
+    let header = "";
+    let subHeader = "";
 
-    this.facilityDetailsJson.attributes.forEach((attribute) => {
+    this.facilityDetailsJson?.attributes.map((attribute) => {
       let attributeTypeName =
         attribute && attribute.attributeType
           ? attribute?.attributeType?.name.toLowerCase()
@@ -146,26 +151,39 @@ export class PaymentReceiptComponent implements OnInit {
       if (attributeTypeName === "logo") {
         image = attribute?.value;
       }
+      header = attributeTypeName === "header" ? attribute?.value : "";
+      subHeader = attributeTypeName === "sub header" ? attribute?.value : "";
     });
 
     let patientMRN =
-      this.data?.currentPatient?.MRN ||
-      this.data?.currentPatient?.patient?.identifiers[0]?.identifier.replace(
+      e.CurrentPatient?.MRN ||
+      e.CurrentPatient?.patient?.identifiers[0]?.identifier.replace(
         "MRN = ",
         ""
       );
 
     frameDoc.document.write(`
     
-      <center id="top">
+     <center id="top">
+         <div class="info">
+          <h2>${
+            header?.length > 0 ? header : this.facilityDetailsJson?.display
+          } </h2>
+          </div>
         <div class="logo">
           <img src="${image}" alt="Facility's Logo"> 
         </div>
         
 
         <div class="info">
-          <h2>${this.facilityDetailsJson?.display}</h2>
-          <h3>P.O Box ${this.facilityDetailsJson?.postalCode} ${this.facilityDetailsJson?.stateProvince}</h3>
+          <h2>${
+            subHeader?.length > 0
+              ? subHeader
+              : this.facilityDetailsJson?.description
+          } </h2>
+          <h3>P.O Box ${this.facilityDetailsJson?.postalCode} ${
+      this.facilityDetailsJson?.stateProvince
+    }</h3>
           <h3>${this.facilityDetailsJson?.country}</h3>
         </div>
         <!--End Info-->
@@ -175,12 +193,8 @@ export class PaymentReceiptComponent implements OnInit {
       
       <div id="mid">
         <div class="patient-info">
-          <p> 
-              Patient Name : ${this.data?.currentPatient?.name}</br>
-          </p>
-          <p> 
-              MRN : ${patientMRN}</br>
-          </p>
+           <p>Patient Name: ${this.data?.currentPatient?.name}</p>
+              <p>MRN: ${truncatedMRN}</p>
         </div>
       </div>`);
 

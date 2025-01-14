@@ -24,7 +24,6 @@ export class LandingComponent implements OnInit {
     const navigationDetails = JSON.parse(
       localStorage.getItem("navigationDetails")
     );
-
     const isNavigationDetailsAvailable =
       !navigationDetails || !navigationDetails?.path[0] ? false : true;
 
@@ -36,6 +35,14 @@ export class LandingComponent implements OnInit {
             path: isNavigationDetailsAvailable
               ? navigationDetails?.path
               : ["/laboratory/dashboard-lab"],
+          })
+        );
+      } else if (response?.isPharmacy) {
+        this.store.dispatch(
+          go({
+            path: isNavigationDetailsAvailable
+              ? navigationDetails?.path
+              : ["/pharmacy/home"],
           })
         );
       }

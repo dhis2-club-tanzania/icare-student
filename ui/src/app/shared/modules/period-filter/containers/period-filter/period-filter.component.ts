@@ -48,7 +48,7 @@ export class PeriodFilterComponent implements OnInit {
   }
 
   onFormUpdate(formValue: FormValue): void {
-    console.log(formValue.getValues());
+    // console.log(formValue.getValues());
   }
 
   generatePeriodList(): void {

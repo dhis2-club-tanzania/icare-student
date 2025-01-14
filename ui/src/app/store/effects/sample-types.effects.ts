@@ -54,8 +54,6 @@ export class SampleTypesEffects {
             });
           }),
           catchError((error) => {
-            console.log("error :: ", error);
-
             return of(loadingSampleTypesFails({ error }));
           })
         )

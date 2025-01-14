@@ -14,3 +14,27 @@
   color: unset;
   opacity: unset;
 }
+
+.states-list {
+  width: 100% !important;
+  margin-left: -32px !important;
+  border-right: solid 1px #e6e6e6;
+  height: 60vh;
+}
+
+.state-item {
+  list-style-type: none;
+  padding: 8px 8px 8px 4px;
+  border-bottom: solid 1px #e6e6e654;
+  border-top: solid 1px #e6e6e654;
+}
+
+.selected-item {
+  background-color: #2a8fd1 !important;
+  color: #fff !important;
+}
+
+.right-side-panel {
+  padding: 0 !important;
+  border-left: solid 1px #e6e6e654;
+}

@@ -1,0 +1,30 @@
+<div class="system-logs">
+  <!-- <mat-progress-bar
+    class="mt-2"
+    *ngIf="!params?.LISConfigurations"
+  ></mat-progress-bar> -->
+  <mat-tab-group>
+    <mat-tab label="Audit logs">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-audit-logs></app-audit-logs>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Server logs">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-server-logs></app-server-logs>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Logged in users">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-loggedinusers></app-loggedinusers>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

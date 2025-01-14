@@ -65,6 +65,19 @@
           </div>
         </ng-template>
       </mat-tab>
+
+      <mat-tab label="Test Targets Configuration">
+        <ng-template matTabContent>
+          <div class="p-3">
+            <mat-progress-bar
+              *ngIf="!params?.testRelationshipMappingSourceUuid"
+              mode="indeterminate"
+            ></mat-progress-bar>
+            <app-test-target-creation></app-test-target-creation>
+          </div>
+        </ng-template>
+      </mat-tab>
+
     </mat-tab-group>
   </div>
 

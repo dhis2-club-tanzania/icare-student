@@ -10,6 +10,9 @@
     [items]="params?.conceptsList"
     [standardSearchTerm]="standardSearchTerm"
     [itemType]="'concept'"
+    [searchTermOfConceptSetToExcludeFromTestOrders]="
+      searchTermOfConceptSetToExcludeFromTestOrders
+    "
     [standardSearchTerm]="setMembersSearchTerm"
     [selectedItems]="selectedSetMembersItems"
     (getSelectedItems)="onGetSelectedSetMembers($event)"

@@ -5,7 +5,7 @@ import * as _ from "lodash";
 
 const EXCEL_TYPE =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-const EXCEL_EXTENSION = ".xlsx";
+const EXCEL_EXTENSION = ".xls";
 @Injectable({
   providedIn: "root",
 })
@@ -36,7 +36,12 @@ export class ExportDataService {
     );
   }
 
-  downloadTableToExcel(id: string, fileName: string, type?: string): void {
+  downloadTableToExcel(
+    id: string,
+    fileName: string,
+    type?: string,
+    extension?: string
+  ): void {
     let htmlTable;
     if (type === "iframe") {
       const iframe: any = document.getElementById(id);
@@ -67,7 +72,8 @@ export class ExportDataService {
 
       str += "{div}</body></html>";
       const link = document.createElement("a");
-      link.download = fileName + ".xls";
+      link.download =
+        fileName + "." + (extension ? extension.replace(".", "") : "xls");
       link.href = uri + base64(format(str, ctx));
       link.click();
     }

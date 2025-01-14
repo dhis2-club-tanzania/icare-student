@@ -190,8 +190,10 @@ public class TestAllocationStatus implements java.io.Serializable {
 		}
 		allocationStatusesObject.put("result", result);
 		Map<String, Object> testAllocationStatusUserObject = new HashMap<String, Object>();
-		testAllocationStatusUserObject.put("uuid", this.getUser().getUuid());
-		testAllocationStatusUserObject.put("display", this.getUser().getDisplayString());
+		if (this.getUser() != null){
+			testAllocationStatusUserObject.put("uuid", this.getUser().getUuid());
+			testAllocationStatusUserObject.put("display", this.getUser().getDisplayString());
+		}
 		allocationStatusesObject.put("user", testAllocationStatusUserObject);
 		
 		return allocationStatusesObject;

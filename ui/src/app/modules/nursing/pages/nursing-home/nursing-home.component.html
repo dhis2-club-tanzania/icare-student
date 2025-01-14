@@ -17,6 +17,7 @@
     </button>
     <span class="ml-2">Visits</span>
   </mat-toolbar>
+  
   <div *ngIf="!params?.settingCurrentLocationStatus">
     <app-patient-list
       (selectPatient)="onSelectPatient($event)"

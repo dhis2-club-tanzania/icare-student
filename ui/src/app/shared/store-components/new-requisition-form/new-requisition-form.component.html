@@ -1,0 +1,213 @@
+<div
+  *ngIf="{
+    stockStatusForSelectedStore: stockStatusForSelectedStore$ | async,
+    stockStatusForCurrentStore: stockStatusForCurrentStore$ | async,
+    itemRequisitionStatus: itemRequisitionStatus$ | async,
+    allowRequestTargetOutOfStock: allowRequestTargetOutOfStock$ | async
+  } as params"
+>
+  <mat-toolbar *ngIf="!existingRequisitionItem">Requisition Form</mat-toolbar>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.allowRequestTargetOutOfStock"
+  ></mat-progress-bar>
+  <div class="w-100" *ngIf="errors && errors?.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving ....</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="mt-4" *ngIf="errors?.length === 0">
+    <ng-container *ngIf="requisition">
+      <mat-accordion>
+        <mat-expansion-panel
+          class="border mat-elevation-z0 mt-2"
+          [expanded]="false"
+        >
+          <mat-expansion-panel-header class="d-flex justify-content-end">
+            <mat-panel-title>
+              <div class="w-75">
+                <span>
+                  <strong>
+                    {{ requisition?.code }}
+                  </strong></span
+                >
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="items-table">
+            <div class="container-fluid">
+              <app-requisition-items
+                [requisition]="requisition"
+                [isNew]="true"
+                (restartProcess)="onRestartProcess($event)"
+              ></app-requisition-items>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+    <div class="requisition-form">
+      <table class="table w-100">
+        <tbody>
+          <tr class="customtable-width" >
+            <td *ngIf="!existingRequisitionItem" > 
+              <app-form
+                [fields]="targetStoreField"
+                (formUpdate)="onUpdateForm($event)"
+              ></app-form>
+            </td>
+            <td class="custom-width">
+              <mat-progress-bar
+                mode="indeterminate"
+                *ngIf="!requisitionFields?.length"
+              ></mat-progress-bar>
+              <app-form
+                *ngIf="requisitionFields?.length"
+                [fields]="requisitionFields"  
+                (formUpdate)="onUpdateForm($event)"
+              ></app-form>
+              <span class="mt-2 text-small" *ngIf="existingRequisitionItem">
+                <i>
+                  Previous item selected:
+                  {{ existingRequisitionItem?.item?.display }}
+                </i>
+              </span>
+            </td>
+            <td style="width: 160px">
+              <p
+                class="mt-3 text-center"
+                *ngIf="params?.stockStatusForCurrentStore"
+              >
+                {{ currentStore?.display }} available stock:
+                <b>
+                  {{ params?.stockStatusForCurrentStore?.eligibleQuantity }}
+                </b>
+              </p>
+            </td>
+            <td style="width: 160px">
+              <p
+                [ngClass]="{
+                  'text-danger':
+                    params?.stockStatusForSelectedStore?.eligibleQuantity === 0
+                }"
+                class="mt-3 text-center"
+                *ngIf="
+                  params?.stockStatusForSelectedStore &&
+                  showQuantityField &&
+                  params?.stockStatusForCurrentStore
+                "
+              >
+                Target available stock:
+                <b>
+                  {{ params?.stockStatusForSelectedStore?.eligibleQuantity }}
+                </b>
+              </p>
+            </td>
+            <!-- Quantity field -->
+            <td>
+              <app-quantity-form-field
+                *ngIf="showQuantityField && params?.stockStatusForSelectedStore"
+                [stockStatusForSelectedStore]="
+                  params?.stockStatusForSelectedStore
+                "
+                [existingRequisitionItem]="existingRequisitionItem"
+                (quantity)="onGetQuantity($event)"
+              ></app-quantity-form-field>
+            </td>
+            <!-- add button -->
+            <td>
+              <button
+                *ngIf="!existingRequisitionItem"
+                class="mt-1"
+                (click)="onAdd($event)"
+                mat-flat-button
+                color="primary"
+                [disabled]="
+                  (params?.allowRequestTargetOutOfStock !== 'true' &&
+                    params?.stockStatusForSelectedStore?.eligibleQuantity ===
+                      0) ||
+                  !quantity
+                "
+                style="height: 45px"
+              >
+                Add 
+              </button>
+              <button
+                *ngIf="existingRequisitionItem"
+                class="mt-1"
+                (click)="onUpdateItem($event)"
+                mat-flat-button
+                color="primary"
+                style="height: 45px"
+              >
+                Update
+              </button>
+            </td>
+          </tr>
+          <tr
+            *ngIf="
+              params.itemRequisitionStatus &&
+              params.itemRequisitionStatus != false
+            "
+          >
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">
+                The selected drug has drafted/pending request, please verify.
+              </div>
+            </td>
+          </tr>
+          <ng-container
+            *ngIf="
+              showQuantityField &&
+              params?.stockStatusForSelectedStore &&
+              params?.stockStatusForCurrentStore &&
+              params?.allowRequestTargetOutOfStock !== 'true' &&
+              params?.stockStatusForSelectedStore?.eligibleQuantity === 0
+            "
+          >
+            <tr>
+              <td colspan="100%">
+                <div class="alert alert-warning" role="alert">
+                  Request from Out of stock store is not allowed. Contact IT if
+                  there is need to change
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <div
+      class="w-100 alert alert-warning"
+      role="alert"
+      *ngIf="
+        params?.stockStatusForSelectedStore?.eligibleQuantity &&
+        specifiedQuantity &&
+        specifiedQuantity >
+          params?.stockStatusForSelectedStore?.eligibleQuantity
+      "
+    >
+      Request can not exceed availability.
+      {{
+        params?.stockStatusForSelectedStore?.eligibleQuantity
+          ? "Available quantity is " +
+            params?.stockStatusForSelectedStore?.eligibleQuantity
+          : ""
+      }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+</div>

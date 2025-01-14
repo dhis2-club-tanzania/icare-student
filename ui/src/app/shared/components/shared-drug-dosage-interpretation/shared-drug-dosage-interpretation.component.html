@@ -1,0 +1,11 @@
+<div
+  *ngIf="showWarningOnly && showWarningMessage"
+  class="alert alert-warning text-center"
+  role="alert"
+>
+  <b>
+    This drug is still under use, it is expected to end on
+    {{ expectedStopDate | date: "medium" }} from prescription date
+    {{ prescription?.dateActivated | date: "medium" }}
+  </b>
+</div>

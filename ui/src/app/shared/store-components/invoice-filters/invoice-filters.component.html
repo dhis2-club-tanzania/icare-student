@@ -1,0 +1,34 @@
+<div class="w-100 d-flex justify-content-left">
+  <mat-form-field class="w-25 search-field">
+    <input
+      autocomplete="off"
+      type="text"
+      class="float-left"
+      matInput
+      (keyup)="onSearch($event)"
+      placeholder="Search "
+    />
+  </mat-form-field>
+  <mat-form-field class="ml-2 w-50 d-flex">
+    <mat-label>Start date</mat-label>
+    <input 
+      matInput 
+      [(ngModel)]="startDate" 
+      [matDatepicker]="start_date"
+      (dateChange)="onGetDate($event, 'startDate')" 
+      />
+    <mat-datepicker-toggle matSuffix [for]="start_date"></mat-datepicker-toggle>
+    <mat-datepicker #start_date></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field class="ml-2 w-50">
+    <mat-label>End date</mat-label>
+    <input
+      (dateChange)="onGetDate($event, 'endDate')"
+      [min]="startDate"
+      matInput
+      [matDatepicker]="end_date"
+    />
+    <mat-datepicker-toggle matSuffix [for]="end_date"></mat-datepicker-toggle>
+    <mat-datepicker #end_date></mat-datepicker>
+  </mat-form-field>
+</div>

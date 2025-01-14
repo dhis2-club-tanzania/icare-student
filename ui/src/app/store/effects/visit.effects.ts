@@ -63,7 +63,7 @@ export class VisitEffects {
         of(action).pipe(
           withLatestFrom(
             this.store.pipe(select(getCurrentPatient)),
-            this.store.pipe(select(getCurrentLocation))
+            this.store.pipe(select(getCurrentLocation(false)))
           )
         )
       ),

@@ -14,6 +14,7 @@ import {
   clearLoadedLabSamples,
   updateSample,
   loadSampleByUuid,
+  go,
 } from "src/app/store/actions";
 import { AppState } from "src/app/store/reducers";
 import {
@@ -37,6 +38,10 @@ import { getProviderDetails } from "src/app/store/selectors/current-user.selecto
 import { PrintResultsModalComponent } from "../print-results-modal/print-results-modal.component";
 import { RejectionReasonComponent } from "../rejection-reason/rejection-reason.component";
 import { SharedResultsEntryAndViewModalComponent } from "../shared-results-entry-and-view-modal/shared-results-entry-and-view-modal.component";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
+import { groupBy } from "lodash";
+import { LabSample } from "src/app/modules/laboratory/resources/models";
+import { MatTabChangeEvent } from "@angular/material/tabs";
 
 @Component({
   selector: "app-sample-acceptance",
@@ -79,16 +84,42 @@ export class SampleAcceptanceComponent implements OnInit {
   samplesLoadedState$: Observable<boolean>;
 
   entryCategory: string = "INDIVIDUAL";
-  currentTabWithDataLoaded: number = 0;
+  selectedIndex: number = 0;
   showPrintingPage: boolean = false;
-  dataToPrint: any;
+  dataToPrint$: Observable<any>;
+  testRelationshipConceptSourceUuid$: Observable<string>;
+  savingPrintInformation: boolean = false;
+  formUuidsReferencesForSampleReportDisplay$: Observable<any[]>;
   constructor(
     private store: Store<AppState>,
     private dialog: MatDialog,
-    private sampleService: SamplesService
+    private sampleService: SamplesService,
+    private systemSettingsService: SystemSettingsService
   ) {}
 
   ngOnInit(): void {
+    try {
+      this.selectedIndex =
+        localStorage.getItem("resultsAndTestingTab") &&
+        Number(JSON.parse(localStorage.getItem("resultsAndTestingTab"))?.index)
+          ? Number(
+              JSON.parse(localStorage.getItem("resultsAndTestingTab"))?.index
+            )
+          : this.selectedIndex;
+      const label: string =
+        localStorage.getItem("resultsAndTestingTab") &&
+        JSON.parse(localStorage.getItem("resultsAndTestingTab"))?.label
+          ? JSON.parse(localStorage.getItem("resultsAndTestingTab"))?.label
+          : "";
+      this.store.dispatch(
+        go({
+          path: ["/laboratory/sample-acceptance-and-results"],
+          query: { queryParams: { tab: label } },
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
     this.userUuid = this.currentUser?.uuid;
     this.samplesLoadedState$ = this.store.select(
       getFormattedLabSamplesLoadedState
@@ -99,11 +130,91 @@ export class SampleAcceptanceComponent implements OnInit {
     this.settingLabSampleStatus$ = this.store.select(
       getSettingLabSampleStatusState
     );
+    this.testRelationshipConceptSourceUuid$ =
+      this.systemSettingsService.getSystemSettingsByKey(
+        `iCare.lis.testParameterRelationship.conceptSourceUuid`
+      );
+
+    this.formUuidsReferencesForSampleReportDisplay$ =
+      this.systemSettingsService.getSystemSettingsByKey(
+        `iCare.lis.forms.formsToDisplayOnLabSampleReport.uuids`
+      );
   }
 
-  onGetDataToPrint(data: any): void {
-    this.dataToPrint = data;
-    this.showPrintingPage = true;
+  onGetDataToPrint(samplesDetails: any): void {
+    const statuses = [samplesDetails]?.map((sample) => {
+      return {
+        sample: {
+          uuid: sample?.uuid,
+        },
+        user: {
+          uuid: this.userUuid,
+        },
+        remarks: "Printed Results",
+        category: "PRINT",
+        status: "PRINTED",
+      };
+    });
+    this.sampleService
+      .setMultipleSamplesStatuses(statuses)
+      .subscribe((response) => {
+        if (response) {
+          this.showPrintingPage = true;
+          this.dataToPrint$ = this.sampleService
+            .getFormattedSampleByUuid(
+              samplesDetails?.uuid,
+              this.labSamplesDepartments,
+              this.sampleTypes,
+              this.codedSampleRejectionReasons
+            )
+            .pipe(
+              map((response) => {
+                const filteredCompletedSamples = [
+                  {
+                    ...response,
+                    mrn: response?.mrn,
+                    departmentName: response?.department?.name,
+                  },
+                ];
+                const groupedByMRN = groupBy(filteredCompletedSamples, "mrn");
+                return Object.keys(groupedByMRN).map((key) => {
+                  const samplesKeyedByDepartments = groupBy(
+                    groupedByMRN[key],
+                    "departmentName"
+                  );
+                  return {
+                    patientDetailsAndSamples: {
+                      mrn: key,
+                      patient: groupedByMRN[key][0]?.sample?.patient,
+                      departments: Object.keys(samplesKeyedByDepartments).map(
+                        (depName) => {
+                          return {
+                            departmentName: depName,
+                            samples: samplesKeyedByDepartments[depName].map(
+                              (sampleObject) => {
+                                const sample = new LabSample(
+                                  sampleObject,
+                                  this.labSamplesDepartments,
+                                  this.sampleTypes,
+                                  this.codedSampleRejectionReasons
+                                ).toJSon();
+                                return sample;
+                              }
+                            ),
+                          };
+                        }
+                      ),
+                    },
+                    labConfigs: this.labConfigs,
+                    LISConfigurations: this.LISConfigurations,
+                    user: samplesDetails?.providerDetails,
+                    authorized: true,
+                  };
+                });
+              })
+            );
+        }
+      });
   }
 
   togglePrintAndList(event: Event): void {
@@ -123,7 +234,7 @@ export class SampleAcceptanceComponent implements OnInit {
   accept(e, sample, providerDetails) {
     e.stopPropagation();
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: `Accept Sample`,
         modalMessage: `Please, provide results compromization remarks if any upon accepting this sample. Click confirm to accept the sample!`,
@@ -397,39 +508,20 @@ export class SampleAcceptanceComponent implements OnInit {
     this.entryCategory = event?.value;
   }
 
-  onOpenNewTab(e): void {
+  onOpenNewTab(event: MatTabChangeEvent): void {
+    const tabsDetails: any = {
+      index: event?.index,
+      label: event?.tab?.textLabel?.split(" ").join("-"),
+    };
+    localStorage.setItem("resultsAndTestingTab", JSON.stringify(tabsDetails));
     this.searchingText = "";
     this.selectedDepartment = "";
-    // if (e.index === 0) {
-    //   this.store.dispatch(
-    //     loadLabSamplesByCollectionDates({
-    //       datesParameters: this.datesParameters,
-    //       patients: this.patients,
-    //       sampleTypes: this.sampleTypes,
-    //       departments: this.labSamplesDepartments,
-    //       containers: this.labSamplesContainers,
-    //       hasStatus: "NO",
-    //       configs: this.labConfigs,
-    //       codedSampleRejectionReasons: this.codedSampleRejectionReasons,
-    //     })
-    //   );
-    //   this.currentTabWithDataLoaded = e.index;
-    // } else if (this.currentTabWithDataLoaded === 0) {
-    //   this.store.dispatch(
-    //     loadLabSamplesByCollectionDates({
-    //       datesParameters: this.datesParameters,
-    //       patients: this.patients,
-    //       sampleTypes: this.sampleTypes,
-    //       departments: this.labSamplesDepartments,
-    //       containers: this.labSamplesContainers,
-    //       hasStatus: "YES",
-    //       category: "ACCEPTED",
-    //       configs: this.labConfigs,
-    //       codedSampleRejectionReasons: this.codedSampleRejectionReasons,
-    //     })
-    //   );
-    //   this.currentTabWithDataLoaded = e.index;
-    // }
+    this.store.dispatch(
+      go({
+        path: ["/laboratory/sample-acceptance-and-results"],
+        query: { queryParams: { tab: tabsDetails?.label } },
+      })
+    );
   }
 
   onResultsReview(event: Event, sample, providerDetails): void {
@@ -444,6 +536,7 @@ export class SampleAcceptanceComponent implements OnInit {
           actionType: "review",
         },
         width: "100%",
+        maxHeight: "90vh",
         disableClose: false,
         panelClass: "custom-dialog-container",
       })
@@ -470,6 +563,7 @@ export class SampleAcceptanceComponent implements OnInit {
           actionType,
         },
         width: "100%",
+        maxHeight: "90vh",
         disableClose: false,
         panelClass: "custom-dialog-container",
       })
@@ -540,8 +634,15 @@ export class SampleAcceptanceComponent implements OnInit {
         actionType: "review",
       },
       width: "100%",
+      maxHeight: "90vh",
       disableClose: false,
       panelClass: "custom-dialog-container",
     });
+  }
+
+  onCancelFromResultsPage(shouldGoBack: boolean): void {
+    if (shouldGoBack) {
+      this.showPrintingPage = !this.showPrintingPage;
+    }
   }
 }

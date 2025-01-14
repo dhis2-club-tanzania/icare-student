@@ -10,6 +10,9 @@
   <app-shared-dashboard-container
     *ngIf="params?.datesParameters"
     [datesParams]="params?.datesParameters"
+    [dashboardSingleValueDataSetsReferenceKey]="
+      'iCare.laboratory.dashboard.settings.samples.singleValue'
+    "
   >
   </app-shared-dashboard-container>
 </div>

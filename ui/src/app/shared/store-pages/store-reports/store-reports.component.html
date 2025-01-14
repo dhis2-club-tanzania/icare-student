@@ -1,0 +1,47 @@
+<div
+  class="w-100"
+  *ngIf="{ standardReports: standardReports$ | async } as params"
+>
+  <div class="w-100 mt-2">
+    <div class="h4">Reports list</div>
+
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!params?.standardReports"
+    ></mat-progress-bar>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th style="width: 40px">SN</th>
+          <th>Name</th>
+          <th style="width: 40px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          style="cursor: pointer"
+          *ngFor="let report of params?.standardReports; let count = index"
+          (click)="onViewReport(report)"
+        >
+          <td>
+            {{ count + 1 }}
+          </td>
+          <td>
+            {{ report?.value?.name }}
+          </td>
+          <td>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onViewReport(report)">
+                <mat-icon>eye</mat-icon>
+                <span>View</span>
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -47,7 +47,7 @@ export class ConsultationEffects {
           withLatestFrom(
             this.store.select(getProviderDetails),
             this.store.pipe(select(getCurrentPatient)),
-            this.store.pipe(select(getCurrentLocation)),
+            this.store.pipe(select(getCurrentLocation(false))),
             this.store.pipe(select(getActiveVisit)),
             this.store.pipe(
               select(getEncounterTypeByUuid, {
@@ -148,7 +148,7 @@ export class ConsultationEffects {
       withLatestFrom(
         this.store.select(getProviderDetails),
         this.store.pipe(select(getCurrentPatient)),
-        this.store.pipe(select(getCurrentLocation)),
+        this.store.pipe(select(getCurrentLocation(false))),
         this.store.pipe(select(getActiveVisit))
       ),
       switchMap(

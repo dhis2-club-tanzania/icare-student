@@ -7,6 +7,8 @@ import { PatientListDialogComponent } from "./patient-list-dialog/patient-list-d
 import { SharedSamplesVerificationIntegratedComponent } from "./shared-samples-verification-integrated/shared-samples-verification-integrated.component";
 import { ShortMessageConstructionComponent } from "./short-message-construction/short-message-construction.component";
 import { VisitConsultationStatusModalComponent } from "./visit-consultation-status-modal/visit-consultation-status-modal.component";
+import { SharedPdfPreviewComponent } from "./shared-pdf-preview/shared-pdf-preview.component";
+import { ManageReportsModalComponent } from "./manage-reports-modal/manage-reports-modal.component";
 
 export const sharedDialogs: any[] = [
   PatientListDialogComponent,
@@ -18,6 +20,8 @@ export const sharedDialogs: any[] = [
   ManageUserProfileModalComponent,
   SharedSamplesVerificationIntegratedComponent,
   PatientHistoryDialogComponent,
+  SharedPdfPreviewComponent,
+  ManageReportsModalComponent,
 ];
 export {
   PatientListDialogComponent,

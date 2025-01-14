@@ -4,14 +4,14 @@ import { ObservationObject } from "../resources/observation/models/obsevation-ob
 // TODO: Rename to keyedObservationsByConcept since tha actual process is keying
 export function groupObservationByConcept(observations: ObservationObject[]) {
   const groupedObservations = {};
-  const formattedObservations = observations?.map((observation) => {
-    return {
-      ...observation,
-      conceptOrder:
-        observation?.concept?.uuid +
-        (observation?.order?.uuid ? "-" + observation?.order?.uuid : ""),
-    };
-  });
+  // const formattedObservations = observations?.map((observation) => {
+  //   return {
+  //     ...observation,
+  //     conceptOrder:
+  //       observation?.concept?.uuid +
+  //       (observation?.order?.uuid ? "-" + observation?.order?.uuid : ""),
+  //   };
+  // });
   // console.log(groupBy(formattedObservations, "conceptOrder"));
   (observations || []).forEach((observation) => {
     if (observation?.concept?.uuid) {
@@ -35,6 +35,7 @@ export function groupObservationByConcept(observations: ObservationObject[]) {
         order: observation?.order?.uuid,
         latest: head(conceptObservations),
         history: conceptObservations,
+        observationDatetime: head(conceptObservations)?.observationDatetime,
       };
     }
   });

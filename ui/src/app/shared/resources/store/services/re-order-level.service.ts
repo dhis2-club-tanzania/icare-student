@@ -22,4 +22,11 @@ export class ReOrderLevelService {
       catchError((error) => of(error))
     );
   }
+
+  updateReOrderLevel(reOrderLevelUuid: string, reOrderLevel: any): Observable<any>{
+    return this.httpClient.post(`store/reorderlevel/${reOrderLevelUuid}`, reOrderLevel).pipe(
+      map((response) => response),
+      catchError((error) => of(error))
+    );
+  }
 }

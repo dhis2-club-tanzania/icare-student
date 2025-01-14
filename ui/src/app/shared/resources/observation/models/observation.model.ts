@@ -98,6 +98,7 @@ export class Observation {
       personUuid: this.personUuid,
       observationType: this.observationType,
       observationDatetime: this.observationDatetime,
+      obsDatetime: this.observationDatetime,
       valueCodedName: this.valueCodedName,
       location: this.location,
       encounterUuid: this.encounterUuid,

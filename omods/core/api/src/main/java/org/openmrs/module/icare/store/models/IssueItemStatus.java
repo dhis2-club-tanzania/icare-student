@@ -96,7 +96,6 @@ public class IssueItemStatus extends BaseOpenmrsData implements java.io.Serializ
         Map<String,Object> issueMap = new HashMap<>();
         issueMap.put("uuid", this.getIssueItem().getIssueItemId().getIssue().getUuid());
         issueItemStatusMap.put("issue",issueMap);
-
         return issueItemStatusMap;
     }
 }

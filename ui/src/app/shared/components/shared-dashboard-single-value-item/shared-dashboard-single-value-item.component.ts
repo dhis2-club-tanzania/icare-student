@@ -23,7 +23,9 @@ export class SharedDashboardSingleValueItemComponent implements OnInit {
       .pipe(
         map((response) => {
           return {
-            name: response?.definition?.name,
+            name: response?.definition?.name
+              ?.replace("SINGLE VALUE:", "")
+              ?.replace("COUNT:", ""),
             description: response?.definition?.description,
             value:
               response?.rows && response?.rows?.length > 0

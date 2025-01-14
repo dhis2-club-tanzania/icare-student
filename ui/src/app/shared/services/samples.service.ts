@@ -26,6 +26,8 @@ export class SamplesService {
     category?: string,
     hasStatus?: string,
     excludeAllocations?: boolean,
+    tabType?:string,
+    excludedSampleCategories?: string[],
     pagerInfo?: any,
     otherParams?: {
       departments: any[];
@@ -35,7 +37,10 @@ export class SamplesService {
     acceptedBy?: string,
     q?: string,
     department?: string,
-    testUuid?: string
+    testUuid?: string,
+    instrument?: string,
+    specimenUuid?: string,
+    locationUuid?: string
   ): Observable<any> {
     let parameters = [];
     if (pagerInfo) {
@@ -45,7 +50,7 @@ export class SamplesService {
       parameters = [...parameters, "paging=false"];
     }
 
-    if (dates) {
+    if (dates && dates?.startDate && dates?.endDate) {
       parameters = [...parameters, "startDate=" + dates?.startDate];
       parameters = [...parameters, "endDate=" + dates?.endDate];
     }
@@ -62,6 +67,11 @@ export class SamplesService {
       parameters = [...parameters, "acceptedBy=" + acceptedBy];
     }
 
+    if(excludedSampleCategories && tabType === 'result-entry'){
+      excludedSampleCategories = ['RESULT_AUTHORIZATION'];
+      parameters = [...parameters,"excludeStatus=" +excludedSampleCategories]
+    }
+
     if (q) {
       parameters = [...parameters, "q=" + q];
     }
@@ -73,6 +83,18 @@ export class SamplesService {
     if (testUuid) {
       parameters = [...parameters, "test=" + testUuid];
     }
+
+    if (instrument) {
+      parameters = [...parameters, "instrument=" + instrument];
+    }
+
+    if (specimenUuid) {
+      parameters = [...parameters, "specimen=" + specimenUuid];
+    }
+
+    // if (locationUuid) {
+    //   parameters = [...parameters, "location=" + locationUuid];
+    // }
 
     if (excludeAllocations) {
       parameters = [...parameters, "excludeAllocations=true"];
@@ -246,7 +268,8 @@ export class SamplesService {
     searchText?: string,
     departments?: any[],
     specimenSources?: any[],
-    codedSampleRejectionReasons?: any[]
+    codedSampleRejectionReasons?: any[],
+    excludeAllocations?: boolean
   ): Observable<{ pager: any; results: any[] }> {
     let queryParams = [];
     if (paginationParameters && paginationParameters?.page) {
@@ -270,6 +293,12 @@ export class SamplesService {
     if (dates && dates?.endDate) {
       queryParams = [...queryParams, `endDate=${dates?.endDate}`];
     }
+
+    if (excludeAllocations) {
+      queryParams = [...queryParams, "excludeAllocations=true"];
+    } else {
+      queryParams = [...queryParams, "excludeAllocations=true"];
+    }
     return this.httpClient
       .get(BASE_URL + `lab/samples?${queryParams?.join("&")}`)
       .pipe(
@@ -292,7 +321,8 @@ export class SamplesService {
 
   getCollectedSamplesByPaginationDetails(
     paginationParameters: { page: number; pageSize: number },
-    dates?: { startDate: string; endDate: string }
+    dates?: { startDate: string; endDate: string },
+    excludeAllocations?: boolean
   ): Observable<{ pager: any; results: any[] }> {
     let queryParams = [];
     if (paginationParameters && paginationParameters?.page) {
@@ -312,6 +342,12 @@ export class SamplesService {
 
     if (dates && dates?.endDate) {
       queryParams = [...queryParams, `endDate=${dates?.endDate}`];
+    }
+
+    if (excludeAllocations) {
+      queryParams = [...queryParams, "excludeAllocations=true"];
+    } else {
+      queryParams = [...queryParams, "excludeAllocations=true"];
     }
     return this.httpClient
       .get(BASE_URL + `lab/samples?${queryParams?.join("&")}`)
@@ -634,6 +670,42 @@ export class SamplesService {
         return err;
       })
     );
+  }
+
+  getBatchSamples(
+    batchUuid?: string,
+    startDate?: string,
+    endDate?: string,
+    q?: string
+  ): Observable<any> {
+    let startDateParam = startDate?.length ? `?startDate=${startDate}` : "";
+    let endDateParam =
+      endDate?.length && startDateParam.length
+        ? `&endDate=${endDate}`
+        : endDate?.length
+        ? `&endDate=${endDate}`
+        : "";
+    let qParam =
+      q?.length && (startDateParam.length || endDateParam.length)
+        ? `&q=${q}`
+        : q?.length
+        ? `?q=${q}`
+        : "";
+    let batchParam =
+      q || endDate || startDate
+        ? `&batchUuid=${batchUuid}`
+        : `?batchUuid=${batchUuid}`;
+    const queryParams = startDateParam + endDateParam + qParam + batchParam;
+    return this.httpClient
+      .get(BASE_URL + "lab/batchsamples" + queryParams)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((err) => {
+          return err;
+        })
+      );
   }
 
   createBatchSample(batchSampleObject): Observable<any> {

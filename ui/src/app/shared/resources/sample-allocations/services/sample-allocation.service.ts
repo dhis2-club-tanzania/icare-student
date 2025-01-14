@@ -54,7 +54,10 @@ export class SampleAllocationService {
             flatten(
               uniqBy(groupedAllocations[key], "allocationUuid")?.map(
                 (allocation) => {
-                  if (!allocation?.finalResult?.groups) {
+                  if (
+                    !allocation?.finalResult?.groups &&
+                    allocation?.finalResult?.value
+                  ) {
                     return allocation?.finalResult;
                   } else {
                     const results = allocation?.finalResult?.groups?.map(
@@ -72,12 +75,16 @@ export class SampleAllocationService {
                 }
               )
             )?.filter((result) => result) || [];
+
           const authorizationIsReady =
             (
               flatten(
                 uniqBy(groupedAllocations[key], "allocationUuid")?.map(
                   (allocation) => {
-                    if (!allocation?.finalResult?.groups) {
+                    if (
+                      !allocation?.finalResult?.groups &&
+                      allocation?.finalResult?.value
+                    ) {
                       return allocation?.finalResult;
                     } else {
                       const results = allocation?.finalResult?.groups?.map(
@@ -94,12 +101,7 @@ export class SampleAllocationService {
                     }
                   }
                 )
-              )?.filter(
-                (result) =>
-                  result?.authorizationIsReady &&
-                  result?.authorizationStatuses?.length >=
-                    countOfAuthorizationRequired
-              ) || []
+              )?.filter((result) => result?.authorizationIsReady) || []
             )?.length === withResults?.length && withResults?.length > 0;
           const allocationsKeyedByParametersUuid = keyBy(
             allSampleAllocations?.map((allocation) => {
@@ -114,7 +116,18 @@ export class SampleAllocationService {
             groupedAllocations[key]?.filter(
               (allocation) => allocation?.parameter?.relatedTo
             ) || [];
-
+          const finalResults = flatten(
+            groupedAllocations[key]?.map(
+              (allocation) => allocation?.finalResult || []
+            )
+          );
+          const finalResultsFedBy =
+            finalResults[0]?.groups &&
+            finalResults[0]?.groups?.length > 0 &&
+            finalResults[0]?.groups[0]?.results &&
+            finalResults[0]?.groups[0]?.results?.length > 0
+              ? finalResults[0]?.groups[0]?.results[0]?.creator
+              : finalResults[0]?.result?.creator;
           return {
             ...{
               ...groupedAllocations[key][0]?.order,
@@ -158,11 +171,18 @@ export class SampleAllocationService {
               )
             ),
             authorizationIsReady,
-            finalResults: flatten(
-              groupedAllocations[key]?.map(
-                (allocation) => allocation?.finalResult || []
-              )
-            ),
+            finalResults: finalResults,
+            savedOnce:
+              (
+                finalResults?.filter(
+                  (finalResult: any) => finalResult?.savedOnce
+                ) || []
+              )?.length > 0,
+            finalResultsFedBy: finalResultsFedBy?.uuid
+              ? finalResultsFedBy
+              : finalResults && finalResults?.length > 0
+              ? finalResults[0]?.creator
+              : null,
             allocations: groupedAllocations[key]?.map((allocation) => {
               return new SampleAllocation(allocation).toJson();
             }),
@@ -190,6 +210,13 @@ export class SampleAllocationService {
 
   createTestAllocation(data: any): Observable<any> {
     return this.httpClient.post(`lab/allocation`, data).pipe(
+      map((response) => response),
+      catchError((error) => of(error))
+    );
+  }
+
+  voidResults(data: any): Observable<any> {
+    return this.httpClient.put(`lab/voidmultipleresults`, data).pipe(
       map((response) => response),
       catchError((error) => of(error))
     );

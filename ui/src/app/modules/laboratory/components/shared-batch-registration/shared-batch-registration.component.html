@@ -1,0 +1,170 @@
+<div
+  class="w-100"
+  *ngIf="{
+    batchSampleCodeFormatReference: batchSampleCodeFormatReference$ | async
+  } as params"
+>
+  <mat-radio-group class="registration-category">
+    <mat-radio-button
+      *ngFor="let regCategoryItem of sampleRegistrationCategories"
+      (change)="getRegistrationCategorySelection($event)"
+      class="registration-category-btn ml-2"
+      [value]="regCategoryItem"
+      [checked]="registrationCategory?.refKey === regCategoryItem?.refKey"
+      color="primary"
+    >
+      {{ regCategoryItem?.display }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving batch information ....</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="!saving">
+    <div
+      class="col-sm-12 col-sx-12"
+      [ngClass]="{
+        'col-lg-3 col-md-3': fromMaintenance,
+        'col-12': !fromMaintenance
+      }"
+    >
+      <fieldset *ngIf="fromMaintenance">
+        <legend>Batch Information</legend>
+        <div class="row">
+          <div class="col-12 d-flex ml-1">
+            <h4 class="w-75">Use existing batch set</h4>
+            <mat-slide-toggle
+              color="primary"
+              class="w-25"
+              (click)="toggleExistingBatchOrBatchSet($event, 'batchset')"
+            >
+            </mat-slide-toggle>
+          </div>
+          <div class="col-12">
+            <app-shared-batch-set-form
+              [useExistingBatchSet]="useExistingBatchSet"
+              *ngIf="useExistingBatchSet"
+              (formData)="onGetBatchAndBatchSetFormData($event, 'batchset')"
+            ></app-shared-batch-set-form>
+            <app-shared-batch-set-form
+              [useExistingBatchSet]="useExistingBatchSet"
+              *ngIf="!useExistingBatchSet"
+              (formData)="onGetBatchAndBatchSetFormData($event, 'batchset')"
+            ></app-shared-batch-set-form>
+          </div>
+          <!-- <div class="col-12 d-flex ml-1">
+            <h4 class="w-75">Use existing batch</h4>
+            <mat-slide-toggle
+              color="primary"
+              class="w-25"
+              (click)="toggleExistingBatchOrBatchSet($event, 'batch')"
+            >
+            </mat-slide-toggle>
+          </div> -->
+          <div class="col-12 mt-2">
+            <div class="h5 text-muted">Batch</div>
+          </div>
+          <div class="col-12">
+            <app-shared-batch-form
+              *ngIf="useExistingBatch"
+              [useExistingBatch]="useExistingBatch"
+              (formData)="onGetBatchAndBatchSetFormData($event, 'batch')"
+            ></app-shared-batch-form>
+            <app-shared-batch-form
+              *ngIf="!useExistingBatch"
+              [useExistingBatch]="useExistingBatch"
+              (formData)="onGetBatchAndBatchSetFormData($event, 'batch')"
+            ></app-shared-batch-form>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div
+      class="col-12 d-flex justify-content-end"
+      style="margin-bottom: -24px"
+      *ngIf="!fromMaintenance"
+    >
+      <div class="w-25">
+        <app-shared-batch-set-form
+          [useExistingBatchSet]="true"
+          [hideDescription]="true"
+          (formData)="onGetBatchAndBatchSetFormData($event, 'batchset')"
+        ></app-shared-batch-set-form>
+      </div>
+      <div class="w-25">
+        <app-shared-batch-form
+          [useExistingBatch]="true"
+          [hideDescription]="true"
+          (formData)="onGetBatchAndBatchSetFormData($event, 'batch')"
+        ></app-shared-batch-form>
+      </div>
+    </div>
+    <div
+      class="col-sm-12 col-sx-12"
+      [ngClass]="{
+        'col-lg-9 col-md-9': fromMaintenance,
+        'col-12': !fromMaintenance
+      }"
+    >
+      <app-shared-batch-fields-definitions
+        *ngIf="showBatchFieldsDefinition"
+        [registrationCategory]="registrationCategory"
+        [existingBatchFieldsInformations]="existingBatchFieldsInformations"
+        [fromMaintenance]="fromMaintenance"
+        [clinicalFields]="clinicalFields"
+        [personFields]="personFields"
+        [specimenTypeConceptUuid]="specimenTypeConceptUuid"
+        (selectedFieldsByCategory)="onGetSelectedFields($event)"
+        (selectedFieldsData)="onGetFormFieldsData($event)"
+        (fields)="onGetAllFields($event)"
+      ></app-shared-batch-fields-definitions>
+    </div>
+    <div class="col-12" *ngIf="showSampleRegistration && !fromMaintenance">
+      <div class="p-2 ml-2 mr-2">
+        <app-shared-sample-registration-via-batch
+          [fields]="allFields"
+          [category]="
+            batchAndBatchSetsData['batch']?.name?.value ? 'batch' : 'batchset'
+          "
+          [mrnGeneratorSourceUuid]="mrnGeneratorSourceUuid"
+          [preferredPersonIdentifier]="preferredPersonIdentifier"
+          [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+          [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
+          [barcodeSettings]="barcodeSettings"
+          [registrationCategory]="registrationCategory"
+          [specimenTypeConceptUuid]="specimenTypeConceptUuid"
+          [keyedBatchFields]="keyedBatchFields"
+          [existingBatchFieldsInformations]="existingBatchFieldsInformations"
+          [currentLocation]="currentLocation"
+          [provider]="provider"
+          [batchSampleCodeFormatReference]="
+            params?.batchSampleCodeFormatReference
+          "
+          [referFromFacilityVisitAttribute]="referFromFacilityVisitAttribute"
+          (fedDynamicFieldsData)="onGetFedDynamicFieldsData($event)"
+        ></app-shared-sample-registration-via-batch>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end" *ngIf="fromMaintenance">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="
+          (keyedBatchFields?.fixed?.length === 0 &&
+            keyedBatchFields?.static?.length === 0 &&
+            keyedBatchFields?.dynamic?.length === 0) ||
+          !batchAndBatchSetsData['batch']?.name?.value ||
+          !batchAndBatchSetsData['batchset']?.name?.value
+        "
+        (click)="onSave($event)"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

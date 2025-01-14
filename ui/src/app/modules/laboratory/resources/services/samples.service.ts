@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, of, zip } from "rxjs";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
 import { Api } from "src/app/shared/resources/openmrs";
-import { SampleObject, SampleIdentifier } from "../models";
+import { SampleObject, SampleIdentifier, LabSample } from "../models";
 
 import * as _ from "lodash";
 import {
@@ -372,6 +372,41 @@ export class SamplesService {
     return this.httpClientService.post("lab/samplestatus", data);
   }
 
+  setSampleStatuses(
+    statusesDetails: any[],
+    sampleUuid: string
+  ): Observable<any> {
+    const data = statusesDetails?.map((statusDetails) => {
+      return {
+        sample: {
+          uuid: sampleUuid,
+        },
+        user: {
+          uuid: localStorage.getItem("userUuid"),
+        },
+        remarks: statusDetails.comments ? statusDetails.comments : "",
+        status: statusDetails?.status,
+        category: statusDetails?.category,
+      };
+    });
+    return zip(
+      ...data.map((sampleStatus) =>
+        this.httpClientService.post("lab/samplestatus", sampleStatus)
+      )
+    );
+  }
+
+  setMultipleSamplesStatuses(statuses: any[]): Observable<any> {
+    return zip(
+      ...statuses.map((sampleStatus) =>
+        this.httpClientService.post("lab/samplestatus", sampleStatus)
+      )
+    ).pipe(
+      map((response) => response),
+      catchError((error) => of(error))
+    );
+  }
+
   saveSampleStatus(data: any): Observable<any> {
     return this.httpClientService.post("lab/samplestatus", data).pipe(
       map((response) => response),
@@ -446,6 +481,25 @@ export class SamplesService {
       map((response) => {
         return response;
       })
+    );
+  }
+
+  getFormattedSampleByUuid(
+    uuid: string,
+    departments: any[],
+    specimenSources: any[],
+    codedRejectedReasons: any[]
+  ): Observable<any> {
+    return this.httpClientService.get(`lab/sample/${uuid}`).pipe(
+      map((response) =>
+        new LabSample(
+          response,
+          departments,
+          specimenSources,
+          codedRejectedReasons
+        ).toJSon()
+      ),
+      catchError((error) => of(error))
     );
   }
 }

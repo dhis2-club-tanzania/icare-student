@@ -31,7 +31,7 @@ const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: "vertical-programs",
+        path: "vertical_programs",
         loadChildren: () =>
           import("../modules/vertical-programs/vertical-program.module").then(
             (m) => m.VerticalProgramsModule
@@ -55,6 +55,14 @@ const routes: Routes = [
         loadChildren: () =>
           import("../modules/laboratory/laboratory.module").then(
             (m) => m.LaboratoryModule
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: "pharmacy",
+        loadChildren: () =>
+          import("../modules/pharmacy/pharmacy.module").then(
+            (m) => m.PharmacyModule
           ),
         canActivate: [AuthGuard],
       },

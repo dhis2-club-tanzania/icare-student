@@ -59,6 +59,7 @@ export class PatientLabResultsSummaryComponent implements OnInit {
     this.observations = !this.forHistory
       ? this.observations
       : this.patientVisit.observations;
+      // console.log("visit history ------------------------",this.patientVisit);
   }
 
   loadLabResultsComponent(): void {

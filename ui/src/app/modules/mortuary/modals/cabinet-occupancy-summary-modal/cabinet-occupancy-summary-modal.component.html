@@ -1,0 +1,51 @@
+<ng-container>
+  <mat-toolbar color="primary">
+    <span>Cabinet occupancy status</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button mat-dialog-close matTooltip="close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <mat-dialog-content class="mat-typography">
+    <div class="pl-3 pr-3">
+      <ng-container *ngIf="data?.visit">
+        <mat-tab-group mat-align-tabs="start" dynamicHeight="true">
+          <mat-tab label="Client Demographics">
+            <ng-template matTabContent>
+              <div class="p-3">
+                <p class="text-left"><b> MRN: </b> {{ mrn }}</p>
+                <p class="text-left">
+                  <b> Names: </b> {{ data?.visit?.patient?.person?.display }}
+                </p>
+                <p class="text-left"><b> MRN: </b> {{ mrn }}</p>
+                <p class="text-left">
+                  <b> Gender: </b> {{ data?.visit?.patient?.person?.gender }}
+                </p>
+                <p class="text-left">
+                  <b> Age/DoB: </b>
+                  {{ data?.visit?.patient?.person?.age }} years /
+                  {{ data?.visit?.patient?.person?.birthdate | date }}
+                </p>
+              </div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Client Bills">
+            <ng-template matTabContent>
+              <div class="p-3">
+                <div class="h5">[Under construction]</div>
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </ng-container>
+      <ng-container *ngIf="!data?.visit">
+        <div class="alert alert-info" role="alert">
+          {{ data?.display }} is not occupied.
+        </div>
+      </ng-container>
+    </div>
+  </mat-dialog-content>
+  <!-- <mat-dialog-actions align="end" class="m-0 p-3">
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions> -->
+</ng-container>

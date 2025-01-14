@@ -4,6 +4,14 @@ import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { Field } from "src/app/shared/modules/form/models/field.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import { Textbox } from "src/app/shared/modules/form/models/text-box.model";
+import { SampleAllocationObject } from "src/app/shared/resources/sample-allocations/models/allocation.model";
+import { omit } from "lodash";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { Store } from "@ngrx/store";
+import { AppState } from "src/app/store/reducers";
+import { getDataValuesEntities } from "src/app/store/selectors";
+import { identifyFieldIdsFromExpressions } from "src/app/core/helpers/autocalculation.helper";
 
 @Component({
   selector: "app-result-entry-form",
@@ -19,14 +27,36 @@ export class ResultEntryFormComponent implements OnInit {
   @Input() conceptNameType: string;
   @Input() isLIS: boolean;
   @Input() latestResult: any;
+  @Input() allocation: SampleAllocationObject;
+  @Input() calculatedValueExpressionAttributeType: any;
   formField: Field<string>;
   @Output() formData: EventEmitter<any> = new EventEmitter<any>();
+  @Output() attributes: EventEmitter<any> = new EventEmitter<any>();
+  @Output() formDataProperties: EventEmitter<any> = new EventEmitter<any>();
   fieldsData: any = {};
   label: string;
   options: any[];
-  constructor() {}
+  dataValuesEntities$: Observable<any>;
+  autoCalculationAttributes: any[];
+  isAutoCalculated: boolean = false;
+  dependedFields: any = {};
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
+    this.dataValuesEntities$ = this.store.select(getDataValuesEntities);
+    this.autoCalculationAttributes =
+      this.parameter?.attributes?.filter(
+        (attribute: any) =>
+          attribute?.attributeType?.uuid ===
+            this.calculatedValueExpressionAttributeType && !attribute?.voided
+      ) || [];
+    if (this.autoCalculationAttributes?.length > 0)
+      this.dependedFields[this.parameter?.uuid] =
+        identifyFieldIdsFromExpressions(
+          this.autoCalculationAttributes[0]?.value
+        );
+
+    this.isAutoCalculated = this.autoCalculationAttributes?.length > 0;
     this.conceptNameType =
       !this.conceptNameType && this.isLIS ? "SHORT" : this.conceptNameType;
     this.hasMultipleAnswers =
@@ -89,6 +119,8 @@ export class ResultEntryFormComponent implements OnInit {
             min: this.parameter?.min,
             max: this.parameter?.max,
             required: true,
+            isAutoCalculated: this.isAutoCalculated,
+            autoCalculationAttribute: this.autoCalculationAttributes[0],
           })
         : this.parameter?.datatype?.display === "Coded"
         ? new Dropdown({
@@ -102,6 +134,8 @@ export class ResultEntryFormComponent implements OnInit {
             min: this.parameter?.min,
             max: this.parameter?.max,
             required: true,
+            isAutoCalculated: this.isAutoCalculated,
+            autoCalculationAttribute: this.autoCalculationAttributes[0],
           })
         : this.parameter?.datatype?.display === "Complex"
         ? new ComplexDefaultFileField({
@@ -111,6 +145,8 @@ export class ResultEntryFormComponent implements OnInit {
             value: this.value,
             disabled: this.disabled,
             required: true,
+            isAutoCalculated: this.isAutoCalculated,
+            autoCalculationAttribute: this.autoCalculationAttributes[0],
           })
         : new Textbox({
             id: this.parameter?.uuid,
@@ -120,14 +156,43 @@ export class ResultEntryFormComponent implements OnInit {
             value: this.value,
             disabled: this.disabled,
             required: true,
+            isAutoCalculated: this.isAutoCalculated,
+            autoCalculationAttribute: this.autoCalculationAttributes[0],
           });
+
+    //if(this.allocation?.parameter?.attributes.length > 0){
+
+    if (
+      (
+        this.allocation?.parameter?.attributes?.filter(
+          (attribute) =>
+            attribute?.attributeTypeUuid ===
+            this.calculatedValueExpressionAttributeType
+        ) || []
+      )?.length > 0
+    ) {
+      this.attributes.emit(
+        this.allocation?.parameter?.attributes?.map((attribute: any) => {
+          return {
+            ...attribute,
+            parameter: omit(this.allocation?.parameter, ["attributes"]),
+          };
+        })
+      );
+    }
   }
 
-  onFormUpdate(formValue: FormValue): void {
+  //}
+
+  onFormUpdate(formValue: FormValue, fieldsData: any): void {
     this.formData.emit(formValue?.getValues()[this.parameter?.uuid]?.value);
   }
 
   getSelectedItems(value: any): void {
     this.formData.emit(value);
+  }
+
+  createFormFields(parameterValue): void {
+    // console.log(parameterValue);
   }
 }

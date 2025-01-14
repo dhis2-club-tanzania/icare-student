@@ -240,7 +240,7 @@
 
         <div class="row">
           <div class="col-4">
-            <mat-form-field class="w-50" appearance="fill" autocomplete="off">
+            <mat-form-field class="w-100" appearance="fill" autocomplete="off">
               <mat-label> Password </mat-label>
               <input
                 autocomplete="off"
@@ -256,13 +256,16 @@
               <!-- <mat-hint *ngIf="!passwordInput.value"
                 >Enter your password</mat-hint
               > -->
+              <mat-error class="text-danger" *ngIf="!passwordStrong">{{
+                passwordStrengthMessage
+              }}</mat-error>
               <mat-icon matSuffix (click)="hide = !hide">{{
                 hide ? "visibility_off" : "visibility"
               }}</mat-icon>
             </mat-form-field>
 
             <mat-form-field
-              class="w-50 ml-2"
+              class="w-100"
               appearance="fill"
               autocomplete="off"
               *ngIf="hide"

@@ -13,6 +13,10 @@ export class Payment {
   get bill(): string {
     return this.paymentDetails?.invoice?.uuid;
   }
+  
+  get visit(): string {
+    return this.paymentDetails?.visit?.uuid;
+  }
 
   get paymentType(): any {
     return this.paymentDetails?.paymentType;
@@ -68,6 +72,7 @@ export class Payment {
       amount: this.amount,
       status: this.status,
       referenceNumber: this.referenceNumber,
+      visit: this.visit,
     };
   }
 }

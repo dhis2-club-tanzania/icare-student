@@ -23,6 +23,37 @@
                         <property name="sessionFactory" ref="dbSessionFactory" />
                     </bean>
                 </property>
+                <property name="passwordHistoryDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.PasswordHistoryDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="roleDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.RoleDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="privilegeDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.PrivilegeDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="programWorkflowDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.ProgramWorkflowDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="encounterPatientStateDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.EncounterPatientStateDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="encounterPatientProgramDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.EncounterPatientProgramDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
             </bean>
         </property>
         <property name="preInterceptors">
@@ -340,6 +371,18 @@
                     </bean>
                 </property>
 
+                <property name="encounterPatientStateDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.EncounterPatientStateDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="encounterPatientProgramDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.EncounterPatientProgramDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
                 <property name="stockInvoiceStatusDAO">
                     <bean class="org.openmrs.module.icare.store.dao.StockInvoiceStatusDAO">
                         <property name="sessionFactory" ref="dbSessionFactory" />
@@ -459,6 +502,34 @@
                 <ref bean="icare.DhisDatasetTransactionService" />
             </list>
         </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.icare.auditlog.api.AuditLogService</value>
+                <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager" />
+                    </property>
+                    <property name="target">
+                        <bean class="org.openmrs.module.icare.auditlog.api.impl.AuditLogServiceImpl" >
+                            <property name="dao" ref="auditLogDAO" />
+                        </bean>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors" />
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="auditLogDAO" class="org.openmrs.module.icare.auditlog.api.db.hibernate.HibernateAuditLogDAO">
+        <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
 </beans>

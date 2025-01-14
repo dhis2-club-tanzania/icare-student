@@ -48,17 +48,16 @@ export class StockBatch {
     [itemuUuid: string]: StockBatch[];
   } {
     const groupedBatches = {};
-    (stockBatches || []).forEach((stockBatch) => {
+    (stockBatches || []).forEach((stockBatch,index) => {
       const availableStock = groupedBatches[stockBatch?.itemUuid];
-
+      // groupedBatches[stockBatch?.itemUuid] = [stockBatch];
       groupedBatches[stockBatch?.itemUuid] = availableStock
         ? [...availableStock, stockBatch]
         : [stockBatch];
     });
-
     return groupedBatches;
   }
-
+ 
   static mergeStockBatches(oldBatches, newBatches): StockBatch[] {
     let mergedBatches = [...oldBatches];
     if (oldBatches?.length === 0) {

@@ -120,13 +120,15 @@ export class ParametersComponent implements OnInit {
   onFormUpdateForSource(formValue: FormValue): void {
     const values = formValue.getValues();
     this.selectedCodingSource = null;
-    setTimeout(() => {
-      this.selectedCodingSource = values["source"]?.value;
-    }, 100);
+    // console.log(values["source"]);
+    // setTimeout(() => {
+    //   this.selectedCodingSource = values["source"]?.value;
+    // }, 100);
 
     this.conceptReferenceService
       .getReferenceTermsBySource(values["source"]?.value)
       .subscribe((response) => {
+        // console.log("RES", response);
         this.codedOptions = response.map((referenceTerm) => {
           return {
             value: referenceTerm?.uuid,
@@ -135,6 +137,7 @@ export class ParametersComponent implements OnInit {
             name: referenceTerm?.display,
           };
         });
+        this.selectedCodingSource = values["source"]?.value;
         // this.createCodeField(this.codedOptions, null, values["source"]?.value);
       });
   }
@@ -152,11 +155,12 @@ export class ParametersComponent implements OnInit {
     });
   }
 
-  createUnitField(): void {
+  createUnitField(data?: any): void {
     this.unitsField = new Textbox({
       id: "units",
       key: "units",
       label: "Units",
+      value: data ? data?.units : null,
       type: "text",
     });
   }
@@ -271,16 +275,6 @@ export class ParametersComponent implements OnInit {
       },
     ];
 
-    let answers = [];
-
-    if (this.selectedAnswers?.length > 0) {
-      answers = uniq(
-        this.selectedAnswers.map((answer) => {
-          return answer?.uuid;
-        })
-      );
-    }
-
     const conceptMapType = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
 
     let mappings = this.selectedCodeItems.map((item) => {
@@ -338,7 +332,12 @@ export class ParametersComponent implements OnInit {
       // Softcode concept class
       set: false,
       setMembers: [],
-      answers: answers,
+      answers:
+        uniq(
+          this.selectedAnswers.map((answer) => {
+            return answer?.uuid;
+          })
+        ) || [],
       lowNormal: this.formData["lowNormal"]?.value
         ? this.formData["lowNormal"]?.value
         : null,
@@ -372,9 +371,9 @@ export class ParametersComponent implements OnInit {
     // Check if concept exist
     this.conceptService
       .searchConcept({ q: conceptName, conceptClass: "Test" })
-      .subscribe((response) => {
+      .subscribe((response: any) => {
         if (response) {
-          if (response?.length > 0 && !uuid) {
+          if (response?.results?.length > 0 && !uuid) {
             this.saving = false;
             this.alertType = "danger";
             this.savingMessage =
@@ -389,11 +388,24 @@ export class ParametersComponent implements OnInit {
             ).subscribe((response: any) => {
               if (response) {
                 // Repeat update with answers (if any) added: Current openmrs does not support to update concept answers by adding new on the existing ones
-                if (uuid && answers?.length > 0) {
-                  this.concept = {
-                    ...this.concept,
-                    answers,
-                  };
+                this.concept = {
+                  ...this.concept,
+                  answers: uniq(
+                    this.selectedAnswers.map((answer) => {
+                      return answer?.uuid;
+                    })
+                  ),
+                };
+                if (
+                  uuid &&
+                  (
+                    uniq(
+                      this.selectedAnswers.map((answer) => {
+                        return answer?.uuid;
+                      })
+                    ) || []
+                  )?.length > 0
+                ) {
                   this.conceptService
                     .updateConcept(uuid, this.concept)
                     .subscribe((updateResponse) => {
@@ -467,7 +479,7 @@ export class ParametersComponent implements OnInit {
     this.conceptsAttributesTypes$ = this.conceptService.getConceptsAttributes();
     this.selectedConceptDetails$ = this.conceptService.getConceptDetailsByUuid(
       this.parameterUuid,
-      "custom:(uuid,display,datatype,set,retired,descriptions,name,names,setMembers:(uuid,display),conceptClass:(uuid,display),answers:(uuid,display),attributes:(uuid,display,value,attributeType:(uuid,display)),mappings:(uuid,conceptReferenceTerm:(uuid,display,retired,conceptSource:(uuid,display))))"
+      "custom:(uuid,display,datatype,set,units,hiNormal,lowNormal,displayPrecision,retired,descriptions,name,names,setMembers:(uuid,display),conceptClass:(uuid,display),answers:(uuid,display),attributes:(uuid,display,value,attributeType:(uuid,display)),mappings:(uuid,conceptReferenceTerm:(uuid,display,retired,conceptSource:(uuid,display))))"
     );
 
     this.selectedConceptDetails$.subscribe((response) => {
@@ -484,9 +496,10 @@ export class ParametersComponent implements OnInit {
         this.selectedCodingSource =
           response?.mappings[0]?.conceptReferenceTerm?.conceptSource;
         this.createBasicParametersFields(response);
-        this.createUnitField();
+        this.createUnitField(response);
         this.createCodesMappingSourceField(response?.mappings);
         this.createCodeField([]);
+        this.createPrecisionField(response);
         this.selectedAnswers = response?.answers;
         this.createLowAndHighNormalFields(response);
       }

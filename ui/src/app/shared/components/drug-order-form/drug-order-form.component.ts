@@ -48,6 +48,7 @@ export class DrugOrderFormComponent implements OnInit {
   shouldFeedQuantity: boolean = false;
   isDrugSet: boolean = false;
   showOtherDetails: boolean = false;
+  @Output() enterKeyPressedFields: EventEmitter<any> = new EventEmitter<any>();
   constructor() {}
 
   ngOnInit(): void {
@@ -160,6 +161,10 @@ export class DrugOrderFormComponent implements OnInit {
       countOfDispensingFormFieldsWithValues:
         this.countOfDispensingFormFieldsWithValues,
     });
+  }
+
+  onGetEnterKeyResponsedFields(keys: Event): void {
+    this.enterKeyPressedFields.emit(keys);
   }
 
   toggleOtherDetails(event: Event): void {

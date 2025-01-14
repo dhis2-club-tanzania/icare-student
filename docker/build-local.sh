@@ -11,4 +11,6 @@ docker run -w="/app" -v "$(pwd)/ui":/app udsmdhis2/icare-ui-compiler npm run bui
 #docker run --rm -v maven-repo:/root/.m2 -v $(pwd)/omods/core:/usr/src/omod -w /usr/src/omod maven:3.6.3-openjdk-11-slim mvn clean package -DskipTests
 docker run --rm -v $(pwd)/omods/core:/usr/src/omod -w /usr/src/omod udsmdhis2/icare-omod-compiler mvn clean package -DskipTests
 version=$(cat version)
+# docker build --no-cache -t udsmdhis2/icare-core:local .
 docker build -t udsmdhis2/icare-core:student .
+

@@ -11,6 +11,7 @@ import { AppState } from "src/app/store/reducers";
 import { getCurrentUserDetails } from "src/app/store/selectors/current-user.selectors";
 import { AddNewUserComponent } from "../add-new-user/add-new-user.component";
 import { LabEditUserModalComponent } from "../lab-edit-user-modal/lab-edit-user-modal.component";
+import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 
 @Component({
   selector: "app-user-management-dashboard",
@@ -37,6 +38,7 @@ export class UserManagementDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   filterValue: string = "";
   public data = {};
+  securitySystemSettings$: Observable<any[]>;
 
   constructor(
     private store: Store<AppState>,
@@ -44,13 +46,17 @@ export class UserManagementDashboardComponent implements OnInit, AfterViewInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private systemSettingsService: SystemSettingsService
   ) {}
 
   ngOnInit(): void {
     // TODO: current user to be used for privilages control
     this.currentUser$ = this.store.select(getCurrentUserDetails);
     this.getUsers();
+
+    this.securitySystemSettings$ =
+      this.systemSettingsService.getSystemSettingsMatchingAKey("security.");
   }
 
   ngAfterViewInit() {
@@ -70,19 +76,18 @@ export class UserManagementDashboardComponent implements OnInit, AfterViewInit {
       if (userResponse) {
         this.data = userResponse;
         this.dialog.open(LabEditUserModalComponent, {
-          width: "70%",
+          maxWidth: "70%",
           data: this.data,
-          maxHeight: "70vh",
         });
       }
     });
   }
 
-  onAddUser(event: Event): void {
+  onAddUser(event: Event, securitySystemSettings: any[]): void {
     event.stopPropagation();
     this.dialog.open(AddNewUserComponent, {
-      width: "70%",
-      maxHeight: "80vh",
+      minWidth: "70%",
+      data: securitySystemSettings,
     });
   }
 

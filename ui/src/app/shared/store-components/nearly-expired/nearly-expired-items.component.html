@@ -1,0 +1,62 @@
+<div
+  *ngIf="{
+    ledgerTypes: ledgerTypes$ | async,
+    currentStore: currentStore$ | async,
+    currentStock: currentStock$ | async,
+    isCurrentLocationMainStore: isCurrentLocationMainStore$ | async,
+    userPrivileges: userPrivileges$ | async,
+    expiredItems: expiredItemsList$ | async
+  } as params"
+>
+  <div class="d-flex justify-content-between mt-2">
+    <div class="d-flex align-items-center" style="font-size: 1.2rem">
+      <button mat-icon-button (click)="onGoBack($event)">
+        <mat-icon>arrow_backward</mat-icon>
+      </button>
+    </div>
+    <div class="w-100">
+      <h2 class="text-center"><b>Nearly Expired Items</b></h2>
+    </div>
+  </div>
+  <hr />
+  <!-- <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.stockOutList"
+  ></mat-progress-bar> -->
+
+  <mat-card
+    class="border"
+    *ngIf="
+      params?.userPrivileges && params?.currentStore && params?.ledgerTypes
+    "
+  >
+    <div class="row">
+      <div class="overflow-x-auto col-sm-12">
+        <app-stock-status-list
+          [currentLocation]="params?.currentStore"
+          [isCurrentLocationMainStore]="params?.isCurrentLocationMainStore"
+          [userPrivileges]="params?.userPrivileges"
+          [ledgerTypes]="params?.ledgerTypes"
+          [status]="'NEARLYEXPIRED'"
+        ></app-stock-status-list>
+      </div>
+      <div class="overflowing-stock-list">
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.currentStock"
+        ></mat-progress-bar>
+        <app-stock-batch-list
+          *ngIf="params?.expiredItems"
+          [stock]="params?.expiredItems?.results"
+          [ledgerTypes]="params?.ledgerTypes"
+          [currentStore]="params?.currentStore"
+          [isCurrentLocationMainStore]="params?.isCurrentLocationMainStore"
+          [saving]="params?.savingLedger"
+          (closeBatchList)="onToggleCurrentStock($event)"
+          (saveLedger)="onSaveLedger($event, params?.currentStock)"
+        >
+        </app-stock-batch-list>
+      </div>
+    </div>
+  </mat-card>
+</div>

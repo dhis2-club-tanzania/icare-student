@@ -11,6 +11,7 @@
           "
           [attributes]="params?.patientVisit[0]?.visit?.attributesToDisplay"
           [forRegistration]="true"
+          [insurelanceID]="insurelanceID"
         ></app-patient-visit-attributes-details>
         <p *ngIf="ID && !params?.patientVisit?.length">
           ID:

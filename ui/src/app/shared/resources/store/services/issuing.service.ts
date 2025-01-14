@@ -3,6 +3,7 @@ import { orderBy, omit } from "lodash";
 import { Observable, of, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
+import { formatDateToYYMMDD } from "src/app/shared/helpers/format-date.helper";
 import {
   IssueInput,
   IssueStatusInput,
@@ -22,7 +23,12 @@ export class IssuingService {
     page?: number,
     pageSize?: number,
     status?: string,
-    orderByDirection?: string
+    orderByDirection?: string,
+    otherParameters?: {
+      q: string;
+      startDate: Date;
+      endDate: Date;
+    }
   ): Observable<any> {
     const pageNumber = page ? `&page=${page}` : ``;
     const pageSizeNumber = pageSize ? `&pageSize=${pageSize}` : ``;
@@ -30,8 +36,20 @@ export class IssuingService {
     const orderByDirectionArg = orderByDirection
       ? `&orderByDirection=${orderByDirection}`
       : ``;
-    const pagingArgs =
+    let pagingArgs =
       pageNumber + pageSizeNumber + filterStatus + orderByDirectionArg;
+
+      if (otherParameters?.q) {
+        pagingArgs += `&q=${otherParameters?.q}`;
+      }
+      if (otherParameters?.startDate) {
+        pagingArgs += `&startDate=${formatDateToYYMMDD(
+          otherParameters?.startDate
+        )}`;
+      }
+      if (otherParameters?.endDate) {
+        pagingArgs += `&endDate=${formatDateToYYMMDD(otherParameters?.endDate)}`;
+      }
     return this.httpClient
       .get(
         `store/requests?${

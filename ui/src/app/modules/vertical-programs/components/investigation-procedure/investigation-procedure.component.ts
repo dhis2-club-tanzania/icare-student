@@ -1,19 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import * as _ from 'lodash';
-import { FormValue } from 'src/app/shared/modules/form/models/form-value.model';
-import { ICAREForm } from 'src/app/shared/modules/form/models/form.model';
-import { Patient } from 'src/app/shared/resources/patient/models/patient.model';
-import { VisitObject } from 'src/app/shared/resources/visits/models/visit-object.model';
+import { Component, Input, OnInit } from "@angular/core";
+import { Store } from "@ngrx/store";
+import * as _ from "lodash";
+import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
+import { ICAREForm } from "src/app/shared/modules/form/models/form.model";
+import { Patient } from "src/app/shared/resources/patient/models/patient.model";
+import { VisitObject } from "src/app/shared/resources/visits/models/visit-object.model";
 import {
   createLabOrder,
   createLabOrders,
   removeLabOrder,
   voidOrder,
-} from 'src/app/store/actions';
-import { AppState } from 'src/app/store/reducers';
-import { Observable } from 'rxjs';
-import { OrdertypeGet, ProviderGet } from 'src/app/shared/resources/openmrs';
+} from "src/app/store/actions";
+import { AppState } from "src/app/store/reducers";
+import { Observable } from "rxjs";
+import { OrdertypeGet, ProviderGet } from "src/app/shared/resources/openmrs";
 import {
   getAllLabOrders,
   getCreatingLabOrderFailsState,
@@ -22,14 +22,14 @@ import {
   getLabOrdersKeyedByConceptUuid,
   getLabOrderVoidingState,
   getOrderTypesByName,
-} from 'src/app/store/selectors';
-import { getProviderDetails } from 'src/app/store/selectors/current-user.selectors';
-import { LabOrder } from 'src/app/shared/resources/visits/models/lab-order.model';
+} from "src/app/store/selectors";
+import { getProviderDetails } from "src/app/store/selectors/current-user.selectors";
+import { LabOrder } from "src/app/shared/resources/visits/models/lab-order.model";
 
 @Component({
-  selector: 'app-investigation-procedure',
-  templateUrl: './investigation-procedure.component.html',
-  styleUrls: ['./investigation-procedure.component.scss'],
+  selector: "app-investigation-procedure",
+  templateUrl: "./investigation-procedure.component.html",
+  styleUrls: ["./investigation-procedure.component.scss"],
 })
 export class InvestigationProcedureComponent implements OnInit {
   @Input() investigationAndProceduresFormsDetails: ICAREForm;
@@ -52,14 +52,14 @@ export class InvestigationProcedureComponent implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    console.log('3 ***** ');
+    // console.log('3 ***** ');
     this.departments =
       this.investigationAndProceduresFormsDetails?.setMembers || [];
     this.currentDepartmentGroup = (this.departments || [])[0];
     this.currentForm = ((this.departments || [])[0]?.setMembers || [])[0];
 
     this.orderType$ = this.store.select(getOrderTypesByName, {
-      name: 'Test Order',
+      name: "Test Order",
     });
 
     this.provider$ = this.store.select(getProviderDetails);
@@ -74,13 +74,13 @@ export class InvestigationProcedureComponent implements OnInit {
       this.order = {
         concept: orderData?.value,
         orderType: orderData.orderType,
-        action: 'NEW',
+        action: "NEW",
         patient: this.patient.id,
-        careSetting: 'OUTPATIENT',
+        careSetting: "OUTPATIENT",
         orderer: orderData.orderer,
-        urgency: 'ROUTINE',
+        urgency: "ROUTINE",
         encounter: this.visit?.encounterUuid,
-        type: 'testorder',
+        type: "testorder",
       };
       this.orders = [...this.orders, this.order];
     } else {
@@ -126,10 +126,10 @@ export class InvestigationProcedureComponent implements OnInit {
   onDeleteOrder(e, order, orderType, provider) {
     e.stopPropagation();
     const orderToDiscontinue = {
-      type: 'testorder',
-      action: 'DISCONTINUE',
+      type: "testorder",
+      action: "DISCONTINUE",
       previousOrder: order?.uuid,
-      careSetting: 'OUTPATIENT',
+      careSetting: "OUTPATIENT",
       patient: order?.patientUuid,
       concept: order?.concept?.uuid,
       encounter: order?.encounterUuid,

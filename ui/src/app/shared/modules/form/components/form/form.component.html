@@ -2,9 +2,15 @@
   <ng-container *ngFor="let field of fields">
     <div
       *ngIf="field"
-      class="{{ isFormHorizontal ? 'col' : 'col-12' }} {{
-        field?.hidden ? 'hidden-field' : ''
-      }}"
+      class="{{
+        isFormHorizontal
+          ? colClass
+            ? colClass
+            : field?.type == 'number'
+            ? 'col-md-2 col-sx-6 col-sm-6'
+            : 'col-md-4 col-sx-12 col-sm-12'
+          : 'col-12'
+      }} {{ field?.hidden ? 'hidden-field' : '' }}"
     >
       <div class="row">
         <div
@@ -12,7 +18,7 @@
             field?.type !== 'number' ||
             (!field.min && !field?.max && !field?.units)
               ? 'col-12'
-              : 'col-10'
+              : 'col-12'
           }}"
         >
           <app-field
@@ -24,46 +30,46 @@
             [isCheckBoxButton]="shouldRenderAsCheckBoxesButton"
             [shouldDisable]="shouldDisable"
             (fieldUpdate)="onFieldUpdate($event)"
+            (enterKeyPressedFields)="onGetFieldsResponsedToEnterKey($event)"
             (fileFieldUpdate)="onFileFieldUpdate($event)"
           ></app-field>
-        </div>
-        <!-- TODO: Might need to show full (col-12) in case it is not number-->
-
-        <div
-          class="{{
-            field?.type === 'number' && field.min && field.max
-              ? 'col-2 units-and-ranges'
-              : ''
-          }}"
-          *ngIf="
-            field?.type == 'number' && (field.min || field.max || field?.units)
-          "
-        >
-          <div class="d-flex flex-column">
-            <div class="text-left w-100" *ngIf="field?.max">
-              <span><span>(</span>{{ field?.min || 0 }}</span
-              ><span>-</span>
-              <span>{{ field?.max }} <span>)</span></span>
-            </div>
-            <div class="w-100">
-              <span> {{ field?.units }}</span>
-            </div>
-            <div class="w-100">
+          <p
+            class="field-descriptions"
+            *ngIf="
+              field?.type === 'number' &&
+              (field.min || field.max || field?.units)
+            "
+          >
+            <ng-container>
+              <span *ngIf="field?.max">
+                ({{ field?.min || 0 }}-{{ field?.max }})
+              </span>
+              <span *ngIf="field?.units">
+                {{ field?.units }}
+              </span>
               <span
                 class="text-warning text-left for-warning"
                 *ngIf="
-                  (values[field?.key] &&
+                  values &&
+                  ((values[field?.key] &&
                     field?.min &&
                     values[field?.key] < field?.min) ||
-                  (values[field?.key] &&
-                    field?.max &&
-                    values[field?.key] > field?.max)
+                    (values[field?.key] &&
+                      field?.max &&
+                      values[field?.key] > field?.max))
                 "
               >
                 Abnormal
               </span>
-            </div>
-          </div>
+            </ng-container>
+          </p>
+          <p
+            class="text-danger"
+            style="font-size: 0.7rem; margin-top: -10px; text-align: left"
+            *ngIf="validationIssues[field?.key]?.message"
+          >
+            {{ validationIssues[field?.key]?.message }}
+          </p>
         </div>
       </div>
     </div>

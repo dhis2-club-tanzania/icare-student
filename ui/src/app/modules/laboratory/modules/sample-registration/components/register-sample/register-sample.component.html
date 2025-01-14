@@ -8,11 +8,17 @@
     referringDoctorAttributes: referringDoctorAttributes$ | async,
     labNumberCharactersCount: labNumberCharactersCount$ | async,
     testsFromExternalSystemsConfigs: testsFromExternalSystemsConfigs$ | async,
-    currentUser: currentUser$ | async,
     identifierTypes: identifierTypes$ | async,
     batchsets: batchsets$ | async,
     batches: batches$ | async,
-    barcodeSettings: barcodeSettings$ | async
+    barcodeSettings: barcodeSettings$ | async,
+    unifiedCodingReferenceConceptSourceUuid:
+      unifiedCodingReferenceConceptSourceUuid$ | async,
+    relatedMetadataAttributeUuid: relatedMetadataAttributeUuid$ | async,
+    hfrCodeAttributeUuid: hfrCodeAttributeUuid$ | async,
+    labTestRequestProgramStageId: labTestRequestProgramStageId$ | async,
+    sampleRegistrationCategories: sampleRegistrationCategories$ | async,
+    specimenSourceConceptUuid: specimenSourceConceptUuid$ | async
   } as params"
 >
   <div class="row">
@@ -28,12 +34,26 @@
             [ngClass]="{ 'selected-tab-group': selectedTabGroup === 'NEW' }"
             >Sample Registration
           </mat-button-toggle>
-          
+
           <mat-button-toggle
             (click)="setTabGroup($event, 'BATCH')"
             [value]="'BATCH'"
             [ngClass]="{ 'selected-tab-group': selectedTabGroup === 'BATCH' }"
             >Batch Registration
+          </mat-button-toggle>
+
+          <mat-button-toggle
+            *ngIf="
+              currentUser?.userPrivileges[
+                'SAMPLE RECEPTION AND REGISTRATION_SAMPLE_IMPORT_EXPORT'
+              ]
+            "
+            (click)="setTabGroup($event, 'IMPORT-EXPORT')"
+            [value]="'IMPORT-EXPORT'"
+            [ngClass]="{
+              'selected-tab-group': selectedTabGroup === 'IMPORT-EXPORT'
+            }"
+            >Import/Export
           </mat-button-toggle>
 
           <mat-button-toggle
@@ -53,8 +73,12 @@
               !params?.referringDoctorAttributes ||
               !params?.referFromFacilityVisitAttribute ||
               !params?.labNumberCharactersCount ||
-              !params?.testsFromExternalSystemsConfigs
+              !params?.testsFromExternalSystemsConfigs ||
+              !params?.unifiedCodingReferenceConceptSourceUuid ||
+              !params?.labTestRequestProgramStageId ||
+              !params?.sampleRegistrationCategories
             "
+            barcodeSettings
             mode="indeterminate"
           ></mat-progress-bar>
           <div
@@ -64,9 +88,12 @@
               params?.referringDoctorAttributes &&
               params?.referFromFacilityVisitAttribute &&
               params?.labNumberCharactersCount &&
-              params?.testsFromExternalSystemsConfigs && 
-              params?.identifierTypes && 
-              params?.barcodeSettings
+              params?.testsFromExternalSystemsConfigs &&
+              params?.identifierTypes &&
+              params?.barcodeSettings &&
+              params?.labTestRequestProgramStageId &&
+              params?.sampleRegistrationCategories &&
+              params?.specimenSourceConceptUuid
             "
           >
             <app-single-registration
@@ -77,17 +104,33 @@
               [referFromFacilityVisitAttribute]="
                 params?.referFromFacilityVisitAttribute
               "
-              [currentUser]="params?.currentUser"
+              [currentUser]="currentUser"
               [labNumberCharactersCount]="params?.labNumberCharactersCount"
               [referringDoctorAttributes]="params?.referringDoctorAttributes"
               [labSections]="labSections"
-              [specimenSources]=specimenSources
+              [specimenSources]="specimenSources"
               [testsFromExternalSystemsConfigs]="
                 params?.testsFromExternalSystemsConfigs
               "
+              [specimenSourceConceptUuid]="params?.specimenSourceConceptUuid"
+              [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+              [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
               [barcodeSettings]="params?.barcodeSettings"
-              [allRegistrationFields]="allRegistrationFields | createLabFields: params?.referringDoctorAttributes : params?.agencyConceptConfigs : params?.referFromFacilityVisitAttribute : params?.identifierTypes"
+              [allRegistrationFields]="
+                allRegistrationFields
+                  | createLabFields
+                    : params?.referringDoctorAttributes
+                    : params?.agencyConceptConfigs
+                    : params?.referFromFacilityVisitAttribute
+                    : params?.identifierTypes
+              "
               [LISConfigurations]="LISConfigurations"
+              [labTestRequestProgramStageId]="
+                params?.labTestRequestProgramStageId
+              "
+              [sampleRegistrationCategories]="
+                params?.sampleRegistrationCategories
+              "
             ></app-single-registration>
           </div>
         </div>
@@ -95,16 +138,24 @@
           <app-batch-registration></app-batch-registration>
         </div> -->
       </div>
-      <div class="w-100" *ngIf="selectedTabGroup === 'BATCH' || fromMaintenance">
-        <div class="w-100" *ngIf="
-              params?.preferredPersonIdentifier &&
-              params?.referringDoctorAttributes &&
-              params?.referFromFacilityVisitAttribute && 
-              params?.identifierTypes && 
-              params?.batchsets && params?.batches &&
-              params?.barcodeSettings
-          ">
-          <app-batch-registration
+      <div
+        class="w-100"
+        *ngIf="selectedTabGroup === 'BATCH' || fromMaintenance"
+      >
+        <div
+          class="w-100"
+          *ngIf="
+            params?.preferredPersonIdentifier &&
+            params?.referringDoctorAttributes &&
+            params?.referFromFacilityVisitAttribute &&
+            params?.identifierTypes &&
+            params?.batchsets &&
+            params?.batches &&
+            params?.barcodeSettings &&
+            params?.sampleRegistrationCategories
+          "
+        >
+          <!-- <app-batch-registration
             [mrnGeneratorSourceUuid]="params?.mrnGeneratorSourceUuid"
             [preferredPersonIdentifier]="params?.preferredPersonIdentifier"
             [provider]="provider"
@@ -112,25 +163,125 @@
             [referFromFacilityVisitAttribute]="
               params?.referFromFacilityVisitAttribute
             "
-            [currentUser]="params?.currentUser"
+            [currentUser]="currentUser"
             [labNumberCharactersCount]="params?.labNumberCharactersCount"
             [referringDoctorAttributes]="params?.referringDoctorAttributes"
             [labSections]="labSections"
             [testsFromExternalSystemsConfigs]="
               params?.testsFromExternalSystemsConfigs
             "
-            [allRegistrationFields]="allRegistrationFields | createLabFields: params?.referringDoctorAttributes : params?.agencyConceptConfigs : params?.referFromFacilityVisitAttribute : params?.identifierTypes"
+            [allRegistrationFields]="
+              allRegistrationFields
+                | createLabFields
+                  : params?.referringDoctorAttributes
+                  : params?.agencyConceptConfigs
+                  : params?.referFromFacilityVisitAttribute
+                  : params?.identifierTypes
+            "
             [existingBatchsets]="params?.batchsets"
             [existingBatches]="params?.batches"
             [fromMaintenance]="fromMaintenance"
             [LISConfigurations]="LISConfigurations"
             [barcodeSettings]="params?.barcodeSettings"
-            [specimenSources]=specimenSources
+            [specimenSources]="specimenSources"
+            [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+            [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
             (reloadRegisterSample)="onReloadRegisterSample($event)"
-          ></app-batch-registration>
+          ></app-batch-registration> -->
+          <app-shared-batch-registration
+            [currentUser]="currentUser"
+            [sampleRegistrationCategories]="
+              params?.sampleRegistrationCategories
+            "
+            [mrnGeneratorSourceUuid]="params?.mrnGeneratorSourceUuid"
+            [specimenTypeConceptUuid]="specimenTypeConceptUuid"
+            [preferredPersonIdentifier]="params?.preferredPersonIdentifier"
+            [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+            [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
+            [barcodeSettings]="params?.barcodeSettings"
+            [clinicalFields]="newClinicalFormFields"
+            [personFields]="newPersonlFormFields"
+            [fromMaintenance]="fromMaintenance"
+            [labTestRequestProgramStageId]="
+              params?.labTestRequestProgramStageId
+            "
+            [currentLocation]="currentLocation"
+            [referFromFacilityVisitAttribute]="
+              params?.referFromFacilityVisitAttribute
+            "
+            [provider]="provider"
+          ></app-shared-batch-registration>
         </div>
       </div>
-      <div class="w-100" *ngIf="selectedTabGroup === 'LIST' && !fromMaintenance">
+      <div class="w-100" *ngIf="selectedTabGroup === 'IMPORT-EXPORT'">
+        <mat-radio-group class="registration-category">
+          <mat-radio-button
+            (change)="getSelectionCategory($event)"
+            class="registration-category-btn"
+            [value]="'ALL'"
+            [checked]="importExportCategory === 'ALL'"
+            color="primary"
+          >
+            All
+          </mat-radio-button>
+          <mat-radio-button
+            (change)="getSelectionCategory($event)"
+            class="registration-category-btn ml-2"
+            [value]="'CLINICAL'"
+            [checked]="importExportCategory === 'CLINICAL'"
+            color="primary"
+          >
+            Clinical
+          </mat-radio-button>
+          <mat-radio-button
+            (change)="getSelectionCategory($event)"
+            class="registration-category-btn ml-2"
+            [value]="'NON_CLINICAL'"
+            [checked]="importExportCategory === 'NON_CLINICAL'"
+            color="primary"
+          >
+            Non-Clinical
+          </mat-radio-button>
+          <mat-radio-button
+            (change)="getSelectionCategory($event)"
+            class="registration-category-btn ml-2"
+            [value]="'EQA'"
+            [checked]="importExportCategory === 'EQA'"
+            color="primary"
+          >
+            EQA
+          </mat-radio-button>
+        </mat-radio-group>
+        <div class="row">
+          <div
+            class="col-12 mt-2"
+            *ngIf="
+              importExportCategory &&
+              params?.unifiedCodingReferenceConceptSourceUuid &&
+              params?.relatedMetadataAttributeUuid &&
+              params?.hfrCodeAttributeUuid
+            "
+          >
+            <app-sample-import-export
+              [category]="importExportCategory"
+              [currentUser]="currentUser"
+              [provider]="provider"
+              [unifiedCodingReferenceConceptSourceUuid]="
+                params?.unifiedCodingReferenceConceptSourceUuid
+              "
+              [relatedMetadataAttributeUuid]="
+                params?.relatedMetadataAttributeUuid
+              "
+              [hfrCodeAttributeUuid]="params?.hfrCodeAttributeUuid"
+              [labSamplesDepartments]="labSections"
+            ></app-sample-import-export>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-100"
+        *ngIf="selectedTabGroup === 'LIST' && !fromMaintenance"
+      >
         <app-samples-list></app-samples-list>
       </div>
     </div>

@@ -12,16 +12,6 @@ export class PricingService {
   constructor(private httpClient: OpenmrsHttpClientService) {}
 
   getItems(filterInfo): Observable<PricingItem[]> {
-    console.log(
-      "TEST",
-      `icare/item?limit=${filterInfo?.limit}&startIndex=${
-        filterInfo?.limit * filterInfo?.startIndex
-      }${filterInfo?.searchTerm ? "&q=" + filterInfo?.searchTerm : ""}${
-        filterInfo?.conceptSet && !filterInfo?.isDrug
-          ? "&department=" + filterInfo?.conceptSet
-          : ""
-      }${filterInfo?.isDrug ? "&type=DRUG" : ""}`
-    );
     return this.httpClient
       .get(
         `icare/item?limit=${filterInfo?.limit}&startIndex=${

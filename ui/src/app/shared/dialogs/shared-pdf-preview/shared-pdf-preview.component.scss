@@ -1,0 +1,25 @@
+/* Modal wrapper */
+.pdf-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+  }
+  
+  .pdf-preview-content {
+    flex: 1;
+    overflow: auto;
+  }
+  
+  .pdf-preview-footer {
+    padding: 1rem; 
+    background: #fff;
+    border-top: 1px solid #ddd; 
+    position: sticky; 
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; 
+  }
+  
+  

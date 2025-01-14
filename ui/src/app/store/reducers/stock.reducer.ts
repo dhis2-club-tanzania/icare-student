@@ -45,8 +45,6 @@ const reducer = createReducer(
       [stockBatch]
     );
 
-    console.log("newStockBatches", newStockBatches);
-
     return stockAdapter.upsertOne(new Stock(newStockBatches).toJson(), {
       ...state,
       savingLedger: false,

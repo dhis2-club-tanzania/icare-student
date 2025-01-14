@@ -14,6 +14,7 @@ import { OpenmrsHttpClientService } from '../../modules/openmrs-http-client/serv
 export class PatientVisitAttributesDetailsComponent implements OnInit {
   @Input() attributes: { uuid: string; attributeType: any; value: string }[];
   @Input() forRegistration: boolean;
+  @Input() insurelanceID:any;
   attributeValues: string[];
   attributesDetails$: Observable<any[]>;
   constructor(

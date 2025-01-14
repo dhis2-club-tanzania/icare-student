@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { Observable, zip } from "rxjs";
-import { ConceptSourcesService } from "src/app/core/services/concept-sources.service";
+import { Observable, from, of, zip } from "rxjs";
 import { ReferenceTermsService } from "src/app/core/services/reference-terms.service";
 import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import { ConceptsService } from "src/app/shared/resources/concepts/services/concepts.service";
 import { Api } from "src/app/shared/resources/openmrs";
 import { flatten, omit } from "lodash";
+import { catchError, map } from "rxjs/operators";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-test-order-parameters-relationship",
@@ -24,9 +25,9 @@ export class TestOrderParametersRelationshipComponent implements OnInit {
   saving: boolean = false;
   constructor(
     private conceptService: ConceptsService,
-    private conceptSourceService: ConceptSourcesService,
     private api: Api,
-    private conceptReferenceTermsService: ReferenceTermsService
+    private conceptReferenceTermsService: ReferenceTermsService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -53,11 +54,15 @@ export class TestOrderParametersRelationshipComponent implements OnInit {
   onGetTestOrder(formValue: FormValue): void {
     this.testOrderUuid = formValue.getValues()?.testorder?.value;
     if (this.testOrderUuid) {
-      this.selectedTestOrder$ = this.conceptService.getConceptDetailsByUuid(
-        this.testOrderUuid,
-        "custom:(uuid,display,setMembers:(uuid,display,mappings))"
-      );
+      this.getSelectedTestOrderDetails();
     }
+  }
+
+  getSelectedTestOrderDetails(): void {
+    this.selectedTestOrder$ = this.conceptService.getConceptDetailsByUuid(
+      this.testOrderUuid,
+      "custom:(uuid,display,setMembers:(uuid,display,mappings))"
+    );
   }
 
   onGetSelectedReferenceTerm(referenceTerm: any): void {
@@ -102,18 +107,29 @@ export class TestOrderParametersRelationshipComponent implements OnInit {
     );
     zip(
       ...mergedTestOrdersAndMappings?.map((mapping: any) =>
-        this.api.concept.createConceptMap(
-          mapping?.concept,
-          omit(mapping, "concept")
+        from(
+          this.api.concept.createConceptMap(
+            mapping?.concept,
+            omit(mapping, "concept")
+          )
+        ).pipe(
+          map((response: any) => response),
+          catchError((error: any) => of(error))
         )
       )
     ).subscribe((response: any) => {
-      if (response && !response?.error) {
+      // TODO: Handle errors
+      if (response) {
         this.saving = false;
         this.testOrderUuid = null;
-        this.createTestOrderField();
-      } else {
-        this.saving = false;
+        // this.createTestOrderField();
+        this.getSelectedTestOrderDetails();
+        this.snackBar.open(`Saved successfully`, "OK", {
+          horizontalPosition: "center",
+          verticalPosition: "bottom",
+          duration: 2000,
+          panelClass: ["snack-color-ok"],
+        });
       }
     });
   }

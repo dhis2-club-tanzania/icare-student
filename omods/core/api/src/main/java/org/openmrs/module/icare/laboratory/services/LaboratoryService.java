@@ -23,7 +23,7 @@ public interface LaboratoryService extends OpenmrsService {
 	
 	ListResult<Sample> getSamples(Date startDate, Date endDate, Pager pager, String location, String sampleCategory,
 	        String testCategory, String q, String hasStatus, String acceptedByUuid, String testConceptUuid,
-	        String departmentUuid, String specimenSourceUuid);
+	        String departmentUuid, String specimenSourceUuid, String instrumentUuid, String visitUuid, String excludeStatus);
 	
 	List<Sample> getSampleByDates(Date startDate, Date endDate);
 	
@@ -55,6 +55,14 @@ public interface LaboratoryService extends OpenmrsService {
 	
 	List<Map<String, Object>> saveMultipleResults(List<Result> results) throws Exception;
 	
+	Result deleteTestAllocationResults(Result result) throws Exception;
+	
+	Result updateTestAllocationResults(Result result) throws Exception;
+	
+	Result voidTestAllocationResults(Result result) throws Exception;
+	
+	List<Map<String, Object>> voidMultipleResults(Map<String, Object> resultsToVoid) throws Exception;
+	
 	Map<String, Object> saveResultsInstrument(Map<String, Object> resultsInstrumentObject) throws Exception;
 	
 	Sample getSampleByUuid(String sampleUuid);
@@ -84,7 +92,7 @@ public interface LaboratoryService extends OpenmrsService {
 	
 	TestTimeConfig updateTestTimeConfig(TestTimeConfig testTimeConfig);
 	
-	List<TestTimeConfig> getTestTimeConfigs();
+	List<TestTimeConfig> getTestTimeConfigs(String q);
 	
 	TestTimeConfig getTestTimeConfig(String uuid);
 	
@@ -143,7 +151,7 @@ public interface LaboratoryService extends OpenmrsService {
 	WorksheetControl addWorksheetControl(WorksheetControl worksheetControl);
 	
 	List<WorksheetDefinition> getWorksheetDefinitions(Date start, Date end, String q, Integer startIndex, Integer limit,
-	        Date expirationDate);
+	        Date expirationDate, String instrumentUuid);
 	
 	Map<String, Object> getWorksheetDefinitionByUuid(String worksheetDefinitionUuid);
 	
@@ -161,11 +169,12 @@ public interface LaboratoryService extends OpenmrsService {
 	
 	WorksheetSampleStatus addWorksheetSampleStatus(WorksheetSampleStatus worksheetSampleStatus) throws Exception;
 	
-	List<BatchSample> getBatchSamples(Date start, Date end, String q, Integer startIndex, Integer limit);
+	List<BatchSample> getBatchSamples(Date start, Date end, String q, Integer startIndex, Integer limit, String batchUuid);
 	
 	ListResult<SampleExt> getSamplesWithoutAllocations(Date start, Date end, Pager pager, String locationUuid,
 	        String sampleCategory, String testCategory, String q, String hasStatus, String acceptedByUuid,
-	        String testConceptUuid, String departmentUuid, String specimenSourceUuid);
+	        String testConceptUuid, String departmentUuid, String specimenSourceUuid, String instrumentUuid,
+	        String visitUuid, String excludeStatus);
 	
 	AssociatedField addAssociatedField(AssociatedField associatedField);
 	
@@ -186,4 +195,5 @@ public interface LaboratoryService extends OpenmrsService {
 	
 	AssociatedField updateAssociatedField(String associatedFieldUuid, AssociatedField associatedField);
 	
+	TestTimeConfig deleteTestTimeConfiguration(String testConfigUuid);
 }

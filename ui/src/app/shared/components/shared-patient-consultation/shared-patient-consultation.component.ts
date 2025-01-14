@@ -117,7 +117,7 @@ export class SharedPatientConsultationComponent implements OnInit {
     this.loadingForms$ = this.store.pipe(select(getFormsLoadingState));
     this.currentPatient$ = this.store.pipe(select(getCurrentPatient));
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
     this.activeVisit$ = this.store.pipe(select(getConsultationActiveVisit));
 
     this.savingObservations$ = this.store.pipe(
@@ -133,7 +133,7 @@ export class SharedPatientConsultationComponent implements OnInit {
   }
 
   onOpenForm(formName): void {
-    console.log(formName);
+    // console.log(formName);
   }
 
   onSaveObservations(observations: ObsCreate[], patient): void {

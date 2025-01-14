@@ -7,7 +7,7 @@ import {
 import { Dropdown } from "src/app/shared/modules/form/models/dropdown.model";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import { SamplesService } from "src/app/shared/services/samples.service";
-import { BarCodeModalComponent } from "../../../sample-acceptance-and-results/components/bar-code-modal/bar-code-modal.component";
+import { BarCodeModalComponent } from "../../../../../../shared/dialogs/bar-code-modal/bar-code-modal.component";
 
 @Component({
   selector: "app-sample-registration-finalization",

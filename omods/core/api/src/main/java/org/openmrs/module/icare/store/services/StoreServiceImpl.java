@@ -12,6 +12,8 @@ import org.openmrs.module.icare.core.Item;
 import org.openmrs.module.icare.core.ListResult;
 import org.openmrs.module.icare.core.Pager;
 import org.openmrs.module.icare.core.dao.ICareDao;
+import org.openmrs.module.icare.core.models.EncounterPatientProgram;
+import org.openmrs.module.icare.core.models.EncounterPatientState;
 import org.openmrs.module.icare.store.dao.*;
 import org.openmrs.module.icare.store.models.*;
 import org.openmrs.module.icare.store.util.StockOutException;
@@ -52,6 +54,10 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	
 	SupplierDAO supplierDAO;
 	
+	EncounterPatientProgramDAO encounterPatientProgramDAO;
+	
+	EncounterPatientStateDAO encounterPatientStateDAO;
+	
 	StockInvoiceStatusDAO stockInvoiceStatusDAO;
 	
 	StockInvoiceItemDAO stockInvoiceItemDAO;
@@ -86,6 +92,14 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	
 	public void setLedgerTypeDAO(LedgerTypeDAO ledgerTypeDAO) {
 		this.ledgerTypeDAO = ledgerTypeDAO;
+	}
+	
+	public void setEncounterPatientStateDAO(EncounterPatientStateDAO encounterPatientStateDAO) {
+		this.encounterPatientStateDAO = encounterPatientStateDAO;
+	}
+	
+	public void setEncounterPatientProgramDAO(EncounterPatientProgramDAO encounterPatientProgramDAO) {
+		this.encounterPatientProgramDAO = encounterPatientProgramDAO;
 	}
 	
 	public void setDao(ICareDao dao) {
@@ -244,10 +258,11 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	
 	@Override
 	public ListResult<Requisition> getRequestsByRequestingLocation(String requestingLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection) {
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date startDate, Date endDate) {
 		
 		ListResult<Requisition> requisitions = this.requisitionDAO.getRequisitionsByRequestingLocation(
-		    requestingLocationUuid, pager, status, orderByDirection);
+		    requestingLocationUuid, pager, status, orderByDirection, q, startDate, endDate);
 		
 		for (Requisition requisition : requisitions.getResults()) {
 			List<RequisitionStatus> requisitionStatuses = this.requisitionStatusDAO.getStatusesByRequisition(requisition
@@ -262,10 +277,11 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	
 	@Override
 	public ListResult<Requisition> getRequestsForRequestedLocation(String requestedLocationUuid, Pager pager,
-	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection) {
+	        RequisitionStatus.RequisitionStatusCode status, Requisition.OrderByDirection orderByDirection, String q,
+	        Date startDate, Date endDate) {
 		
 		ListResult<Requisition> requisitions = this.requisitionDAO.getRequisitionsByRequestedLocation(requestedLocationUuid,
-		    pager, status, orderByDirection);
+		    pager, status, orderByDirection, q, startDate, endDate);
 		
 		for (Requisition requisition : requisitions.getResults()) {
 			List<RequisitionStatus> requisitionStatuses = this.requisitionStatusDAO.getStatusesByRequisition(requisition
@@ -426,15 +442,20 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
-	public List<Stock> getStockByLocation(String locationUuid, String search, Integer startIndex, Integer limit,
-	        String conceptClassName) {
-		
-		return this.stockDAO.getStockByLocation(locationUuid, search, startIndex, limit, conceptClassName);
+	public ListResult<Stock> getAllStock(Pager pager) {
+		return this.stockDAO.getStockByLocation(null, pager, null, null, null, null);
 	}
 	
 	@Override
-	public List<Item> getStockout() {
-		return this.stockDAO.getStockedOut();
+	public ListResult<Stock> getStockByLocation(String locationUuid, Pager pager, String search, Integer startIndex,
+	        Integer limit, String conceptClassName) {
+		
+		return this.stockDAO.getStockByLocation(locationUuid, pager, search, startIndex, limit, conceptClassName);
+	}
+	
+	@Override
+	public ListResult<Item> getStockout(Pager pager) {
+		return this.stockDAO.getStockedOut(pager);
 	}
 	
 	@Override
@@ -502,97 +523,133 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
-	public OrderStatus dispenseDrug(String drugUuid, String locationUuid, String remarks) {
+	public OrderStatus dispenseDrug(String drugOrderUuid, String drugUuid, Integer quantity, String locationUuid,
+	        String remarks) {
 		OrderService orderService = Context.getOrderService();
-		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(drugUuid);
+		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(drugOrderUuid);
 		for (OrderStatus orderStatus : orderStatuses) {
 			if (orderStatus.getStatus() == OrderStatus.OrderStatusCode.DISPENSED) {
 				throw new OrderEntryException("Order is already dispensed");
 			}
 		}
+		Order savedOrder = orderService.getOrderByUuid(drugOrderUuid);
+		ICareService iCareService = Context.getService(ICareService.class);
+		Item item = iCareService.getItemByDrugUuid(drugUuid);
+		
+		List<Stock> stockList = this.getStockByItemAndLocation(item.getUuid(), locationUuid);
+		AdministrationService administrationService = Context.getAdministrationService();
+		String stockEnabled = administrationService.getGlobalProperty(ICareConfig.STOCK_ENABLE);
+		if (!(stockEnabled != null && stockEnabled.equals("false"))) {
+			Double totalQuantity = new Double(quantity);
+			for (Stock stock : stockList) {
+				if (totalQuantity == 0.0) {
+					break;
+				}
+				Double quantityToDeduct;
+				if (totalQuantity > stock.getQuantity()) {
+					quantityToDeduct = stock.getQuantity();
+				} else {
+					quantityToDeduct = totalQuantity;
+				}
+				StockableItem stockableItem = new StockableItem();
+				stockableItem.setBatch(stock.getBatch());
+				stockableItem.setExpiryDate(stock.getExpiryDate());
+				stockableItem.setItem(item);
+				stockableItem.setLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setSourceLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setQuantity(quantityToDeduct);
+				stockableItem.setOrder(savedOrder);
+				TransactionUtil.deductStock(stockableItem);
+				totalQuantity -= quantityToDeduct;
+			}
+		}
+		
+		OrderStatus orderStatus = new OrderStatus();
+		orderStatus.setOrder(savedOrder);
+		orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
+		orderStatus.setRemarks(remarks);
+		return this.stockDAO.saveOrderStatus(orderStatus);
+	}
+	
+	@Override
+	public OrderStatus dispenseNonDrug(Order order, Double quantity, String locationUuid, String remarks) {
+		OrderService orderService = Context.getOrderService();
+		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(order.getUuid());
+		for (OrderStatus orderStatus : orderStatuses) {
+			if (orderStatus.getStatus() == OrderStatus.OrderStatusCode.DISPENSED) {
+				throw new OrderEntryException("Order is already dispensed");
+			}
+		}
+		ICareService iCareService = Context.getService(ICareService.class);
+		Item item = iCareService.getItemByConceptUuid(order.getConcept().getUuid());
+		
+		List<Stock> stockList = this.getStockByItemAndLocation(item.getUuid(), locationUuid);
+		AdministrationService administrationService = Context.getAdministrationService();
+		String stockEnabled = administrationService.getGlobalProperty(ICareConfig.STOCK_ENABLE);
+		if (!(stockEnabled != null && stockEnabled.equals("false"))) {
+			Double totalQuantity = new Double(quantity);
+			for (Stock stock : stockList) {
+				if (totalQuantity == 0.0) {
+					break;
+				}
+				Double quantityToDeduct;
+				if (totalQuantity > stock.getQuantity()) {
+					quantityToDeduct = stock.getQuantity();
+				} else {
+					quantityToDeduct = totalQuantity;
+				}
+				StockableItem stockableItem = new StockableItem();
+				stockableItem.setBatch(stock.getBatch());
+				stockableItem.setExpiryDate(stock.getExpiryDate());
+				stockableItem.setItem(item);
+				stockableItem.setLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setSourceLocation(Context.getLocationService().getLocationByUuid(locationUuid));
+				stockableItem.setQuantity(quantityToDeduct);
+				stockableItem.setOrder(order);
+				TransactionUtil.deductStock(stockableItem);
+				totalQuantity -= quantityToDeduct;
+			}
+		}
+		
+		OrderStatus orderStatus = new OrderStatus();
+		orderStatus.setOrder(order);
+		orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
+		orderStatus.setRemarks(remarks);
+		return this.stockDAO.saveOrderStatus(orderStatus);
+	}
+	
+	@Override
+	public OrderStatus setDrugOrderStatus(String drugUuid, String status, String remarks) {
+		OrderService orderService = Context.getOrderService();
+		List<OrderStatus> orderStatuses = this.stockDAO.getOrderStatusByOrderUuid(drugUuid);
+		for (OrderStatus orderStatus : orderStatuses) {
+			if (orderStatus.getStatus().toString().equals(status)) {
+				throw new OrderEntryException("Order is already set the status: " + status);
+			}
+		}
 		Order savedOrder = orderService.getOrderByUuid(drugUuid);
 		
-		if (savedOrder instanceof Prescription) {
-			Prescription prescription = (Prescription) savedOrder;
-			ICareService iCareService = Context.getService(ICareService.class);
-			Item item = iCareService.getItemByDrugUuid(prescription.getDrug().getUuid());
-			
-			List<Stock> stockList = this.getStockByItemAndLocation(item.getUuid(), locationUuid);
-			AdministrationService administrationService = Context.getAdministrationService();
-			String stockEnabled = administrationService.getGlobalProperty(ICareConfig.STOCK_ENABLE);
-			
-			if (!(stockEnabled != null && stockEnabled.equals("false"))) {
-				if (stockList.size() == 0) {
-					throw new StockOutException(item.getDisplayString() + " is stocked out.");
-				}
-				Double totalQuantity = prescription.getQuantity();
-				for (Stock stock : stockList) {
-					if (totalQuantity == 0.0) {
-						break;
-					}
-					Double quantityToDeduct;
-					if (totalQuantity > stock.getQuantity()) {
-						quantityToDeduct = stock.getQuantity();
-					} else {
-						quantityToDeduct = totalQuantity;
-					}
-					StockableItem stockableItem = new StockableItem();
-					stockableItem.setBatch(stock.getBatch());
-					stockableItem.setExpiryDate(stock.getExpiryDate());
-					stockableItem.setItem(item);
-					stockableItem.setLocation(Context.getLocationService().getLocationByUuid(locationUuid));
-					stockableItem.setSourceLocation(Context.getLocationService().getLocationByUuid(locationUuid));
-					stockableItem.setQuantity(quantityToDeduct);
-					TransactionUtil.deductStock(stockableItem);
-					totalQuantity -= quantityToDeduct;
-				}
-			}
-			OrderStatus orderStatus = new OrderStatus();
-			orderStatus.setOrder(prescription);
-			orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
-			orderStatus.setRemarks(remarks);
-			return this.stockDAO.saveOrderStatus(orderStatus);
-		} else {
-			DrugOrder drugOrder = (DrugOrder) savedOrder;
-			ICareService iCareService = Context.getService(ICareService.class);
-			Item item = iCareService.getItemByDrugUuid(drugOrder.getDrug().getUuid());
-			
-			List<Stock> stockList = this.getStockByItemAndLocation(item.getUuid(), locationUuid);
-			AdministrationService administrationService = Context.getAdministrationService();
-			String stockEnabled = administrationService.getGlobalProperty(ICareConfig.STOCK_ENABLE);
-			
-			if (!(stockEnabled != null && stockEnabled.equals("false"))) {
-				if (stockList.size() == 0) {
-					throw new StockOutException(item.getDisplayString() + " is stocked out.");
-				}
-				Double totalQuantity = drugOrder.getQuantity();
-				for (Stock stock : stockList) {
-					if (totalQuantity == 0.0) {
-						break;
-					}
-					Double quantityToDeduct;
-					if (totalQuantity > stock.getQuantity()) {
-						quantityToDeduct = stock.getQuantity();
-					} else {
-						quantityToDeduct = totalQuantity;
-					}
-					StockableItem stockableItem = new StockableItem();
-					stockableItem.setBatch(stock.getBatch());
-					stockableItem.setExpiryDate(stock.getExpiryDate());
-					stockableItem.setItem(item);
-					stockableItem.setLocation(Context.getLocationService().getLocationByUuid(locationUuid));
-					stockableItem.setSourceLocation(Context.getLocationService().getLocationByUuid(locationUuid));
-					stockableItem.setQuantity(quantityToDeduct);
-					TransactionUtil.deductStock(stockableItem);
-					totalQuantity -= quantityToDeduct;
-				}
-			}
-			OrderStatus orderStatus = new OrderStatus();
-			orderStatus.setOrder(drugOrder);
-			orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
-			orderStatus.setRemarks(remarks);
-			return this.stockDAO.saveOrderStatus(orderStatus);
+		OrderStatus orderStatus = new OrderStatus();
+		
+		orderStatus.setOrder(savedOrder);
+		
+		if (status.equals(OrderStatus.OrderStatusCode.EMPTY.toString())) {
+			orderStatus.setStatus(OrderStatus.OrderStatusCode.EMPTY);
 		}
+		if (status.equals(OrderStatus.OrderStatusCode.CANCELLED.toString())) {
+			orderStatus.setStatus(OrderStatus.OrderStatusCode.CANCELLED);
+		}
+		if (status.equals(OrderStatus.OrderStatusCode.ISSUED.toString())) {
+			orderStatus.setStatus(OrderStatus.OrderStatusCode.ISSUED);
+		}
+		if (status.equals(OrderStatus.OrderStatusCode.REJECTED.toString())) {
+			orderStatus.setStatus(OrderStatus.OrderStatusCode.REJECTED);
+		}
+		if (status.equals(OrderStatus.OrderStatusCode.DISPENSED.toString())) {
+			orderStatus.setStatus(OrderStatus.OrderStatusCode.DISPENSED);
+		}
+		orderStatus.setRemarks(remarks);
+		return this.stockDAO.saveOrderStatus(orderStatus);
 	}
 	
 	public Supplier getSupplierByUuid(String supplierUuid) {
@@ -600,14 +657,15 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
-	public ListResult<StockInvoice> getStockInvoices(Pager pager, StockInvoiceStatus.Type status) {
+	public ListResult<StockInvoice> getStockInvoices(Pager pager, StockInvoiceStatus.Type status, String q, Date startDate,
+	        Date endDate) {
 		
-		ListResult<StockInvoice> stockInvoices = stockInvoiceDAO.getStockInvoices(pager, status);
+		ListResult<StockInvoice> stockInvoices = stockInvoiceDAO.getStockInvoices(pager, status, q, startDate, endDate);
 		for (StockInvoice stockInvoice : stockInvoices.getResults()) {
 			Double totalAmount = stockInvoiceDAO.getTotalStockItemsAmountByStockInvoice(stockInvoice);
 			stockInvoice.setTotalAmount(totalAmount);
 		}
-		return stockInvoiceDAO.getStockInvoices(pager, status);
+		return stockInvoices;
 	}
 	
 	@Override
@@ -680,7 +738,6 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 				this.saveStockInvoiceStatus(stockInvoiceStatus);
 				
 								if (stockInvoiceStatus.status.equals(StockInvoiceItemStatus.Type.RECEIVED.toString())) {
-									//Integer invoiceId = stockInvoice.getId();
 									List<StockInvoiceItem> stockInvoiceItemsList = this.stockInvoiceItemDAO.getStockInvoiceItemByInvoice(existingStockInvoice);
 									for(StockInvoiceItem stockInvoiceItem : stockInvoiceItemsList){
 										boolean isStatusReceieved = false;
@@ -738,6 +795,7 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 				this.saveStockInvoiceItemStatus(stockInvoiceItemStatus);
 				
 				if (stockInvoiceItemStatus.status.equals(StockInvoiceItemStatus.Type.RECEIVED.toString())) {
+					stockInvoiceItem.setDateCreated(stockInvoiceItem.getStockInvoice().getReceivingDate());
 					TransactionUtil.operateOnStock("+", stockInvoiceItem);
 				}
 			}
@@ -802,7 +860,7 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 			}
 			supplier.setLocation(location);
 		}
-		return this.supplierDAO.updateSupplier(supplier);
+		return supplierDAO.updateSupplier(supplier);
 	}
 	
 	@Override
@@ -914,6 +972,156 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
+	public ListResult<Item> getNearlyStockedOutByLocation(String locationUuid, Pager pager, String q) {
+		
+		ListResult<Item> items = stockDAO.getNearlyStockedOut(locationUuid, pager, q);
+		
+		return items;
+	}
+	
+	@Override
+	public ListResult<Item> getNearlyExpiredByLocation(String locationUuid, Pager pager, String q) {
+		
+		ListResult<Item> items = stockDAO.getNearlyExpiredByLocation(locationUuid, pager, q);
+		return items;
+	}
+	
+	@Override
+	public ListResult<Item> getExpiredItemsByLocation(String locationUuid, Pager pager, String q) {
+		
+		ListResult<Item> items = stockDAO.getExpiredItemsByLocation(locationUuid, pager, q);
+		return items;
+	}
+	
+	@Override
+	public ReorderLevel updateReorderLevel(ReorderLevel reorderLevel) {
+		return stockDAO.updateReorderLevel(reorderLevel);
+	}
+	
+	@Override
+	public Boolean isPendingRequisition(String itemUuid, String locationUuid) {
+		
+		Boolean isPendingRequisition = stockDAO.isPendingRequisition(itemUuid, locationUuid);
+		
+		return isPendingRequisition;
+	}
+	
+	@Override
+	public Requisition deleteRequisition(String requisitionUuid) {
+		
+		Requisition requisitionToDelete = this.getRequestByUuid(requisitionUuid);
+		
+		if (requisitionToDelete != null) {
+			if (requisitionToDelete.getRequisitionItems().size() > 0) {
+				
+				for (RequisitionItem requisitionItem : requisitionToDelete.getRequisitionItems()) {
+					this.deleteRequisitionItem(requisitionItem.getUuid());
+				}
+			}
+			
+			if (requisitionToDelete.getRequisitionStatuses().size() > 0) {
+				for (RequisitionStatus requisitionStatus : requisitionToDelete.getRequisitionStatuses()) {
+					this.deleteRequisitionStatus(requisitionStatus.getUuid());
+				}
+			}
+		}
+		
+		Requisition requisition = stockDAO.deleteRequisition(requisitionUuid);
+		
+		return requisition;
+	}
+	
+	@Override
+	public RequisitionItem deleteRequisitionItem(String requestItemUuid) {
+		
+		RequisitionItem requisitionItemToDelete = this.getRequisitionItem(requestItemUuid);
+		
+		if (requisitionItemToDelete != null) {
+			if (requisitionItemToDelete.getRequisitionItemStatuses().size() > 1) {
+				for (RequisitionItemStatus requisitionItemStatus : requisitionItemToDelete.getRequisitionItemStatuses()) {
+					this.deleteRequisitionItemStatus(requisitionItemStatus.getUuid());
+				}
+			}
+		}
+		
+		RequisitionItem requisitionItem = stockDAO.deleteRequisitionItem(requestItemUuid);
+		
+		return requisitionItem;
+	}
+	
+	@Override
+	public RequisitionStatus deleteRequisitionStatus(String requestStatusUuid) {
+		
+		RequisitionStatus requisitionStatus = stockDAO.deleteRequisitionStatus(requestStatusUuid);
+		return requisitionStatus;
+	}
+	
+	@Override
+	public RequisitionItemStatus deleteRequisitionItemStatus(String requestItemStatusUuid) {
+		
+		RequisitionItemStatus requisitionItemStatus = stockDAO.deleteRequisitionItemStatus(requestItemStatusUuid);
+		return requisitionItemStatus;
+	}
+	
+	@Override
+	public RequisitionItem getRequisitionItem(String requestItemUuid) {
+		RequisitionItem requisitionItem = stockDAO.getRequisitionItemByUuid(requestItemUuid);
+		return requisitionItem;
+	}
+	
+	@Override
+	public StockInvoice deleteStockInvoice(String stockInvoiceUuid) {
+		StockInvoice stockInvoiceToDelete = this.getStockInvoicebyUuid(stockInvoiceUuid);
+		if (stockInvoiceToDelete != null) {
+			if (stockInvoiceToDelete.getStockInvoiceItems().size() > 0) {
+				for (StockInvoiceItem stockInvoiceItem : stockInvoiceToDelete.getStockInvoiceItems()) {
+					this.deleteStockInvoiceItem(stockInvoiceItem.getUuid());
+				}
+			}
+			
+			if (stockInvoiceToDelete.getStockInvoiceStatuses().size() > 0) {
+				for (StockInvoiceStatus stockInvoiceStatus : stockInvoiceToDelete.getStockInvoiceStatuses()) {
+					this.deleteStockInvoiceStatus(stockInvoiceStatus.getUuid());
+				}
+			}
+		}
+		return stockDAO.deleteStockInvoice(stockInvoiceUuid);
+	}
+	
+	@Override
+	public StockInvoiceStatus deleteStockInvoiceStatus(String stockInvoiceStatusUuid) {
+		return stockDAO.deleteStockInvoiceStatus(stockInvoiceStatusUuid);
+	}
+	
+	@Override
+	public StockInvoiceItem deleteStockInvoiceItem(String stockInvoiceItemUuid) {
+		StockInvoiceItem stockInvoiceItem = this.getStockInvoiceItemByUuid(stockInvoiceItemUuid);
+		if (stockInvoiceItem != null) {
+			if (stockInvoiceItem.getStockInvoiceItemStatuses().size() > 0) {
+				for (StockInvoiceItemStatus stockInvoiceItemStatus : stockInvoiceItem.getStockInvoiceItemStatuses()) {
+					this.deleteStockInvoiceItemStatus(stockInvoiceItemStatus.getUuid());
+				}
+			}
+		}
+		return stockDAO.deleteStockInvoiceItem(stockInvoiceItemUuid);
+	}
+	
+	@Override
+	public StockInvoiceItemStatus deleteStockInvoiceItemStatus(String stockInvoiceItemStatusUuid) {
+		return stockDAO.deleteStockInvoiceItemStatus(stockInvoiceItemStatusUuid);
+	}
+	
+	@Override
+	public EncounterPatientState saveEncounterPatientState(EncounterPatientState encounterPatientState) {
+		return encounterPatientStateDAO.save(encounterPatientState);
+	}
+	
+	@Override
+	public EncounterPatientProgram saveEncounterPatientProgram(EncounterPatientProgram encounterPatientProgram) {
+		return encounterPatientProgramDAO.save(encounterPatientProgram);
+	}
+	
+	@Override
 	public StockInvoice saveStockInvoice(StockInvoice stockInvoice) throws Exception {
 		
 		Supplier supplier = this.getSupplierByUuid(stockInvoice.getSupplier().getUuid());
@@ -978,9 +1186,10 @@ public class StoreServiceImpl extends BaseOpenmrsService implements StoreService
 	}
 	
 	@Override
-	public List<Item> getStockoutByLocation(String locationUuid, String q, Integer startIndex, Integer limit,
-	        String conceptClassName) {
-		return this.stockDAO.getStockedOutByLocation(locationUuid, q, startIndex, limit, conceptClassName);
+	public ListResult<Item> getStockoutByLocation(String locationUuid, Pager pager, String q, String conceptClassName) {
+		ListResult<Item> items = this.stockDAO.getStockedOutByLocation(locationUuid, pager, q, conceptClassName);
+		
+		return items;
 	}
 	
 	@Override

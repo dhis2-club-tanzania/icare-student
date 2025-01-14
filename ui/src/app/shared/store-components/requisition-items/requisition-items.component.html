@@ -1,0 +1,186 @@
+<div
+  class="container-fluid"
+  *ngIf="{
+    specificRequisition: specificRequisition$ | async
+  } as params"
+>
+  <div class="row">
+    <div class="col-12">
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="!params?.specificRequisition"
+      ></mat-progress-bar>
+      <!-- Actions needed -->
+      <div class="w-100 d-flex justify-content-end" *ngIf="isNew">
+        <a
+          class="anchor-button ml-4"
+          style="cursor: pointer"
+          color="primary"
+          matTooltip="Send this requisition"
+          (click)="onSendRequisition($event, params?.specificRequisition)"
+        >
+          <mat-icon>send</mat-icon>
+        </a>
+      </div>
+      <table
+        class="table table-hover table-striped"
+        *ngIf="
+          params?.specificRequisition?.requisitionItems?.length &&
+          !loadingRequisition
+        "
+      >
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th></th>
+            <th>
+              <section
+                *ngIf="
+                  params?.specificRequisition?.requisitionStatuses[
+                    params?.specificRequisition?.requisitionStatuses?.length - 1
+                  ]?.status === 'ISSUED' || markAll
+                "
+              >
+                <mat-checkbox
+                  color="primary"
+                  (change)="
+                    selectAll(
+                      $event,
+                      params?.specificRequisition?.requisitionItems
+                    )
+                  "
+                  [checked]="selectAllItems"
+                ></mat-checkbox>
+              </section>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="
+              let item of params?.specificRequisition?.requisitionItems;
+              let itemIndex = index
+            "
+          >
+            <td>{{ itemIndex + 1 }}</td>
+            <td>{{ item?.item?.display }}</td>
+            <td>{{ item?.quantity }}</td>
+            <td>
+              {{
+                item?.requisitionItemStatuses[
+                  item?.requisitionItemStatuses?.length - 1
+                ]?.status
+                  ? item?.requisitionItemStatuses[
+                      item?.requisitionItemStatuses?.length - 1
+                    ]?.status
+                  : "DRAFT"
+              }}
+            </td>
+            <td
+              *ngIf="
+                requisition?.requisitionStatuses[
+                  requisition?.requisitionStatuses?.length - 1
+                ]?.status === 'DRAFT'
+              "
+            >
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onUpdateRequsitionItem(item)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Update</span>
+                </button>
+                <button
+                  mat-menu-item
+                  (click)="onDeleteRequsitionItem(item?.uuid)"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+            <td>
+              <ng-container
+                *ngIf="
+                  item?.requisitionItemStatuses[
+                    item?.requisitionItemStatuses?.length - 1
+                  ]?.status === 'ISSUED'
+                "
+              >
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="onReceiveItem($event, item)"
+                >
+                  Receive
+                </button>
+                <button
+                  mat-flat-button
+                  class="ml-2"
+                  color="warn"
+                  (click)="onRejectItem($event, item)"
+                >
+                  Reject
+                </button>
+              </ng-container>
+            </td>
+            <td>
+              <section>
+                <mat-checkbox
+                  color="primary"
+                  (change)="getSelection($event, item)"
+                  [checked]="selectedItems[item]"
+                  *ngIf="
+                    item?.requisitionItemStatuses[
+                      item?.requisitionItemStatuses?.length - 1
+                    ]?.status === 'ISSUED'
+                  "
+                ></mat-checkbox>
+              </section>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="table table-hover table-striped"
+        *ngIf="
+          !params?.specificRequisition?.requisitionItems?.length &&
+          !loadingRequisition
+        "
+      >
+        <tbody>
+          <tr>
+            <h3 class="text-center">This requisition has no items</h3>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <table class="table">
+                  <tr>
+                    <td>#</td>
+                    <td>Store</td>
+                    <td>Item</td>
+                    <td>Quantity</td>
+                    <td><span class="float-right">Actions</span></td>
+                  </tr>
+                 
+
+                  <tr
+                    *ngFor="let item of requisition?.items; let itemIndex = index"
+                  >
+                    <td>{{ itemIndex + 1 }}</td>
+                    <td>Test Store {{ itemIndex + 1 }}</td>
+                    <td>Test Item {{ itemIndex + 1 }}</td>
+                    <td>{{item?.quantity}}</td>
+                    <td>
+                      ...
+                    </td>
+                  </tr>
+                </table> -->

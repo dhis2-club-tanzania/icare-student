@@ -1,4 +1,4 @@
-<div>
+<div class="w-100">
   <mat-tab-group>
     <mat-tab label="Lab Sections">
       <ng-template matTabContent>
@@ -9,6 +9,9 @@
             [isSet]="true"
             [itemTypeName]="'Lab Section'"
             [setMembersHeaderName]="'Test orders'"
+            [searchTermOfConceptSetToExcludeFromTestOrders]="
+              searchTermOfConceptSetToExclude
+            "
             [standardSearchTerm]="'LAB_DEPARTMENT'"
             [setMembersSearchTerm]="'TEST_ORDERS'"
           ></app-standard-concept-creation>

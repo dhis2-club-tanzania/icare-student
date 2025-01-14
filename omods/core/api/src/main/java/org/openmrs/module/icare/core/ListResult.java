@@ -30,7 +30,7 @@ public class ListResult<T extends JSONConverter> implements JSONConverter {
 	}
 	
 	@Override
-	public Map<String, Object> toMap() {
+	public Map<String, Object> toMap() throws Exception {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("pager", this.pager.toMap());
 		List<Map<String, Object>> resultObjectList = new ArrayList<Map<String, Object>>();

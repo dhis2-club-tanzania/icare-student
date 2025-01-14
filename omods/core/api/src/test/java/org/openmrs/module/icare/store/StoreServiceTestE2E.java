@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.icare.core.ICareService;
+import org.openmrs.module.icare.core.ListResult;
+import org.openmrs.module.icare.core.Pager;
 import org.openmrs.module.icare.store.models.Ledger;
 import org.openmrs.module.icare.store.models.Stock;
 import org.openmrs.module.icare.store.models.Transaction;
@@ -61,9 +63,11 @@ public class StoreServiceTestE2E extends StoreTestBase {
 		//Then
 		Ledger newLedger = storeService.getLedgerByUuid(ledger.getUuid());
 		assertThat("Ledger is created", newLedger != null, is(true));
-		List<Stock> stocks = storeService.getStockByLocation(location.getUuid(), null, 0, 100, null);
-		assertThat("Stock size added", stocks.size(), is(1));
-		Stock stock = stocks.get(0);
+		Pager pager = new Pager();
+		//pager.setAllowed(false);
+		ListResult<Stock> stocks = storeService.getStockByLocation(location.getUuid(), pager, null, 0, 100, null);
+		assertThat("Stock size added", stocks.getResults().size(), is(1));
+		Stock stock = stocks.getResults().get(0);
 		assertThat("Stock is created with batch", stock.getBatch(), is(ledger.getBatchNo()));
 		assertThat("Stock is created with expiry", stock.getExpiryDate(), is(ledger.getExpiryDate()));
 		assertThat("Stock is created with quantity", stock.getQuantity(), is(ledger.getQuantity()));

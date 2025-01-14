@@ -1,0 +1,46 @@
+<div class="w-100">
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let interpretation of interpretations; let count = index">
+        <td style="width: 20px">
+          {{ count + 1 }}
+        </td>
+        <td>
+          {{ interpretation?.label?.value }}
+        </td>
+        <td>
+          {{ interpretation?.interpretation?.value }}
+        </td>
+        <td>
+          <button
+            mat-icon-button
+            (click)="onDelete($event, interpretation?.id)"
+            class="text-muted"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            (click)="onEdit($event, interpretation)"
+            class="ml-2"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<app-form
+  [fields]="interpretationsFormFields"
+  (formUpdate)="onFormUpdate($event)"
+></app-form>
+<div class="d-flex justify-content-end" style="margin-top: -10px">
+  <button
+    mat-icon-button
+    (click)="onAddInterpretation($event, currentInterpretation)"
+    [disabled]="!isFormValid"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

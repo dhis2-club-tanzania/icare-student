@@ -5,7 +5,7 @@ package org.openmrs.module.icare.store.models;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Location;
 import org.openmrs.module.icare.core.Item;
-
+import org.openmrs.Order;
 import javax.persistence.*;
 import java.util.Date;
 
@@ -22,6 +22,10 @@ public class Transaction extends BaseOpenmrsData implements java.io.Serializable
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "transaction_id", unique = true, nullable = false)
 	private Integer id;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private Order order;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "item_id")
@@ -134,5 +138,13 @@ public class Transaction extends BaseOpenmrsData implements java.io.Serializable
 	
 	public void setDestinationLocation(Location destinationLocation) {
 		this.destinationLocation = destinationLocation;
+	}
+	
+	public Order getOrder() {
+		return order;
+	}
+	
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 }

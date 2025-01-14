@@ -3,7 +3,8 @@
     samplesLoadedState: samplesLoadedState$ | async,
     privileges: privileges$ | async,
     labConfigs: labConfigs$ | async,
-    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    barcodeSettings: barcodeSettings$ | async
   } as sampleParams"
 >
   <mat-progress-bar
@@ -22,15 +23,18 @@
         ></app-shared-samples-summary-dashboard>
       </div>
       <app-shared-samples-list
+        *ngIf="sampleParams?.barcodeSettings"
         [tabType]="'sample-tracking'"
         [LISConfigurations]="LISConfigurations"
         [labSamplesDepartments]="labSamplesDepartments"
         [hasStatus]="'YES'"
         [showLegend]="true"
+        [category]="'COLLECTED'"
         [datesParameters]="datesParameters"
         [excludeAllocations]="true"
         [sampleTypes]="sampleTypes"
         [codedSampleRejectionReasons]="codedSampleRejectionReasons"
+        [barcodeSettings]="sampleParams?.barcodeSettings"
       ></app-shared-samples-list>
     </div>
     <!-- <div class="filtering-div">

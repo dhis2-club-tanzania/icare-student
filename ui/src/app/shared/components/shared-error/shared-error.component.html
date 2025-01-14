@@ -1,7 +1,9 @@
-<ng-container *ngIf="errors.length > 0">
+<ng-container *ngIf="errors && errors?.length > 0">
   <div *ngFor="let error of errors; let errorIndex = index">
     <div
-      class="alert alert-{{ error.type || 'danger' }} alert-dismissible fade show mt-2"
+      class="alert alert-{{
+        error.type || 'danger'
+      }} alert-dismissible fade show mt-2"
       role="alert"
       *ngIf="error?.error"
     >
@@ -36,8 +38,13 @@
     </div>
 
     <!-- Handle global errors if any -->
-    <div *ngIf="error?.error?.globalErrors;">
-      <ng-container *ngFor="let globalError of error?.error?.globalErrors; let globalErrorIndex = index">
+    <div *ngIf="error?.error?.globalErrors">
+      <ng-container
+        *ngFor="
+          let globalError of error?.error?.globalErrors;
+          let globalErrorIndex = index
+        "
+      >
         <div
           class="alert alert-{{ alertType }} alert-dismissible fade show mt-2"
           role="alert"
@@ -77,7 +84,7 @@
           </p>
           <div
             *ngIf="
-              (errorIndex.toString() + globalErrorIndex.toString()) ===
+              errorIndex.toString() + globalErrorIndex.toString() ===
                 toggleIndex && globalError?.detail
             "
             class="mt-2"

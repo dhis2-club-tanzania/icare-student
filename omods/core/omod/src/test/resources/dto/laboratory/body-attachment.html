@@ -1,0 +1,62 @@
+<html>
+<body>
+<div style="width: 1000px">
+    <h2 style="color: #2c6693; text-align: center">
+        <b>National Public Health Laboratory</b>
+    </h2>
+    <h3 style="margin-top: -16px; color: #2c6693; text-align: center">
+        <b>Clients Results</b>
+    </h3>
+    <h4 style="margin-top: -16px; color: #2c6693; text-align: center">
+        Date: {date}
+    </h4>
+    <table
+            style="width: 100%; border: 1px solid #222; border-collapse: collapse"
+    >
+        <tbody>
+        <tr style="padding: 6px">
+            <td
+                    colspan="4"
+                    style="
+                text-align: left;
+                font-size: 16px;
+                border: 1px solid #222;
+                padding: 6px;
+              "
+            >
+                <b>{test}</b>
+            </td>
+        </tr>
+        <tr parameterrepeatable>
+            <td
+                    style="
+                border: 1px solid #222;
+                padding: 6px;
+                font-size: 16px;
+                width: 20px;
+              "
+            >
+                {sn}
+            </td>
+            <td style="border: 1px solid #222; padding: 6px; font-size: 16px">
+                {parameter}
+            </td>
+            <td
+                    style="
+                border: 1px solid #222;
+                padding: 6px;
+                font-size: 16px;
+                text-align: center;
+              "
+            >
+                {result}
+            </td>
+            <td style="border: 1px solid #222; padding: 6px; font-size: 16px">
+                {comment}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

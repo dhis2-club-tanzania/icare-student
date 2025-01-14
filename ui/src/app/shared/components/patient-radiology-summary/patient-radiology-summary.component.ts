@@ -7,6 +7,7 @@ import { VisitsService } from "../../resources/visits/services";
 import { flatten, orderBy, uniqBy } from "lodash";
 import { SharedConfirmationComponent } from "../shared-confirmation/shared-confirmation.component";
 import { MatDialog } from "@angular/material/dialog";
+import { SharedPdfPreviewComponent } from "../../dialogs/shared-pdf-preview/shared-pdf-preview.component";
 
 @Component({
   selector: "app-patient-radiology-summary",
@@ -27,8 +28,9 @@ export class PatientRadiologySummaryComponent implements OnInit {
   isFormValid: boolean = false;
   formValuesData: any = {};
   orders$: Observable<any>;
+  ordersSubscription: any;
   fields: string =
-    "custom:(uuid,encounters:(uuid,location:(uuid,display),encounterType,display,encounterProviders,encounterDatetime,voided,obs,orders:(uuid,display,orderer,orderType,dateActivated,orderNumber,concept,display)))";
+    "custom:(uuid,encounters:(uuid,location:(uuid,display),encounterType,display,encounterProviders,encounterDatetime,voided,obs,orders:(uuid,display,orderer,orderType,dateActivated,dateStopped,autoExpireDate,orderNumber,concept,display)))";
   creatingOrdersResponse$: Observable<any>;
   formDetails: FormValue;
   @Output() updateConsultationOrder = new EventEmitter();
@@ -43,7 +45,14 @@ export class PatientRadiologySummaryComponent implements OnInit {
       this.patientVisit.uuid,
       this.fields
     );
-
+    this.ordersSubscription = this.orders$.subscribe(
+      data => {
+        console.log("radiology data .......................................",data); 
+      },
+      error => {
+        console.error('Error fetching orders:', error);
+      }
+    );
     this.getFormFields();
   }
 
@@ -161,9 +170,9 @@ export class PatientRadiologySummaryComponent implements OnInit {
   }
 
   onDeleteOrder(e: Event, order: any) {
-    e.stopPropagation();
+    // e.stopPropagation();
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
-      width: "25%",
+      minWidth: "25%",
       data: {
         modalTitle: `Delete ${order?.concept?.display}`,
         modalMessage: `You are about to delete ${order?.concept?.display} for this patient, Click confirm to delete!`,
@@ -182,12 +191,28 @@ export class PatientRadiologySummaryComponent implements OnInit {
           .subscribe((response) => {
             if (!response?.error) {
               // this.reloadOrderComponent.emit();
+              this.orders$ = this.visitService.getActiveVisitRadiologyOrders(
+                this.patientVisit.uuid,
+                this.fields
+              );
             }
             if (response?.error) {
               this.errors = [...this.errors, response?.error];
             }
           });
       }
+    });
+  }
+
+  previewUploadPDF(event: Event, data, rendererType: string): void {
+    event.stopPropagation();
+    this.dialog.open(SharedPdfPreviewComponent, {
+      minWidth: "60%",
+      maxHeight: "800px",
+      data: {
+        data,
+        rendererType,
+      },
     });
   }
 }

@@ -1,0 +1,35 @@
+// .store-sidebar {
+//   position: fixed;
+//   width: 300px;
+// }
+
+.page {
+  text-align: left;
+}
+
+.store-active,
+.store-active:hover {
+  background-color: #42abed;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 40px;
+}
+
+// .store-content {
+//   margin-left: 215px;
+// }
+
+.not-allowed-menu-item {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  // background-color: #cccccc;
+  color: #666666;
+}
+
+.border {
+  border-radius: 10px;
+}
+// .card-nearly {
+//   border: 1px solid #666666 !important;
+//   // border-right: 5px solid #666666 !important;
+// }

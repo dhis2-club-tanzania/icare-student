@@ -33,7 +33,7 @@ export const logoutUserFail = createAction(
 
 export const loadCurrentUserDetails = createAction(
   "[LOGIN] load current User details",
-  props<{ uuid: string }>()
+  props<{ uuid: string; sessionDetails?: any }>()
 );
 
 export const addLoadedUserDetails = createAction(

@@ -35,6 +35,9 @@ export class RejectedSamplesComponent implements OnInit {
 
   samplesToViewMoreDetails: any = {};
   saving: boolean = false;
+  excludedSampleCategories: string[] = ["ACCEPTED"];
+  tabType: string = "sample-tracking";
+
   constructor(
     private store: Store<AppState>,
     private sampleService: SamplesService
@@ -50,6 +53,8 @@ export class RejectedSamplesComponent implements OnInit {
       "REJECTED",
       "YES",
       this.excludeAllocations,
+      this.tabType,
+      this.excludedSampleCategories,
       null,
       {
         departments: this.labSamplesDepartments,
@@ -61,6 +66,6 @@ export class RejectedSamplesComponent implements OnInit {
 
   onToggleViewSampleDetails(event: Event, sample: any): void {
     event.stopPropagation();
-    console.log(sample);
+    // console.log(sample);
   }
 }

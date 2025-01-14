@@ -5,7 +5,6 @@ import { AppState } from "src/app/store/reducers";
 import { getGroupedObservationByConcept } from "src/app/store/selectors/observation.selectors";
 import { groupObservationByConcept } from "../../helpers/observations.helpers";
 import { VisitObject } from "../../resources/visits/models/visit-object.model";
-import { Visit } from "../../resources/visits/models/visit.model";
 
 @Component({
   selector: "app-patient-clinical-notes-summary",

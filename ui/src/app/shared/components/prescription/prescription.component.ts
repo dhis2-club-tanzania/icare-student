@@ -1,33 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers';
+import { Component, OnInit } from "@angular/core";
+import { select, Store } from "@ngrx/store";
+import { AppState } from "src/app/store/reducers";
 import {
   removeDrugOrder,
   saveDrugOrder,
   updateDrugOrder,
-} from 'src/app/store/actions';
-import { Observable, of } from 'rxjs';
+} from "src/app/store/actions";
+import { Observable, of } from "rxjs";
 import {
   getAllDrugOrders,
   getConsultationEncounterUuid,
   getCurrentLocation,
   getOrderTypesByName,
-} from 'src/app/store/selectors';
-import { Patient } from 'src/app/shared/resources/patient/models/patient.model';
-import { getCurrentPatient } from 'src/app/store/selectors/current-patient.selectors';
-import { getProviderDetails } from 'src/app/store/selectors/current-user.selectors';
-import { ProviderGet } from 'src/app/shared/resources/openmrs';
-import { DrugOrder } from 'src/app/shared/resources/order/models/drug-order.model';
-import { ActivatedRoute } from '@angular/router';
-import { Visit } from 'src/app/shared/resources/visits/models/visit.model';
-import { VisitsService } from 'src/app/shared/resources/visits/services';
-import { catchError, tap } from 'rxjs/operators';
-import { getVisitLoadedState } from 'src/app/store/selectors/visit.selectors';
+} from "src/app/store/selectors";
+import { Patient } from "src/app/shared/resources/patient/models/patient.model";
+import { getCurrentPatient } from "src/app/store/selectors/current-patient.selectors";
+import { getProviderDetails } from "src/app/store/selectors/current-user.selectors";
+import { ProviderGet } from "src/app/shared/resources/openmrs";
+import { DrugOrder } from "src/app/shared/resources/order/models/drug-order.model";
+import { ActivatedRoute } from "@angular/router";
+import { Visit } from "src/app/shared/resources/visits/models/visit.model";
+import { VisitsService } from "src/app/shared/resources/visits/services";
+import { catchError, tap } from "rxjs/operators";
+import { getVisitLoadedState } from "src/app/store/selectors/visit.selectors";
 
 @Component({
-  selector: 'app-prescription',
-  templateUrl: './prescription.component.html',
-  styleUrls: ['./prescription.component.scss'],
+  selector: "app-prescription",
+  templateUrl: "./prescription.component.html",
+  styleUrls: ["./prescription.component.scss"],
 })
 export class PrescriptionComponent implements OnInit {
   expandedRow: number;
@@ -61,11 +61,11 @@ export class PrescriptionComponent implements OnInit {
     this.provider$ = this.store.pipe(select(getProviderDetails));
     // TODO: Find best way to find order by type instead of name
     this.orderType$ = this.store.pipe(
-      select(getOrderTypesByName, { name: 'Drug Order' })
+      select(getOrderTypesByName, { name: "Drug Order" })
     );
     this.drugsOrdered$ = this.store.select(getAllDrugOrders);
 
-    this.currentLocation$ = this.store.pipe(select(getCurrentLocation));
+    this.currentLocation$ = this.store.pipe(select(getCurrentLocation(false)));
   }
 
   private _getPatientVisit() {

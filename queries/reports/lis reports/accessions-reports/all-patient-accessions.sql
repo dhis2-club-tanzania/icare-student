@@ -2,13 +2,13 @@ SELECT
     sp.label AS "lab_no",
     DATE_FORMAT(CONVERT_TZ(sp.date_time, 'Etc/GMT+3', 'GMT'), "%d/%m/%Y %h:%i %p") AS "reg_date",
     pi.identifier AS "file_no",
-    (SELECT GROUP_CONCAT(DISTINCT  cn.name)
-		FROM lb_sample_status spstatus
-        INNER JOIN concept c ON c.uuid = spstatus.remarks
-		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
-        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'PRIORITY'
-
-    ) AS "priority",
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220298 THEN cn.name ELSE NULL END)
+         FROM obs ob
+         INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+         INNER JOIN concept c ON c.concept_id = ob.value_coded
+         INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
+         WHERE e.visit_id = sp.visit_id
+        ) AS "priority",
     (SELECT GROUP_CONCAT(DISTINCT CASE WHEN va.attribute_type_id=7 THEN l.name ELSE NULL END)
         FROM visit v
         LEFT JOIN visit_attribute va ON va.visit_id = v.visit_id
@@ -24,58 +24,66 @@ SELECT
     CASE WHEN (TIMESTAMPDIFF(YEAR,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))) =0 AND (TIMESTAMPDIFF(MONTH,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))) =0 THEN CONCAT((TIMESTAMPDIFF(DAY,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))),' ',"Day(s)") WHEN (TIMESTAMPDIFF(YEAR,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))) =0 AND (TIMESTAMPDIFF(MONTH,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))) !=0 THEN CONCAT((TIMESTAMPDIFF(MONTH,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))),' ',"Month(s)") ELSE CONCAT((TIMESTAMPDIFF(YEAR,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT'))),' ',"Year(s)") END AS "age_years",
     CONCAT((TIMESTAMPDIFF(DAY,p.birthdate,CONVERT_TZ(v.date_started,'Etc/GMT+3','GMT')))) AS "age_days",
     DATE_FORMAT(CONVERT_TZ(p.birthdate	,'Etc/GMT+3','GMT'), "%d/%m/%Y ") AS "date_of_birth",
-    CASE WHEN p.gender='M' THEN 'M'  ELSE 'F' END AS "sex",
+    CASE WHEN p.gender='M' THEN 'M' WHEN p.gender='F' THEN 'F' ELSE 'UNKNOWN' END AS "sex",
 
-    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN spstatus.status = 'COLLECTED_ON' THEN spstatus.remarks ELSE NULL END)
-        FROM lb_sample_status spstatus
-        WHERE spstatus.sample_id = sp.sample_id
-    ) AS "collected_on",
+--    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN spstatus.status = 'COLLECTED_ON' THEN spstatus.remarks ELSE NULL END)
+--        FROM lb_sample_status spstatus
+--        WHERE spstatus.sample_id = sp.sample_id
+--    ) AS "collected_on",
+--
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220300 THEN ob.value_datetime ELSE NULL END)
+         	FROM obs ob
+         	INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+            WHERE e.visit_id = sp.visit_id
+        ) AS "collected_on",
 
-    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN spstatus.status = 'COLLECTED_BY' THEN UPPER(spstatus.remarks) ELSE NULL END)
-     	FROM lb_sample_status spstatus
-        WHERE spstatus.sample_id = sp.sample_id
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220299 THEN UPPER(ob.value_text) ELSE NULL END)
+            FROM obs ob
+            INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+            WHERE e.visit_id = sp.visit_id
     ) AS "collected_by",
 
-    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN spstatus.status = 'RECEIVED_ON' THEN spstatus.remarks ELSE NULL END)
-     	FROM lb_sample_status spstatus
-        WHERE spstatus.sample_id = sp.sample_id
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220311 THEN ob.value_datetime ELSE NULL END)
+     	FROM obs ob
+     	INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+        WHERE e.visit_id = sp.visit_id
     ) AS "received_on",
 
-    (SELECT GROUP_CONCAT( DISTINCT UPPER(CONCAT(pn.given_name," ",pn.family_name)))
-        FROM lb_sample_status spstatus
-        INNER JOIN users u on u.user_id = spstatus.user_id
-        INNER JOIN person_name pn ON pn.person_id = u.person_id
-        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'RECEIVED_BY'
-    ) AS "received_by",
-    (SELECT GROUP_CONCAT( DISTINCT  spstatus.remarks)
-        FROM lb_sample_status spstatus
-     	 WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'DELIVERED_ON'
-    ) AS "delivered_on",
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220333 THEN UPPER(ob.value_text) ELSE NULL END)
+         FROM obs ob
+         INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+         WHERE e.visit_id = sp.visit_id
+        ) AS "received_by",
+--    (SELECT GROUP_CONCAT( DISTINCT  spstatus.remarks)
+--        FROM lb_sample_status spstatus
+--     	 WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'DELIVERED_ON'
+--    ) AS "delivered_on",
+--
+--    (SELECT GROUP_CONCAT( DISTINCT  UPPER(spstatus.remarks))
+--        FROM lb_sample_status spstatus
+--     	 WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'DELIVERED_BY'
+--    ) AS "delivered_by",
+--    (SELECT GROUP_CONCAT( DISTINCT cn.name)
+--        FROM lb_sample_status spstatus
+--        INNER JOIN concept c ON c.uuid = spstatus.remarks
+--		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
+--        WHERE spstatus.sample_id = sp.sample_id AND spstatus.category = 'CONDITION'
+--    ) AS "specimen_condition",
 
-    (SELECT GROUP_CONCAT( DISTINCT  UPPER(spstatus.remarks))
-        FROM lb_sample_status spstatus
-     	 WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'DELIVERED_BY'
-    ) AS "delivered_by",
-    (SELECT GROUP_CONCAT( DISTINCT cn.name)
-        FROM lb_sample_status spstatus
-        INNER JOIN concept c ON c.uuid = spstatus.remarks
+    (SELECT GROUP_CONCAT( DISTINCT CASE WHEN ob.concept_id = 220315 THEN cn.name ELSE NULL END)
+        FROM obs ob
+        INNER JOIN encounter e ON e.encounter_id = ob.encounter_id
+        INNER JOIN concept c ON c.concept_id = ob.value_coded
 		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
-        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'CONDITION'
-    ) AS "specimen_condition",
-
-    (SELECT GROUP_CONCAT(cn.name)
-        FROM lb_sample_status spstatus
-        INNER JOIN concept c ON c.uuid = spstatus.remarks
-		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
-        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'TRANSPORT_CONDITION'
+        WHERE e.visit_id = sp.visit_id
     ) AS "transport_condition",
 
-    (SELECT GROUP_CONCAT( DISTINCT cn.name )
-        FROM lb_sample_status spstatus
-        INNER JOIN concept c ON c.uuid = spstatus.remarks
-		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
-        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'TRANSPORT_TEMPERATURE'
-    ) AS "transport_temperature",
+--    (SELECT GROUP_CONCAT( DISTINCT cn.name )
+--        FROM lb_sample_status spstatus
+--        INNER JOIN concept c ON c.uuid = spstatus.remarks
+--		INNER JOIN concept_name cn ON cn.concept_id = c.concept_id and cn.concept_name_type = 'FULLY_SPECIFIED'
+--        WHERE spstatus.sample_id = sp.sample_id AND spstatus.status = 'TRANSPORT_TEMPERATURE'
+--    ) AS "transport_temperature",
 
     (SELECT GROUP_CONCAT(DISTINCT diagnosis_concept_name.name)
      	FROM visit v

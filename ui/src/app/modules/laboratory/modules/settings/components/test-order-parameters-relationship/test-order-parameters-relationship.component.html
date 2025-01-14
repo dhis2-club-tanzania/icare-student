@@ -28,13 +28,13 @@
         ></mat-progress-bar>
         <div *ngIf="params?.conceptReferenceTerms && params?.selectedTestOrder">
           <!-- {{ params?.conceptReferenceTerms | json }} -->
-          <div class="w-100" style="max-height: 200px; overflow: auto">
-            <table class="table mb-2">
+          <div class="w-100" style="max-height: 350px; overflow: auto">
+            <table class="table mb-2 mat-elevation-z1">
               <thead>
                 <tr>
                   <th>SN</th>
                   <th>Parameter</th>
-                  <th>Mapping</th>
+                  <th>Mapping (Relationship)</th>
                 </tr>
               </thead>
               <tbody>

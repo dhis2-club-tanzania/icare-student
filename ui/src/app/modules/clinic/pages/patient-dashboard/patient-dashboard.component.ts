@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of, zip } from "rxjs";
 import { AppState } from "src/app/store/reducers";
 
 import { loadFormPrivilegesConfigs } from "src/app/store/actions/form-privileges-configs.actions";
@@ -24,8 +24,15 @@ import { VisitObject } from "src/app/shared/resources/visits/models/visit-object
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import { LocationGet } from "src/app/shared/resources/openmrs";
 import { getCurrentLocation } from "src/app/store/selectors";
-import { map } from "rxjs/operators";
+import { catchError, map } from "rxjs/operators";
 import { getAllObservations } from "src/app/store/selectors/observation.selectors";
+import { MatDialog } from "@angular/material/dialog";
+import { DischargePatientModalComponent } from "src/app/shared/components/discharge-patient-modal/discharge-patient-modal.component";
+import { addBillStatusOnBedOrders } from "src/app/modules/inpatient/helpers/sanitize-bed-orders.helper";
+import { getCurrentPatient } from "src/app/store/selectors/current-patient.selectors";
+import { BillingService } from "src/app/modules/billing/services/billing.service";
+import { PaymentService } from "src/app/modules/billing/services/payment.service";
+import { VisitsService } from "src/app/shared/resources/visits/services";
 
 @Component({
   selector: "app-patient-dashboard",
@@ -48,10 +55,16 @@ export class PatientDashboardComponent implements OnInit {
   visitEndingControlStatusesConceptUuid$: Observable<string>;
   observations$: Observable<any>;
   IPDRoundConceptUuid$: Observable<any>;
+  patient$: Observable<any>;
+  patientBillingDetails$: Observable<any>;
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
-    private systemSettingsService: SystemSettingsService
+    private systemSettingsService: SystemSettingsService,
+    private dialog: MatDialog,
+    private visitService: VisitsService,
+    private billingService: BillingService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -120,7 +133,7 @@ export class PatientDashboardComponent implements OnInit {
       );
     const patientId = this.route.snapshot.params["patientID"];
     this.store.dispatch(loadFormPrivilegesConfigs());
-    this.store.dispatch(loadRolesDetails());
+    // this.store.dispatch(loadRolesDetails());
     // this.store.dispatch(loadActiveVisit({ patientId }));
     this.store.dispatch(loadCurrentPatient({ uuid: patientId }));
     this.privilegesConfigs$ = this.store.select(getFormPrivilegesConfigs);
@@ -133,11 +146,77 @@ export class PatientDashboardComponent implements OnInit {
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
     this.activeVisit$ = this.store.pipe(select(getActiveVisit));
     this.provider$ = this.store.select(getProviderDetails);
-    this.currentLocation$ = this.store.select(getCurrentLocation);
+    this.currentLocation$ = this.store.select(getCurrentLocation(false));
     this.visitEndingControlStatusesConceptUuid$ =
       this.systemSettingsService.getSystemSettingsByKey(
         `iCare.visits.settings.controlVisitsEndingStatuses.ConceptUuid`
       );
     this.observations$ = this.store.select(getAllObservations);
+    this.activeVisit$.subscribe((response: any) => {
+      if (response && response?.isAdmitted) {
+        // console.log(response);
+        this.patient$ = this.store.select(getCurrentPatient);
+        this.patientBillingDetails$ = zip(
+          this.visitService.getActiveVisit(patientId, false),
+          this.billingService.getPatientBills(patientId),
+          this.paymentService.getPatientPayments(patientId)
+        ).pipe(
+          map((res) => {
+            const visit = res[0];
+            const bills = res[1];
+            const payments = res[2];
+
+            return {
+              visit,
+              bills: bills.filter((bill) => !bill.isInsurance),
+              payments,
+              paymentItemCount: payments
+                .map((payment) => payment?.items?.length || 0)
+                .reduce((sum, count) => sum + count, 0),
+              pendingPayments: bills.filter((bill) => bill.isInsurance),
+            };
+          }),
+          catchError((error) => {
+            return of(null);
+          })
+        );
+      }
+    });
+  }
+
+  dischargePatient(
+    dischargeInfo: { discharge: boolean; invoice: any },
+    activeVisit: any,
+    provider: any,
+    patientBillingDetails: any,
+    currentPatient: any,
+    currentUser: any
+  ): void {
+    const bedOrders =
+      activeVisit &&
+      activeVisit.otherOrders &&
+      activeVisit.otherOrders?.length > 0
+        ? activeVisit.otherOrders.filter(
+            (otherOrder) =>
+              otherOrder?.order?.orderType?.name.toLowerCase() === "bed order"
+          ) || []
+        : [];
+    const bedOrdersWithBillStatus = addBillStatusOnBedOrders(
+      bedOrders,
+      patientBillingDetails?.bills,
+      activeVisit
+    );
+    const lastBedOrder = bedOrdersWithBillStatus[0];
+    this.dialog.open(DischargePatientModalComponent, {
+      minWidth: "50%",
+      data: {
+        ...activeVisit,
+        provider,
+        currentUser,
+        patient: currentPatient?.patient,
+        lastBedOrder,
+        invoice: dischargeInfo?.invoice,
+      },
+    });
   }
 }
