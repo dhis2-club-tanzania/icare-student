@@ -296,8 +296,8 @@ export class VisitsService {
     includeInactive?: boolean,
     onlyInsurance?: boolean,
     queryParam?: string,
-    startIndex?: number,
-    limit?: number,
+    startIndex: number= 0,
+    limit: number = 10,
     orderType?: string,
     orderStatus?: string,
     orderStatusCode?: string,
@@ -353,6 +353,7 @@ export class VisitsService {
     if (includeDeadPatients && includeDeadPatients === true) {
       parametersString += `&includeDeadPatients=true`;
     }
+    console.log('Constructed Query Parameters:', parametersString);
     //
     return (
       locationUuids?.length > 0

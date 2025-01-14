@@ -70,6 +70,7 @@ export class EClaimHomeComponent implements OnInit {
     this.loadedData = false;
     this.visitService.getAllVisits(null, null, true).subscribe(
       (visits) => {
+        console.log('Fetched Active Visits:', visits);
         this.dataSource = new MatTableDataSource(visits);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -77,6 +78,7 @@ export class EClaimHomeComponent implements OnInit {
         this.loadedData = true;
       },
       (error) => {
+        console.error('Error fetching active visits:', error);
         this.loadingData = false;
         this.loadedData = true;
         this.loadingDataError = error;

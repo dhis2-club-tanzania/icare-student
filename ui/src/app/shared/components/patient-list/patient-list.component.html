@@ -123,14 +123,7 @@
       <!-- Tabular list -->
       <div
         class="tabular-patient-list"
-        *ngIf="
-          isTabularList &&
-          params?.visits &&
-          params?.visits.length > 0 &&
-          ((paymentTypeSelected &&
-            visit?.visit?.paymentType === paymentTypeSelected) ||
-            !paymentTypeSelected)
-        "
+        *ngIf="params?.visits && params?.visits.length > 0"
       >
         <app-patients-tabular-list
           [shouldShowParentLocation]="shouldShowParentLocation"
