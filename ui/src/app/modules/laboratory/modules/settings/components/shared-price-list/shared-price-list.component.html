@@ -134,15 +134,14 @@
               class="item-price"
               *ngFor="let paymentScheme of paymentTypesAndSchemes"
             >
-              <!-- {{ paymentScheme?.paymentType | json }} -->
-              <!-- {{ pricingItem | json }} -->
-              <!-- <app-pricing-item
-                [pricingItem]="pricingItem"
-                [paymentScheme]="paymentScheme"
-                [paymentType]="paymentScheme?.paymentType"
-                (saveItemPrice)="onSaveItem($event)"
-              >
-              </app-pricing-item> -->
+            <app-pricing-item
+            [pricingItem]="pricingItem"
+            [paymentScheme]="paymentScheme"
+            [paymentType]="paymentScheme?.paymentType"
+            (saveItemPrice)="onSaveItem($event)"
+          >
+          </app-pricing-item>
+          
             </td>
           </tr>
 
