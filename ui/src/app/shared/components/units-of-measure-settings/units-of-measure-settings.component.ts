@@ -98,5 +98,21 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
       });
   }
 
-  onEdit(concept: ConceptGet): void {}
+  // fixed error on edit-unit-of-measure//
+  onEdit(event: Event, drug): void {
+    this.dialog
+    .open(ManageUnitOfMeasureModalComponent, {
+      minWidth: "40%",
+      data: {
+       
+      },
+    })
+    .afterClosed()
+    .subscribe((shouldReloadData) => {
+      if (shouldReloadData) {
+        this.getUnitsOfMeasure();
+      }
+       });
+    }
+//end of fixed bug
 }
