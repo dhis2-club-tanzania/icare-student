@@ -18,6 +18,17 @@
 >
   <div class="d-flex justify-content-between mb-2">
     <div class="h4 font-weight-normal">Price List</div>
+    <!-- Download Button -->
+    <button
+      mat-flat-button
+      color="primary"
+      style="height: 40px; margin-right: 10px"
+      (click)="downloadExcel()"
+    >
+      <mat-icon>download</mat-icon>
+      <span>Download</span>
+    </button>
+
     <button
       mat-flat-button
       color="primary"

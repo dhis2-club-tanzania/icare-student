@@ -6,6 +6,7 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+import * as XLSX from 'xlsx';
 import { MatSelectChange } from "@angular/material/select";
 import { select, Store } from "@ngrx/store";
 import { find } from "lodash";
@@ -261,6 +262,48 @@ export class PriceListComponent implements OnInit, OnChanges {
       }
     });
   }
+
+
+
+
+  /** START CODES FOR  DOWNLOADING METHOD */
+
+  downloadExcel(): void {
+    this.pricingItems$.subscribe((allPricingItems) => {
+      if (allPricingItems && allPricingItems.length > 0) {
+        const worksheetData = allPricingItems.map(item => ({
+          'Item Name': item.display,  
+          'Price': item.prices      
+        }));
+
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
+
+        const maxItemNameLength = Math.max(...worksheetData.map(item => item['Item Name'].length));
+        const maxPriceLength = Math.max(...worksheetData.map(item => item['Price'].toString().length));
+
+        ws['!cols'] = [
+          { width: maxItemNameLength + 2 },  
+          { width: Math.min(maxPriceLength + 2, 15) }, 
+        ];
+
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Price List');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(data);
+        link.download = 'Price_List.xlsx';  
+        link.click();  
+      } else {
+        console.warn('No pricing items to download');
+      }
+    });
+  }
+  
+/** END CODES FOR  DOWNLOADING METHOD */
 
   onFormUpdate(
     formValue: FormValue,
