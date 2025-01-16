@@ -275,14 +275,16 @@ public class VisitWrapper {
 		}
 		return insuranceService;
 	}
-	
+	// here we see all datetime format
 	public Map<String, Object> toMap() {
 		Map<String, Object> visitMap = new HashMap<>();
 		visitMap.put("uuid",visit.getUuid());
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		visitMap.put("startDatetime", dateFormat.format(visit.getStartDatetime()));
-		visitMap.put("stopDatetime", null);
+		visitMap.put("admission", dateFormat.format(visit.getStartDatetime()));
+		visitMap.put("discharge", dateFormat.format(visit.getStopDatetime()));
+		visitMap.put("stopDatetime", dateFormat.format(visit.getStopDatetime()));
 		visitMap.put("patient", (new PatientWrapper(visit.getPatient())).toMap());
 
 		List<Map<String, Object>> attributesMap = new ArrayList<>();
@@ -323,9 +325,11 @@ public class VisitWrapper {
 			encounterMap.put("uuid",encounter.getUuid());
 			encounterMap.put("id",encounter.getEncounterId());
 			encounterMap.put("encounterDateTime",encounter.getEncounterDatetime());
+			encounterMap.put("admission1",encounter.getEncounterDatetime());
 			encounterMap.put("voidedReason",encounter.getVoidReason());
 			encounterMap.put("voided",encounter.getVoided());
 			encounterMap.put("dateVoided",encounter.getDateVoided());
+			encounterMap.put("discharge1",encounter.getDateVoided());
 			encounterMap.put("createdOn",encounter.getDateCreated());
 			encounterMap.put("changedOn",encounter.getDateChanged());
 

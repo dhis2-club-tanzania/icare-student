@@ -17,6 +17,13 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
   <div *ngIf="params?.visits?.length && !loadingData && params?.provider">
+    
+    <div class="notification">
+      <h4>
+        Patient Status: {{ patientStatus }}
+      </h4>
+    </div>
+    
     <mat-vertical-stepper [linear]="false" #stepper>
       <mat-step *ngFor="let visit of params?.visits">
         <ng-template matStepLabel>
@@ -26,9 +33,18 @@
             to {{ visit?.visit?.stopDatetime | date: "dd-MM-yyyy HH:mm:ss" }}
           </span>
           <span *ngIf="!visit?.visit?.stopDatetime">
-            <i>(On going visit)</i>
+            <i>(Admitted)</i>
           </span>
+
+          <span *ngIf="visit?.visit?.stopDatetime && visit?.visit?.startDatetime">
+            <i>(Discharged)</i>
+          </span>
+
         </ng-template>
+
+        
+
+
 
         <!-- <div *ngFor="let form of params?.customForms">
 

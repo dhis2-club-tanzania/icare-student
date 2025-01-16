@@ -82,10 +82,37 @@ export class PatientHistoryComponent implements OnInit {
     private systemSettingsService: SystemSettingsService,
     private observationService: ObservationService
   ) {}
+//data has to be initialized on start to work
+  params: any;
+  get patientStatus(): string {
+    if (this.params?.visits?.some((visit: any) => !visit.visit.stopDatetime)) {
+      return 'Admitted';
+    }
+    if (
+      this.params?.visits?.every(
+        (visit: any) => visit.visit.startDatetime && visit.visit.stopDatetime
+      )
+    ) {
+      return 'Discharged';
+    }
+    return 'Unknown';
+  }
+
 
   ngOnInit(): void {
     this.loadData();
+
+    this.params = {
+      visits: [
+        { visit: this.visits$ },
+      ],
+    };
   }
+
+
+  
+
+
 
   private loadData(): void {
     this.loadingData = true;
@@ -147,6 +174,11 @@ export class PatientHistoryComponent implements OnInit {
       .pipe(
         map((response) => {
           this.loadingData = false;
+
+
+
+
+          
           if (!response?.error) {
             return response?.map((visit) => {
               let obs = [];
@@ -204,6 +236,14 @@ export class PatientHistoryComponent implements OnInit {
   //       }
   //     });
   // }
+
+
+ // params: any; // Replace with actual type
+ // loadingData: boolean = false;
+
+  
+
+
 
   onDoctorsIPDRoundCommentsFormUpdate(formValue: FormValue): void {
     console.log(formValue.getValues());
