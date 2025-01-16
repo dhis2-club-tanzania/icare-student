@@ -98,7 +98,7 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
       });
   }
 
-  // fixed error on edit-unit-of-measure//
+  // fixed error on edit-unit-of-measure
   onEdit(event: Event, drug): void {
     this.dialog
     .open(ManageUnitOfMeasureModalComponent, {
