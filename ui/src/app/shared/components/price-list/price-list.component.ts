@@ -457,7 +457,28 @@ export class PriceListComponent implements OnInit, OnChanges {
   // START CODES FOR UPLOADING METHOD 
 
 
-
+    uploadExcel(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (!target.files?.length) return;
+    const file = target.files[0];
+    this.selectedFileName = file.name;
+    
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+      // Parse workbook
+      const workbook = XLSX.read(data, { type: 'array' });
+      // Access first worksheet
+      const ws = workbook.Sheets[workbook.SheetNames[0]];
+      // Convert to JSON
+      const fileContent = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      console.log(fileContent);
+      // Additional processing here
+      this.parsedData = fileContent;
+      console.log('Processed data:', this.parsedData);
+    };
+    reader.readAsArrayBuffer(file);
+  }
 
 
   // END CODES FOr UPLOADING METHOD
