@@ -20,9 +20,11 @@ import { CurrentUserDetailsService } from "..";
 })
 export class AuthService {
   private _session: Subject<any> = new ReplaySubject(1);
+  cookieValue: any; // cookie value declaration
   constructor(
     private httpClient: OpenmrsHttpClientService,
-    private currentUserService: CurrentUserDetailsService
+    private currentUserService: CurrentUserDetailsService,
+    private cookieService : CookieService // imported and injected CookieService in the constructor
   ) {
     this.getSession().subscribe(
       (session) => {
@@ -53,6 +55,8 @@ export class AuthService {
 
   clearCookie() {
     var cookies = document.cookie.split("; ");
+    console.log("cookies" , document.cookie); // consoling the available cookies in the browser
+    this._cookieService.deleteAll() // deleting all the cookies
     for (var c = 0; c < cookies.length; c++) {
       var d = window.location.hostname.split(".");
       while (d.length > 0) {
@@ -78,6 +82,7 @@ export class AuthService {
     sessionStorage.clear();
 
     this.clearCookie();
+  this.cookieService.delete("JSESSIONID") //deleted the cookie present when new user tries to log in"
 
     return this.httpClient.login(credentialsToken).pipe(
       switchMap((loginResponse) => {
@@ -123,6 +128,8 @@ export class AuthService {
         sessionStorage.clear();
         localStorage.clear();
         this.clearCookie();
+        this.cookieService.set("JSESSIONID" ,"0"); // setting the JSESSION cookie to 0 when user logs out
+        this.cookieValue = this.cookieService.get("JSESSIONID") //printing the sessionid
       })
     );
   }
