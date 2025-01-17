@@ -5,6 +5,9 @@ import {
   OnInit,
   SimpleChanges,
 } from "@angular/core";
+
+import { combineLatest } from "rxjs";
+import { take } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSelectChange } from "@angular/material/select";
 import { select, Store } from "@ngrx/store";
@@ -40,7 +43,10 @@ import { ItemPriceInterface } from "../../../modules/maintenance/models/item-pri
 import { PricingItemInterface } from "../../../modules/maintenance/models/pricing-item.model";
 import { ItemPriceService } from "../../services/item-price.service";
 import { PricingService } from "../../services/pricing.service";
-import { GoogleAnalyticsService } from "src/app/google-analytics.service";
+import { all } from "cypress/types/bluebird";
+import * as XLSX from 'xlsx';
+import { ActivatedRoute } from "@angular/router";
+
 @Component({
   selector: "app-price-list",
   templateUrl: "./price-list.component.html",
@@ -49,8 +55,8 @@ import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 export class PriceListComponent implements OnInit, OnChanges {
   @Input() paymentTypes: PaymentTypeInterface[];
   @Input() departmentId: string;
-  @Input() hideDepartmentsSelection: boolean;
-  currentDepartmentId: string;
+  currentDepartmentId: number;
+
   priceList: any[];
   priceList$: Observable<any[]>;
 
@@ -79,24 +85,24 @@ export class PriceListComponent implements OnInit, OnChanges {
   selectedPriceListDepartment: any;
   errors: any[] = [];
   isDrug: boolean = false;
+  isUploading: boolean = false;
+  // isDownloading: boolean = false;
 
   constructor(
     private dialog: MatDialog,
     private itemPriceService: ItemPriceService,
     private pricingService: PricingService,
     private store: Store<AppState>,
-    private googleAnalyticsService: GoogleAnalyticsService
-  ) {}
+    private route: ActivatedRoute
+  ) {
+    this.currentDepartmentId = Number(this.route.snapshot.paramMap.get('departmentId'));
+  }
 
   ngOnInit() {
-    this.currentDepartmentId = this.departmentId;
-    this.isDrug =
-      this.currentDepartmentId && this.currentDepartmentId == "Drug"
-        ? true
-        : false;
-
+    this.currentDepartmentId = parseInt(this.departmentId, 10);
     this.loadData();
-    this.priceListDepartments$ =
+    const newLocal = this;
+    newLocal.priceListDepartments$ =
       this.itemPriceService.getDepartmentsByMappingSearchQuery("PRICE_LIST");
   }
 
@@ -115,7 +121,7 @@ export class PriceListComponent implements OnInit, OnChanges {
           limit: 25,
           startIndex: 0,
           searchTerm: null,
-          conceptSet: this.currentDepartmentId,
+          conceptSet: this.currentDepartmentId.toString(),
           isDrug: this.isDrug,
         },
       })
@@ -152,11 +158,11 @@ export class PriceListComponent implements OnInit, OnChanges {
   onCreate(e, pricingItems: PricingItemInterface[]): void {
     e.stopPropagation();
     const dialog = this.dialog.open(ManageItemPriceComponent, {
-      minWidth: "50%",
+      width: "50%",
       panelClass: "custom-dialog-container",
       data: { pricingItems },
     });
-    this.trackActionForAnalytics("Add Price List: Open");
+
     // TODO: Find best way in order to stop subscribing here
     dialog.afterClosed().subscribe((results) => {
       if (results) {
@@ -232,7 +238,7 @@ export class PriceListComponent implements OnInit, OnChanges {
     e.stopPropagation();
     this.itemInEditing = {
       ...this.itemInEditing,
-      [`${paymentScheme.uuid}_${priceItem.uuid}`]: false,
+      [${paymentScheme.uuid}_${priceItem.uuid}]: false,
     };
   }
 
@@ -253,7 +259,7 @@ export class PriceListComponent implements OnInit, OnChanges {
                 startIndex: this.currentPage,
                 searchTerm:
                   this.itemSearchTerm !== "" ? this.itemSearchTerm : null,
-                conceptSet: this.currentDepartmentId,
+                conceptSet: this.currentDepartmentId.toString(),
               },
             })
           );
@@ -269,10 +275,10 @@ export class PriceListComponent implements OnInit, OnChanges {
   ) {
     const formValues = formValue.getValues();
     const price = formValues
-      ? formValues[`${paymentSchemeUuid}_${priceItem.uuid}`]?.value
+      ? formValues[${paymentSchemeUuid}_${priceItem.uuid}]?.value
       : undefined;
 
-    this.itemForSaving[`${paymentSchemeUuid}_${priceItem.uuid}`] = {
+    this.itemForSaving[${paymentSchemeUuid}_${priceItem.uuid}] = {
       item: {
         uuid: priceItem.uuid,
       },
@@ -281,6 +287,7 @@ export class PriceListComponent implements OnInit, OnChanges {
       price,
     };
   }
+
   onSelectPaymentType(selectionChange: MatSelectChange) {
     if (selectionChange) {
       this.store.dispatch(
@@ -310,7 +317,6 @@ export class PriceListComponent implements OnInit, OnChanges {
   onSearch(e: any, departmentId: string): void {
     e.stopPropagation();
     this.itemSearchTerm = e?.target?.value;
-    const encodedSearchTerm = encodeURIComponent(this.itemSearchTerm);
     if (
       (this.itemSearchTerm && this.itemSearchTerm.length >= 3) ||
       this.itemSearchTerm === ""
@@ -320,27 +326,304 @@ export class PriceListComponent implements OnInit, OnChanges {
         loadPricingItems({
           filterInfo: {
             limit: 25,
-            startIndex: 0,
-            searchTerm: this.itemSearchTerm !== "" ? encodedSearchTerm : null,
+            startIndex: this.currentPage,
+            searchTerm: this.itemSearchTerm !== "" ? this.itemSearchTerm : null,
             conceptSet: departmentId,
-            isDrug: this.isDrug,
           },
         })
       );
     }
   }
+
   getSelectedDepartment(event: MatSelectChange): void {
     this.selectedPriceListDepartment = event?.value;
     this.isDrug = event?.value == "Drug";
     this.currentDepartmentId = this.selectedPriceListDepartment?.uuid;
     this.loadData();
   }
-  trackActionForAnalytics(eventname: any) {
-    // Send data to Google Analytics
-    this.googleAnalyticsService.sendAnalytics(
-      "Pharmacy",
-      eventname,
-      "Pharmacy"
+
+ 
+  
+  // START CODES FOR DOWNLOADING METHOD
+
+  downloadExcel(): void {
+    // Combine latest values from observables using combineLatest
+    combineLatest([
+      this.pricingItems$,
+      this.itemPriceEntities$
+    ]).pipe(
+      take(1)  // Take only the first emission
+    ).subscribe(([pricingItems, priceEntities]) => {
+      if (pricingItems && pricingItems.length > 0) {
+        // Prepare worksheet data
+        const worksheetData = pricingItems.map((item, index) => {
+          // Get all prices for this item
+          const itemPrices = item.prices || [];
+          
+          // Create the base data object
+          const rowData = {
+            '#': index + 1,
+            'Item': item.display || item.name,
+            // Cash payment categories
+            'Cash - Normal track': this.findPrice(itemPrices, 'Normal track'),
+            'Cash - Fast Track': this.findPrice(itemPrices, 'Fast Track'),
+            'Cash - Post Graduate': this.findPrice(itemPrices, 'Post Graduate'),
+            'Cash - Undergraduate': this.findPrice(itemPrices, 'Undergraduate'),
+            // NHIF category
+            'NHIF:1001': this.findPrice(itemPrices, 'NHIF:1001'),
+            // Gepg category
+            'Gepg': this.findPrice(itemPrices, 'Gepg')
+          };
+  
+          return rowData;
+        });
+  
+        // Create worksheet
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
+  
+        // Set column widths
+        ws['!cols'] = [
+          { wch: 5 },    // #
+          { wch: 40 },   // Item name
+          { wch: 15 },   // Normal track
+          { wch: 15 },   // Fast Track
+          { wch: 15 },   // Post Graduate
+          { wch: 15 },   // Undergraduate
+          { wch: 15 },   // NHIF
+          { wch: 15 }    // Gepg
+        ];
+  
+        // Add header styling
+        const headerRange = XLSX.utils.decode_range(ws['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const address = XLSX.utils.encode_col(C) + "1";
+          if (!ws[address]) continue;
+          ws[address].s = {
+            fill: { fgColor: { rgb: "CCCCCC" } },
+            font: { bold: true }
+          };
+        }
+  
+        // Create workbook and append worksheet
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Price List');
+  
+        // Generate excel file
+        const excelBuffer: ArrayBuffer = XLSX.write(wb, { 
+          bookType: 'xlsx', 
+          type: 'array' 
+        });
+        
+        // Create blob and trigger download
+        const data = new Blob([excelBuffer], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(data);
+        link.download = Drug_Price_List_${new Date().toISOString().split('T')[0]}.xlsx;
+        link.click();
+        
+        // Clean up
+        URL.revokeObjectURL(link.href);
+      } else {
+        console.warn('No pricing items to download');
+        // Optionally show user feedback
+        this.errors = [...this.errors, {
+          error: {
+            message: 'No pricing items available to download',
+            detail: 'Please ensure there are items in the price list'
+          }
+        }];
+      }
+    });
+  }
+  
+  // Helper method to find price by scheme name
+  private findPrice(prices: any[], schemeName: string): number | string {
+    const price = prices.find(p => 
+      p.paymentScheme?.name === schemeName || 
+      p.paymentScheme?.display === schemeName
+    );
+    return price ? price.price : '';
+  }
+
+  // END CODES FOR DOWNLOADING METHOD
+
+
+
+  // START CODES FOR UPLOADING METHOD 
+
+  uploadExcel(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Track analytics
+    this.trackActionForAnalytics("Upload Price List Excel");
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      try {
+        // Read the Excel file
+        const workBook: XLSX.WorkBook = XLSX.read(e.target.result, { type: 'array' });
+        const workSheet: XLSX.WorkSheet = workBook.Sheets[workBook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(workSheet);
+
+        // Get existing pricing items for reference
+        this.pricingItems$.pipe(take(1)).subscribe(pricingItems => {
+          const priceUpdates = [];
+
+          jsonData.forEach((row: any) => {
+            // Find matching item by name
+            const matchingItem = pricingItems.find(item => 
+              item.display === row['Item'] || item.name === row['Item']
+            );
+
+            if (matchingItem) {
+              // Process Cash prices
+              if (row['Cash - Normal track'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Normal track',
+                  row['Cash - Normal track']
+                ));
+              }
+
+              if (row['Cash - Fast Track'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Fast Track',
+                  row['Cash - Fast Track']
+                ));
+              }
+
+              if (row['Cash - Post Graduate'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Post Graduate',
+                  row['Cash - Post Graduate']
+                ));
+              }
+
+              if (row['Cash - Undergraduate'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Undergraduate',
+                  row['Cash - Undergraduate']
+                ));
+              }
+
+              // Process NHIF price
+              if (row['NHIF:1001'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'NHIF:1001',
+                  row['NHIF:1001']
+                ));
+              }
+
+              // Process Gepg price
+              if (row['Gepg'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Gepg',
+                  row['Gepg']
+                ));
+              }
+            }
+          });
+
+          // Save all price updates
+          if (priceUpdates.length > 0) {
+            this.saveBatchPriceUpdates(priceUpdates);
+          } else {
+            this.errors = [...this.errors, {
+              error: {
+                message: 'No valid price updates found',
+                detail: 'Please check the Excel file format and data'
+              }
+            }];
+          }
+        });
+
+      } catch (error) {
+        console.error('Error processing Excel file:', error);
+        this.errors = [...this.errors, {
+          error: {
+            message: 'Failed to process Excel file',
+            detail: error.message
+          }
+        }];
+      }
+    };
+
+    reader.onerror = (error) => {
+      this.errors = [...this.errors, {
+        error: {
+          message: 'Failed to read Excel file',
+          detail: error
+        }
+      }];
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+  trackActionForAnalytics(arg0: string) {
+    throw new Error("Method not implemented.");
+  }
+
+  private createPriceUpdate(itemUuid: string, schemeName: string, price: any): any {
+    const scheme = this.paymentTypesAndSchemes.find(s => 
+      s.name === schemeName || s.display === schemeName
+    );
+
+    if (!scheme) return null;
+
+    return {
+      item: { uuid: itemUuid },
+      paymentScheme: { uuid: scheme.uuid },
+      paymentType: scheme.paymentType,
+      price: price !== '' ? parseFloat(price) : 0
+    };
+  }
+
+  private saveBatchPriceUpdates(updates: any[]): void {
+    const validUpdates = updates.filter(update => update !== null);
+    
+    if (validUpdates.length === 0) {
+      this.errors = [...this.errors, {
+        error: {
+          message: 'No valid price updates to save',
+          detail: 'Please check the payment scheme names in your Excel file'
+        }
+      }];
+      return;
+    }
+
+    this.pricingService.saveItemPrice(validUpdates).pipe(
+      take(1)
+    ).subscribe(
+      (response) => {
+        if (response?.error) {
+          this.errors = [...this.errors, {
+            error: {
+              message: 'Failed to save price updates',
+              detail: response.error
+            }
+          }];
+        } else {
+          // Refresh the price list
+          this.loadData();
+        }
+      },
+      (error) => {
+        this.errors = [...this.errors, {
+          error: {
+            message: 'Failed to save price updates',
+            detail: error
+          }
+        }];
+      }
     );
   }
 }
