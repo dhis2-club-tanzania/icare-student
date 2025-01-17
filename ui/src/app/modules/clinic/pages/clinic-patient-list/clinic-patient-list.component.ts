@@ -30,6 +30,7 @@ export class ClinicPatientListComponent implements OnInit {
   labTestOrderType$: Observable<any>;
   showAllPatientsTab$: Observable<any>;
   userPrivileges$: Observable<any>;
+  savedSelectedTab: any;
   constructor(
     private store: Store<AppState>,
     private systemSettingsService: SystemSettingsService,
