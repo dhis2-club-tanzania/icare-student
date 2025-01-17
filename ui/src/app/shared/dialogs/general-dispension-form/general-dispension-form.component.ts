@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { getGenericDrugPrescriptionsFromVisit } from "../../helpers/visits.helper";
 import { uniqBy, keyBy } from "lodash";
 import { Observable } from "rxjs";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
@@ -201,6 +202,23 @@ export class GeneralDispensingFormComponent implements OnInit {
   }
 
   saveOrder(e: any, conceptFields: any) {
+    
+    const prescriptions = getGenericDrugPrescriptionsFromVisit(this.currentVisit, this.orderType);
+        let drug_names: string[] = [];;
+
+    // Accessing the values
+    prescriptions.forEach(item => {
+      if (this.specificDrugConceptUuid in item.obs){
+        drug_names.push(item.obs[this.specificDrugConceptUuid].comment);
+        console.log(item.obs[this.specificDrugConceptUuid]);
+        
+      }
+    });
+    prescriptions.forEach(item => {
+      if(item.obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display) {
+        drug_obs = item.obs
+      }
+    })
     if (!this.formValues?.drug?.value) {
       this.errors = [];
       setTimeout(() => {
