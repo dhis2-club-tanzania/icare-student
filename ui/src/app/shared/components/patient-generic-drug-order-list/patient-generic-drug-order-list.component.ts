@@ -53,6 +53,7 @@ export class PatientGenericDrugOrderListComponent implements OnInit {
   isThereDiagnosisProvided$: Observable<boolean>;
   drugOrders$: Observable<any>;
   drugOrders: any[];
+  isDispensed?: boolean;
 
   drugOrdersKeyedByEncounter: any = {};
 
@@ -242,6 +243,7 @@ export class PatientGenericDrugOrderListComponent implements OnInit {
     });
 
     dialog.afterClosed().subscribe(() => {
+      order.isDispensed=true;
       // this.store.dispatch(
       //   loadActiveVisit({ patientId: this.visit?.visit?.patient?.uuid })
       // );

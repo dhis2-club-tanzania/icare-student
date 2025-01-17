@@ -90,6 +90,33 @@ export class CurrentPrescriptionComponent implements OnInit {
   }
 
   stopDrugOrder(e: Event, drugOrder: any, drugName: string) {
+    if (drugOrder.isDispensed) {
+      const confirmDialog =this.dialog.open(SharedConfirmationComponent, {
+        minWidth: "25%",
+        data: {
+          modalTitle: `Action Not Allowed`,
+          modalMessage: `${drugName} has already been dispensed and cannot be stopped.`,
+        },
+        disableClose: false,
+      });
+      confirmDialog.afterClosed().subscribe((confirmationObject) => {
+        if (confirmationObject?.confirmed) {
+          this.encounterService
+            .voidEncounterWithReason({
+              ...drugOrder?.encounter,
+              voidReason: confirmationObject?.remarks || "",
+            })
+            .subscribe((response) => {
+              if (!response?.error) {
+                this.loadVisit.emit(this.visit);
+              }
+              if (response?.error) {
+                this.errors = [...this.errors, response?.error];
+              }
+            });
+        }
+      });;
+    }
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
       minWidth: "25%",
       data: {
