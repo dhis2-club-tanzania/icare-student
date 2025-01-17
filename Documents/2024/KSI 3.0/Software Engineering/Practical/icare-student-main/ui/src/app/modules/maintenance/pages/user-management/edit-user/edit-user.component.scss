@@ -1,0 +1,120 @@
+mat-form-field {
+  width: 100%;
+}
+
+button {
+  margin: 14px 5px 5px 5px;
+}
+.cancel {
+  color: rgb(255, 152, 0);
+}
+
+mat-form-field {
+  line-height: normal;
+}
+mat-form-field:hover {
+  cursor: pointer;
+}
+mat-form-field:active {
+  cursor: auto;
+}
+input {
+  height: 100%;
+  margin-top: 10px;
+  appearance: textfield;
+  padding: 0px;
+  position: relative;
+  width: 100%;
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0);
+  color: rgba(0, 0, 0, 0.87);
+  cursor: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+input:hover {
+  cursor: pointer;
+}
+
+input:active {
+  cursor: auto;
+}
+
+p {
+  margin-top: 14px;
+}
+.disabledForm:hover {
+  cursor: not-allowed;
+}
+.demo-table {
+  width: 100%;
+  max-height: 40%;
+}
+
+.mat-row .mat-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-row:hover .mat-cell {
+  border-color: currentColor;
+}
+
+.demo-row-is-clicked {
+  font-weight: bold;
+}
+
+.table-roles,
+.table-locations {
+  height: 400px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.mat-cell-header,
+th {
+  color: black;
+  font-weight: 500;
+  font-size: medium;
+}
+.selected-btn {
+  background-color: #cccccc;
+  color: #000000;
+}
+::ng-deep .rowColor {
+  color: white !important;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}

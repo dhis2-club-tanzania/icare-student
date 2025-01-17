@@ -1,0 +1,98 @@
+<div
+  class="summary-container"
+  *ngIf="{
+    samplesLoaded: samplesLoaded$ | async,
+    samplesLoading: samplesLoading$ | async,
+    samplesCollected: samplesCollected$ | async,
+    samplesWaitingAcceptance: samplesWaitingAcceptance$ | async,
+    samplesAccepted: samplesAccepted$ | async,
+    samplesToCollect: samplesToCollect$ | async,
+    completedSamples: completedSamples$ | async,
+    samplesRejected: samplesRejected$ | async,
+    patientsWithActiveVisits: patientsWithActiveVisits$ | async,
+    allLabSamples: allLabSamples$ | async
+  } as state"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!state?.samplesLoaded && state?.samplesLoading"
+  ></mat-progress-bar>
+
+  <span class="p-2"
+    >Sample Status as of <b>{{ visitsParameters?.startDate | date }} </b>|
+  </span>
+
+  <!-- Total samples -->
+
+  <span class="status-span">
+    <span>Total Samples:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.allLabSamples?.length }}</span
+    >
+  </span>
+
+  <!-- Collected -->
+  <span class="status-span">
+    <span>Collected:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.samplesCollected?.length }}</span
+    >
+  </span>
+
+  <!-- To collect -->
+
+  <span class="status-span">
+    <span>Awaiting Collection:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{
+        state?.allLabSamples?.length - state?.samplesCollected?.length
+      }}</span
+    >
+  </span>
+
+  <!-- Accepted -->
+  <span class="status-span">
+    <span>Accepted:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.samplesAccepted?.length }}</span
+    >
+  </span>
+
+  <!-- Waiting -->
+  <span class="status-span">
+    <span>Awaiting Acceptance:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.samplesWaitingAcceptance?.length }}</span
+    >
+  </span>
+
+  <!-- Rejected -->
+  <span class="status-span">
+    <span>Rejected:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.samplesRejected?.length }}</span
+    >
+  </span>
+
+  <span class="status-span" style="float: right">
+    <span>Active Patients:</span
+    ><span
+      class="count-of-items"
+      *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+      >{{ state?.patientsWithActiveVisits?.length }}</span
+    >
+  </span>
+</div>
+<hr />

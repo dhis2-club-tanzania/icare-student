@@ -1,0 +1,352 @@
+<div
+  *ngIf="{
+    testResultsMapping: testResultsMapping$ | async,
+    externalSystemsReferenceConceptUuid:
+      externalSystemsReferenceConceptUuid$ | async
+  } as sampleParams"
+>
+  <mat-progress-bar
+    *ngIf="
+      !sampleParams?.testResultsMapping ||
+      !sampleParams?.externalSystemsReferenceConceptUuid
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving data</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="
+      sampleParams?.testResultsMapping &&
+      sampleParams?.externalSystemsReferenceConceptUuid
+    "
+  >
+    <div class="p-2">
+      <div class="mb-2">
+        <app-shared-samples-summary-dashboard
+          [datesParams]="datesParameters"
+          [dashboardSingleValueDataSetsReferenceKey]="
+            'iCare.laboratory.sampleResults.dashboard.settings.samples.singleValue'
+          "
+        ></app-shared-samples-summary-dashboard>
+      </div>
+      <app-shared-samples-list
+        [tabType]="'view-results'"
+        [LISConfigurations]="LISConfigurations"
+        [labSamplesDepartments]="labSamplesDepartments"
+        [category]="'HAS_RESULTS'"
+        [hasStatus]="'YES'"
+        [showLegend]="true"
+        [datesParameters]="datesParameters"
+        [excludeAllocations]="true"
+        [sampleTypes]="sampleTypes"
+        [codedSampleRejectionReasons]="codedSampleRejectionReasons"
+        (selectedSampleDetails)="
+          onGetSelectedSampleDetails(
+            $event,
+            sampleParams?.testResultsMapping,
+            sampleParams?.externalSystemsReferenceConceptUuid
+          )
+        "
+      ></app-shared-samples-list>
+    </div>
+
+    <!-- <div class="p-1">
+      <table class="table table-bordered">
+        <thead class="table-header">
+          <tr>
+            <th rowspan="2">SN</th>
+            <th rowspan="2">Department</th>
+            <th rowspan="2" *ngIf="!LISConfigurations?.isLIS">
+              Sample / Specimen
+            </th>
+            <th rowspan="2">Laboratory ID</th>
+            <th rowspan="2" *ngIf="!LISConfigurations?.isLIS">MRN</th>
+            <th rowspan="2" *ngIf="!LISConfigurations?.isLIS">Patient Names</th>
+            <th colspan="2" class="text-center">Test Orders Details</th>
+            <th rowspan="2" *ngIf="LISConfigurations?.isLIS">Received By</th>
+            <th rowspan="2" *ngIf="LISConfigurations?.isLIS">Received On</th>
+            <th rowspan="2">
+              {{ !LISConfigurations?.isLIS ? "Collected By" : "Registered By" }}
+            </th>
+            <th rowspan="2">
+              {{ !LISConfigurations?.isLIS ? "Collected On" : "Registered On" }}
+            </th>
+            <th rowspan="2">Priority</th>
+            <th rowspan="2">Status</th>
+            <th rowspan="2">Action</th>
+          </tr>
+          <tr>
+            <th>Test Order</th>
+            <th>
+              {{ !LISConfigurations?.isLIS ? "Collected By" : "ID" }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="sampleParams?.samplesWithResults?.length > 0">
+            <ng-container
+              *ngFor="
+                let sample of sampleParams?.samplesWithResults;
+                let count = index
+              "
+            >
+              <tr
+                [ngStyle]="{
+                  'background-color': sample?.integrationStatus
+                    ? '#0080009e'
+                    : ''
+                }"
+                [ngClass]="{ 'row-alternated': count % 2 !== 0 }"
+                *ngFor="let order of sample?.orders; let orderCount = index"
+              >
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ count + 1 }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.department?.departmentName }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0 && !LISConfigurations?.isLIS"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.specimen?.name }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.label }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0 && !LISConfigurations?.isLIS"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.patient?.identifiers[0]?.id }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0 && !LISConfigurations?.isLIS"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.patient?.givenName }}
+                  {{ sample?.patient?.middleName }}
+                  {{ sample?.patient?.familyName }}
+                </td>
+                <td>{{ order?.order?.concept?.display }}</td>
+                <td>
+                  {{
+                    !LISConfigurations?.isLIS
+                      ? order?.order?.orderer?.name
+                      : order?.order?.orderNumber
+                  }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0 && LISConfigurations?.isLIS"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.receivedByStatus?.user?.name }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0 && LISConfigurations?.isLIS"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{
+                    sample?.receivedOnStatus?.remarks
+                      ? (sample?.receivedOnStatus?.remarks | date: "medium")
+                      : ""
+                  }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.collectedBy?.display }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{ sample?.created | date: "medium" }}
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  {{
+                    !LISConfigurations?.isLIS
+                      ? sample?.priorityHigh
+                        ? "Urgent"
+                        : "Routine"
+                      : sample?.priorityStatus?.status
+                      ? sample?.priorityStatus?.status
+                      : "Routine"
+                  }}
+                </td>
+                <td
+                  class="text-center"
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  <a
+                    style="cursor: pointer"
+                    (click)="toggleSampleDetails($event, sample)"
+                  >
+                    <span>
+                      {{
+                        sample?.integrationStatus
+                          ? "Already Sent to Pima COVID"
+                          : "-"
+                      }}
+                    </span>
+                  </a>
+                </td>
+                <td
+                  *ngIf="orderCount == 0"
+                  [attr.rowspan]="sample?.orders?.length"
+                >
+                  <div class="d-flex justify-content-center">
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="onToggleViewSampleDetails($event, sample)"
+                    >
+                      <mat-icon *ngIf="!samplesToViewMoreDetails[sample?.id]"
+                        >expand_more</mat-icon
+                      >
+                      <mat-icon *ngIf="samplesToViewMoreDetails[sample?.id]"
+                        >expand_less</mat-icon
+                      >
+                      {{
+                        !samplesToViewMoreDetails[sample?.id] ? "View" : "Hide"
+                      }}
+                      Details
+                    </button>
+                    {{ params?.externalSystemsReferenceConceptUuid }}
+                  </div>
+                </td>
+              </tr>
+
+              <tr
+                *ngIf="
+                  samplesToViewMoreDetails[sample?.id] &&
+                  sampleParams?.externalSystemsReferenceConceptUuid
+                "
+                class="sample-details-row"
+              >
+                <td colspan="11">
+                  <app-shared-sample-details
+                    [sample]="sample"
+                    [departments]="labSamplesDepartments"
+                    [codedReasonsForRejection]="codedSampleRejectionReasons"
+                    [specimenSources]="sampleTypes"
+                    [hasResults]="true"
+                    [externalSystemsReferenceConceptUuid]="
+                      sampleParams?.externalSystemsReferenceConceptUuid
+                    "
+                    (visitDetails)="onGetVisitDetails($event)"
+                  ></app-shared-sample-details>
+                </td>
+                <td>
+                  <div
+                    *ngIf="message[sample?.id]"
+                    class="alert alert-warning"
+                    role="alert"
+                  >
+                    {{ message[sample?.id] }}
+                  </div>
+                  <div class="d-flex justify-content-center">
+                    <button
+                      mat-flat-button
+                      [disabled]="
+                        shouldConfirm ||
+                        !externalSystemPayload ||
+                        sample?.authorizationInfo?.length == 0 ||
+                        !sampleParams?.testResultsMapping ||
+                        sample?.integrationStatus
+                      "
+                      color="primary"
+                      (click)="
+                        onSend(
+                          $event,
+                          sample,
+                          shouldConfirm,
+                          sampleParams?.testResultsMapping
+                        )
+                      "
+                    >
+                      Send
+                    </button>
+                    <button
+                      class="ml-2"
+                      color="primary"
+                      mat-flat-button
+                      *ngIf="shouldConfirm"
+                      (click)="
+                        onSend(
+                          $event,
+                          sample,
+                          shouldConfirm,
+                          sampleParams?.testResultsMapping
+                        )
+                      "
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                  <div class="mt-2">
+                    <button
+                      mat-stroked-button
+                      (click)="
+                        onVerifyIfIsFromExternalSystem(
+                          $event,
+                          sample,
+                          sampleParams?.externalSystemsReferenceConceptUuid
+                        )
+                      "
+                    >
+                      Verify for External System
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="sampleDetailsToggleControl[sample?.id]">
+                <td colspan="100%" class="text-muted font-italic text-right">
+                  {{
+                    sample?.releasedStatuses?.length > 0
+                      ? "By " +
+                        sample?.releasedStatuses[
+                          sample?.releasedStatuses?.length - 1
+                        ]?.user?.name +
+                        " on " +
+                        sample?.releasedStatuses[
+                          sample?.releasedStatuses?.length - 1
+                        ]?.date
+                      : ""
+                  }}
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="sampleParams?.samplesWithResults?.length == 0">
+            <tr>
+              <td colspan="100%" class="text-danger text-center">No samples</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div> -->
+  </div>
+</div>

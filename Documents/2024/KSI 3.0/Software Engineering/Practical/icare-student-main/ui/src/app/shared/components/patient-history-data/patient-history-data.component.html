@@ -1,0 +1,450 @@
+<!-- <div class="visit">
+    <mat-vertical-stepper [linear]="false" #stepper>
+        <mat-step *ngFor="let formsObservations of obsBasedOnForms">
+            <ng-template matStepLabel>{{ formsObservations?.form }}</ng-template>
+            <div class="step-body ml-1">
+                <div class="card pt-4 ">
+                    <ul>
+                        <li *ngFor="let field of formsObservations?.fields">
+                            
+                            <ng-container *ngIf="field?.formFields?.length">
+                                <ng-container *ngFor="let formField of field?.formFields">
+                                    <div *ngIf="formsObservations?.obs[formField?.key]">
+                                        <p>
+                                            <strong>
+                                                {{ formField?.label }}
+                                            </strong>
+                                        </p>
+                                        <p *ngFor="let observation of formsObservations?.obs[formField?.key]">
+                                            {{
+                                                observation?.value?.uuid ? observation?.value?.display : observation?.valueNumeric ? observation?.valueNumeric : observation?.value
+                                            }}
+                                        </p>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="!field?.formFields && formsObservations?.obs[field?.formField?.key]">
+                                <p>
+                                    <strong>
+                                        {{ field?.formField?.label }}
+                                    </strong>
+                                </p>
+                                <p *ngFor="let observation of formsObservations?.obs[field?.formField?.key]">
+                                    {{
+                                        observation?.value?.uuid ? observation?.value?.display : observation?.valueNumeric ? observation?.valueNumeric : observation?.value
+                                    }}
+                                </p>
+                            </ng-container>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </mat-step>
+        <mat-step *ngIf="drugsPrescribed.length > 0">
+            <ng-template matStepLabel>Medications</ng-template>
+            <div class="card pt-4 ">
+                <ul>
+                    <li *ngFor="let drug of drugsPrescribed; let index = index">    
+                     <p>
+                        <strong>
+                            {{ drug.obs[specificDrugConceptUuid] ? drug.obs[specificDrugConceptUuid]?.comment : drug?.display }} 
+                        </strong>
+                     </p>
+                     <p>
+                         <span *ngIf="prescriptionArrangementFields">
+                         {{ drug.obs[prescriptionArrangementFields['1']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['1']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['1']?.uuid]?.value }}
+                         ({{ drug.obs[prescriptionArrangementFields['2']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['2']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['2']?.uuid]?.value }})
+                         {{ drug.obs[prescriptionArrangementFields['3']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['3']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['3']?.uuid]?.value }}
+                         {{ drug.obs[prescriptionArrangementFields['4']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['4']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['4']?.uuid]?.value }}
+                         {{ drug.obs[prescriptionArrangementFields['5']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['5']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['5']?.uuid]?.value }}
+                         {{ drug.obs[prescriptionArrangementFields['6']?.uuid]?.value?.display ? drug.obs[prescriptionArrangementFields['6']?.uuid]?.value?.display : drug.obs[prescriptionArrangementFields['6']?.uuid]?.value }}
+                         </span>
+
+                         <ng-container *ngIf="!prescriptionArrangementFields">
+                            <span *ngFor="let instruction of drug?.formulatedDescription; let instructonIndex=index">
+                                {{ instructonIndex + 1 }}. {{ instruction?.concept?.display }} - {{ instruction?.value?.display ? instruction?.value?.display : instruction?.value }} <br>
+                            </span>
+                         </ng-container>
+
+                        <span class="faint-small-text"> On 
+                            {{ drug.dateActivated | date: "medium" }}
+                        </span>
+                     </p>
+                    </li>
+                </ul>
+            </div>
+        </mat-step>
+        <mat-step *ngIf="labOrders.length > 0">
+            <ng-template matStepLabel>Lab Orders</ng-template>
+            <div class="card pt-4 ">
+                <ul>
+                    <li *ngFor="let order of labOrders">
+                        <strong>
+                            {{ order?.order?.concept?.display }}
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+        </mat-step>
+        <mat-step *ngIf="radiologyOrders.length > 0">
+            <ng-template matStepLabel>Radiology Orders</ng-template>
+            <div class="card pt-4 ">
+                <ul>
+                    <li *ngFor="let order of radiologyOrders">
+                        <strong>
+                            {{ order?.order?.concept?.display }}
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+        </mat-step>
+        <mat-step *ngIf="procedureOrders.length > 0">
+            <ng-template matStepLabel>Procedure Orders</ng-template>
+            <div class="card pt-4 ">
+                <ul>
+                    <li *ngFor="let order of procedureOrders">
+                        <strong>
+                            {{ order?.order?.concept?.display }}
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+        </mat-step>
+    </mat-vertical-stepper>
+</div> -->
+
+<div id="timeline-content">
+  <ul class="timeline">
+     <li class="event" *ngIf="visitHistory?.visitStopDateTime?.date" [attr.data-date]="[visitHistory?.visitStopDateTime?.date]">
+        <p> 
+            <strong>
+                Visit was stopped
+            </strong> 
+            <i *ngIf="visitHistory?.visitStopDateTime?.time" class="text-small"> at {{ visitHistory?.visitStopDateTime?.time }} </i>
+        </p>
+    </li>
+    <ng-container *ngFor="let visitData of visitHistory?.visitOrderedData">
+        <li class="mini-event" *ngIf="visitData?.category === 'DRUG_ORDER'">
+            <p class="data-name"> 
+                <strong>
+                    {{visitData?.name}}
+                </strong>
+                <span>
+                    <i *ngIf="visitData?.date" class="text-small">prescribed on {{ visitData?.date }} {{ visitData?.time }} by {{ visitData?.provider }} </i>
+                </span>
+            </p>
+            <p class="data-description"> {{ visitData?.description }} </p>
+        </li>
+        <li class="mini-event" *ngIf="visitData?.category === 'LAB_ORDER'">
+            <p class="data-name"> 
+                <strong>
+                    {{visitData?.order?.display}}
+                </strong>
+                <span>
+                    <i *ngIf="visitData?.date" class="text-small"> ordered on {{ visitData?.date }} {{ visitData?.time }} by {{ visitData?.provider }} </i>
+                </span>
+            </p>
+            <div>
+                <table class="table table-hover w-100">
+                    <ng-container *ngIf="visitData?.results?.length > 1">
+                        <mat-accordion>
+                            <mat-expansion-panel
+                                class="border mat-elevation-z0 mt-2"
+                                [expanded]="true"
+                            >
+                                <mat-expansion-panel-header class="d-flex justify-content-between">
+                                <mat-panel-title>
+                                    <span>
+                                        <strong>
+                                            Results
+                                        </strong>
+                                        <span class="text-small"> 
+                                            <i>
+                                                fed on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss" }} by {{ visitData?.results[0]?.provider?.display?.split('-')[1] }}
+                                            </i> 
+                                        </span>
+                                    </span>
+                                </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                    <tbody>
+                                        <tr *ngFor="let result of visitData?.results">
+                                            <ng-container *ngIf="result?.value?.links?.uri">
+                                                <td>Attachment</td>
+                                                <td>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                                    </a>
+                                                </td>
+                                            </ng-container>
+                                            <ng-container *ngIf="!result?.value?.links?.uri">
+                                                <td>{{ result?.concept?.display }}</td>
+                                                <td>
+                                                    {{ result?.value?.display ? result?.value?.display : result?.value }}
+                                                </td>
+                                            </ng-container>
+                                        </tr>
+                                    </tbody>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                    </ng-container>
+                    <ng-container *ngIf="visitData?.results?.length === 1">
+                        <p>
+                            <strong>
+                                Results :
+                            </strong>
+                            <span *ngIf="visitData?.results[0]?.value?.links?.uri">
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                </a>
+                            </span>
+                            <span *ngIf="!visitData?.results[0]?.value?.links?.uri">
+                                {{ visitData?.results[0]?.value?.display ? visitData?.results[0]?.value?.display : visitData?.results[0]?.value }}
+                            </span>
+                            
+                            <span class="text-small"> 
+                                <i>
+                                    fed on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss"}} by {{ visitData?.results[0]?.provider?.display }} 
+                                </i>
+                            </span>
+                        </p>
+                    </ng-container>
+                    <ng-container *ngIf="!visitData?.results?.length">
+                        <p>
+                            No results found
+                        </p>
+                    </ng-container>
+                </table>
+            </div>
+        </li>
+        <li class="mini-event" *ngIf="visitData?.category === 'RADIOLOGY_ORDER'">
+            <p class="data-name"> 
+                <strong>
+                    {{visitData?.order?.display}}
+                </strong>
+                <span>
+                    <i *ngIf="visitData?.date" class="text-small"> ordered on {{ visitData?.date }} {{ visitData?.time }} by {{ visitData?.provider }} </i>
+                </span>
+            </p>
+            <div>
+                <table class="table table-hover w-100">
+                    <ng-container *ngIf="visitData?.results?.length > 1">
+                        <mat-accordion>
+                            <mat-expansion-panel
+                                class="border mat-elevation-z0 mt-2"
+                                [expanded]="true"
+                            >
+                                <mat-expansion-panel-header class="d-flex justify-content-between">
+                                <mat-panel-title>
+                                    <span>
+                                        <strong>
+                                            Results
+                                        </strong>
+                                        <span class="text-small"> 
+                                            <i>
+                                                fed on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss" }} by {{ visitData?.results[0]?.provider?.display?.split('-')[1] }}
+                                            </i> 
+                                        </span>
+                                    </span>
+                                </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                    <tbody>
+                                        <tr *ngFor="let result of visitData?.results">
+                                            <ng-container *ngIf="result?.value?.links?.uri">
+                                                <td>Attachment</td>
+                                                <td>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                                    </a>
+                                                </td>
+                                            </ng-container>
+                                            <ng-container *ngIf="!result?.value?.links?.uri">
+                                                <td>{{ result?.concept?.display }}</td>
+                                                <td>
+                                                    {{ result?.value?.display ? result?.value?.display : result?.value }}
+                                                </td>
+                                            </ng-container>
+                                        </tr>
+                                    </tbody>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                    </ng-container>
+                    <ng-container *ngIf="visitData?.results?.length === 1">
+                        <p>
+                            <strong>
+                                Results :
+                            </strong>
+                            <span *ngIf="visitData?.results[0]?.value?.links?.uri">
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                </a>
+                            </span>
+                            <span *ngIf="!visitData?.results[0]?.value?.links?.uri">
+                                {{ visitData?.results[0]?.value?.display ? visitData?.results[0]?.value?.display : visitData?.results[0]?.value }}
+                            </span>
+                            
+                            <span class="text-small"> 
+                                <i>
+                                    fed on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss"}} by {{ visitData?.results[0]?.provider?.display }} 
+                                </i>
+                            </span>
+                        </p>
+                    </ng-container>
+                    <ng-container *ngIf="!visitData?.results?.length">
+                        <p>
+                            No results found
+                        </p>
+                    </ng-container>
+                </table>
+            </div>
+        </li>
+        <li class="mini-event" *ngIf="visitData?.category === 'PROCEDURE_ORDER'">
+            <p class="data-name"> 
+                <strong>
+                    {{visitData?.order?.display}}
+                </strong>
+                <span>
+                    <i *ngIf="visitData?.date" class="text-small"> ordered on {{ visitData?.order?.date }} {{ visitData?.time }} by {{ visitData?.provider }} </i>
+                </span>
+            </p>
+            <div>
+                <table class="table table-hover w-100">
+                    <ng-container *ngIf="visitData?.results?.length > 1">
+                        <mat-accordion>
+                            <mat-expansion-panel
+                                class="border mat-elevation-z0 mt-2"
+                                [expanded]="true"
+                            >
+                                <mat-expansion-panel-header class="d-flex justify-content-between">
+                                <mat-panel-title>
+                                    <span>
+                                        <strong>
+                                            Results
+                                        </strong>
+                                        <span class="text-small"> 
+                                            <i>
+                                                fed on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss" }} by {{ visitData?.results[0]?.provider?.display?.split('-')[1] }}
+                                            </i> 
+                                        </span>
+                                    </span>
+                                </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                    <tbody>
+                                        <tr *ngFor="let result of visitData?.results">
+                                            <ng-container *ngIf="result?.value?.links?.uri">
+                                                <td>Attachment</td>
+                                                <td>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                                    <a *ngIf="result?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + result?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                                    </a>
+                                                </td>
+                                            </ng-container>
+                                            <ng-container *ngIf="!result?.value?.links?.uri">
+                                                <td>{{ result?.concept?.display }}</td>
+                                                <td>
+                                                    {{ result?.value?.display ? result?.value?.display : result?.value }}
+                                                </td>
+                                            </ng-container>
+                                        </tr>
+                                    </tbody>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                    </ng-container>
+                    <ng-container *ngIf="visitData?.results?.length === 1">
+                        <p>
+                            <!-- <strong>
+                                Results :
+                            </strong>
+                            <span *ngIf="visitData?.results[0]?.value?.links?.uri">
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length > 2" href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[2] }}"> Download Results </a>
+                                <a *ngIf="visitData?.results[0]?.value?.links?.uri.split('openmrs').length == 2 " href="{{ '/openmrs' + visitData?.results[0]?.value?.links?.uri.split('openmrs')[1] }}"> Download Results
+                                </a>
+                            </span>
+                            <span *ngIf="!visitData?.results[0]?.value?.links?.uri">
+                                {{ visitData?.results[0]?.value?.display ? visitData?.results[0]?.value?.display : visitData?.results[0]?.value }}
+                            </span> -->
+                            
+                            <span class="text-small"> 
+                                <i>
+                                    Attended on {{ visitData?.results[0]?.obsDatetime | date:"dd-MM-yyyy HH:mm:ss"}} by {{ visitData?.results[0]?.provider?.display }} 
+                                </i>
+                            </span>
+                        </p>
+                    </ng-container>
+                    <ng-container *ngIf="!visitData?.results?.length">
+                        <p>
+                            Not Attended
+                        </p>
+                    </ng-container>
+                </table>
+            </div>
+        </li>
+        <li class="mini-event" *ngIf="visitData?.category === 'OBSERVATIONS'">
+            <p class="data-name"> 
+                <strong>
+                    {{visitData?.form }}
+                </strong>
+            </p> 
+            <table class="table table-hover">
+                <tbody>
+                    <mat-accordion>
+                        <mat-expansion-panel
+                            class="border mat-elevation-z0 mt-2"
+                            [expanded]="true"
+                        >
+                            <mat-expansion-panel-header class="d-flex justify-content-between">
+                            <mat-panel-title>
+                                <span>
+                                    <strong>
+                                        Values
+                                    </strong>
+                                <span>
+                                        <i *ngIf="visitData?.date" class="text-small"> written on {{ visitData?.date }} {{ visitData?.time }} by {{ visitData?.provider }} </i>
+                                </span>
+                                </span>
+                            </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <tr *ngFor="let ob of visitData?.obs">
+                                <td>
+                                    {{ ob?.concept?.display }}
+                                </td>
+                                <td>
+                                    {{ ob?.value?.display ? ob?.value?.display : ob?.value }}
+                                </td>
+                            </tr>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </tbody>
+            </table>
+        </li>
+    </ng-container>
+    <li class="mini-event" *ngIf="visitHistory?.diagnoses?.PROVISIONAL?.length">
+        <p class="data-name"> 
+            <strong>
+                Provisional Diagnoses
+            </strong>
+        </p>
+        <p class="data-description" *ngFor="let diagnosis of visitHistory?.diagnoses?.PROVISIONAL">
+            {{diagnosis?.display}}
+        </p>
+    </li>
+    <li class="mini-event" *ngIf="visitHistory?.diagnoses?.CONFIRMED?.length">
+        <p class="data-name"> 
+            <strong>
+                Confirmed Diagnoses
+            </strong>
+        </p>
+        <p class="data-description" *ngFor="let diagnosis of visitHistory?.diagnoses?.CONFIRMED">
+            {{diagnosis?.display}}
+        </p>
+    </li>
+    <li class="event" [attr.data-date]="[visitHistory?.visitStartDateTime?.date]">
+        <p> 
+            <strong>
+                Started new visit
+            </strong> 
+            <i *ngIf="visitHistory?.visitStartDateTime?.time" class="text-small"> at {{ visitHistory?.visitStartDateTime?.time }} </i>
+        </p>
+    </li>
+    <hr>
+  </ul>
+</div>

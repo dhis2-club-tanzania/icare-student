@@ -1,0 +1,17 @@
+
+::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 1rem !important;
+  }
+
+.invalid-time-input {
+  border-color: red;
+  color: red;
+}
+
+.invalid-text {
+  color: red;
+}
+
+.fluid-form {
+  overflow-x: auto;
+}

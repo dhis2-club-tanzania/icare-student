@@ -1,0 +1,48 @@
+@import "~@angular/material/theming";
+
+@include mat-core();
+
+$icare-primary: (
+  50: #e5f2f9,
+  100: #bfddf1,
+  200: #95c7e8,
+  300: #6ab1df,
+  400: #4aa0d8,
+  500: #2a8fd1,
+  600: #2587cc,
+  700: #1f7cc6,
+  800: #1972c0,
+  900: #0f60b5,
+  A100: #e3f0ff,
+  A200: #b0d3ff,
+  A400: #7db7ff,
+  A700: #63a9ff,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$primary: mat-palette($icare-primary);
+$accent: mat-palette($mat-deep-orange, A200, A100, A400);
+$warn: mat-palette($mat-red);
+
+$theme: mat-light-theme($primary, $accent, $warn);
+
+@include angular-material-theme($theme);
+
+.icare__bg-primary {
+  background-color: mat-color($primary);
+}

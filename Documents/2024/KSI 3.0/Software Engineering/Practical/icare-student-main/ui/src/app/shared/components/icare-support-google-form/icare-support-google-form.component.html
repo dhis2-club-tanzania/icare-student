@@ -1,0 +1,53 @@
+<div *ngIf="isSupportOpened" class="info-container mat-elevation-z3">
+  <div *ngIf="googleFormLink$ | async as googleFormLink" class="p-3">
+    <div class="w-100">
+      <h2 mat-dialog-title>
+        <b>
+          Welcome to iCare Support<span
+            (click)="onClose()"
+            class="material-icons cancel"
+          >
+            cancel
+          </span>
+        </b>
+      </h2>
+      <hr />
+    </div>
+    <div
+      style="margin-top: 40vh"
+      class="alert alert-warning p-3"
+      role="alert"
+      *ngIf="googleFormLink && googleFormLink === 'none'"
+    >
+      Link to support form is not set, Contact IT
+    </div>
+    <mat-progress-bar
+      style="margin-top: 40hv"
+      mode="indeterminate"
+      *ngIf="!googleFormLink"
+    ></mat-progress-bar>
+    <div
+      *ngIf="
+        googleFormLink &&
+        googleFormLink !== 'none' &&
+        googleFormLink !== 'invalid'
+      "
+    >
+      <div id="ifram_id"></div>
+      <!-- <iframe
+        frameBorder="0"
+        class="w-100 h-100"
+        [src]="googleFormLink"
+        title="iCare Support"
+      ></iframe> -->
+    </div>
+    <div
+      class="alert alert-warning p-3"
+      style="margin-top: 40vh"
+      role="alert"
+      *ngIf="isInvalid"
+    >
+      The link set is NOT VALID, Contact IT
+    </div>
+  </div>
+</div>

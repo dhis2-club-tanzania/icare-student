@@ -1,0 +1,81 @@
+<div class="prescription-container">
+  <div class="row">
+    <div class="col-md-4 col-sm-6">
+      <div class="prescription-form">
+        <app-drug-order
+          [encounterUuid]="consultationEncounterUuid$ | async"
+          [patient]="patient$ | async"
+          [isFromDoctor]="true"
+          (drugOrdered)="onOrderingDrug($event)"
+          [showAddButton]="true"
+        ></app-drug-order>
+      </div>
+    </div>
+    <div class="col-md-8 col-sm-6">
+      <div class="prescription-list">
+        <div class="col-12 mt-4">
+          <mat-card class="mat-elevation-z0 border">
+            <div class="d-flex justify-content-between">
+              <mat-form-field appearance="fill">
+                <input  autocomplete="off" type="text" matInput placeholder="Search" />
+              </mat-form-field>
+            </div>
+            <table class="table border-bottom">
+              <tr>
+                <td>#</td>
+                <td>Item</td>
+                <td colspan="2">Actions</td>
+                <td
+                  rowspan="3"
+                  width="50%"
+                  *ngIf="expandedRow > 0"
+                  class="mat-elevation-z1"
+                >
+                  <div *ngIf="currentDrugOrder">
+                    <div class="d-flex justify-content-between">
+                      <mat-form-field appearance="fill">
+                        <input  autocomplete="off" type="text" matInput placeholder="Search" />
+                      </mat-form-field>
+                      <button
+                        mat-flat-button
+                        class="mb-4"
+                        color="primary"
+                      >
+                        Save updates
+                      </button>
+                    </div>
+                    <app-drug-order
+                      [drugOrder]="currentDrugOrder"
+                      [fromDispensing]="false"
+                      [showAddButton]="false"
+                      (drugOrdered)="onOrderingDrug($event)"
+                      (cancelForm)="expandedRow = undefined"
+                    ></app-drug-order>
+                  </div>
+                </td>
+              </tr>
+
+              <ng-template
+                ngFor
+                let-count="index"
+                let-drugOrder
+                [ngForOf]="drugsOrdered$ | async"
+              >
+                <tr
+                  class="{{
+                    expandedRow === count + 1 ? 'prescription-active' : ''
+                  }}"
+                >
+                  <td>1</td>
+                  <td>{{ drugOrder.concept.display }}</td>
+                  <td (click)="onToggleExpand(count + 1)">view</td>
+                  <td (click)="removeDrugFromList(drugOrder)">Remove</td>
+                </tr>
+              </ng-template>
+            </table>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

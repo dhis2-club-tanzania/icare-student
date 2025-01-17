@@ -1,0 +1,123 @@
+<div class="drugs-list-container" *ngIf="{ drugs: drugs$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.drugs"
+  ></mat-progress-bar>
+  <div class="d-flex mt-2">
+    <mat-form-field class="w-50">
+      <mat-label>Search</mat-label>
+      <mat-icon matPrefix>search</mat-icon
+      ><input
+        type="text"
+        placeholder="Search drug"
+        matInput
+        (keyup)="onSearch($event)"
+        [(ngModel)]="searchingText"
+      />
+    </mat-form-field>
+    <div class="w-50 d-flex justify-content-end">
+      <button mat-stroked-button (click)="onDownload($event, 'Drugs List')">
+        <mat-spinner
+          color="primary"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+          *ngIf="downloading"
+        >
+        </mat-spinner>
+        Download to Excel
+      </button>
+    </div>
+  </div>
+  <div class="drugs-list mt-2">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Generic Drug</th>
+          <th>Drug</th>
+          <th>Strength</th>
+          <th *ngIf="!conceptUuid"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let drug of params?.drugs?.results; let count = index">
+          <td>
+            {{ count + 1 + (page - 1) * limit }}
+          </td>
+          <td>
+            {{ drug?.concept?.display }}
+          </td>
+          <td>
+            {{ drug?.display }}
+          </td>
+          <td>
+            {{ drug?.strength ? drug?.strength : "-" }}
+          </td>
+          <td *ngIf="!conceptUuid">
+            <!-- TODO: For actions on drug management -->
+
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onEdit($event, drug)">Edit</button>
+            </mat-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end mt-2" *ngIf="!conceptUuid">
+    <button
+      [disabled]="page === 1"
+      mat-stroked-button
+      (click)="onGetList($event, 'prev')"
+    >
+      Prev
+    </button>
+    <button
+      [disabled]="params?.drugs?.results && params?.drugs?.results < limit"
+      mat-stroked-button
+      (click)="onGetList($event, 'next')"
+      class="ml-2"
+    >
+      Next
+    </button>
+  </div>
+
+  <div class="d-flex justify-content-end mt-2">
+    <button
+      (click)="onAddNew($event)"
+      tabindex="0"
+      type="button"
+      title="Add new"
+      class="add-new-general-button"
+    >
+      <div>
+        <div
+          style="
+            transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+            top: 0px;
+          "
+        >
+          <svg
+            class=""
+            viewBox="0 0 24 24"
+            style="
+              display: inline-block;
+              color: rgb(255, 255, 255);
+              fill: rgb(255, 255, 255);
+              height: 56px;
+              width: 24px;
+              user-select: none;
+              transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+              line-height: 56px;
+            "
+          >
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+          </svg>
+        </div>
+      </div>
+    </button>
+  </div>
+</div>

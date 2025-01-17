@@ -1,0 +1,229 @@
+<app-menu></app-menu>
+<div class="container contents">
+  <div class="row">
+    <div class="col-md-8">
+      <app-patient-search
+        (onPatientClick)="viewPatient($event)"
+      ></app-patient-search>
+
+      <mat-card *ngIf="!showPatientDetails">
+        <h2>Maelezo</h2>
+        <p>
+          1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+          tristique arcu sit amet vulputate finibus.<br /><br />
+          2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+          tristique arcu sit amet vulputate finibus.<br /><br />
+          3. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+          tristique arcu sit amet vulputate finibus.<br /><br />
+          4. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+          tristique arcu sit amet vulputate finibus.<br /><br />
+        </p>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+      <mat-card *ngIf="showPatientDetails">
+        <div class="row">
+          <div class="col-md-6">
+            <div
+              style="
+                background-image: url('../../../../../assets/images/person-placeholder.jpg');
+                background-size: cover;
+                height: 80px;
+                width: 80px;
+                border-radius: 40px;
+                margin-top: 20px;
+                margin-bottom: 15px;
+              "
+            ></div>
+          </div>
+          <div class="col-md-6" style="margin-top: 20px">
+            <p>
+              Total Payable<br />{{
+                quoteToShow ? totalCostsObject[quoteToShow] : "-"
+              }}<br />Total Discount<br />
+              100
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"><p class="title">PATIENT ID</p></div>
+          <div class="col-md-6"><p>7862376378236</p></div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"><p class="title">NAME</p></div>
+          <div class="col-md-6">
+            <p>{{ patientDetails.name }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"><p class="title">AGE</p></div>
+          <div class="col-md-6">
+            <p>{{ patientDetails.age }} years 2 months 3 days</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"><p class="title">SEX</p></div>
+          <div class="col-md-6">
+            <p>{{ patientDetails.gender == "M" ? "Male" : "Female" }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"><p class="title">PAYMENT METHOD</p></div>
+          <div class="col-md-6">
+            <p>
+              INSURANCE (NHIF) <br />
+              23876725916
+            </p>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-md-9">
+      <mat-card *ngIf="showPatientDetails">
+        <mat-form-field appearance="fill" floatLabel="always">
+          <mat-label>Exemption Criteria</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let criteria of criterias" [value]="criteria">
+              {{ criteria }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        &nbsp;
+
+        <button mat-raised-button color="primary">
+          <mat-icon>attach_file</mat-icon> Supporting Documents
+        </button>
+      </mat-card>
+      <mat-tab-group *ngIf="showPatientDetails" style="margin-top: 25px">
+        <mat-tab label="Quotations(3)">
+          <div *ngFor="let quote of bills; let i = index" [attr.data-index]="i">
+            <mat-card class="qoute-card">
+              <div class="row">
+                <div class="col-md-8">
+                  #{{ i + 1 }} <span class="title">MRN :</span> 215641 &nbsp;
+                  <span class="title">TSH :</span>
+                  {{ totalCostsObject[quote["id"]] }}
+                  <span style="color: #306963">(Tsh 100 Exemption)</span>
+
+                  <span
+                    style="
+                      color: #fff;
+                      background-color: green;
+                      padding: 4px 16px 4px 16px;
+                      border-radius: 4px;
+                      margin-left: 8px;
+                    "
+                    >ACTIVE</span
+                  >
+                </div>
+                <div class="col-md-4" style="text-align: right">
+                  {{ quote["date"].slice(0, 10) }}
+                  <button
+                    mat-icon-button
+                    aria-label=""
+                    *ngIf="quoteToShow != quote['id']"
+                    (click)="showQuote(quote['id'])"
+                  >
+                    <mat-icon>keyboard_arrow_down</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    aria-label=""
+                    *ngIf="quoteToShow == quote['id']"
+                    (click)="showQuote(quote['id'])"
+                  >
+                    <mat-icon>keyboard_arrow_up</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="row" *ngIf="quoteToShow == quote['id']">
+                <div class="col-md-2">
+                  <span class="title">MRN :</span> 215641 &nbsp;
+                  <span class="title">VISIT :</span> OPD &nbsp;
+                </div>
+                <div class="col-md-10">
+                  <table
+                    class="table table-striped"
+                    style="border: 1px solid #dee2e6"
+                  >
+                    <tr>
+                      <td>#</td>
+                      <td>Item</td>
+                      <td>Quantity</td>
+                      <td>Unit</td>
+                      <td>Unit Price</td>
+                      <td>Amount</td>
+                      <td>Discount</td>
+                      <td>Payable</td>
+                      <td>
+                        <mat-checkbox class="example-margin"> </mat-checkbox>
+                      </td>
+                    </tr>
+                    <tr
+                      *ngFor="let item of quote['items']; let j = index"
+                      [attr.data-index]="j"
+                    >
+                      <td>{{ j + 1 }}</td>
+                      <td>{{ item["item"] }}</td>
+                      <td>{{ item["qty"] ? item["qty"] : "-" }}</td>
+                      <td>{{ item["cost"] }}</td>
+
+                      <td>
+                        {{
+                          item["qty"]
+                            ? item["qty"] * item["cost"]
+                            : item["cost"]
+                        }}
+                      </td>
+                      <td></td>
+                      <td>
+                        <mat-form-field appearance="fill" style="width: 80px">
+                          <input autocomplete="off" matInput />
+                        </mat-form-field>
+                      </td>
+                      <td></td>
+                      <td>
+                        <mat-checkbox class="example-margin"> </mat-checkbox>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <p style="text-align: right">
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="fill"
+                      floatLabel="always"
+                    >
+                      <mat-label>Discount</mat-label>
+                      <input autocomplete="off" matInput placeholder="10,000" />
+                    </mat-form-field>
+
+                    &nbsp;
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="fill"
+                      floatLabel="always"
+                    >
+                      <mat-label>Payable</mat-label>
+                      <input autocomplete="off" matInput placeholder="10,000" />
+                    </mat-form-field>
+
+                    &nbsp;
+                    <button mat-raised-button color="primary">Confirm</button>
+                  </p>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </mat-tab>
+        <mat-tab label="Payments(2)"> <mat-card></mat-card> </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

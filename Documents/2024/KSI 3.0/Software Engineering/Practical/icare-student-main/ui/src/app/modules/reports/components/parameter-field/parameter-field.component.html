@@ -1,0 +1,99 @@
+<div *ngIf="type !== 'custom'">
+  <mat-form-field
+    appearance="fill"
+    class="w-100"
+    *ngIf="parameter?.type === 'DATE'"
+  >
+    <mat-label>{{ parameter?.label }}</mat-label>
+    <input
+      matInput
+      [matDatepicker]="datep"
+      (dateChange)="onParamChange($event, parameter?.id)"
+    />
+    <mat-datepicker-toggle matSuffix [for]="datep"></mat-datepicker-toggle>
+    <mat-datepicker #datep></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field
+    appearance="outline"
+    class="w-100"
+    *ngIf="parameter?.type === 'DATETIME'"
+  >
+    <mat-label>{{ parameter?.label }}</mat-label>
+    <input
+      matInput
+      [ngxMatDatetimePicker]="datep"
+      [(ngModel)]="selectedDateTime"
+      (dateChange)="onParamChange($event, field?.id, selectedDateTime)"
+    />
+    <mat-datepicker-toggle matSuffix [for]="datep"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #datep> </ngx-mat-datetime-picker>
+  </mat-form-field>
+
+  <mat-form-field
+    appearance="outline"
+    class="w-100"
+    *ngIf="parameter?.type === 'dropdown'"
+  >
+    <mat-label>{{ parameter?.label }}</mat-label>
+    <mat-select (selectionChange)="onParamChange($event, parameter?.id)">
+      <mat-option
+        [value]="option?.name"
+        *ngFor="let option of parameter?.options"
+      >
+        {{ option?.label }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- boolean field -->
+  <mat-checkbox
+    (change)="onParamChange($event, parameter?.id)"
+    *ngIf="parameter?.type === 'BOOLEAN'"
+  >
+    {{ parameter?.name }}
+  </mat-checkbox>
+  <mat-form-field
+    appearance="fill"
+    class="w-100"
+    *ngIf="parameter?.type === ''"
+  >
+    <mat-label>{{ parameter?.label }}</mat-label>
+    <input matInput (change)="onParamChange($event, parameter?.id)" />
+  </mat-form-field>
+
+  <!-- <mat-form-field
+    appearance="outline"
+    *ngIf="field?.id == 'gender' || field?.name == 'gender'"
+  >
+    <mat-label>Gender</mat-label>
+    <mat-select (selectionChange)="onParamChange($event, field?.id)">
+      <mat-option value="M"> Male </mat-option>
+
+      <mat-option value="F"> Female </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+
+  <!-- <mat-form-field
+    appearance="outline"
+    class="w-100"
+    *ngIf="field?.id == 'maxAge' || field?.id == 'minAge' || field?.id == 'age'"
+  >
+    <mat-label>{{ field?.name }}</mat-label>
+
+    <input
+      matInput
+      type="number"
+      [(ngModel)]="fieldValue"
+      (keyup)="onParamChange($event, field?.id)"
+    />
+  </mat-form-field> -->
+</div>
+<div *ngIf="type === 'custom'">
+  <ngx-period-filter
+    [periodType]="parameter?.periodType"
+    [periodTypes]="periodTypes"
+    [maxHeight]="'300'"
+    (selectedItems)="onGetSelectedPeriods($event)"
+  ></ngx-period-filter>
+</div>

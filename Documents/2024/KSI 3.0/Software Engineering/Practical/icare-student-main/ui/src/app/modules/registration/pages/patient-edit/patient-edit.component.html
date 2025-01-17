@@ -1,0 +1,43 @@
+<div
+  *ngIf="{
+    patientDetails: patientDetails$ | async,
+    registrationConfigurations: registrationConfigurations$ | async,
+
+    registrationFormConfigs: registrationFormConfigs$ | async,
+    occupationConceptUuid: occupationConceptUuid$ | async,
+    additionalClientInformationConceptUuid:
+      additionalClientInformationConceptUuid$ | async,
+    relationShipTypesConceptUuid: relationShipTypesConceptUuid$ | async,
+    genderOptionsConceptUuid: genderOptionsConceptUuid$ | async,
+    residenceDetailsLocationUuid: residenceDetailsLocationUuid$ | async
+  } as params"
+>
+  <app-registration-add
+    *ngIf="
+      params?.patientDetails &&
+      params?.registrationConfigurations &&
+      params?.registrationFormConfigs &&
+      params?.occupationConceptUuid &&
+      params?.additionalClientInformationConceptUuid &&
+      params?.relationShipTypesConceptUuid &&
+      params?.genderOptionsConceptUuid &&
+      params?.residenceDetailsLocationUuid
+    "
+    [patientInformation]="params?.patientDetails"
+    [registrationConfigurations]="params?.registrationConfigurations"
+    [editMode]="true"
+    [registrationFormConfigs]="params?.registrationFormConfigs"
+    [occupationConceptUuid]="params?.occupationConceptUuid"
+    [additionalClientInformationConceptUuid]="
+      params?.additionalClientInformationConceptUuid
+    "
+    [relationShipTypesConceptUuid]="params?.relationShipTypesConceptUuid"
+    [genderOptionsConceptUuid]="params?.genderOptionsConceptUuid"
+    [residenceDetailsLocationUuid]="params?.residenceDetailsLocationUuid"
+  ></app-registration-add>
+
+  <mat-progress-bar
+    *ngIf="!params?.patientDetails || !params?.registrationConfigurations"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

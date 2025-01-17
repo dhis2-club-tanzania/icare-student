@@ -1,0 +1,17 @@
+<div
+  *ngIf="{
+    locationTags: locationTags$ | async,
+    locationTagsUuids: locationTagsUuids$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="!params?.locationTags || !params?.locationTagsUuids"
+    mode="indeterminate"
+    class="mt-3 mb-3"
+  ></mat-progress-bar>
+  <app-shared-location-type-selection
+    *ngIf="params?.locationTags && params?.locationTagsUuids"
+    [locationTags]="params?.locationTags"
+    [allowedLocationTagsReferences]="params?.locationTagsUuids"
+  ></app-shared-location-type-selection>
+</div>

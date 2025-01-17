@@ -1,0 +1,107 @@
+<div class="form" *ngIf="conceptFields$ | async as conceptFields">
+  <div class="loading-overlay" *ngIf="savingOrder">
+    <div class="text-center">
+      <div>Saving order details...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errors">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <div *ngIf="!savingOrder">
+    <div>
+      <app-form
+        [fields]="[drugConceptField]"
+        (formUpdate)="onFormUpdate($event, 'drug')"
+      ></app-form>
+      <!-- <app-form
+        *ngIf="strengthFormField"
+        [fields]="[strengthFormField]"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form> -->
+    </div>
+    <!-- <div *ngIf="conceptFields">
+      <app-concepts-form
+        [conceptFields]="conceptFields"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-concepts-form>
+    </div> -->
+    <!-- <div *ngIf="conceptFields">
+    </div> -->
+    <div class="row" *ngIf="conceptFields">
+      <div class="col-4">
+        <app-concepts-form
+          [conceptFields]="[conceptFields[0]]"
+          [textfield]="true"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-concepts-form>
+        <app-form *ngIf="!conceptFields"
+          [fields]="[drugDoseField]"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-form>
+      </div>
+      <div class="col-4" *ngIf="dosingUnits$ | async as dosingUnits">
+        <app-unit-field
+          [dosingUnits]="dosingUnits"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-unit-field>
+      </div>
+      <div
+        class="col-4"
+        *ngIf="dosingFrequencies$ | async as dosingFrequencies"
+      >
+        <app-unit-field
+          [dosingFrequencies]="dosingFrequencies"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-unit-field>
+      </div>
+    </div>
+    <div class="row" *ngIf="conceptFields">
+      <div class="col-5">
+        <app-concepts-form
+          [conceptFields]="[conceptFields[1]]"
+          [textfield]="true"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-concepts-form>
+        <app-form *ngIf="!conceptFields"
+          [fields]="[drugDurationField]"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-form>
+      </div>
+      <div class="col-7" *ngIf="durationUnits$ | async as durationUnits">
+        <app-unit-field
+          [durationUnits]="durationUnits"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-unit-field>
+      </div>
+    </div>
+    <div *ngIf="drugRoutesSettings">
+      <div *ngIf="drugRoutes$ | async as drugRoutes">
+        <app-unit-field
+          [drugRoutes]="drugRoutes"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-unit-field>
+      </div>
+    </div>
+    <div class="float-right">
+      <button
+        class="float-right"
+        (click)="saveOrder($event, conceptFields)"
+        mat-flat-button
+        [color]="savingError ? 'warn' : 'primary'"
+        [disabled]="savingOrder"
+      >
+        <mat-icon *ngIf="savingError" class="mr-2">error</mat-icon>
+        <mat-spinner
+          color="primary"
+          *ngIf="savingOrder"
+          [diameter]="17"
+          class="order__spinner mr-2"
+        ></mat-spinner>
+        <span>{{ savingOrder ? "Saving..." : "Save" }}</span>
+      </button>
+    </div>
+  </div>
+</div>

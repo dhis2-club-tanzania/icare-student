@@ -1,0 +1,21 @@
+.concept-list {
+    height: 320px;
+    overflow: auto;
+}
+
+.custom-selection {
+    width: 45%;
+    border: solid 1px #eee;
+    height: 450px;
+    padding: 16px 4px;
+}
+
+ul li {
+    list-style-type: none !important;
+    padding: 3px;
+    cursor: pointer; 
+    margin-left: -24px; 
+}
+ul li:hover {
+    font-weight: 600; 
+}

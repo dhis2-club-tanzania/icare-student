@@ -1,0 +1,66 @@
+<div>
+  <mat-toolbar color="primary">Manage Item Price</mat-toolbar>
+  <mat-progress-bar *ngIf="loadingForm" mode="indeterminate"></mat-progress-bar>
+  <div class="p-3 mb-3" *ngIf="!loadingForm">
+    <div class="position-relative">
+      <div class="d-flex align-items-center">
+        <mat-form-field class="w-100">
+          <mat-label>Search Item or Drug</mat-label>
+          <input
+            id="search-pricing-item-input"
+            type="text"
+            matInput
+            (keyup)="onSearchItems($event)"
+          />
+        </mat-form-field>
+        <!-- <button class="ml-2" mat-stroked-button (click)="onToggleNewForm($event)">
+          <mat-icon>add</mat-icon>
+        </button> -->
+      </div>
+      <ng-container *ngIf="availableItems">
+        <div class="item-list mb-2" *ngIf="showItems">
+          <mat-option
+            *ngFor="let item of availableItems"
+            [value]="item.uuid"
+            (click)="onSelectItem($event, item)"
+          >
+            {{ item.display }}
+          </mat-option>
+        </div>
+      </ng-container>
+    </div>
+    <!-- new item form -->
+    <div *ngIf="showNewForm">
+      <div>
+        <app-form
+          [fields]="form"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-form>
+      </div>
+    </div>
+    <!-- end of new item form -->
+
+    <div style="text-align: right">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <!-- <button
+        id="btn-exemption-confirmed"
+        class="ml-2"
+        color="primary"
+        mat-flat-button
+        color="primary"
+        (click)="onSave($event)"
+        [disabled]="!formValue?.isValid"
+      > -->
+      <button
+        id="btn-exemption-confirmed"
+        class="ml-2"
+        color="primary"
+        mat-flat-button
+        color="primary"
+        (click)="onSave($event)"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

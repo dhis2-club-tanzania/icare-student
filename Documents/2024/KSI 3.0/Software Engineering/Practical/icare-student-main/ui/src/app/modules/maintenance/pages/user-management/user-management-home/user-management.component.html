@@ -1,0 +1,40 @@
+<mat-card>
+  <div class="w-100 d-flex justify-content-between mb-2">
+    <div class="h4 font-weight-normal">User Management</div>
+    <button
+      mat-flat-button
+      color="primary"
+      style="height: 40px"
+      (click)="onRouteToManageUser($event)"
+      [routerLink]="'manage-user'"
+    >
+      <mat-icon *ngIf="!addingUserItem">add</mat-icon>
+      <mat-spinner
+        color="primary"
+        *ngIf="addingUserItem"
+        [diameter]="20"
+        style="display: inline-block !important; margin-right: 4px"
+      ></mat-spinner>
+      <span>Add User</span>
+    </button>
+  </div>
+
+  <div
+    class="w-100"
+    *ngIf="{
+      currentUser: currentUser$ | async
+    } as params"
+  >
+    <app-users-list
+      [currentUser]="params?.currentUser"
+      (edit)="getRecord($event)"
+    ></app-users-list>
+
+    <!-- loading section -->
+    <mat-progress-bar
+      *ngIf="!params?.currentUser"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <!-- end of loading section -->
+  </div>
+</mat-card>

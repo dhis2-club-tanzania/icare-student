@@ -1,0 +1,4 @@
+
+enum EncounterTypes {
+    BILL = ''
+}

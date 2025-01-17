@@ -1,0 +1,33 @@
+<div
+  *ngIf="{
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="loadingVisit$ | async"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <mat-toolbar>
+    <button
+      mat-icon-button
+      (click)="onBack($event)"
+      matTooltip="Go to Home page"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="ml-2">Visits</span>
+  </mat-toolbar>
+  <div *ngIf="!params?.settingCurrentLocationStatus">
+    <!-- <app-patient-list
+      (selectPatient)="onSelectPatient($event)"
+      [isTabularList]="isPatientListTabular"
+    ></app-patient-list> -->
+
+    <app-patient-list
+      [orderType]="'8189dbdd-3f10-11e4-adec-0800271c1b75'"
+      [itemsPerPage]="10"
+      [isTabularList]="true"
+      (selectPatient)="onSelectPatient($event)"
+    ></app-patient-list>
+  </div>
+</div>

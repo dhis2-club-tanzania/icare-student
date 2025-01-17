@@ -1,0 +1,88 @@
+<div class="d-flex">
+  <mat-form-field class="w-50">
+    <mat-label>Search</mat-label>
+    <mat-icon matPrefix>search</mat-icon
+    ><input
+      type="text"
+      placeholder="Search Sample Types"
+      matInput
+      [(ngModel)]="searchingText"
+    />
+  </mat-form-field>
+</div>
+<div class="row">
+  <div class="col-md-2">
+    <ul class="list-group">
+      <li
+        class="list-group-item"
+        [ngClass]="{
+          'active-panel': currentSampleGroup?.name === sampleTypeGroup?.name
+        }"
+        (click)="onSetCurrentSampleGroup($event, sampleTypeGroup)"
+        *ngFor="
+          let sampleTypeGroup of groupedSampleTypes$
+            | async
+            | searchItem: searchingText
+        "
+      >
+        <a>
+          {{ sampleTypeGroup?.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-10">
+    <mat-card>
+      <div>
+        <h2 style="margin: 5px 20px 5px 20px">
+          {{ currentSampleGroup?.name }}
+        </h2>
+        <table
+          class="table"
+          style="border: 1px solid #dee2e6; margin: 10px 20px 20px 20px"
+        >
+          <thead class="table-header">
+            <tr class="lab-tests-control-table-header">
+              <td>Test</td>
+              <td>Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let test of (currentSampleGroup$ | async)?.setMembers">
+              <td>
+                {{ test["name"] }}
+                <mat-progress-bar
+                  *ngIf="
+                    changedTestsObject[test['uuid']] &&
+                    changedTestsObject[test['uuid']]['loading']
+                  "
+                  mode="indeterminate"
+                ></mat-progress-bar>
+              </td>
+              <td>
+                <button
+                  *ngIf="test['state'] && test['state'] == 'stalled'"
+                  mat-raised-button
+                  color="primary"
+                  (click)="addtoSelectedTestsObject(test)"
+                >
+                  activate
+                </button>
+                <button
+                  *ngIf="
+                    (test['state'] && test['state'] == 'active') ||
+                    test['state'] == 'nostate'
+                  "
+                  mat-raised-button
+                  (click)="addtoSelectedTestsObject(test)"
+                >
+                  stall
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,178 @@
+<div
+  *ngIf="{
+    procedures: procedures$ | async,
+    observationsKeyedByConcepts: observationsKeyedByConcepts$ | async
+  } as params"
+>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">SN</th>
+        <th>Procedure</th>
+        <th>Date & Time</th>
+        <th style="width: 60px">Status</th>
+        <th
+          style="width: 60px"
+          *ngIf="userPrivileges['CLINIC_ATTEND_PROCEDURE_ORDER']"
+        >
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container
+        *ngIf="
+          params?.procedures &&
+          params?.procedures?.length > 0 &&
+          !addingProcedure &&
+          params?.observationsKeyedByConcepts
+        "
+      >
+        <ng-container
+          *ngFor="let procedure of params?.procedures; let count = index"
+        >
+          <tr
+            [ngClass]="{
+              'attended-procedure':
+                params?.observationsKeyedByConcepts[procedure?.concept?.uuid]
+                  ?.latest?.valueObject?.display === 'True'
+            }"
+          >
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ procedure?.display }}
+            </td>
+            <td>
+              {{ procedure?.dateActivated | date: "medium" }}
+            </td>
+            <td>
+              <span
+                class="{{
+                  params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + '-' + procedure?.uuid
+                  ]
+                    ? 'text-success'
+                    : 'text-danger'
+                }}"
+              >
+                {{
+                  params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + "-" + procedure?.uuid
+                  ]?.latest?.valueObject?.display === "True"
+                    ? "Attended"
+                    : "Not-Attended"
+                }}
+              </span>
+            </td>
+            <td *ngIf="userPrivileges['CLINIC_ATTEND_PROCEDURE_ORDER']">
+              <button
+                [disabled]="
+                  params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + '-' + procedure?.uuid
+                  ] &&
+                  params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + '-' + procedure?.uuid
+                  ]?.latest?.valueObject &&
+                  params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + '-' + procedure?.uuid
+                  ]?.latest?.valueObject?.display
+                "
+                mat-stroked-button
+                (click)="onOpenAttendProcedure($event, procedure)"
+              >
+                Attend
+              </button>
+            </td>
+            <td>
+              <button
+              *ngIf="!params?.observationsKeyedByConcepts[
+                    procedure?.concept?.uuid + '-' + procedure?.uuid
+                  ]"
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Options"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="onDeleteProcedure($event, procedure)"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          !params?.procedures ||
+          addingProcedure ||
+          !params?.observationsKeyedByConcepts
+        "
+      >
+        <tr>
+          <td colspan="100%">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          params?.procedures &&
+          params?.procedures.length === 0 &&
+          !addingProcedure &&
+          !hasError
+        "
+      >
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-warning" role="alert">
+              NO Procedure ordered
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="hasError">
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-danger" role="alert">
+              {{ error }}
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="forConsultation && !isInpatient">
+        <tr>
+          <td colspan="5">
+            <app-form
+              [fields]="formFields"
+              [isFormHorizontal]="true"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </td>
+          <td
+            [attr.colspan]="
+              userPrivileges['CLINIC_ATTEND_PROCEDURE_ORDER'] ? 2 : 1
+            "
+            class="text-center"
+          >
+            <button
+              mat-stroked-button
+              [disabled]="!isFormValid || addingProcedure"
+              (click)="onSave($event)"
+            >
+              Add
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

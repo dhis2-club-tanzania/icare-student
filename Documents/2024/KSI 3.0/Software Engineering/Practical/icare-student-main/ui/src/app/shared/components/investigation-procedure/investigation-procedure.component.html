@@ -1,0 +1,321 @@
+<div
+  class="row mt-3"
+  *ngIf="{
+    orderType: orderType$ | async,
+    provider: provider$ | async,
+    formFields: currentForm?.formFields,
+    setMembers: currentForm?.setMembers,
+    orderTypes: orderTypes$ | async,
+    creatingLabOrderState: creatingLabOrderState$ | async,
+    voidingLabOrder: voidingLabOrder$ | async
+  } as orderCreateInfo"
+>
+  <div class="col-md-3">
+    <mat-accordion>
+      <mat-expansion-panel
+        class="mb-2"
+        *ngFor="let departmentGroup of departments"
+        (click)="setCurrentDepartmentGroup($event, departmentGroup)"
+        [expanded]="departmentGroup?.id == currentDepartmentGroup?.id"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ departmentGroup?.name }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-nav-list class="mt-2">
+          <mat-list-item
+            class="orders-form-list"
+            [ngClass]="{ 'active-form': currentForm?.id == department?.id }"
+            *ngFor="let department of departmentGroup?.setMembers"
+            (click)="setCurrentForm($event, department)"
+          >
+            <a matLine>{{ department?.name }}</a>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <div
+    [ngClass]="{
+      'col-md-6': orderedItems?.length > 0 || (labOrders$ | async)?.length > 0,
+      'col-md-9': orderedItems?.length == 0 && (labOrders$ | async)?.length == 0
+    }"
+  >
+    <div class="h5 mb-3">{{ currentForm?.name }}</div>
+    <div
+      class="form list-of-items-to-order"
+      *ngIf="
+        orderCreateInfo?.orderTypes && orderCreateInfo?.orderTypes?.length > 0
+      "
+    >
+      <div *ngIf="orderCreateInfo?.setMembers?.length > 0" class="row">
+        <div
+          class="col-md-6 col-sm-12 col-sx-12"
+          *ngFor="let member of currentForm?.setMembers"
+        >
+          <!-- {{ member | json }} -->
+          <app-orders-options-form
+            *ngIf="member?.formField"
+            [fieldOption]="member?.formField"
+            [setMember]="member"
+            [isBillable]="member?.isBillable"
+            [orderType]="orderCreateInfo?.orderType"
+            [orderTypes]="orderCreateInfo?.orderTypes"
+            [provider]="orderCreateInfo?.provider"
+            [orderClassName]="member?.formClass"
+            [departmentGroup]="currentDepartmentGroup"
+            [orderMapping]="member?.concept?.mappings"
+            (formValues)="onGetFormValue($event, patient)"
+          ></app-orders-options-form>
+
+          <app-orders-options-form
+            *ngIf="!member?.formField"
+            [fieldOption]="member"
+            [setMember]="member"
+            [orderType]="orderCreateInfo?.orderType"
+            [orderTypes]="orderCreateInfo?.orderTypes"
+            [provider]="orderCreateInfo?.provider"
+            [orderClassName]="member?.formClass"
+            [departmentGroup]="currentDepartmentGroup"
+            (formValues)="onGetFormValue($event, patient)"
+          ></app-orders-options-form>
+        </div>
+      </div>
+
+      <div *ngIf="orderCreateInfo?.setMembers?.length == 0" class="row">
+        <div
+          class="col-md-6 col-sm-12 col-sx-12"
+          *ngFor="let field of orderCreateInfo?.formFields"
+        >
+          <!-- {{ field | json }} -->
+          <!-- 
+          <app-orders-options-form
+            [fieldOption]="field"
+            [orderType]="orderCreateInfo?.orderType"
+            [orderTypes]="orderCreateInfo?.orderTypes"
+            [orderClassName]="field?.concept?.conceptClass?.display"
+            [provider]="orderCreateInfo?.provider"
+            (formValues)="onGetFormValue($event, patient)"
+          ></app-orders-options-form> 
+          -->
+        </div>
+      </div>
+    </div>
+    <mat-progress-bar
+      *ngIf="
+        !orderCreateInfo?.orderTypes ||
+        (orderCreateInfo?.orderTypes &&
+          orderCreateInfo?.orderTypes?.length === 0)
+      "
+      mode="indeterminate"
+    ></mat-progress-bar>
+  </div>
+  <div
+    *ngIf="orderedItems?.length > 0 || (labOrders$ | async)?.length > 0"
+    [ngClass]="{
+      'col-md-3': orderedItems?.length > 0 || (labOrders$ | async)?.length > 0,
+      '': orderedItems?.length == 0 && (labOrders$ | async)?.length == 0
+    }"
+  >
+    <div class="ordered-items-container">
+      <mat-card class="p-0 border">
+        <div class="ordered-items">
+          <mat-toolbar color="primary">Ordered items</mat-toolbar>
+          <div
+            style="padding: 8px !important; max-height: 200px; overflow: auto"
+          >
+            <div
+              style="margin-top: 15px"
+              *ngIf="orderCreateInfo?.voidingLabOrder"
+            >
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Order</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngIf="
+                    (labOrders$ | async) && (labOrders$ | async)?.length > 0
+                  "
+                >
+                  <tr *ngFor="let item of labOrders$ | async">
+                    <td>Lab Test</td>
+                    <td>
+                      {{ item?.concept?.display }}
+                    </td>
+                    <td>
+                      <span
+                        class="remove-item text-muted"
+                        (click)="
+                          onDeleteOrder(
+                            $event,
+                            item,
+                            orderCreateInfo?.orderType,
+                            orderCreateInfo?.provider,
+                            orderCreateInfo?.voidingLabOrder
+                          )
+                        "
+                      >
+                        <mat-icon
+                          title="Discontinue {{ item?.concept?.display }} "
+                          >delete</mat-icon
+                        >
+                      </span>
+                    </td>
+                  </tr>
+                </ng-container>
+                <ng-container *ngIf="visit?.radiologyOrders?.length > 0">
+                  <tr *ngFor="let radiologyOrder of visit?.radiologyOrders">
+                    <td>Radiology</td>
+                    <td>{{ radiologyOrder?.order?.display }}</td>
+                    <td>
+                      <span class="remove-item text-muted">
+                        <mat-icon
+                          title="Discontinue {{
+                            radiologyOrder?.order?.display
+                          }} "
+                          >delete</mat-icon
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                </ng-container>
+                <ng-container *ngIf="visit?.procedureOrders?.length > 0">
+                  <tr *ngFor="let prodecure of visit?.procedureOrders">
+                    <td>Procedure</td>
+                    <td>{{ prodecure?.order?.display }}</td>
+                    <td>
+                      <span class="remove-item text-muted">
+                        <mat-icon
+                          title="Discontinue {{ prodecure?.order?.display }} "
+                          >delete</mat-icon
+                        ></span
+                      >
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+            <!-- <div
+              *ngFor="let item of labOrders$ | async"
+              style="display: flex; justify-content: space-between"
+            >
+              <span class="w-75">{{ item?.concept?.display }} </span>
+              <span
+                class="remove-item text-muted"
+                (click)="
+                  onDeleteOrder(
+                    $event,
+                    item,
+                    orderCreateInfo?.orderType,
+                    orderCreateInfo?.provider,
+                    orderCreateInfo?.voidingLabOrder
+                  )
+                "
+              >
+                <mat-icon title="Discontinue {{ item?.concept?.display }} "
+                  >delete</mat-icon
+                >
+              </span>
+            </div>
+            <div
+              *ngFor="let prodecure of visit?.procedureOrders"
+              style="display: flex; justify-content: space-between"
+            >
+              {{ prodecure?.order?.display }}
+            </div> -->
+          </div>
+        </div>
+        <div *ngIf="orderedItems?.length > 0">
+          <mat-toolbar color="primary">Items to order</mat-toolbar>
+          <div
+            style="padding: 8px !important; max-height: 180px; overflow: auto"
+          >
+            <div *ngFor="let item of orderedItems">
+              <div
+                *ngIf="
+                  (failedOrders$ | async) && !(failedOrders$ | async)[item?.id]
+                "
+                style="display: flex; justify-content: space-between"
+              >
+                <span class="w-75"
+                  >{{ item?.valueName }}
+                  <span
+                    class="text-danger"
+                    *ngIf="failedOrders[item?.id] == true"
+                    style="font-size: 0.8rem"
+                  >
+                    Failed, not a billable item
+                  </span>
+                </span>
+                <span *ngIf="creatingLabOrderState$ | async">
+                  <mat-spinner
+                    color="primary"
+                    [diameter]="20"
+                    style="display: inline-block !important; margin-right: 4px"
+                  >
+                  </mat-spinner>
+                </span>
+                <span class="remove-item" (click)="onRemoveItem($event, item)">
+                  <mat-icon title="Remove {{ item?.valueName }}"
+                    >close</mat-icon
+                  >
+                </span>
+              </div>
+            </div>
+
+            <div *ngFor="let item of orderedItems">
+              <div
+                *ngIf="
+                  (failedOrders$ | async) && (failedOrders$ | async)[item?.id]
+                "
+                style="display: flex; justify-content: space-between"
+              >
+                <span class="w-75"
+                  >{{ item?.valueName }}
+                  <span style="margin-left: 4px; color: red; font-size: 0.8rem">
+                    Failed, not a billable item
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+    <div style="margin-top: 15px">
+      <button
+        [disabled]="
+          orderedItems?.length == 0 ||
+          orders?.length == 0 ||
+          orderCreateInfo?.creatingLabOrderState
+        "
+        mat-flat-button
+        class="float-right"
+        color="primary"
+        (click)="onSaveOrders($event, patient)"
+      >
+        <mat-spinner
+          color="primary"
+          *ngIf="orderCreateInfo?.creatingLabOrderState"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        {{
+          orderCreateInfo?.creatingLabOrderState
+            ? "Confirming orders ..."
+            : "Confirm"
+        }}
+      </button>
+    </div>
+  </div>
+</div>

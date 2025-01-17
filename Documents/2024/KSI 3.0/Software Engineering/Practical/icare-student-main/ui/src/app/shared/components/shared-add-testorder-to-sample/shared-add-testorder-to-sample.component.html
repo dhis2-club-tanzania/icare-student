@@ -1,0 +1,90 @@
+<div
+  class="p-3"
+  *ngIf="{
+    existingOrdersDetails: existingOrdersDetails$ | async,
+    labSampleLoadingState: labSampleLoadingState$ | async
+  } as params"
+>
+  <div class="loading-overlay" *ngIf="saving || params?.labSampleLoadingState">
+    <div class="text-center">
+      <div>Saving data</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errors?.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <app-form
+        [fields]="[formField]"
+        (formUpdate)="onUpdateForm($event)"
+      ></app-form>
+
+      <div class="d-flex justify-content-end mt-2">
+        <button
+          mat-flat-button
+          [disabled]="!isFormValid"
+          color="primary"
+          (click)="onSave($event)"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ml-2 mr-2">
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.existingOrdersDetails"
+        ></mat-progress-bar>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>SN</th>
+              <th>Test Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let order of params?.existingOrdersDetails;
+                let count = index
+              "
+            >
+              <td>
+                {{ count + 1 }}
+              </td>
+              <td>
+                {{ order?.order?.concept?.display }}
+              </td>
+              <!-- <td>
+                {{ order?.dateCreated | date: "medium" }}
+              </td> -->
+              <td>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="menu"
+                  aria-label="Options"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button
+                    mat-menu-item
+                    (click)="onRemoveSampleOrder($event, order)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

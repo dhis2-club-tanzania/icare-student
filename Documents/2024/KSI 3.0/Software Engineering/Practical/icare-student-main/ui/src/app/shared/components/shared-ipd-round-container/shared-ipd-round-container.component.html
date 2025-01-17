@@ -1,0 +1,63 @@
+<div
+  *ngIf="{
+    observationsGroupedByIPDRounds: observationsGroupedByIPDRounds$ | async,
+    customForms: customForms$ | async
+  } as params"
+>
+  <ng-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.customForms || !params?.observationsGroupedByIPDRounds"
+  ></ng-progress-bar>
+  <div *ngIf="params?.customForms && params?.observationsGroupedByIPDRounds">
+    <mat-accordion>
+      <mat-expansion-panel
+        *ngFor="
+          let IPDRound of params?.observationsGroupedByIPDRounds;
+          let count = index
+        "
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <b>{{ count }}: </b>
+            <span class="ml-3">
+              {{
+                IPDRound?.roundData?.obsData?.observationDatetime
+                  | date: "medium"
+              }}
+            </span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <!-- This is a summary of the content -->
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div>Visit Notes</div>
+        <div class="w-100" *ngFor="let form of params?.customForms">
+          <div class="obs" *ngFor="let formField of form?.formFields">
+            {{ formField?.concept?.display }}:
+            <span
+              *ngFor="
+                let obs of IPDRound?.groupedData[formField?.concept?.uuid];
+                let count = index
+              "
+            >
+              {{ !obs?.valueObject ? obs?.value : obs?.valueObject?.display }}
+              <span class="ml-1 text-muted" style="font-size: 0.6rem">
+                ({{ obs?.provider?.name }} at
+                {{ obs?.observationDatetime | date: "medium" }})
+              </span>
+              <span
+                class="ml-1"
+                *ngIf="
+                  count <
+                  IPDRound?.groupedData[formField?.concept?.uuid]?.length - 1
+                "
+                >,</span
+              >
+            </span>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

@@ -1,0 +1,152 @@
+<div
+  *ngIf="{
+    observations: observations$ | async,
+    customForms: customForms$ | async,
+    observationChartForm: observationChartForm$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.observations || !params?.customForms"
+  ></mat-progress-bar>
+  <div *ngIf="params?.observations && params?.customForms">
+    <!-- {{ params?.observations | json }} -->
+    <div class="w-100" *ngFor="let form of params?.customForms">
+      <div>{{ form?.display }}</div>
+      <table class="table table-bordered mt-2">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Value</th>
+            <th>Date & Time</th>
+            <th>Provider</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container
+            *ngFor="let formField of form?.formFields; let countField = index"
+          >
+            <ng-container *ngIf="formField?.setMembers?.length == 0">
+              <ng-container
+                *ngIf="
+                  params?.observations[formField?.concept?.uuid] &&
+                  params?.observations[formField?.concept?.uuid]?.history
+                    ?.length > 0
+                "
+              >
+                <tr
+                  *ngFor="
+                    let obs of params?.observations[formField?.concept?.uuid]
+                      ?.history;
+                    let obsCount = index
+                  "
+                >
+                  <td
+                    *ngIf="obsCount == 0"
+                    [attr.rowspan]="
+                      params?.observations[formField?.concept?.uuid]?.history
+                        ?.length
+                    "
+                  >
+                    {{ formField?.concept?.display }}
+                  </td>
+                  <td>
+                    {{
+                      !obs?.value?.display ? obs?.value : obs?.value?.display
+                    }}
+                    <span class="ml-2" *ngIf="formField?.concept?.units">
+                      {{ formField?.concept?.units }}
+                    </span>
+                  </td>
+                  <td>
+                    {{ obs?.obsDatetime | date: "medium" }}
+                  </td>
+                  <td class="text-muted">
+                    {{ obs?.encounterProvider?.name }}
+
+                    <span class="ml-2"> ({{ obs?.location?.display }}) </span>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngIf="formField?.setMembers?.length > 0">
+              <ng-container *ngFor="let setMember of formField?.setMembers">
+                <ng-container
+                  *ngIf="
+                    params?.observations[setMember?.uuid] &&
+                    params?.observations[setMember?.uuid]?.history?.length > 0
+                  "
+                >
+                  <tr
+                    *ngFor="
+                      let obs of params?.observations[setMember?.uuid]?.history;
+                      let obsCount = index
+                    "
+                  >
+                    <td
+                      *ngIf="obsCount == 0"
+                      [attr.rowspan]="
+                        params?.observations[setMember?.uuid]?.history?.length
+                      "
+                    >
+                      {{
+                        setMember?.display
+                          ? setMember?.display
+                          : setMember?.name
+                      }}
+                    </td>
+                    <td>
+                      {{
+                        !obs?.value?.display ? obs?.value : obs?.value?.display
+                      }}
+                      <span class="ml-2" *ngIf="setMember?.units">
+                        {{ setMember?.units }}
+                      </span>
+                    </td>
+                    <td>
+                      {{ obs?.obsDatetime | date: "medium" }}
+                    </td>
+                    <td class="text-muted">
+                      {{ obs?.encounterProvider?.name }}
+                      <span class="ml-2"> ({{ obs?.location?.display }}) </span>
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+      <!--<div class="obs" *ngFor="let formField of form?.formFields">
+        {{ formField?.concept?.display }}:
+        <span>
+          {{
+            !params?.observations[formField?.concept?.uuid]?.latest?.valueObject
+              ? params?.observations[formField?.concept?.uuid]?.latest?.value
+              : params?.observations[formField?.concept?.uuid]?.latest
+                  ?.valueObject?.display
+          }}
+          <span class="ml-1 text-muted" style="font-size: 0.6rem">
+            ({{
+              params?.observations[formField?.concept?.uuid]?.latest
+                ?.encounterProvider?.name
+            }}
+            at
+            {{
+              params?.observations[formField?.concept?.uuid]?.latest
+                ?.observationDatetime | date: "medium"
+            }})
+          </span>
+        </span>
+      </div> -->
+    </div>
+    <!-- {{ params?.observationChartForm | json }} -->
+    <!-- <app-observation-chart-table
+      *ngIf="params?.observationChartForm"
+      [activeVisit]="activeVisit"
+      [selectedForm]="params?.observationChartForm"
+      [obsChartEncounterType]="'f2b1e4e4-1dc7-4c36-b56e-481fa4928b01'"
+      [shouldNotEnterData]="true"
+    ></app-observation-chart-table> -->
+  </div>
+</div>

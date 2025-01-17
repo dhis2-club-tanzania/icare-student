@@ -1,0 +1,63 @@
+<div
+  *ngIf="{
+    visitsLoadedState: visitsLoadedState$ | async,
+    labConfigs: labConfigs$ | async,
+    sampleTypes: sampleTypes$ | async,
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    visitsParameters: visitsParameters$ | async,
+    labOrdersLoadedState: labOrdersLoadedState$ | async,
+    labOrdersGroupedByPatients: labOrdersGroupedByPatients$ | async,
+    collectedLabOrders: collectedLabOrders$ | async,
+    visitReferences: visitReferences$ | async,
+    testsContainers: testsContainers$ | async,
+    sampleContainers: sampleContainers$ | async,
+    privileges: privileges$ | async,
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    labDepartments: labDepartments$ | async
+  } as params"
+>
+  <mat-card>
+    <!-- {{params?.sampleTypesLoadedState}} - {{params?.labConfigs}} - {{params?.labOrdersLoadedState}} - {{params?.visitsLoadedState}} -->
+    <mat-progress-bar
+      *ngIf="
+        !params?.sampleTypesLoadedState ||
+        !params?.labConfigs ||
+        !params?.labOrdersLoadedState ||
+        !params?.visitsLoadedState
+      "
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <!-- 
+    {{params?.sampleTypesLoadedState}} - {{params?.labConfigs}} - {{params?.labOrdersLoadedState}} - {{params?.visitsLoadedState}} -->
+
+    <div class="row">
+      <div class="col-12">
+        <div
+          style="overflow: auto; padding: 0 1.5%"
+          *ngIf="
+            params?.sampleTypesLoadedState &&
+            params?.labConfigs &&
+            params?.labOrdersLoadedState &&
+            params?.visitsLoadedState
+          "
+        >
+          <app-patients-by-visits-list
+            [labConfigs]="params?.labConfigs"
+            [visits]="visits$ | async"
+            [sampleTypes]="params?.sampleTypes"
+            [labOrdersGroupedByPatients]="params?.labOrdersGroupedByPatients"
+            [visitsParameters]="params?.visitsParameters"
+            [collectedLabOrders]="params?.collectedLabOrders"
+            [visitReferences]="params?.visitReferences"
+            [sampleContainers]="params?.sampleContainers"
+            [testsContainers]="params?.testsContainers"
+            [privileges]="params?.privileges"
+            [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
+            [labDepartments]="params?.labDepartments"
+          >
+          </app-patients-by-visits-list>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

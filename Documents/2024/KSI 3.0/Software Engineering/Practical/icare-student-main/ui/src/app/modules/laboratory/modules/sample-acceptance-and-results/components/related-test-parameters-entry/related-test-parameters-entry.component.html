@@ -1,0 +1,49 @@
+<div class="w-100" style="height: 20vh; overflow: auto">
+  <table
+    class="table"
+    *ngIf="
+      finalResultsForParentTestParameter &&
+      finalResultsForParentTestParameter?.length > 0
+    "
+  >
+    <tbody>
+      <tr>
+        <td *ngFor="let result of finalResultsForParentTestParameter">
+          <div class="w-100 mb-2">
+            {{ result?.valueCoded?.display }}
+          </div>
+          <div class="w-100">
+            <table class="table table-responsive">
+              <tr *ngFor="let allocation of parametersWithDefinedRelationship">
+                <td>
+                  <!-- {{ allocation?.formattedAllocation?.finalResult | json }} -->
+                  <app-test-parameter-entry
+                    [parameterUuid]="allocation?.parameter?.uuid"
+                    [allocation]="allocation"
+                    [isLIS]="isLIS"
+                    [relatedResult]="result"
+                    [disabled]="disabled"
+                    [finalResult]="allocation?.formattedAllocation?.finalResult"
+                    [conceptNameType]="conceptNameType"
+                    (data)="getFedResult($event, result, allocation)"
+                  ></app-test-parameter-entry>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div
+    class="alert alert-warning"
+    role="alert"
+    *ngIf="
+      !finalResultsForParentTestParameter ||
+      (finalResultsForParentTestParameter &&
+        finalResultsForParentTestParameter?.length == 0)
+    "
+  >
+    No results fed on related result parameter
+  </div>
+</div>

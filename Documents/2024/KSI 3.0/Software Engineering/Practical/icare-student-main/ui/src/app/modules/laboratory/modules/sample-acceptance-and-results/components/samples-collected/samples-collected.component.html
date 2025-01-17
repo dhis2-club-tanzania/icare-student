@@ -1,0 +1,34 @@
+<div>
+  <mat-card>
+    <div class="d-flex">
+      <mat-form-field class="w-50">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input  autocomplete="off" matInput [(ngModel)]="searchingText" />
+      </mat-form-field>
+    </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr class="table-header">
+          <th style="width: 20px">SN</th>
+          <th style="width: 150px">Sample/Specimen</th>
+          <th style="width: 350px">Laboratory ID</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="
+            let sample of samples | filterSamples: searchingText;
+            let count = index
+          "
+        >
+          <td>{{ count + 1 }}</td>
+          <td>{{ sample.sampleName }}</td>
+          <td>{{ sample.identifier }}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card>
+</div>

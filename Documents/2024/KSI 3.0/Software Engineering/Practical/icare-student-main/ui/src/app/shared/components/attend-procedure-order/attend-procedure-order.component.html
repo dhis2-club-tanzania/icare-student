@@ -1,0 +1,47 @@
+<div
+  *ngIf="{
+    currentBills: currentBills$ | async,
+    patient: patient$ | async,
+    orderTypes: orderTypes$ | async,
+    provider: provider$ | async,
+    visit: visit$ | async
+  } as params"
+>
+  <!-- {{ dialogData | json }} -->
+  <mat-toolbar color="primary"> Attend procedures </mat-toolbar>
+  <div
+    class="m-3"
+    *ngIf="
+      params?.currentBills &&
+      params?.patient &&
+      params?.orderTypes &&
+      params?.provider
+    "
+  >
+    <app-attend-ordered-items
+      [orderedItems]="[dialogData?.proceduredOrder]"
+      [currentBills]="params?.currentBills"
+      [orderTypeName]="'Procedure'"
+      [patient]="params?.patient"
+      [visit]="params?.visit"
+      [orderTypes]="params?.orderTypes"
+      [provider]="params?.provider"
+      [encounters]="params?.visit.encounters"
+      [nursingConfigurations]=""
+      (done)="onDone($event)"
+    ></app-attend-ordered-items>
+    <div class="d-flex justify-content-end mt-2 mb-2">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+    </div>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="
+      !params?.currentBills ||
+      !params?.patient ||
+      !params?.orderTypes ||
+      !params?.provider
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

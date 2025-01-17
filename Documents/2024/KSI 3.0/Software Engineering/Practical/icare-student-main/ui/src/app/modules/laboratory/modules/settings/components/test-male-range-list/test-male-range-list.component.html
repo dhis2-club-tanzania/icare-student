@@ -1,0 +1,46 @@
+<span style="color: gray"><b>Value Ranges | Gender: Male</b></span>
+<!-- 
+<button
+  class="mb-2 ml-2"
+  mat-mini-fab
+  color="primary"
+  matTooltip="Add New Time Configurations"
+  (click)="addConfigurations()"
+>
+  <mat-icon>add</mat-icon>
+</button>
+
+<div *ngIf="reloadingConfigurations">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div> -->
+<!-- 
+<mat-accordion
+  *ngIf="
+    existingConfigs &&
+    existingConfigs?.length > 0 &&
+    !addingConfigsMode &&
+    !reloadingConfigurations
+  "
+>
+  <mat-expansion-panel hideToggle *ngFor="let config of existingConfigs">
+    <mat-expansion-panel-header>
+      <mat-panel-title>version: {{ config['version']}} </mat-panel-title>
+      <mat-panel-description>created: {{ config['created']}} </mat-panel-description>
+    </mat-expansion-panel-header> -->
+
+    <app-test-male-range *ngIf = "existingConfigs?.length > 0" [test]="test" [existingConfigs]="existingConfigs"></app-test-male-range>
+
+    <!-- content -->
+  <!-- </mat-expansion-panel>
+</mat-accordion> -->
+
+<!-- adding configs form -->
+<div>
+  <app-test-male-range
+    *ngIf="!existingConfigs || existingConfigs?.length == 0"
+    [test]="test"
+    [existingConfigs]="null"
+    [newConfigIndex] = "existingConfigs?.length"
+    (onNewConfigurationsAdded)="onNewConfigurationsAdded()"
+  ></app-test-male-range>
+</div>

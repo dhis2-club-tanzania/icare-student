@@ -1,0 +1,111 @@
+<div
+  class="standard-concepts-list"
+  *ngIf="{ conceptsList: conceptsList$ | async } as params"
+>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving data</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="w-100" *ngIf="!saving">
+    <div class="w-100">
+      <mat-form-field class="w-100" apperance="fill" style="font-size: 0.9rem">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input
+          type="text"
+          placeholder="Search"
+          class="search-input"
+          matInput
+          autocomplete="off"
+          (keyup)="searchConcept($event)"
+        />
+      </mat-form-field>
+    </div>
+    <div *ngIf="params?.conceptsList" style="height: 400px; overflow: auto">
+      <table class="w-100 table-striped">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="saving">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </ng-container>
+          <ng-container
+            *ngIf="params?.conceptsList && params?.conceptsList?.length > 0"
+          >
+            <tr
+              [ngClass]="{
+                'selected-concept': concept?.uuid === selectedConceptUuid
+              }"
+              *ngFor="let concept of params?.conceptsList; let count = index"
+            >
+              <td>
+                {{ count + 1 + (page - 1) * pageSize }}
+              </td>
+              <td>
+                {{ concept?.display }}
+              </td>
+              <td>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="onEdit($event, concept)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="onDelete($event, concept)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container
+            *ngIf="params?.conceptsList && params?.conceptsList?.length === 0"
+          >
+            <tr>
+              <td colspan="100%">
+                <div class="alert alert-warning" role="alert">Missing List</div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="w-100 d-flex justify-content-end">
+      <button
+        [disabled]="page <= 1"
+        mat-button
+        (click)="getConceptList($event, 'prev')"
+      >
+        Prev
+      </button>
+      <button
+        [disabled]="
+          params?.conceptsList && params?.conceptsList?.length < pageSize
+        "
+        mat-button
+        (click)="getConceptList($event, 'next')"
+        class="ml-2"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="!params?.conceptsList"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

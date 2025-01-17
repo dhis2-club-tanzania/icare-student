@@ -1,0 +1,187 @@
+<div style="z-index: 200">
+  <mat-radio-group class="registration-category">
+    <mat-radio-button
+      (change)="getSelection($event)"
+      class="person-details-btn"
+      [value]="'new'"
+      [checked]="personDetailsCategory === 'new'"
+      color="primary"
+    >
+      New
+    </mat-radio-button>
+    <button
+      mat-button
+      class="ml-2 mr-4 pinning-btn"
+      (click)="onPinThis($event, 'new')"
+    >
+      Pin
+      <span
+        *ngIf="pinnedCategory == 'new'"
+        matBadge="P"
+        matBadgeSize="small"
+        matBadgeColor="accent"
+        matBadgeOverlap="false"
+      >
+      </span>
+    </button>
+    <!-- <mat-radio-button
+      (change)="getSelection($event)"
+      class="person-details-btn ml-2"
+      [value]="'existing'"
+      [checked]="personDetailsCategory === 'existing'"
+      color="primary"
+    >
+      Existing
+    </mat-radio-button> -->
+    <mat-radio-button
+      (change)="getSelection($event)"
+      class="person-details-btn ml-2"
+      [value]="'other'"
+      [checked]="personDetailsCategory === 'other'"
+      color="primary"
+    >
+      Other systems
+    </mat-radio-button>
+    <button
+      mat-button
+      class="ml-2 pinning-btn"
+      (click)="onPinThis($event, 'other')"
+    >
+      Pin
+      <span
+        *ngIf="pinnedCategory == 'other'"
+        matBadge="P"
+        matBadgeSize="small"
+        matBadgeColor="accent"
+        matBadgeOverlap="false"
+      >
+      </span>
+    </button>
+  </mat-radio-group>
+  <app-registered-patient-details
+    *ngIf="personDetailsCategory === 'existing'"
+    (personDetails)="onGetPersonDetails($event)"
+  ></app-registered-patient-details>
+  <app-clients-from-external-systems
+    *ngIf="personDetailsCategory === 'other'"
+    (selectedClientRequest)="getSelectedClientRequest($event)"
+    (system)="onGetSelectedSystem($event)"
+  ></app-clients-from-external-systems>
+
+  <div class="row primary-identifier">
+    <div class="col-10">
+      <app-form
+        [isFormHorizontal]="true"
+        [fields]="primaryIdentifierFields"
+        (formUpdate)="onUpdatePrimaryIdentifierForm($event)"
+      ></app-form>
+    </div>
+    <div class="col-2">
+      <a class="show-more-toggle" (click)="toggleIdentifiers($event)">{{
+        showOtherIdentifiers ? "Hide" : "Other"
+      }}</a>
+    </div>
+  </div>
+
+  <mat-progress-bar
+  *ngIf="searchByIdentifier && showSearchedDetails"
+  mode="indeterminate"
+  ></mat-progress-bar>
+  <div *ngIf="existingPersons$ | async as persons">
+        <mat-progress-bar
+          *ngIf="!persons && !searchByIdentifier && showSearchedDetails"
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <div *ngIf="persons.length > 0 && showSearchedDetails" class="existing-table" >
+          <table class="table w-100 table-bordered table-striped">
+            <tbody>
+              <tr *ngFor="let person of persons" class="searched-person" (click)="onSelectExisting($event, person)">
+                <td class="w-50">{{ person?.display?.split("-")[1] }}</td>
+                <td class="w-50">{{ person?.display?.split("-")[0] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  </div>
+
+  <app-form
+    *ngIf="showOtherIdentifiers"
+    [fields]="identifiersFields"
+    (formUpdate)="onUpdateIdentifierForm($event)"
+  ></app-form>
+  <app-form
+    [fields]="personFields"
+    [isFormHorizontal]="true"
+    (formUpdate)="onFormUpdate($event)"
+  ></app-form>
+
+  <div class="row">
+    <div class="col-3">
+      <div class="row">
+        <div class="col-12">
+          <app-form
+            [fields]="personDOBField"
+            [isFormHorizontal]="true"
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+        </div>
+        <!-- <div class="col-6">
+          <span style="font-size: 0.8rem">
+            {{
+              personDetailsData["dob"]
+                ? (personDetailsData["dob"] | date: "medium")
+                : ""
+            }}
+          </span>
+        </div> -->
+      </div>
+    </div>
+    <div class="col-1">
+      <mat-form-field
+        class="w-100 no-padding"
+        style="margin-left: 6px"
+        appearance="fill"
+      >
+        <mat-label>Years</mat-label>
+        <input
+          matInput
+          type="number"
+          (change)="getAge($event)"
+          required
+          min="0"
+          max="150"
+          [(ngModel)]="age"
+          placeholder="Age"
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </div>
+    <div class="col-1">
+      <mat-form-field
+        class="w-100 no-padding"
+        style="margin-left: 6px"
+        appearance="fill"
+      >
+        <mat-label>Months</mat-label>
+        <input
+          matInput
+          type="number"
+          (change)="getAge($event)"
+          required
+          min="0"
+          max="12"
+          [(ngModel)]="month"
+          placeholder="Month"
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </div>
+    <div class="col-7"></div>
+  </div>
+
+  <app-form
+    [fields]="personFieldsGroupThree"
+    [isFormHorizontal]="true"
+    (formUpdate)="onFormUpdate($event)"
+  ></app-form>
+</div>

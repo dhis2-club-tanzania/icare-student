@@ -1,0 +1,565 @@
+<mat-card>
+  <div class="d-flex justify-content-between mb-2">
+    <div class="h4 font-weight-normal">
+      <button mat-flat-button style="height: 10px" [routerLink]="'../'">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      Edit User
+    </div>
+  </div>
+
+  <!-- loading section -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  <!-- end of loading section -->
+
+  <div class="table-responsive" *ngIf="!loading">
+    <!-- <span class="muted">UUID: {{selectedUser.uuid}}</span> -->
+
+    <form [formGroup]="userForm" class="example-form">
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width disabledForm"
+        MatFormFieldControl="systemid"
+      >
+        <mat-label> System ID </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="System ID"
+          formControlName="systemid"
+          class="disabledForm"
+        />
+      </mat-form-field>
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width disabledForm"
+        MatFormFieldControl="username"
+      >
+        <mat-label> Username </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Username"
+          formControlName="username"
+          class="disabledForm"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width disabledForm"
+        MatFormFieldControl="fullName"
+      >
+        <mat-label> Full Name </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Full Name"
+          [value]="fullName"
+          class="disabledForm"
+          disabled
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="firstName"
+      >
+        <mat-label> First Name </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="First Name"
+          formControlName="firstName"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="middleName"
+      >
+        <mat-label> Middle Name </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Middle Name"
+          formControlName="middleName"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="surname"
+      >
+        <mat-label> Surname </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Surname"
+          formControlName="surname"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="gender"
+        (click)="onClickGender($event)"
+      >
+        <mat-label> Gender </mat-label>
+        <mat-select formControlName="gender">
+          <mat-option
+            *ngFor="let option of genderValues"
+            [value]="option.value"
+          >
+            {{ option.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        class="example-full-width"
+        appearance="fill"
+        MatFormFieldControl="birthdate"
+        (click)="pickeror.open()"
+      >
+        <input
+          autocomplete="off"
+          matInput
+          [matDatepicker]="pickeror"
+          [max]="today"
+          placeholder="Date of Birth"
+          (click)="pickeror.open()"
+          [readonly]="true"
+          [value]="birthdate"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="pickeror"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickeror></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="addressDisplay"
+      >
+        <mat-label> Primary Address </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Address"
+          formControlName="addressDisplay"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="addressDisplay2"
+      >
+        <mat-label> Alternative Address </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Alternative Address"
+          formControlName="addressDisplay2"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="country"
+      >
+        <mat-label> Country </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Country"
+          formControlName="country"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="city"
+      >
+        <mat-label> Region/City </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Region/City"
+          formControlName="city"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="district"
+      >
+        <mat-label> District/Town </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="District/Town"
+          formControlName="district"
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="postalCode"
+      >
+        <mat-label> Postal Code </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Postal Code"
+          formControlName="postalCode"
+        />
+      </mat-form-field>
+
+      <p>
+        <mat-checkbox #checkbox (change)="showOptions(checkbox.checked)"
+          >Update Password</mat-checkbox
+        >
+      </p>
+
+      <ng-container *ngIf="checked">
+        <mat-form-field appearance="fill" autocomplete="off">
+          <mat-label> Password </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Password"
+            [type]="hide ? 'password' : 'text'"
+            formControlName="password"
+            [errorStateMatcher]="passwordErrorMatcher"
+            required
+            autocomplete="off"
+            (focusout)="confirmStrongPassword($event)"
+          />
+          <mat-hint *ngIf="!passwordInput.value">Enter your password</mat-hint>
+          <mat-icon matSuffix (click)="hide = !hide">{{
+            hide ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </mat-form-field>
+        <span
+          *ngIf="!passwordStrong && passwordFocusOut"
+          class="mt-0 text-danger"
+          ><b>Password too weak.</b> A strong password should have at least one
+          number, one lowercase, one uppercase letter, and at least six
+          characters that are letters</span
+        >
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          *ngIf="hide"
+          style="margin-top: 14px"
+        >
+          <mat-label> Confirm Password </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Confirk Password"
+            [type]="hide ? 'password' : 'text'"
+            [errorStateMatcher]="confirmErrorMatcher"
+            formControlName="confirmpassword"
+            autocomplete="off"
+            (focusout)="confirmPassword($event)"
+          />
+          <mat-hint *ngIf="!confirmpassword.value">Confirm Password</mat-hint>
+        </mat-form-field>
+        <span *ngIf="confirmFocusOut && !passwordMatch" class="mt-0 text-danger"
+          ><b>Passwords must match.</b></span
+        >
+      </ng-container>
+
+      <p>
+        <mat-checkbox #provider (change)="providerAccount(provider.checked)"
+          >Provider Details</mat-checkbox
+        >
+      </p>
+      <ng-container *ngIf="value">
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="MCTNumber"
+        >
+          <mat-label> Provider's MCT Number </mat-label>
+          <input
+            matInput
+            placeholder="Provider's MCT Number"
+            formControlName="MCTNumber"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="phoneNumber"
+        >
+          <mat-label> Provider's Phone Number </mat-label>
+          <input
+            matInput
+            placeholder="Provider's Phone Number"
+            formControlName="phoneNumber"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="qualification"
+        >
+          <mat-label> Provider's Qualification </mat-label>
+          <input
+            matInput
+            placeholder="Provider's Qualification"
+            formControlName="qualification"
+            autocomplete="off"
+          />
+        </mat-form-field>
+      </ng-container>
+
+      <h4 style="margin-top: 14px">Locations</h4>
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+      >
+        <mat-label> Search Location </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Location"
+          (keyup)="searchLocation($event)"
+          autocomplete="off"
+        />
+      </mat-form-field>
+      <div class="d-flex justify-content-between">
+        <div
+          class="table-locations mat-elevation-z1 mr-4"
+          style="width: 900px; margin-left: 1px"
+        >
+          <table
+            mat-table
+            [dataSource]="locations"
+            class="demo-table"
+            *ngIf="locations.length > 0"
+          >
+            <ng-container matColumnDef="display">
+              <th mat-header-cell *matHeaderCellDef>Available Locations</th>
+              <td mat-cell *matCellDef="let location">
+                {{ location.display }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="getLocations($event, row)"
+            ></tr>
+          </table>
+        </div>
+        <div
+          class="table-roles mat-elevation-z1"
+          style="width: 900px; margin-left: 1px"
+        >
+          <table mat-table [dataSource]="selectedLocations" class="demo-table">
+            <ng-container matColumnDef="display">
+              <th mat-header-cell *matHeaderCellDef>Selected Locations</th>
+              <td mat-cell *matCellDef="let location">
+                {{ location.display }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="removeLocation($event, row)"
+            ></tr>
+          </table>
+        </div>
+      </div>
+
+      <h4 style="margin-top: 14px">Roles</h4>
+      <mat-form-field appearance="fill" style="margin-bottom: 0px">
+        <mat-label>Search Roles</mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Role Name"
+          type="search"
+          (keyup)="applyFilter($event)"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <div
+        class="d-flex justify-content-between"
+        *ngIf="!loading"
+        style="z-index: -1"
+      >
+        <div
+          class="table-roles mat-elevation-z1"
+          style="width: 900px; margin-left: 1px"
+        >
+          <table mat-table [dataSource]="rolesDataSource" class="demo-table">
+            <ng-container matColumnDef="display">
+              <th mat-header-cell *matHeaderCellDef>Available Roles</th>
+              <td mat-cell *matCellDef="let role">{{ role.display }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="getRoleSingleClick($event, row, 'available')"
+              [style.background-color]="selectedRowAvailable(row).background"
+              [style.color]="selectedRowAvailable(row).color"
+              (dblclick)="getRoleDoubleClick($event, row, 'available')"
+              tabindex="1"
+            >
+              [class.rowColor]="row.rowColor"
+            </tr>
+          </table>
+        </div>
+
+        <div class="d-flex flex-column align-self-center">
+          <button
+            *ngIf="moveToAvailable.length > 0 || moveToSelected.length > 0"
+            disabled
+            class="selected-btn"
+            style="
+              padding: 0;
+              border: none;
+              background: none;
+              margin-bottom: 0px !important;
+            "
+          >
+            <ng-container *ngIf="moveToAvailable.length > 0">
+              {{ moveToAvailable.length }}
+            </ng-container>
+            <ng-container *ngIf="moveToSelected.length > 0">
+              {{ moveToSelected.length }}
+            </ng-container>
+            Selected
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            style="max-width: 100px; margin-top: 5px !important"
+            [disabled]="moveToSelected.length === 0"
+            (click)="onClickMoveToSelected()"
+          >
+            <span style="padding: 10px">→</span>
+          </button>
+
+          <button
+            mat-flat-button
+            color="primary"
+            style="max-width: 100px"
+            [disabled]="moveToAvailable.length === 0"
+            (click)="onClickMoveToAvailable()"
+          >
+            <span>←</span>
+          </button>
+        </div>
+
+        <div class="table-roles mat-elevation-z1" style="width: 900px">
+          <table
+            mat-table
+            [dataSource]="selectedRolesDatasource"
+            class="demo-table"
+          >
+            <ng-container matColumnDef="display">
+              <th mat-header-cell *matHeaderCellDef>Selected Roles</th>
+              <td mat-cell *matCellDef="let role">{{ role.display }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="getRoleSingleClick($event, row, 'selected')"
+              [style.background-color]="selectedRow(row).background"
+              [style.color]="selectedRow(row).color"
+              (dblclick)="getRoleDoubleClick($event, row, 'selected')"
+              tabindex="1"
+            ></tr>
+          </table>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between" *ngIf="!loading">
+        <button
+          mat-flat-button
+          color="primary"
+          style="height: 30px; width: 160px"
+          (click)="assignAll()"
+          [disabled]="roles.length === 0"
+        >
+          <span style="padding: 10px">ASSIGN ALL ({{ roles?.length }}) →</span>
+        </button>
+        <button
+          mat-flat-button
+          *ngIf="!loading"
+          color="primary"
+          style="height: 30px; width: 160px"
+          (click)="unAssignAll()"
+          [disabled]="selectedRoles?.length === 0"
+        >
+          <span>← REMOVE ALL ({{ selectedRoles?.length }})</span>
+        </button>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        style="height: 40px; width: 100px"
+        (click)="saveData()"
+        [disabled]="!userForm.valid || saving"
+      >
+        <ng-container *ngIf="saving">
+          <span class="ml-2">Saving</span>
+          <mat-icon [ngClass]="{ 'fa-spin': saving }">cached</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="!saving">
+          <mat-icon [diameter]="20">save</mat-icon>
+          <span>Save</span>
+        </ng-container>
+      </button>
+
+      <button
+        mat-flat-button
+        [routerLink]="'../'"
+        color="primary"
+        style="height: 40px; width: 100px; background-color: rgb(173, 172, 172)"
+      >
+        <mat-icon [diameter]="25">cancel</mat-icon>
+        <span>CANCEL</span>
+      </button>
+    </form>
+  </div>
+</mat-card>

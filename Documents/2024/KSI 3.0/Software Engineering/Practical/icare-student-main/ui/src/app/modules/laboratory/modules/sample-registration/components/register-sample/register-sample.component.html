@@ -1,0 +1,138 @@
+<div
+  class="sample-registration"
+  *ngIf="{
+    mrnGeneratorSourceUuid: mrnGeneratorSourceUuid$ | async,
+    preferredPersonIdentifier: preferredPersonIdentifier$ | async,
+    agencyConceptConfigs: agencyConceptConfigs$ | async,
+    referFromFacilityVisitAttribute: referFromFacilityVisitAttribute$ | async,
+    referringDoctorAttributes: referringDoctorAttributes$ | async,
+    labNumberCharactersCount: labNumberCharactersCount$ | async,
+    testsFromExternalSystemsConfigs: testsFromExternalSystemsConfigs$ | async,
+    currentUser: currentUser$ | async,
+    identifierTypes: identifierTypes$ | async,
+    batchsets: batchsets$ | async,
+    batches: batches$ | async,
+    barcodeSettings: barcodeSettings$ | async
+  } as params"
+>
+  <div class="row">
+    <div class="col-12">
+      <div class="w-100" *ngIf="errors?.length">
+        <app-shared-error [errors]="errors"></app-shared-error>
+      </div>
+      <div class="w-100 d-flex mb-4" *ngIf="!fromMaintenance">
+        <mat-button-toggle-group>
+          <mat-button-toggle
+            (click)="setTabGroup($event, 'NEW')"
+            [value]="'NEW'"
+            [ngClass]="{ 'selected-tab-group': selectedTabGroup === 'NEW' }"
+            >Sample Registration
+          </mat-button-toggle>
+          
+          <mat-button-toggle
+            (click)="setTabGroup($event, 'BATCH')"
+            [value]="'BATCH'"
+            [ngClass]="{ 'selected-tab-group': selectedTabGroup === 'BATCH' }"
+            >Batch Registration
+          </mat-button-toggle>
+
+          <mat-button-toggle
+            (click)="setTabGroup($event, 'LIST')"
+            [value]="'LIST'"
+            [ngClass]="{ 'selected-tab-group': selectedTabGroup === 'LIST' }"
+            >Registered Samples
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="w-100" *ngIf="selectedTabGroup === 'NEW' && !fromMaintenance">
+        <div class="single-sample-registration">
+          <mat-progress-bar
+            *ngIf="
+              !params?.mrnGeneratorSourceUuid ||
+              !params?.preferredPersonIdentifier ||
+              !params?.referringDoctorAttributes ||
+              !params?.referFromFacilityVisitAttribute ||
+              !params?.labNumberCharactersCount ||
+              !params?.testsFromExternalSystemsConfigs
+            "
+            mode="indeterminate"
+          ></mat-progress-bar>
+          <div
+            *ngIf="
+              params?.mrnGeneratorSourceUuid &&
+              params?.preferredPersonIdentifier &&
+              params?.referringDoctorAttributes &&
+              params?.referFromFacilityVisitAttribute &&
+              params?.labNumberCharactersCount &&
+              params?.testsFromExternalSystemsConfigs && 
+              params?.identifierTypes && 
+              params?.barcodeSettings
+            "
+          >
+            <app-single-registration
+              [mrnGeneratorSourceUuid]="params?.mrnGeneratorSourceUuid"
+              [preferredPersonIdentifier]="params?.preferredPersonIdentifier"
+              [provider]="provider"
+              [agencyConceptConfigs]="params?.agencyConceptConfigs"
+              [referFromFacilityVisitAttribute]="
+                params?.referFromFacilityVisitAttribute
+              "
+              [currentUser]="params?.currentUser"
+              [labNumberCharactersCount]="params?.labNumberCharactersCount"
+              [referringDoctorAttributes]="params?.referringDoctorAttributes"
+              [labSections]="labSections"
+              [specimenSources]=specimenSources
+              [testsFromExternalSystemsConfigs]="
+                params?.testsFromExternalSystemsConfigs
+              "
+              [barcodeSettings]="params?.barcodeSettings"
+              [allRegistrationFields]="allRegistrationFields | createLabFields: params?.referringDoctorAttributes : params?.agencyConceptConfigs : params?.referFromFacilityVisitAttribute : params?.identifierTypes"
+              [LISConfigurations]="LISConfigurations"
+            ></app-single-registration>
+          </div>
+        </div>
+        <!-- <div class="batch-sample-registration">referFrom
+          <app-batch-registration></app-batch-registration>
+        </div> -->
+      </div>
+      <div class="w-100" *ngIf="selectedTabGroup === 'BATCH' || fromMaintenance">
+        <div class="w-100" *ngIf="
+              params?.preferredPersonIdentifier &&
+              params?.referringDoctorAttributes &&
+              params?.referFromFacilityVisitAttribute && 
+              params?.identifierTypes && 
+              params?.batchsets && params?.batches &&
+              params?.barcodeSettings
+          ">
+          <app-batch-registration
+            [mrnGeneratorSourceUuid]="params?.mrnGeneratorSourceUuid"
+            [preferredPersonIdentifier]="params?.preferredPersonIdentifier"
+            [provider]="provider"
+            [agencyConceptConfigs]="params?.agencyConceptConfigs"
+            [referFromFacilityVisitAttribute]="
+              params?.referFromFacilityVisitAttribute
+            "
+            [currentUser]="params?.currentUser"
+            [labNumberCharactersCount]="params?.labNumberCharactersCount"
+            [referringDoctorAttributes]="params?.referringDoctorAttributes"
+            [labSections]="labSections"
+            [testsFromExternalSystemsConfigs]="
+              params?.testsFromExternalSystemsConfigs
+            "
+            [allRegistrationFields]="allRegistrationFields | createLabFields: params?.referringDoctorAttributes : params?.agencyConceptConfigs : params?.referFromFacilityVisitAttribute : params?.identifierTypes"
+            [existingBatchsets]="params?.batchsets"
+            [existingBatches]="params?.batches"
+            [fromMaintenance]="fromMaintenance"
+            [LISConfigurations]="LISConfigurations"
+            [barcodeSettings]="params?.barcodeSettings"
+            [specimenSources]=specimenSources
+            (reloadRegisterSample)="onReloadRegisterSample($event)"
+          ></app-batch-registration>
+        </div>
+      </div>
+      <div class="w-100" *ngIf="selectedTabGroup === 'LIST' && !fromMaintenance">
+        <app-samples-list></app-samples-list>
+      </div>
+    </div>
+  </div>
+</div>

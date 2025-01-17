@@ -1,0 +1,94 @@
+<div class="w-100" style="overflow: auto">
+  <table class="table table-bordered">
+    <tbody>
+      <tr>
+        <td *ngFor="let relatedResult of finalResultsForParentTestParameter">
+          <div class="p-2">
+            <b>
+              {{
+                relatedResult?.valueText
+                  ? relatedResult?.valueText
+                  : relatedResult?.valueNumeric
+                  ? relatedResult?.valueNumeric
+                  : relatedResult?.valueCoded
+                  ? relatedResult?.valueCoded?.display
+                  : "-"
+              }}
+            </b>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Result</th>
+                <th>Fed By</th>
+                <th>Fed/Amended On</th>
+                <th>Remarks</th>
+                <th>Authorization</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngFor="
+                  let allocation of parametersWithDefinedRelationship;
+                  let count = index
+                "
+              >
+                <tr
+                  *ngFor="
+                    let result of allocation?.formattedAllocation?.results
+                      | filterResultsByResultGroup: relatedResult
+                  "
+                >
+                  <td>
+                    {{ allocation?.allocation?.parameter?.display }}
+                    <!-- {{ allocation?.formattedAllocation?.fi| json }} -->
+                  </td>
+                  <td>
+                    {{
+                      result?.valueText
+                        ? result?.valueText
+                        : result?.valueNumeric
+                        ? result?.valueNumeric
+                        : result?.valueCoded
+                        ? result?.valueCoded?.display
+                        : "-"
+                    }}
+                  </td>
+                  <td>
+                    {{ result?.creator?.display }}
+                  </td>
+                  <td>
+                    {{ result?.dateCreated | date: "medium" }}
+                  </td>
+                  <td>
+                    {{
+                      result?.remarksStatus
+                        ? result?.remarksStatus?.remarks
+                        : "-"
+                    }}
+                  </td>
+                  <td>
+                    <div *ngIf="result?.authorizationStatus">
+                      On
+                      <b>
+                        {{
+                          result?.authorizationStatus?.timestamp
+                            | date: "medium"
+                        }}
+                      </b>
+                      by
+                      <span class="text-muted">
+                        {{ result?.authorizationStatus?.user?.display }}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

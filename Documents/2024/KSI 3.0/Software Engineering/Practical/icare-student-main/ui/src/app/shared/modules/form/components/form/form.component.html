@@ -1,0 +1,71 @@
+<form [formGroup]="form" class="row p-1">
+  <ng-container *ngFor="let field of fields">
+    <div
+      *ngIf="field"
+      class="{{ isFormHorizontal ? 'col' : 'col-12' }} {{
+        field?.hidden ? 'hidden-field' : ''
+      }}"
+    >
+      <div class="row">
+        <div
+          class="{{
+            field?.type !== 'number' ||
+            (!field.min && !field?.max && !field?.units)
+              ? 'col-12'
+              : 'col-10'
+          }}"
+        >
+          <app-field
+            [field]="field"
+            [form]="form"
+            [value]="values && values[field?.key] ? values[field?.key] : null"
+            [isReport]="isReport"
+            [fieldClass]="fieldClass"
+            [isCheckBoxButton]="shouldRenderAsCheckBoxesButton"
+            [shouldDisable]="shouldDisable"
+            (fieldUpdate)="onFieldUpdate($event)"
+            (fileFieldUpdate)="onFileFieldUpdate($event)"
+          ></app-field>
+        </div>
+        <!-- TODO: Might need to show full (col-12) in case it is not number-->
+
+        <div
+          class="{{
+            field?.type === 'number' && field.min && field.max
+              ? 'col-2 units-and-ranges'
+              : ''
+          }}"
+          *ngIf="
+            field?.type == 'number' && (field.min || field.max || field?.units)
+          "
+        >
+          <div class="d-flex flex-column">
+            <div class="text-left w-100" *ngIf="field?.max">
+              <span><span>(</span>{{ field?.min || 0 }}</span
+              ><span>-</span>
+              <span>{{ field?.max }} <span>)</span></span>
+            </div>
+            <div class="w-100">
+              <span> {{ field?.units }}</span>
+            </div>
+            <div class="w-100">
+              <span
+                class="text-warning text-left for-warning"
+                *ngIf="
+                  (values[field?.key] &&
+                    field?.min &&
+                    values[field?.key] < field?.min) ||
+                  (values[field?.key] &&
+                    field?.max &&
+                    values[field?.key] > field?.max)
+                "
+              >
+                Abnormal
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</form>

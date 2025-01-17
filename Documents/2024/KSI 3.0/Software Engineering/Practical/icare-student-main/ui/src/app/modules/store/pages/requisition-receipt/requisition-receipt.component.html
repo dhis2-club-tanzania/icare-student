@@ -1,0 +1,76 @@
+<div
+  class="requisition-container"
+  *ngIf="{
+    requisitions: requisitions$ | async,
+    stores: stores$ | async,
+    currentStore: currentStore$ | async,
+    stockableItems: stockableItems$ | async,
+    loadingRequisitions: loadingRequisitions$ | async
+  } as params"
+>
+  <mat-card class="border">
+    <div class="d-flex justify-content-between">
+      <mat-form-field class="w-25">
+        <input autocomplete="off" type="text" matInput placeholder="Search" (keyup)="searchStock($event)" />
+      </mat-form-field>
+      <!-- <button
+        (click)="onNewRequest($event, params)"
+        mat-flat-button
+        color="primary"
+        style="height: 40px"
+      >
+        New Request
+      </button> -->
+    </div>
+
+    <!-- <table class="table">
+      <tr>
+        <td>#</td>
+        <td>Item</td>
+        <td>Quantity Requested</td>
+        <td>Quantity Received</td>
+        <td>Received Date</td>
+        <td>Received From</td>
+      </tr>
+
+      <tr *ngIf="params.loadingRequisitions">
+        <td colspan="6">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </td>
+      </tr>
+
+      <tr
+        *ngIf="!params.loadingRequisitions && params.requisitions.length === 0"
+      >
+        <td colspan="6">
+          <div class="w-100 d-flex justify-content-center">No data</div>
+        </td>
+      </tr>
+
+      <tr
+        *ngFor="let request of params?.requisitions; let requestIndex = index"
+      >
+        <td>{{ requestIndex + 1 }}</td>
+        <td>{{ request?.name }}</td>
+        <td>{{ request?.quantityRequested }}</td>
+        <td>{{ request?.quantityIssued || "-" }}</td>
+        <td>{{ request?.created?.substring(0, 10) }}</td>
+        <td>{{ request?.targetStore?.name }}</td>
+      </tr>
+    </table> -->
+    <ng-container>
+      <mat-progress-bar mode="indeterminate" *ngIf="!params?.requisitions.length || !filterLoaded"></mat-progress-bar>
+      <app-requisition-receipt-by-store
+      *ngIf="params?.requisitions.length > 0 && filterLoaded"
+      [requisitions]="params?.requisitions"
+      ></app-requisition-receipt-by-store>
+      <table class="table table-striped w-100" *ngIf="!params?.requisitions.length && filterLoaded">
+        <tbody>
+          <tr class="text-center">
+            <td>No received items records.</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </mat-card>
+</div>

@@ -1,0 +1,11 @@
+<table>
+  <tr
+    class="item"
+    (click)="getSelectedPeriod($event, period)"
+    *ngFor="let period of periodsList"
+  >
+    <td>
+      {{ period?.name }}
+    </td>
+  </tr>
+</table>

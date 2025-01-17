@@ -1,0 +1,22 @@
+<div
+  class="w-100 mt-3"
+  *ngIf="{
+    worksheetDefinitions: worksheetDefinitions$ | async,
+    multipleResultsAttributeType: multipleResultsAttributeType$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      !params?.worksheetDefinitions || !params?.multipleResultsAttributeType
+    "
+  ></mat-progress-bar>
+  <app-result-entry-by-worksheet
+    *ngIf="params?.worksheetDefinitions && params?.multipleResultsAttributeType"
+    [worksheetDefinitions]="params?.worksheetDefinitions"
+    [isLIS]="isLIS"
+    [viewType]="viewType"
+    [conceptNameType]="conceptNameType"
+    [multipleResultsAttributeType]="params?.multipleResultsAttributeType"
+  ></app-result-entry-by-worksheet>
+</div>

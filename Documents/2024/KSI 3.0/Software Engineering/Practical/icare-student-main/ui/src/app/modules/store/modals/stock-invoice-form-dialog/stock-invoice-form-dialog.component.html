@@ -1,0 +1,22 @@
+<div class="w-100">
+  <mat-toolbar color="primary">{{ data?.stockInvoice ? 'Update Stock Invoice' : data?.stockInvoiceItem ? 'Update Stock Invoice Item' : '' }}
+  </mat-toolbar>
+  <app-stock-receiving-form 
+    [suppliers]="data?.suppliers"
+    [unitsOfMeasurementSettings]="data?.unitsOfMeasurementSettings"
+    [existingStockInvoice]="data?.stockInvoice"
+    [stockInvoiceItem]="data?.stockInvoiceItem"
+    [currentLocation]="data?.currentLocation"
+    (closeDialog)="onClosePopup()"
+  ></app-stock-receiving-form>
+  <div class="mt-2 mb-2" *ngIf="!data?.stockInvoice">
+    <button
+      class="float-right mr-2 mb-2"
+      mat-flat-button
+      color="primary"
+      (click)="onClosePopup($event)"
+    >
+      Close
+    </button>
+  </div>
+</div>

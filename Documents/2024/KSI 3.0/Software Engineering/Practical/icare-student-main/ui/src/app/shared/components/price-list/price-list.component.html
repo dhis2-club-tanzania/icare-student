@@ -1,0 +1,219 @@
+<!-- Alerts -->
+<div *ngIf="errors?.length > 0">
+  <app-shared-error [errors]="errors"></app-shared-error>
+</div>
+<!-- End Alerts -->
+<mat-card
+  class="price-list-container"
+  *ngIf="{
+    loadingPricingItems: loadingPricingItems$ | async,
+    paymentTypes: paymentTypes$ | async,
+    currentPaymentType: currentPaymentType$ | async,
+    paymentSchemes: paymentSchemes$ | async,
+    pricingItems: pricingItems$ | async,
+    itemPriceEntities: itemPriceEntities$ | async,
+    priceListDepartments: priceListDepartments$ | async
+  } as params"
+>
+  <div class="d-flex justify-content-between mb-2">
+    <div class="h4 font-weight-normal">Price List</div>
+    <div>
+
+      
+     <button
+        mat-flat-button
+        color="primary"
+        style="height: 40px; margin-right: 10px;"
+        [disabled]="isDownloading"
+        (click)="downloadExcel()"
+      >
+        <mat-icon *ngIf="!isDownloading">download</mat-icon>
+        <mat-spinner
+          color="primary"
+          *ngIf="isDownloading"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        <span>Download</span>
+      </button>
+      
+
+
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="fileInput.click()">
+        Choose File
+      </button>
+      <input
+        type="file"
+        #fileInput
+        accept=".xlsx,.xls,.csv"
+        (change)="uploadExcel($event)"
+        style="display: none"
+      />
+      <span *ngIf="selectedFileName">{{ selectedFileName }}</span>
+
+
+
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="addingPricingItem"
+      style="height: 40px"
+      (click)="onCreate($event, params?.pricingItems)"
+    >
+      <mat-icon *ngIf="!addingPricingItem">add</mat-icon>
+      <mat-spinner
+        color="primary"
+        *ngIf="addingPricingItem"
+        [diameter]="20"
+        style="display: inline-block !important; margin-right: 4px"
+      ></mat-spinner>
+      <span>Add Item</span>
+    </button>
+  </div>
+
+  <div
+    *ngIf="params?.priceListDepartments"
+    class="w-100 d-flex justify-content-between mt-3"
+  >
+    <mat-form-field class="w-25">
+      <mat-label>Depatments</mat-label>
+      <mat-select (selectionChange)="getSelectedDepartment($event)">
+        <mat-option [value]="'Drug'">Drugs</mat-option>
+        <mat-option
+          *ngFor="let department of params?.priceListDepartments"
+          [value]="department"
+          >{{ department?.display }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <div class="w-75">
+      <div class="d-flex justify-content-end mb-2">
+        <button
+          [disabled]="currentPage == 0"
+          mat-stroked-button
+          (click)="getAnotherList($event, 'prev', currentDepartmentId)"
+        >
+          Prev
+        </button>
+        <button
+          [disabled]="params?.pricingItems && params?.pricingItems?.length < 25"
+          class="ml-2"
+          mat-stroked-button
+          (click)="getAnotherList($event, 'next', currentDepartmentId)"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- loading section -->
+
+  <!-- end of loading section -->
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th rowspan="2">#</th>
+          <th rowspan="2" class="pb-0">
+            <mat-form-field class="w-100" appearance="fill">
+              <mat-label>{{
+                itemSearchTerm ? "Item" : "Search item"
+              }}</mat-label>
+              <input
+                autocomplete="off"
+                type="text"
+                matInput
+                (keyup)="onSearch($event, currentDepartmentId)"
+              />
+            </mat-form-field>
+          </th>
+          <th
+            *ngFor="let paymentType of paymentTypes"
+            [attr.colSpan]="paymentType?.paymentSchemes?.length"
+            class="pb-0 text-center"
+          >
+            {{ paymentType.display }}
+          </th>
+        </tr>
+        <tr>
+          <th
+            class="text-center"
+            *ngFor="let paymentScheme of paymentTypesAndSchemes"
+          >
+            {{ paymentScheme.concept?.display }}
+          </th>
+        </tr>
+        <tr *ngIf="params?.loadingPricingItems">
+          <td colspan="100%">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+      </thead>
+
+      <tbody *ngIf="!params.loadingPricingItems">
+        <ng-container *ngIf="params?.pricingItems as pricingItems">
+          <tr
+            *ngFor="let pricingItem of pricingItems; let priceItemIndex = index"
+            class="pricing-item-tr"
+            id="{{ pricingItem?.htmlDisplay }}"
+          >
+            <td width="2%">
+              {{ currentPage * 25 + priceItemIndex + 1 }}
+            </td>
+            <td width="10%">
+              {{ pricingItem?.display }}
+            </td>
+            <td
+              width="10%"
+              class="item-price"
+              *ngFor="let paymentScheme of paymentTypesAndSchemes"
+            >
+              <!-- {{ paymentScheme?.paymentType | json }} -->
+              <!-- {{ pricingItem | json }} -->
+              <app-pricing-item
+                [pricingItem]="pricingItem"
+                [paymentScheme]="paymentScheme"
+                [paymentType]="paymentScheme?.paymentType"
+                (saveItemPrice)="onSaveItem($event)"
+              >
+              </app-pricing-item>
+            </td>
+          </tr>
+
+          <tr *ngIf="pricingItems?.length === 0">
+            <td [attr.colSpan]="2 + params?.paymentSchemes?.length">
+              <span>No pricing items at the moment</span>
+              <span *ngIf="itemSearchTerm"
+                >&nbsp;for search keyword "<span>{{ itemSearchTerm }}</span
+                >"</span
+              >
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+      <button
+        [disabled]="currentPage == 0"
+        mat-stroked-button
+        (click)="getAnotherList($event, 'prev', currentDepartmentId)"
+      >
+        Prev
+      </button>
+      <button
+        [disabled]="params?.pricingItems && params?.pricingItems?.length < 25"
+        class="ml-2"
+        mat-stroked-button
+        (click)="getAnotherList($event, 'next', currentDepartmentId)"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</mat-card>

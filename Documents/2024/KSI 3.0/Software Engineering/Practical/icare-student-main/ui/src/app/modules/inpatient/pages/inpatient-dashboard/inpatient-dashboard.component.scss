@@ -1,0 +1,36 @@
+.admission-container {
+  margin-top: 60px;
+}
+
+.patient-home-container {
+  padding: auto;
+}
+
+.admission-sidebar-container {
+  position: fixed;
+  // height: 100vh;
+  width: 250px;
+  left: 10px;
+  border-radius: 5px;
+  padding-bottom: 10px;
+}
+
+.admission-home-content {
+  // margin-right: 15px;
+  margin-left: 260px;
+  padding: 2px 30px;
+  border-radius: 5px;
+}
+
+.button-container {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 100;
+}
+
+.back-to-patient-arrow-div {
+  margin-left: -15px;
+  margin-bottom: 15px;
+}

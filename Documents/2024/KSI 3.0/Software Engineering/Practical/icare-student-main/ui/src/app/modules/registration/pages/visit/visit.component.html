@@ -1,0 +1,786 @@
+<div
+  class="visit-container"
+  *ngIf="{
+    activeVisitUuid: activeVisitUuid$ | async,
+    currentPatient: currentPatient$ | async,
+    activeVisit: activeVisit$ | async,
+    loadingVisit: loadingVisit$ | async,
+    visitErrorState: visitErrorState$ | async,
+    visitError: visitError$ | async,
+    locations: locations$ | async,
+    paymentsCategories: paymentsCategories$ | async,
+    admissionLocations: admissionLocations$ | async,
+    insuranceSchemes: insuranceSchemes$ | async,
+    userPrivileges: userPrivileges$ | async
+  } as params"
+>
+  <!-- <div class="centered-container" *ngIf="!params?.currentPatient">
+    <div class="w-100 text-center">
+      <div class="text-muted h6 mb-4">
+        Search for a patient in order to start a visit
+      </div>
+      <app-patient-search></app-patient-search>
+    </div>
+  </div> -->
+  <mat-progress-bar
+    *ngIf="!params?.paymentsCategories || !params?.currentPatient"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <!-- visit form -->
+  <div
+    *ngIf="
+      params?.currentPatient &&
+      params?.admissionLocations &&
+      treatmentLocations &&
+      params?.paymentsCategories
+    "
+  >
+    <!-- patient sidebar -->
+    <!-- <div class="sidebar-container visit-sidebar">
+      <mat-card class="p-2">
+        <app-patient-profile
+          [patient]="currentPatient$ | async"
+        ></app-patient-profile>
+      </mat-card>
+    </div> -->
+    <!-- end of patient sidebar -->
+
+    <div>
+      <div class="col-12">
+        <div
+          class="alert alert-danger"
+          role="alert"
+          *ngIf="params?.visitErrorState"
+        >
+          <!-- {{ params?.visitError | json }} -->
+          {{ params?.visitError?.status }}
+          {{ params?.visitError?.error?.error?.message }}
+          {{ params?.visitError?.url }}
+        </div>
+      </div>
+
+      <!-- active visit section -->
+      <mat-card
+        class="col-12"
+        *ngIf="
+          params?.activeVisit && !params?.activeVisit?.stopDate && !editMode
+        "
+      >
+        <h2>Patient already has active visit</h2>
+        <div class="row mt-2">
+          <div class="col-3">Service Departments</div>
+          <div class="col-9">{{ params?.activeVisit?.visitType?.name }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-3">Visit Date</div>
+          <div class="col-9">
+            Started on {{ params?.activeVisit?.startDate | date }}
+            {{
+              params?.activeVisit?.endDate
+                ? ("and ends on " + params?.activeVisit?.endDate | date)
+                : ""
+            }}
+          </div>
+        </div>
+
+        <div class="row mt-2" *ngIf="params?.activeVisit?.location">
+          <div class="col-3">Location</div>
+          <div class="col-9">{{ params?.activeVisit?.location?.display }}</div>
+        </div>
+
+        <div
+          class="row mt-2"
+          *ngFor="let attribute of params?.activeVisit?.attributes"
+        >
+          <div
+            class="col-3"
+            *ngIf="attribute?.attributeType?.display == 'PaymentCategory'"
+          >
+            {{ attribute?.attributeType?.display }}
+          </div>
+          <div
+            class="col-9"
+            *ngIf="attribute?.attributeType?.display == 'PaymentCategory'"
+          >
+            {{ getConceptValue(attribute?.value) }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <!-- <button
+            mat-flat-button
+            class="ml-2"
+            (click)="editVisit(params.activeVisit)"
+          >
+            Edit Visit
+          </button> -->
+          <ng-container *ngIf="params?.activeVisit">
+            <button
+              mat-stroked-button
+              class="bg-secondary text-white"
+              (click)="onCloseActiveVisit($event, params?.activeVisit, 'close')"
+            >
+              Close Visit
+            </button>
+            <button
+              mat-stroked-button
+              class="ml-2 bg-danger text-white"
+              color="danger"
+              *ngIf="params?.userPrivileges['REGISTRATION_DELETE_ACTIVE_VISIT']"
+              (click)="onCloseActiveVisit($event, params?.activeVisit, 'void')"
+            >
+              Delete Visit
+            </button>
+          </ng-container>
+          <button
+            mat-stroked-button
+            class="ml-2"
+            (click)="
+              onSetEditPatient(
+                $event,
+                'registration/edit/',
+                params?.currentPatient?.uuid
+              )
+            "
+          >
+            Edit Patient
+          </button>
+          <a
+            mat-flat-button
+            class="ml-2"
+            color="primary"
+            (click)="onCancel($event)"
+            >Done</a
+          >
+          <button
+            class="ml-2"
+            color="primary"
+            *ngIf="params?.activeVisit && params?.activeVisit?.isEnsured"
+            mat-flat-button
+            (click)="getClaimForm($event, params?.activeVisit)"
+          >
+            Claim Form
+          </button>
+        </div>
+      </mat-card>
+      <!-- end of active visit section -->
+
+      <div class="col-12 mb-3 p-0">
+        <mat-progress-bar
+          *ngIf="params?.loadingVisit"
+          mode="indeterminate"
+        ></mat-progress-bar>
+      </div>
+
+      <!-- visit form -->
+      <div
+        class="col-12 p-3 border"
+        style="border-radius: 5px"
+        *ngIf="
+          (params?.activeVisit &&
+            params?.activeVisit?.stopDate &&
+            !params?.loadingVisit) ||
+          editMode ||
+          !params?.activeVisit
+        "
+      >
+        <!-- 
+      {{
+        params?.activeVisit | json
+      }} -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row">
+              <div
+                class="col-md-12"
+                *ngIf="referralLocations$ | async as referralLocations"
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="isEmergencyVisit"
+                  (change)="setVisitMode($event.checked, null, 'emergency')"
+                >
+                  Emergency visit
+                </mat-checkbox>
+
+                <mat-checkbox
+                  class="ml-2"
+                  color="primary"
+                  [checked]="isReferralVisit"
+                  (change)="setVisitMode($event.checked, null, 'referral')"
+                >
+                  Referral visit
+                </mat-checkbox>
+                <br />
+
+                <mat-form-field
+                  *ngIf="isReferralVisit"
+                  appearance="fill"
+                  class="w-25"
+                >
+                  <mat-label>Referral No:</mat-label>
+                  <input
+                    [(ngModel)]="visitDetails['referralNo']"
+                    (change)="getReferralNumber($event.target.value)"
+                    matInput
+                    type="text"
+                  />
+                </mat-form-field>
+                <br />
+
+                <div *ngIf="isReferralVisit">
+                  <label>Referred from</label>
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Referred from</mat-label>
+                    <mat-select
+                      [value]="referralHospital ? referralHospital.uuid : null"
+                    >
+                      <mat-option value="none" (click)="setReferral('none')">
+                        none
+                      </mat-option>
+                      <mat-option
+                        *ngFor="let referralHospital of referralLocations"
+                        [value]="referralHospital?.uuid"
+                        (click)="setReferral(referralHospital)"
+                      >
+                        {{ referralHospital?.display }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div *ngIf="isEmergencyVisit">
+                  <p>
+                    Patient need to be sent to Observation Room or be admitted
+                    (EMD)
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label>Visit type</label>
+                <mat-chip-list aria-label="Visit types" *ngIf="visitTypes">
+                  <mat-chip
+                    *ngFor="let visitType of applicableVisitTypes"
+                    (click)="setVisitTypeOption(visitType, isEmergencyVisit)"
+                    color="{{
+                      visitType.uuid == currentVisitType?.uuid ? 'primary' : ''
+                    }}"
+                    [selected]="visitType.uuid == currentVisitType?.uuid"
+                    >{{ visitType.display }}</mat-chip
+                  >
+                </mat-chip-list>
+
+                <div
+                  class="mt-3"
+                  *ngIf="servicesConcepts$ | async as servicesConcepts"
+                >
+                  <mat-progress-bar
+                    mode="indeterminate"
+                    *ngIf="!servicesConcepts"
+                  ></mat-progress-bar>
+                  <div *ngIf="servicesConcepts">
+                    <label>Service</label>
+                    <mat-chip-list aria-label="Visit services">
+                      <mat-chip
+                        *ngFor="let service of servicesConcepts['setMembers']"
+                        (click)="setService(service)"
+                        color="{{
+                          service?.uuid == currentVisitService?.uuid
+                            ? 'primary'
+                            : ''
+                        }}"
+                        [selected]="service?.uuid == currentVisitService?.uuid"
+                        >{{ service?.display }}</mat-chip
+                      >
+                    </mat-chip-list>
+                  </div>
+                </div>
+                <div
+                  class="w-100 rooms-status-container"
+                  *ngIf="
+                    params?.locations &&
+                    currentVisitService &&
+                    !isEmergencyVisit
+                  "
+                >
+                  <div
+                    style="max-height: 160px; overflow: auto; padding: 6px 8px"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length > 0
+                    "
+                  >
+                    <!--  <mat-form-field class="w-100">
+                      <input
+                        matInput
+                        placeholder="Search Rooms"
+                        (keyup)="searchRoom($event)"
+                      />
+                    </mat-form-field> -->
+                    <mat-chip-list
+                      aria-label="Locations"
+                      *ngIf="
+                        (
+                          treatmentLocations
+                          | filterBy: searchTerm:'name'
+                          | filterLocationByService: currentVisitService
+                        ).length > 0
+                      "
+                    >
+                      <mat-chip
+                        *ngFor="
+                          let room of treatmentLocations
+                            | filterBy: searchTerm:'name'
+                            | filterLocationByService: currentVisitService
+                        "
+                        (click)="onSelectRoom($event, room)"
+                        color="{{ room.id === currentRoom ? 'primary' : '' }}"
+                        [selected]="room.id === currentRoom"
+                      >
+                        {{ room.name }}
+                        <span
+                          class="patient-load-badge"
+                          *ngIf="patientsByLocation[room.id] as patientsLoaded"
+                          >{{ patientsLoaded }}</span
+                        >
+                      </mat-chip>
+                    </mat-chip-list>
+                    <p
+                      class="text-left text-danger"
+                      *ngIf="missingBillingConceptError"
+                    >
+                      {{ missingBillingConceptError }}
+                    </p>
+                  </div>
+                  <div
+                    class="text-left"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length === 0 && currentVisitService
+                    "
+                  >
+                    <p class="text-warning">No room</p>
+
+                    <p>
+                      Error: <span class="text-danger">CODE R001 </span>- No
+                      room for this service
+                    </p>
+                  </div>
+
+                  <div
+                    class="text-left"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length === 0 && !currentVisitService
+                    "
+                  >
+                    <p class="text-warning">Please select service</p>
+                  </div>
+
+                  <!-- <mat-form-field
+                    appearance="fill"
+                    floatLabel="always"
+                    class="example-full-width"
+                    (click)="openDialog(params.locations)"
+                    style="width: 50% !important"
+                  >
+                    <mat-label>Doctor's Room</mat-label>
+                    <input
+                      matInput
+                      placeholder="Select Room"
+                      [(ngModel)]="visitDetails['RoomName']"
+                      readonly="true"
+                    />
+                  </mat-form-field> -->
+                </div>
+
+                <!--Room Searching  -->
+                <div
+                  class="w-100 rooms-status-container"
+                  *ngIf="
+                    treatmentLocations &&
+                    currentVisitService &&
+                    isEmergencyVisit
+                  "
+                >
+                  <div
+                    style="max-height: 160px; overflow: auto; padding: 6px 8px"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length > 0
+                    "
+                  >
+                    <!-- <mat-form-field class="w-100">
+                      <input
+                        matInput
+                        placeholder="Search Rooms"
+                        (keyup)="searchRoom($event)"
+                      />
+                    </mat-form-field> -->
+
+                    <mat-chip-list aria-label="Locations">
+                      <mat-chip
+                        *ngFor="
+                          let room of treatmentLocations
+                            | filterBy: searchTerm:'name'
+                            | filterLocationByService: currentVisitService
+                        "
+                        (click)="onSelectRoom($event, room)"
+                        color="{{ room.id === currentRoom ? 'primary' : '' }}"
+                        [selected]="room.id === currentRoom"
+                      >
+                        {{ room.name }}
+                        <span
+                          class="patient-load-badge"
+                          *ngIf="patientsByLocation[room.id] as patientsLoaded"
+                          >{{ patientsLoaded }}</span
+                        >
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                  <div
+                    class="text-left"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length === 0 && currentVisitService
+                    "
+                  >
+                    <p class="text-warning">No room</p>
+
+                    <p>
+                      Error: <span class="text-danger">CODE R001 </span>- No
+                      room for this service
+                    </p>
+                  </div>
+
+                  <div
+                    class="text-left"
+                    *ngIf="
+                      (
+                        treatmentLocations
+                        | filterBy: searchTerm:'name'
+                        | filterLocationByService: currentVisitService
+                      ).length === 0 && !currentVisitService
+                    "
+                  >
+                    <p class="text-warning">Please select service</p>
+                  </div>
+                </div>
+                <!-- End Room Searching -->
+              </div>
+            </div>
+            <!-- {{ visitDetails | json }} -->
+
+            <div
+              class="row"
+              *ngIf="params?.paymentsCategories && visitDetails.Room"
+            >
+              <div
+                style="padding: 15px"
+                *ngIf="editMode && disableEditingPayments"
+              >
+                <h4>Editing is disabled for Payment category Insurance</h4>
+
+                <p>
+                  Payment Category : {{ visitDetails["Payment"]["display"] }}
+                </p>
+                <p>Insurance Type : {{ visitDetails["Insurance"]?.display }}</p>
+                <p>Insurance ID : {{ visitDetails["InsuranceID"] }}</p>
+              </div>
+
+              <div
+                class="col-md-6"
+                *ngIf="!(editMode && disableEditingPayments)"
+              >
+                <p>Payment Category</p>
+                <mat-chip-list
+                  aria-label="Payment categories"
+                  *ngIf="
+                    params?.paymentsCategories &&
+                    params?.paymentsCategories['results'][0]['setMembers']
+                  "
+                >
+                  <mat-chip
+                    *ngFor="
+                      let option of params?.paymentsCategories['results'][0][
+                        'setMembers'
+                      ]
+                    "
+                    (click)="setPaymentOptions('Payment', option)"
+                    color="{{
+                      option?.display == visitDetails?.Payment?.display
+                        ? 'primary'
+                        : ''
+                    }}"
+                    [selected]="
+                      option?.display == visitDetails?.Payment?.display
+                    "
+                    >{{ option.display }}</mat-chip
+                  >
+                </mat-chip-list>
+              </div>
+
+              <div
+                class="col-md-6"
+                *ngIf="visitDetails['Payment'] && !editMode"
+              >
+                <label
+                  *ngIf="visitDetails['Payment']['display'] == 'Insurance'"
+                >
+                  Insurance type
+                </label>
+                <mat-chip-list
+                  aria-label="Payments"
+                  *ngIf="visitDetails['Payment']['display'] == 'Insurance'"
+                >
+                  <mat-chip
+                    *ngFor="let option of currentPaymentCategory['setMembers']"
+                    (click)="setInsuranceTypeOption(option)"
+                    color="{{
+                      option == visitDetails['Insurance'] ? 'primary' : ''
+                    }}"
+                    [selected]="option == visitDetails['Insurance']"
+                    >{{ option?.display }}</mat-chip
+                  >
+                </mat-chip-list>
+
+                <mat-progress-bar
+                  mode="indeterminate"
+                  *ngIf="!params?.insuranceSchemes && visitDetails['Insurance']"
+                ></mat-progress-bar>
+                <!-- 
+                  *ngIf="
+                    (!allowOnlineVerification && params?.insuranceSchemes) ||
+                    (allowOnlineVerification &&
+                      visitDetails['Insurance']?.display !== 'NHIF')
+                  "
+                 -->
+                <mat-chip-list *ngIf="visitDetails['Insurance']?.display">
+                  <mat-chip
+                    class="mt-3"
+                    (click)="setInsuranceScheme(scheme)"
+                    color="{{
+                      scheme?.uuid == visitDetails['insuranceScheme']?.uuid
+                        ? 'primary'
+                        : ''
+                    }}"
+                    [selected]="
+                      scheme?.uuid == visitDetails['insuranceScheme']?.uuid
+                    "
+                    *ngFor="let scheme of params?.insuranceSchemes?.setMembers"
+                  >
+                    {{
+                      scheme?.shortNameDetails
+                        ? scheme?.shortNameDetails?.name
+                        : scheme?.display
+                    }}
+                  </mat-chip>
+                </mat-chip-list>
+                <div
+                  class="mt-2"
+                  *ngIf="
+                    (visitDetails['Payment']['display'] == 'Insurance' &&
+                      visitDetails['Insurance'] &&
+                      visitDetails['insuranceScheme']) ||
+                    (allowOnlineVerification &&
+                      visitDetails['Payment']['display'] == 'Insurance' &&
+                      visitDetails['Insurance'])
+                  "
+                >
+                  <mat-form-field
+                    class="w-100"
+                    appearance="fill"
+                    floatLabel="always"
+                  >
+                    <mat-label>Insurance ID</mat-label>
+                    <input
+                      matInput
+                      pattern="\d{12}"
+                      placeholder="Enter Text"
+                      [(ngModel)]="visitDetails['InsuranceID']"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field
+                    class="w-100"
+                    *ngIf="
+                      !allowOnlineVerification ||
+                      (allowOnlineVerification &&
+                        visitDetails['Insurance']?.display !== 'NHIF')
+                    "
+                    appearance="fill"
+                    floatLabel="always"
+                  >
+                    <mat-label>VOTE NO. or COMPANY</mat-label>
+                    <input
+                      matInput
+                      placeholder="Enter Text"
+                      [(ngModel)]="visitDetails['voteNumber']"
+                    />
+                  </mat-form-field>
+                  <mat-checkbox
+                    (change)="toggleAuthorizationNumberInputActive($event)"
+                    >Tick if you can NOT authorize now</mat-checkbox
+                  >
+
+                  <mat-form-field
+                    class="w-100"
+                    *ngIf="
+                      visitDetails['InsuranceAuthNo'] !== 'NOT_AUTHORIZED' &&
+                      visitDetails['insuranceScheme']?.uuid
+                    "
+                    appearance="fill"
+                    floatLabel="always"
+                  >
+                    <mat-label
+                      >Insurance Authorization NO.
+                      {{ canYouAuthorize }}</mat-label
+                    >
+                    <input
+                      matInput
+                      placeholder="Enter Text"
+                      [(ngModel)]="visitDetails['InsuranceAuthNo']"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <p *ngIf="visitDetails['Payment']['display'] == 'Cash'">
+                  Track Scheme
+                </p>
+
+                <mat-chip-list
+                  aria-label="Payments"
+                  *ngIf="visitDetails['Payment']['display'] == 'Cash'"
+                >
+                  <mat-chip
+                    *ngFor="let option of currentPaymentCategory['setMembers']"
+                    (click)="setPaymentOptions('Cash', option)"
+                    color="{{
+                      option?.uuid == visitDetails['Cash']?.uuid
+                        ? 'primary'
+                        : ''
+                    }}"
+                    [selected]="option?.uuid == visitDetails['Cash']?.uuid"
+                    >{{ option?.display }}</mat-chip
+                  >
+                </mat-chip-list>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- hapa {{ visitPayloadViable() }} {{ params.loadingVisit }} -->
+
+        <div class="row" *ngIf="editMode">
+          <div class="col-md-12" style="text-align: right">
+            <button mat-stroked-button (click)="onCancel($event)">
+              Cancel
+            </button>
+            <button
+              id="btn-start-visit"
+              class="ml-2"
+              mat-flat-button
+              color="primary"
+              (click)="updateVisit($event)"
+              [disabled]="
+                !(
+                  (!editMode &&
+                    visitDetails?.visitType?.uuid &&
+                    visitDetails?.Payment &&
+                    visitDetails?.service?.display &&
+                    (visitDetails?.Cash ||
+                      (visitDetails?.Insurance && visitDetails?.InsuranceID)) &&
+                    visitDetails?.RoomName) ||
+                  (editMode && visitDetails?.RoomName)
+                ) || params.loadingVisit
+              "
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="params.loadingVisit"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              {{ params?.loadingVisit ? "Updating visit..." : "Update Visit" }}
+            </button>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="!editMode">
+          <div class="col-md-12" style="text-align: right">
+            <button mat-stroked-button (click)="onCancel($event)">
+              Cancel
+            </button>
+            <button
+              mat-stroked-button
+              class="ml-2"
+              (click)="
+                onSetEditPatient(
+                  $event,
+                  'registration/edit/',
+                  params?.currentPatient?.patient?.uuid
+                    ? params?.currentPatient?.patient?.uuid
+                    : params?.currentPatient && params?.currentPatient?.uuid
+                    ? params?.currentPatient?.uuid
+                    : params?.currentPatient?.person?.uuid
+                )
+              "
+            >
+              Edit Patient
+            </button>
+            <button
+              id="btn-start-visit"
+              class="ml-2"
+              mat-flat-button
+              color="primary"
+              (click)="startVisit($event)"
+              [disabled]="
+                !(
+                  (!editMode &&
+                    visitDetails?.visitType?.uuid &&
+                    visitDetails?.Payment &&
+                    visitDetails?.service?.display &&
+                    (visitDetails?.Cash ||
+                      (visitDetails?.Insurance && visitDetails?.InsuranceID)) &&
+                    visitDetails?.RoomName) ||
+                  (editMode && visitDetails?.RoomName)
+                ) ||
+                params.loadingVisit ||
+                (authorizationNumberAvailable &&
+                  !visitDetails['InsuranceAuthNo'] &&
+                  visitDetails?.Insurance &&
+                  visitDetails?.InsuranceID &&
+                  !visitDetails?.Cash)
+              "
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="params.loadingVisit"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              {{ params?.loadingVisit ? "Starting visit..." : "Start Visit" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end of visit form -->
+  </div>
+</div>

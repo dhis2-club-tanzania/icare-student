@@ -1,0 +1,129 @@
+<ng-container>
+  <mat-toolbar color="primary">
+    <span>
+      Lab Results - {{ dialogData?.sample?.patient?.givenName }} {{ dialogData?.sample?.patient?.familyName }}
+    </span>
+  </mat-toolbar>
+  <div class="row results-modal">
+    <div class="col-12">
+      <div *ngIf="results.length > 0">
+        <div class="text-center">
+          <h3>Sample Tests with Results</h3>
+        </div> 
+      </div>
+      <!-- Table -->
+      <table class="table table-bordered" *ngIf="results.length > 0">
+        <thead class="table-header">
+          <tr>
+            <th rowspan="2">SN</th>
+            <th rowspan="2">
+              Test Taken
+            </th>
+            <th colspan="2">Test Results</th>
+          </tr>
+          
+        </thead>
+        <tbody>
+          <ng-container>
+            <ng-container
+            *ngFor="
+            let result of results;
+            let count = index
+            "
+            >
+              <tr>
+                <td>
+                  {{ count + 1 }}
+                </td>
+                <td>
+                  {{ result.testName }}
+                </td>
+                <td *ngIf="result.results.length > 0">
+                  <span *ngFor="
+                  let singleResult of result.results;
+                    let counter = index">
+                    <span *ngIf="singleResult?.valueCoded">
+                      {{ counter + 1 }}. {{ singleResult?.valueCoded?.display }} <br>
+                    </span>
+                    <span *ngIf="singleResult?.valueComplex">
+                      {{ counter + 1 }}. {{ singleResult?.valueComplex.display }} <br>
+                    </span>
+                    <span *ngIf="singleResult?.valueText">
+                      {{ counter + 1 }}. {{ singleResult?.valueText }} <br>
+                    </span>
+                    <span *ngIf="singleResult?.valueNumeric">
+                      {{ counter + 1 }}. {{ singleResult?.valueNumeric }} <br>
+                    </span>
+                    <span *ngIf="singleResult?.valueBoolean">
+                      {{ counter + 1 }}. {{ singleResult?.valueBoolean }} <br>
+                    </span>
+                  </span>
+                  
+                </td>
+                <td *ngIf="result.results.length === 0">
+                  <span>
+                    No Results Yet</span>
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="results.length === 0">
+            <tr>
+              <td colspan="14" class="text-danger text-center">
+                No Results Yet
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-12">
+      <div *ngIf="noResults.length > 0">
+        <div class="textcenter">
+          <h3>Sample Tests with No Results</h3>
+        </div>
+
+      </div>
+      <!-- Table -->
+      <table class="table table-bordered">
+        <thead class="table-header">
+          <tr>
+            <th rowspan="2">SN</th>
+            <th rowspan="2">
+              Test Taken
+            </th>
+            <th colspan="2">Test Results</th>
+          </tr>
+          
+        </thead>
+        <tbody>
+          <ng-container>
+            <ng-container
+              *ngFor="
+                let test of noResults;
+                let count = index
+                "
+                >
+              <tr>
+                <td>
+                  {{ count + 1 }}
+                </td>
+                <td>
+                  {{ test.testName }}
+                </td>
+                <td>
+                    No Results Yet
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row w-100 justify-content-end">
+    <button mat-stroked-button (click)="onClose($event)">
+      Close
+    </button>
+  </div>
+  </ng-container>

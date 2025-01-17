@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-4">
+    <mat-form-field class="w-100">
+      <input
+        class="ml-2 w-100"
+        matInput
+        autocomplete="off"
+        id="search"
+        placeholder="Search"
+        [(ngModel)]="searchText"
+        (ngModelChange)="this.subject.next($event)"
+        />
+    </mat-form-field>
+  </div>
+</div>
+
+<div *ngIf="{ samples: samples$ | async } as params">
+  <table class="table mt-2">
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>Label/Lab No.</th>
+        <th>Lab</th>
+        <th>Patient Name</th>
+        <th>File No</th>
+        <th>Registered By</th>
+        <th>Date Registered</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="!params?.samples">
+        <tr>
+          <td colspan="100%">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="params?.samples && params?.samples?.results?.length > 0"
+      >
+        <tr *ngFor="let sample of params?.samples?.results; let count = index">
+          <td>
+            {{
+              (count+1) + ((page-1)*pageSize)
+            }}
+          </td>
+          <td>
+            {{ sample?.label }}
+          </td>
+          <td>
+            {{ sample?.location?.display }}
+          </td>
+          <td>
+            {{ sample?.patient?.givenName?.toUpperCase() }} {{ sample?.patient?.middleName?.length > o ? sample?.patient?.middleName?.toUpperCase() : "" }} {{ sample?.patient?.familyName?.toUpperCase() }}
+          </td>
+          <td>
+            {{ sample?.patient?.identifiers[0]?.id }}
+          </td>
+          <td>
+            {{ sample?.creator?.name }}
+          </td>
+          <td>
+            {{ sample?.dateCreated | date: "medium" }}
+          </td>
+          <td>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item [disabled]="true">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="params?.samples && params?.samples?.results?.length === 0"
+      >
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-warning" role="alert">No samples</div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  <mat-paginator 
+    [hidden]="!pageCounts"
+    [length]="params?.samples?.pager?.total"
+    [pageSize]=""
+    [pageSizeOptions]="pageCounts"
+    (page)="onPageChange($event)"
+  >
+
+  </mat-paginator>
+</div>

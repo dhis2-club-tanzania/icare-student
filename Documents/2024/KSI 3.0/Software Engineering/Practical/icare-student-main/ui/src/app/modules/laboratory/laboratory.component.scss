@@ -1,0 +1,45 @@
+.laboratory-home-content {
+  border-radius: 5px;
+}
+
+.laboratory-header {
+  display: flex;
+  // justify-content: space-between;
+  // align-items: center;
+  left: 0;
+  right: 0;
+  // position: fixed;
+  z-index: 200;
+  background-color: #fff;
+  padding: 10px 5px;
+}
+
+.laboratory-home-container {
+  padding: 0 10px;
+}
+
+.laboratory-home-container a {
+  text-decoration: none;
+}
+
+::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-standard-chip {
+  width: 95% !important;
+  height: auto !important;
+  margin: 1px 4px !important;
+  padding: 10px !important;
+  background-color: rgba(238, 238, 238, 0.218);
+}
+
+// ::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-standard-chip:hover {
+//   border-radius: 0 16px 16px 0 !important;
+// }
+
+::ng-deep .mat-standard-chip .for-lis-chip:hover {
+  border-radius: 0 !important;
+}
+
+.active-route {
+  background-color: #2a8fd1 !important; // TODO use variable
+  color: #fff !important;
+  border-radius: 0 !important;
+}

@@ -1,0 +1,77 @@
+<div
+  *ngIf="{
+    bedsByLocationDetails: bedsUnderCurrentWard$ | async,
+    loadingVisit: loadingVisit$ | async,
+    currentLocation: currentLocation$ | async,
+    locationsIds: locationsIds$ | async,
+    orderType: orderType$ | async,
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="
+      params?.loadingVisit ||
+      !params?.locationsIds ||
+      !params?.bedsByLocationDetails
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div *ngIf="params?.bedsByLocationDetails && params?.locationsIds">
+    <mat-tab-group mat-align-tabs="start" dynamicHeight="true">
+      <mat-tab label="Patients">
+        <mat-toolbar>
+          <button
+            mat-icon-button
+            (click)="onBack($event)"
+            matTooltip="Go to Home page"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="ml-2">IPD visits</span>
+          <!-- <button
+            mat-button
+            class="ml-2"
+            id="nursing-search-patient"
+            (click)="onSearchPatient($event)"
+          >
+            <mat-icon class="mr-2">search</mat-icon>
+            <span>Search from all Patients</span>
+          </button> -->
+        </mat-toolbar>
+        <div *ngIf="!params?.settingCurrentLocationStatus">
+          <div class="w-100 text-centered">
+            <!-- TODO: Softcode the order uuid -->
+            <!-- {{ locationsIds$ | async | json }} -->
+            <app-patient-list
+              [encounterType]="'e22e39fd-7db2-45e7-80f1-60fa0d5a4378'"
+              (selectPatient)="onSelectPatient($event)"
+              [shouldShowParentLocation]="true"
+              [isTabularList]="true"
+            ></app-patient-list>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Beds">
+        <mat-toolbar>
+          <button
+            mat-icon-button
+            (click)="onBack($event)"
+            matTooltip="Go to Home page"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            <span class="ml-2" style="font-size: 1.2rem"
+              >Beds list & status</span
+            >
+          </button>
+        </mat-toolbar>
+        <app-wards-list
+          [locationBedsDetails]="params?.bedsByLocationDetails"
+          [locationsIds]="params?.locationsIds"
+          [encounterType]="'e22e39fd-7db2-45e7-80f1-60fa0d5a4378'"
+          [currentLocation]="currentLocation"
+          (bedStatus)="onGetBedStatus($event, params?.orderType)"
+        ></app-wards-list>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

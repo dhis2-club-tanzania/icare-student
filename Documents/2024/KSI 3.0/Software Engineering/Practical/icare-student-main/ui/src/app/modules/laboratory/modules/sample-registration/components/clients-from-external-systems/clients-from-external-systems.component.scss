@@ -1,0 +1,11 @@
+.client-has-results {
+  background-color: #00ff5a1a;
+}
+
+.list-from-other-systems {
+  z-index: 201;
+  position: absolute;
+  background-color: #fff;
+  max-height: 40vh;
+  overflow: auto;
+}

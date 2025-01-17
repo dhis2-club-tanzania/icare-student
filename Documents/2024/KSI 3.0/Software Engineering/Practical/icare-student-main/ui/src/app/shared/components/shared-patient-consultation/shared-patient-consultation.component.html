@@ -1,0 +1,259 @@
+<div
+  *ngIf="{
+    formEntities: consultationForms$ | async,
+    loadingForms: loadingForms$ | async,
+    savingObservations: savingObservations$ | async,
+    observations: observations$ | async,
+    currentPatient: currentPatient$ | async,
+    loadingVisit: loadingVisit$ | async,
+    location: currentLocation$ | async,
+    visit: activeVisit$ | async,
+    forms: forms$ | async,
+    billableItems: billableItems$ | async,
+    observationsGroupedByConcept: observationsGroupedByConcept$ | async
+  } as params"
+>
+  <!-- current patient sidebar -->
+  <!-- <div class="sidebar-container bg-white mat-elevation-z1">
+    <app-patient-sidebar
+      [currentPatient]="params?.currentPatient"
+    ></app-patient-sidebar>
+  </div> -->
+  {{ "JOSE" }}
+
+  <mat-progress-bar
+    *ngIf="params?.loadingVisit || !params?.currentPatient"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div *ngIf="params?.currentPatient">
+    <app-new-patient-profile
+      [currentPatient]="params?.currentPatient"
+    ></app-new-patient-profile>
+
+    <!-- current patient consultation panel -->
+    <div
+      class="patient-consultation-container mat-elevation-z1 border"
+      style="border-radius: 5px"
+    >
+      <!-- <mat-progress-bar
+        *ngIf="params?.loadingVisit"
+        mode="indeterminate"
+      ></mat-progress-bar> -->
+
+      <div class="d-flex justify-content-between p-3 pb-0">
+        <div style="height: 40px" class="w-100 d-flex">
+          <div class="w-50 float-left d-flex">
+            <h2>Consultation</h2>
+            <button
+              class="float-left ml-2"
+              mat-stroked-button
+              (click)="clearBills($event)"
+              [routerLink]="'/clinic/patient-list'"
+              matTooltip="Back to List"
+            >
+              <mat-icon>arrow_back</mat-icon>
+              Back to Client List
+            </button>
+
+            <button
+              class="ml-2"
+              (click)="
+                onGetBackToPatientDashboard(
+                  $event,
+                  params?.currentPatient?.patient
+                )
+              "
+              mat-stroked-button
+            >
+              Back to Dashboard
+            </button>
+          </div>
+          <div class="d-flex justify-content-end w-50">
+            <a
+              class="text-danger mr-2"
+              *ngIf="params?.visit?.waitingToBeAdmitted"
+            >
+              Waiting to be given a bed
+            </a>
+            <a
+              class="mr-2"
+              *ngIf="
+                !params?.visit?.waitingToBeAdmitted && params?.visit?.isAdmitted
+              "
+            >
+              <img
+                height="20"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAAEqUlEQVRYhc2YW2hURxjH/9/MnL3lVovGS28ENa0iFKq1m2wi0j4UQ4wxmrZUKAg2rU9FCn1YrF1aRREsBS20kZbeESnFJESNCD4kGyMGSxG8Uo3QSzReqnGze/bMpQ9bN4m71Wxy1uT/eGbmm9+Zb/4f5zvAFBe5GWz1lo4vlJIbYAgewXf+/PGr4YnGZG6AAUBTU6+lldxQGQzypS8t4Y5Wm9yI6xrghTmDHCDDBYclBGAg3IjrGmC+NOUBx52GYUOAAwCSQyAifW/cGCPqwu1meAWp8RhnXC5uauq1rs64Gq8IBjkXfExr7GQSJ0/2Jlq21vhz2UusjnSUMm2+k1pXM8YvKK3faN264vx4wPMhwbT5aebMWcueevpJ69rAwPN9l6+0AHjuQYuam5c4DR91fNnd0/NOOsUAGJEOVVUyrTWi0eOj1hCRZIJ9misg1YcPJitCQYuxlF+i0e6kTjrTW3euGswl0PLIMV+JEx+sqqoUWmt0d/fIlm01Vq5A94tpQNyDAwACKR7w5XRP8qkpX2ZcAyz/q0gBhpRUcKQECNKNuBl1kDPywqjzb35y5FzclgcU6MBYXD3SOAQy4zFENlFduF1XV4fS9fDXkyf02pfnMr/HwulLN+xTFwckDHpjtt7ctm1Flxub5qKMFGsDMEZYWDYNr78yz7v97WBBfXXZsmIf63gt0vHD8sgx36QCOkqbOzFneAInVCyaRR+ufzFQNqdoTSmS0cZN+x+ZyzPuoFJGXekflAC8I5/7vQIb6xf5vj10dsGZPvM9gLVrNh/ZI7Wz0UzQbETM4Zz9qbT5UUq5q31H7a302Kpwu6qqDqU3iEaP234v1zveDWY9JUcqRL7ujd2NJ2qN5keDlUu54BP79NNaIxYbQv/f/fbA9esJLeXKlu21nUCWN6fUNbx28Y/bWYNZgqOm4pmAR3giBoZNFA4AGGMoKirE/PJ53gULF5QwwQ+vDLe9kBUQAJIJ+VlL56WYMSbbMBY/O4Ok0kGXWxoAwLTHSjCvfL5fcOuXxsb9PCsgt8y+a7fs31q7+pxs4z4PR9nsYtt1uv9UOn06+QP+x+3yQAMzlHlKEkLfScj6ztP9v3/VfjY+GM/knPtEUUG+AAFgzuzZRZbwvvW/7ju0vWYgYZKLz1y+uXfL3hP2NwfPxc5d+Qd2UgEASqcVcPcTPKzikmIoLYMPvOFtkZVDAN5rCB/ecerC9fVn+m6uSzpmfmHASggCM4RAvgC9Hg+MRokgw9I51lpDae1HUl+tC7enJ0sowABxO3V6t+/aqe+8PB4hYwzGaDHqBIkIAGH3pqqHBkg4Eh983pMvPgAGAI0uM0QEIgOls5eXUcsfPmVCMgYgGJNhEkY0NkDkNcOpHShrX0x4f3d0zGE6O8c+N1cRwATuq4OVoYq8bZirurqiamr3JIamdtNkSJPAiBxna7gfpRgjHQpVpg+NDGWahIhcabhzVWPkWKEjEzcAeEY+nzIpHkrELKSqV1oGIHavlwXgaj+bq7SPKRjDtE79wZNSgoiU4Fw0d/f0NMGAE5FknO2aDMBDkZo7DZEj+7qjx9cZgBFIcYvvmQyWnPQvCULmfbqY+pMAAAAASUVORK5CYII="
+              />
+            </a>
+            <span class="mr-2 text-left" *ngIf="params?.currentPatient">
+              <app-is-first-visit
+                [patient]="params?.currentPatient?.patient?.uuid"
+              ></app-is-first-visit>
+            </span>
+            <button
+              mat-stroked-button
+              (click)="
+                viewPatientHistory(
+                  $event,
+                  params?.currentPatient?.patient?.uuid
+                )
+              "
+              class="ml-2 float-right"
+            >
+              History
+            </button>
+            <button
+              class="ml-2 float-right"
+              (click)="onDone($event)"
+              mat-flat-button
+              color="primary"
+            >
+              Finish Consultation
+            </button>
+          </div>
+        </div>
+      </div>
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="params.loadingForms"
+      ></mat-progress-bar>
+      <mat-horizontal-stepper #stepper class="">
+        <mat-step (click)="onOpenForm('All opd observations')">
+          <ng-template matStepLabel
+            >Clinical Notes/Diagnosis & Prescription</ng-template
+          >
+          <mat-divider></mat-divider>
+
+          <!-- {{params?.formEntities | json }} -->
+          <p
+            *ngIf="applicableForms?.length === 0"
+            class="text-danger text-center"
+          >
+            NO Form, contact IT
+          </p>
+          <ng-template matStepContent>
+            <div class="row">
+              <div class="col-md-7 col-sx-12 col-sm-12">
+                <app-clinical-notes
+                  *ngIf="
+                    !params.loadingForms &&
+                    !params.loadingVisit &&
+                    params.currentPatient &&
+                    params?.forms &&
+                    params?.forms?.length > 0
+                  "
+                  [clinicalObservations]="params?.observations"
+                  [patient]="params?.currentPatient"
+                  [location]="params?.location"
+                  [visit]="params?.visit"
+                  [savingObservations]="params?.savingObservations"
+                  [forms]="params?.forms"
+                  (saveObservations)="
+                    onSaveObservations($event, params?.currentPatient)
+                  "
+                >
+                </app-clinical-notes>
+              </div>
+              <div class="col-md-5 col-sx-12 col-sm-12">
+                <div *ngIf="currentPatient$ | async">
+                  <app-diagnosis
+                    [patient]="currentPatient$ | async"
+                    [diagnosisFormDetails]="
+                      (params?.formEntities)['Visit Diagnoses']
+                    "
+                  ></app-diagnosis>
+                </div>
+                <div>
+                  <mat-progress-bar
+                    *ngIf="params?.loadingVisit"
+                    mode="indeterminate"
+                  ></mat-progress-bar>
+                  <app-prescription
+                    *ngIf="!params?.loadingVisit"
+                  ></app-prescription>
+                </div>
+
+                <div style="margin-top: 15px">
+                  <mat-accordion>
+                    <mat-expansion-panel
+                      class="mb-2 border p-0"
+                      [expanded]="false"
+                    >
+                      <mat-expansion-panel-header>
+                        <mat-panel-title style="font-size: 1.4rem">
+                          Other visit details
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <div>
+                        <div class="h5">Lab Tests</div>
+                        <app-patient-lab-results-summary
+                          *ngIf="
+                            params?.visit &&
+                            params?.observationsGroupedByConcept
+                          "
+                          [observations]="params?.observationsGroupedByConcept"
+                          [patientVisit]="params?.visit"
+                        ></app-patient-lab-results-summary>
+
+                        <div class="mt-2">
+                          <div class="h5">Vitals</div>
+                          <app-patient-vitals-summary></app-patient-vitals-summary>
+                        </div>
+                      </div>
+                    </mat-expansion-panel>
+                  </mat-accordion>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-step>
+        <!-- <mat-step>
+          <ng-template matStepLabel>Diagnosis</ng-template>
+          <mat-divider></mat-divider>
+          <ng-template matStepContent>
+            <div *ngIf="currentPatient$ | async">
+              <app-diagnosis
+                [patient]="currentPatient$ | async"
+                [diagnosisFormDetails]="
+                  (params?.formEntities)['Visit Diagnoses']
+                "
+              ></app-diagnosis>
+            </div>
+          </ng-template>
+        </mat-step> -->
+        <mat-step>
+          <ng-template matStepLabel>Investigation/Procedure</ng-template>
+          <mat-divider></mat-divider>
+          <!-- {{ params?.formEntities | json }} -->
+          <!-- TODO: Find a better way to have an API returning billable items by parent department of the orderable aitems -->
+          <ng-template matStepContent>
+            <app-investigation-procedure
+              *ngIf="
+                !params.loadingForms && params?.currentPatient && params?.visit
+              "
+              [investigationAndProceduresFormsDetails]="
+                (params?.formEntities)['All orderables']
+              "
+              [patient]="params?.currentPatient?.patient"
+              [visit]="params?.visit"
+              [billableItems]="[]"
+            ></app-investigation-procedure>
+
+            <mat-progress-bar
+              mode="indeterminate"
+              *ngIf="!params?.currentPatient || !params?.visit"
+            ></mat-progress-bar>
+          </ng-template>
+        </mat-step>
+        <!-- <mat-step>
+          <ng-template matStepLabel>Prescription</ng-template>
+          <mat-divider></mat-divider>
+          <ng-template matStepContent>
+            <app-prescription></app-prescription>
+          </ng-template>
+        </mat-step> -->
+      </mat-horizontal-stepper>
+    </div>
+  </div>
+</div>

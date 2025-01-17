@@ -1,0 +1,57 @@
+<div
+  *ngIf="{ labSamplesGroupedByMRN: labSamplesGroupedByMRN$ | async } as params"
+>
+  <div class="d-flex">
+    <mat-form-field class="w-50">
+      <mat-label>Search</mat-label>
+      <mat-icon matPrefix>search</mat-icon
+      ><input
+        type="text"
+        placeholder="Search Patient"
+        matInput
+        (keyup)="onSearch($event)"
+        [(ngModel)]="searchingText"
+      />
+    </mat-form-field>
+  </div>
+
+  <table class="table table-bordered">
+    <thead class="table-header">
+      <tr>
+        <td>MRN</td>
+        <td>Name</td>
+        <td>Visit Date</td>
+        <td>Action</td>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="params?.labSamplesGroupedByMRN?.length > 0">
+        <tr *ngFor="let samplesGroupedByMRN of params?.labSamplesGroupedByMRN">
+          <td>{{ samplesGroupedByMRN?.mrNo }}</td>
+          <td>
+            {{ samplesGroupedByMRN?.patientNames }}
+          </td>
+          <td>
+            {{ visitsParams?.startDate }}
+          </td>
+          <td>
+            <button
+              mat-flat-button
+              class="print-btn"
+              (click)="openPrintDialog($event, samplesGroupedByMRN?.samples)"
+            >
+              Print Results
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="params?.labSamplesGroupedByMRN?.length == 0">
+        <tr class="text-danger">
+          <td colspan="3">
+            <p class="text-center">No patient with completed results</p>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

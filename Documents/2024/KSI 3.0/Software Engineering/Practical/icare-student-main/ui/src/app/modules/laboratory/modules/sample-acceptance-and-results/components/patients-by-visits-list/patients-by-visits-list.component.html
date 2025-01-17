@@ -1,0 +1,425 @@
+<div
+  *ngIf="{
+    visitsDetailsLoadedSate: visitsDetailsLoadedSate$ | async,
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    sampleTypes: sampleTypes$ | async,
+    visitsDetails: visitsDetails$ | async,
+    labSamplesToReCollect: labSamplesToReCollect$ | async,
+    patient: patient$ | async
+  } as params"
+>
+  <div class="row" *ngIf="privileges && privileges['Sample Collection']">
+    <div class="col-12">
+      <mat-progress-bar
+        *ngIf="
+          !params?.sampleTypesLoadedState ||
+          !params?.visitsDetails ||
+          !params?.sampleTypes
+        "
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <div
+        style="margin-top: 15px"
+        *ngIf="
+          params?.sampleTypesLoadedState &&
+          params?.visitsDetails &&
+          params?.sampleTypes
+        "
+      >
+        <app-sample-status-summary-for-home
+          [visitsDetails]="params?.visitsDetails"
+          [sampleTypes]="params?.sampleTypes"
+          [visitsParameters]="visitsParameters"
+        ></app-sample-status-summary-for-home>
+      </div>
+    </div>
+    <div class="col-12">
+      <mat-tab-group (selectedTabChange)="onOpenNewTab($event)">
+        <mat-tab label="New Patients">
+          <div class="p-3" *ngIf="!loadPatientIsSet">
+            <app-patients-list
+              (patientVisit)="onGetPatientVisit($event)"
+            ></app-patients-list>
+          </div>
+
+          <div class="p-3">
+            <div class="row" *ngIf="loadPatientIsSet">
+              <div class="col-12">
+                <div>
+                  <div class="row">
+                    <div class="col-md-7">
+                      <p
+                        style="
+                          text-align: left;
+                          padding: 8px;
+                          color: #222222;
+                          font-weight: 600;
+                        "
+                      >
+                        {{ selectedPatientVisit?.name }} &nbsp; | &nbsp; Age :
+                        {{ (patient$ | async)?.age }} &nbsp; | &nbsp; Gender :
+                        {{ (patient$ | async)?.gender }} &nbsp;
+                        <!-- Phone: {{ (patient$ | async)?.phone }} -->
+                      </p>
+                    </div>
+                    <div class="col-md-5 clinical-history-summary">
+                      <div style="float: right">
+                        <a
+                          (click)="showClinicalNotes($event)"
+                          class="clinical-notes-btn"
+                        >
+                          Clinical notes summary
+                          <i
+                            *ngIf="!showClinicalNotesSummary"
+                            class="fa fa-chevron-down"
+                            style="margin-left: 5px"
+                          ></i>
+                          <i
+                            *ngIf="showClinicalNotesSummary"
+                            class="fa fa-chevron-up"
+                            style="margin-left: 5px"
+                          ></i>
+                        </a>
+                        <div
+                          *ngIf="showClinicalNotesSummary"
+                          class="clinical-summary"
+                        >
+                          <app-clinical-notes-summary
+                            [labConfigs]="labConfigs"
+                            [patientUuid]="selectedPatientVisit?.uuid"
+                          >
+                          </app-clinical-notes-summary>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="{
+                      visitsLoadedState: visitsLoadedState$ | async,
+                      currentPatientVisit: currentPatientVisit$ | async
+                    } as visitParams"
+                  >
+                    <div style="margin-top: 15px" *ngIf="params?.patient">
+                      <app-patient-orders
+                        [patient]="patient$ | async"
+                        [sampleTypes]="sampleTypes"
+                        [labConfigs]="labConfigs"
+                        [currentVisit]="visitParams?.currentPatientVisit"
+                        [visitsParameters]="visitsParameters"
+                        (backToPatientList)="onGetBackToList($event)"
+                      ></app-patient-orders>
+                    </div>
+                    <!-- <div
+            *ngIf="
+              !visitParams?.visitsLoadedState ||
+              !visitParams?.currentPatientVisit
+            "
+          >
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </div> -->
+                  </div>
+                  <!-- <button class="ml-2" mat-stroked-button (click)="onGetBackToList($event)">Done</button> -->
+                </div>
+                <div *ngIf="!(patient$ | async)">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Attended Patients">
+          <div class="p-3" *ngIf="!loadPatientIsSet">
+            <app-patient-attended
+              (patientVisit)="onGetPatientVisit($event)"
+            ></app-patient-attended>
+          </div>
+
+          <div class="p-3">
+            <div class="row" *ngIf="loadPatientIsSet">
+              <div class="col-12">
+                <div>
+                  <div class="row">
+                    <div class="col-md-7">
+                      <p
+                        style="
+                          text-align: left;
+                          padding: 8px;
+                          color: #222222;
+                          font-weight: 600;
+                        "
+                      >
+                        {{ selectedPatientVisit?.name }} &nbsp; | &nbsp; Age :
+                        {{ (patient$ | async)?.age }} &nbsp; | &nbsp; Gender :
+                        {{ (patient$ | async)?.gender }} &nbsp;
+                        <!-- Phone: {{ (patient$ | async) }} -->
+                      </p>
+                    </div>
+                    <div class="col-md-5 clinical-history-summary">
+                      <div style="float: right">
+                        <a
+                          (click)="showClinicalNotes($event)"
+                          class="clinical-notes-btn"
+                        >
+                          Clinical notes summary
+                          <i
+                            *ngIf="!showClinicalNotesSummary"
+                            class="fa fa-chevron-down"
+                            style="margin-left: 5px"
+                          ></i>
+                          <i
+                            *ngIf="showClinicalNotesSummary"
+                            class="fa fa-chevron-up"
+                            style="margin-left: 5px"
+                          ></i>
+                        </a>
+                        <div
+                          *ngIf="showClinicalNotesSummary"
+                          class="clinical-summary"
+                        >
+                          <app-clinical-notes-summary
+                            [labConfigs]="labConfigs"
+                            [patientUuid]="selectedPatientVisit?.patient?.uuid"
+                          >
+                          </app-clinical-notes-summary>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="{
+                      visitsLoadedState: visitsLoadedState$ | async,
+                      currentPatientVisit: currentPatientVisit$ | async
+                    } as visitParams"
+                  >
+                    <div style="margin-top: 15px">
+                      <app-patient-orders
+                        [patient]="patient$ | async"
+                        [sampleTypes]="sampleTypes"
+                        [labConfigs]="labConfigs"
+                        [currentVisit]="visitParams?.currentPatientVisit"
+                        (backToPatientList)="onGetBackToList($event)"
+                      ></app-patient-orders>
+                    </div>
+                    <!-- <div
+            *ngIf="
+              !visitParams?.visitsLoadedState ||
+              !visitParams?.currentPatientVisit
+            "
+          >
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </div> -->
+                  </div>
+                  <!-- <button class="ml-2" mat-stroked-button (click)="onGetBackToList($event)">Done</button> -->
+                </div>
+                <div *ngIf="!(patient$ | async)">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Sample Re-collection">
+          <div class="p-3">
+            <table class="table table-bordered">
+              <thead class="table-header">
+                <tr style="text-align: center">
+                  <th rowspan="2">SN</th>
+                  <th rowspan="2">Department</th>
+                  <th rowspan="2">Patient</th>
+                  <th colspan="1" rowspan="2">Sample / Specimen</th>
+                  <th rowspan="2">Previous Sample ID</th>
+                  <th colspan="1" rowspan="2">Rejection Reason</th>
+                  <th colspan="4">Test Details</th>
+                  <th colspan="2" rowspan="2">Sample ID</th>
+                  <th colspan="1" rowspan="2">Priority</th>
+                  <th colspan="1" rowspan="2">Action</th>
+                </tr>
+                <tr style="text-align: center">
+                  <th>Test</th>
+                  <th>Ordered By</th>
+                  <th>Source</th>
+                  <th>Date Ordered</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngIf="params?.labSamplesToReCollect">
+                  <ng-container
+                    *ngFor="
+                      let sampledOrder of params?.labSamplesToReCollect;
+                      let i = index
+                    "
+                  >
+                    <tr
+                      *ngFor="
+                        let order of sampledOrder?.orders;
+                        let count = index
+                      "
+                      [ngClass]="{ 'row-alternated': i % 2 !== 0 }"
+                    >
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ i + 1 }}
+                      </td>
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ sampledOrder?.departmentName }}
+                      </td>
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ sampledOrder?.patientNames }}
+                      </td>
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ sampledOrder.name }}
+                      </td>
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ sampledOrder.id }}
+                      </td>
+                      <td
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        {{ sampledOrder?.rejectionReason }}
+                      </td>
+                      <td>
+                        {{ order?.concept?.display }}
+                      </td>
+                      <td>{{ order?.orderer_names }}</td>
+                      <td>
+                        {{ order?.location_name }}
+                      </td>
+                      <td>
+                        {{ order?.order_date | date: "medium" }}
+                      </td>
+                      <!-- <td>
+                        {{ order?.paymentType }}
+                      </td> -->
+                      <td
+                        colspan="2"
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        <mat-form-field class="w-50">
+                          <mat-label>Sample ID</mat-label>
+                          <input
+                            id="{{ sampledOrder.id }}"
+                            type="text"
+                            [(ngModel)]="sampleIdentification[sampledOrder.id]"
+                            required
+                            matInput
+                            [disabled]="sampleIdentification[sampledOrder.id]"
+                            value="{{ sampleIdentification[sampledOrder.id] }}"
+                            placeholder="2020-09-20/122"
+                          />
+                        </mat-form-field>
+                        <button
+                          style="margin-left: 15px; float: right"
+                          [disabled]="sampleIdentification[sampledOrder.id]"
+                          mat-stroked-button
+                          (click)="generateSampleId($event, sampledOrder.id)"
+                        >
+                          Generate Sample ID
+                        </button>
+                      </td>
+                      <td
+                        colspan="1"
+                        *ngIf="count == 0"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                      >
+                        <mat-checkbox
+                          [checked]="
+                            sampledOrder.priorityHigh ||
+                            samplePriority[sampledOrder?.id]
+                          "
+                          [disabled]="
+                            sampledOrder.collected && sampledOrder.priorityHigh
+                          "
+                          id="{{ sampledOrder.id }} + '-priority'"
+                          (change)="setPriority(sampledOrder.id, $event)"
+                        >
+                          High
+                        </mat-checkbox>
+                      </td>
+                      <td
+                        colspan="1"
+                        [attr.rowspan]="sampledOrder?.orders?.length"
+                        *ngIf="count == 0"
+                      >
+                        <div
+                          *ngIf="
+                            patientsCollectedSamplesKeyedBySampleIdentifier$
+                              | async as patientsCollectedSamplesKeyedBySampleIdentifier
+                          "
+                        >
+                          <button
+                            color="primary"
+                            mat-raised-button
+                            (click)="saveSamplesToCollect($event, sampledOrder)"
+                            [disabled]="
+                              !sampleIdentification[sampledOrder.id] ||
+                              (sampleIdentification[sampledOrder.id] &&
+                                patientsCollectedSamplesKeyedBySampleIdentifier[
+                                  sampleIdentification[sampledOrder.id]
+                                ])
+                            "
+                          >
+                            <mat-spinner
+                              *ngIf="
+                                params?.collectingLabSampleState &&
+                                collectingSampleMessage[sampledOrder?.id]
+                              "
+                              color="primary"
+                              [diameter]="20"
+                              style="
+                                display: inline-block !important;
+                                margin-right: 4px;
+                              "
+                            >
+                            </mat-spinner>
+                            Save
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    params?.labSamplesToReCollect &&
+                    params?.labSamplesToReCollect?.length == 0
+                  "
+                >
+                  <tr>
+                    <td colspan="14">
+                      <p style="text-align: center; color: red">
+                        No sample to re-collect
+                      </p>
+                    </td>
+                  </tr>
+                </ng-container>
+                <ng-container *ngIf="!params?.labSamplesToReCollect">
+                  <tr>
+                    <td colspan="13">
+                      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

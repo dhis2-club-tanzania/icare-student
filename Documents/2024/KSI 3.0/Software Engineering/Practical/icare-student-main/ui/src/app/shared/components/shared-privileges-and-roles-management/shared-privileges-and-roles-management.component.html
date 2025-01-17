@@ -1,0 +1,18 @@
+<div class="users-profiles-and-access-control mt-2">
+  <mat-tab-group>
+    <mat-tab label="User Privileges">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-privileges-list></app-privileges-list>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="User Profiles/Roles">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-roles-list></app-roles-list>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

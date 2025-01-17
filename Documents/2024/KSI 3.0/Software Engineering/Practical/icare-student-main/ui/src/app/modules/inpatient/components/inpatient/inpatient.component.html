@@ -1,0 +1,333 @@
+<div
+  class="row"
+  *ngIf="{
+    forms: forms$ | async,
+    observations: observations$ | async,
+    savingObservations: savingObservations$ | async,
+    observationsGroupedByConcept: observationsGroupedByConcept$ | async
+  } as params"
+>
+  <!-- <div class="col-md-12 col-sm-12 back-to-client-list">
+    <button
+      class="float-left"
+      mat-stroked-button
+      (click)="getBackToPatientsList($event)"
+      matTooltip="Back to List"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      Back to Client List
+    </button>
+    <button
+      [disabled]="activeVisit?.transferedOutSide"
+      (click)="transferPatient($event, activeVisit)"
+      *ngIf="activeVisit?.isAdmitted"
+      style="color: #fff"
+      mat-stroked-button
+      class="ml-2 float-right"
+    >
+      Transfer within
+    </button>
+    <button
+      [disabled]="activeVisit?.transferedOutSide"
+      (click)="transferPatientOutSide($event, activeVisit)"
+      *ngIf="activeVisit?.isAdmitted"
+      style="color: #fff"
+      mat-stroked-button
+      class="ml-2 float-right"
+    >
+      Transfer Outside
+    </button>
+    <button
+      [disabled]="
+        lastBedOrder?.dueDateAndTime > now || activeVisit?.transferedOutSide
+      "
+      (click)="
+        createNewOrder(
+          $event,
+          activeVisit,
+          currentPatient,
+          provider,
+          lastBedOrder
+        )
+      "
+      *ngIf="activeVisit?.isAdmitted"
+      style="color: #fff"
+      mat-stroked-button
+      class="ml-2 float-right"
+    >
+      Continue
+    </button>
+    <button
+      (click)="
+        dischargePatient(
+          $event,
+          activeVisit,
+          currentPatient,
+          provider,
+          lastBedOrder
+        )
+      "
+      *ngIf="activeVisit?.isAdmitted"
+      style="color: #fff"
+      mat-stroked-button
+      class="ml-2 float-right"
+    >
+      Discharge
+    </button>
+    <button
+      [disabled]="
+        (!activeVisit?.waitingToBeAdmitted && lastBedOrder) ||
+        (countOfUnPaidBedOrders > 0 && lastBedOrder)
+      "
+      style="color: #fff"
+      mat-stroked-button
+      class="float-right"
+      (click)="
+        onAdmit(
+          $event,
+          bedsByLocationDetails,
+          currentPatient,
+          provider,
+          activeVisit,
+          bedOrdersWithBillStatus
+        )
+      "
+    >
+      Assign Bed
+    </button>
+  </div>
+  <div class="col-12" *ngIf="activeVisit?.transferedOutSide">
+    <p class="text-danger text-center">
+      Patient has already set for Referral to
+      {{ activeVisit?.transferToEncounterDetails?.location?.display }}
+    </p>
+  </div>
+  <div
+    class="col-12"
+    *ngIf="
+      !activeVisit?.isAdmitted &&
+      countOfUnPaidBedOrders > 0 &&
+      !activeVisit?.transferedOutSide
+    "
+  >
+    <p class="text-danger text-center">
+      Can not be admitted due to pending Admission Fee
+    </p>
+  </div>
+  <div
+    class="col-12"
+    *ngIf="
+      bedOrdersWithBillStatus?.length === 0 && !activeVisit?.transferedOutSide
+    "
+  >
+    <p class="text-danger text-center">
+      No any admission order has been ordered
+    </p>
+  </div> -->
+  <!-- <div
+    class="col-md-12"
+    *ngIf="
+      (bedOrdersWithBillStatus?.length !== 0 &&
+        countOfUnPaidBedOrders === 0 &&
+        !activeVisit?.isAdmitted &&
+        !activeVisit?.transferedOutSide) ||
+      (activeVisit?.isAdmitted && !activeVisit?.transferedOutSide)
+    "
+  > -->
+  <div class="col-md-12">
+    <!-- <div
+      class="loading-overlay"
+      style="align-items: baseline"
+      *ngIf="
+        activeVisit?.isAdmitted &&
+        lastBedOrder &&
+        lastBedOrder?.dueDateAndTime < now
+      "
+    >
+      <div class="text-center">
+        <div style="top: 100px">
+          Patient Bed Payment is overdue, click continue for next payment
+        </div>
+      </div>
+    </div> -->
+    <div class="row">
+      <div class="col-12">
+        <div
+          style="padding: 0 4px"
+          *ngIf="{
+            currentUser: currentUser$ | async,
+            userPrivileges: userPrivileges$ | async,
+            loadingVisit: loadingVisit$ | async,
+            activeVisit: activeVisit$ | async,
+            iCareGeneralConfigurations: iCareGeneralConfigurations$ | async,
+            currentLocation: currentLocation$ | async
+          } as params"
+        >
+          <app-shared-patient-dashboard
+            *ngIf="
+              params?.currentUser &&
+              params?.userPrivileges &&
+              params?.activeVisit &&
+              !params?.loadingVisit &&
+              params?.iCareGeneralConfigurations &&
+              params?.iCareGeneralConfigurations !== '' &&
+              params?.currentLocation
+            "
+            [currentUser]="params?.currentUser"
+            [activeVisit]="params?.activeVisit"
+            [userPrivileges]="params?.userPrivileges"
+            [iCareGeneralConfigurations]="params?.iCareGeneralConfigurations"
+            [currentLocation]="params?.currentLocation"
+            [isInpatient]="true"
+            (assignBed)="
+              onAssignBed(
+                bedsByLocationDetails,
+                currentPatient,
+                provider,
+                activeVisit,
+                bedOrdersWithBillStatus
+              )
+            "
+            (dichargePatient)="
+              dischargePatient(
+                $event,
+                activeVisit,
+                currentPatient,
+                provider,
+                lastBedOrder
+              )
+            "
+          ></app-shared-patient-dashboard>
+          <div
+            class="alert alert-danger mt-2"
+            role="alert"
+            *ngIf="params?.iCareGeneralConfigurations === ''"
+          >
+            Missing General iCare Metadata Configurations, Please set
+            "iCare.GeneralMetadata.Configurations" or Contact IT
+          </div>
+
+          <div
+            class="alert alert-danger mt-2"
+            role="alert"
+            *ngIf="params?.iCareClinicConfigurations === ''"
+          >
+            Missing Icare Clinic Configurations. Please set
+            "icare.clinic.configurations" or Contact IT
+          </div>
+
+          <mat-progress-bar
+            mode="indeterminate"
+            *ngIf="
+              !params?.userPrivileges ||
+              params?.rolesLoadingState ||
+              params?.loadingVisit ||
+              !params?.currentLocation
+            "
+          ></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="row">
+      <div class="col-9">
+        <mat-progress-bar
+          *ngIf="!currentBedOrder && bedOrdersWithBillStatus?.length > 0"
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <div *ngIf="currentBedOrder" class="mt-4">
+          <p class="text-center text-danger" *ngIf="!activeVisit?.isAdmitted">
+            Should be admitted first to proceed
+          </p>
+
+          <mat-tab-group
+            *ngIf="activeVisit?.isAdmitted"
+            (selectedTabChange)="changeTab(selectedTab.value)"
+            [selectedIndex]="selectedTab.value"
+            (selectedIndexChange)="selectedTab.setValue($event)"
+          >
+            <mat-tab label="Forms">
+              <div class="p-2" *ngIf="selectedTab.value === 0">
+                <mat-progress-bar
+                  *ngIf="!params?.forms"
+                  mode="indeterminate"
+                ></mat-progress-bar>
+                <p
+                  class="text-center text-danger"
+                  *ngIf="params?.forms && params?.forms?.length === 0"
+                >
+                  No forms assigned, contact IT
+                </p>
+                <app-capture-data
+                  *ngIf="params?.forms && params?.forms?.length > 0"
+                  [patient]="currentPatient"
+                  [savingObservations]="params?.savingObservations"
+                  (saveObservations)="
+                    onSaveObservations($event, currentPatient)
+                  "
+                  [location]="bedsByLocationDetails"
+                  [visit]="activeVisit"
+                  [provider]="provider"
+                  [forms]="params?.forms"
+                  [observations]="params?.observations"
+                  [useSideBar]="true"
+                ></app-capture-data>
+              </div>
+            </mat-tab>
+            <mat-tab label="Medication / Diagnosis / Laboratory">
+              <div
+                class="p-2"
+                style="margin: 4px 5%"
+                *ngIf="selectedTab.value === 1"
+              >
+                <h4 class="text-left">Medication</h4>
+                <app-patient-medication-summary
+                  [patientVisit]="activeVisit"
+                ></app-patient-medication-summary>
+                <h4 class="text-left mt-2">Confirmed Diagnosis</h4>
+                <app-patient-diagnoses-summary
+                  [isConfirmedDiagnosis]="true"
+                ></app-patient-diagnoses-summary>
+                <h4 class="text-left mt-2">Provisional Diagnosis</h4>
+                <app-patient-diagnoses-summary
+                  [isConfirmedDiagnosis]="false"
+                ></app-patient-diagnoses-summary>
+                <h4 class="text-left mt-2">Laboratory</h4>
+                <app-patient-lab-results-summary
+                  *ngIf="activeVisit"
+                  [observations]="params?.observationsGroupedByConcept"
+                  [patientVisit]="activeVisit"
+                ></app-patient-lab-results-summary>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+      <div class="col-3">
+        <mat-accordion>
+          <mat-expansion-panel
+            [expanded]="count === 0"
+            *ngFor="let bedOrder of bedOrdersWithBillStatus; let count = index"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title
+                (click)="setCurrentBedOrder($event, bedOrder)"
+                [ngClass]="{
+                  'text-danger': now > bedOrder?.dueDateAndTime,
+                  'active-bed-order':
+                    bedOrder?.orderNumber === currentBedOrder?.orderNumber
+                }"
+              >
+                {{ bedOrder?.dateActivated | date: "medium" }}
+              </mat-panel-title>
+              <mat-panel-description> </mat-panel-description>
+            </mat-expansion-panel-header>
+            <a (click)="setCurrentBedOrder($event, bedOrder)"
+              >Admitted By: {{ bedOrder?.orderer?.display }}</a
+            >
+            <table></table>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div> -->
+  </div>
+</div>

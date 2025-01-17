@@ -1,0 +1,37 @@
+<div
+  *ngIf="{
+    cabinets: cabinetsUnderCurrentLocation$ | async,
+    loadingVisit: loadingVisit$ | async,
+    currentLocation: currentLocation$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="params?.loadingVisit"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <div *ngIf="params?.cabinets">
+    <mat-tab-group mat-align-tabs="start" dynamicHeight="true">
+      <mat-tab label="Patients">
+        <div class="centered-container-patient-list">
+          <div class="w-100 text-centered">
+            <div class="text-muted h6 mb-4 text-center">
+              Search for a patient
+            </div>
+            <app-patient-list
+              (selectPatient)="onSelectPatient()"
+              [currentLocation]="params?.cabinets"
+            ></app-patient-list>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Cabinets">
+        <div class="p-3">
+          <app-cabinets-list
+            [currentLocation]="currentLocation"
+          ></app-cabinets-list>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

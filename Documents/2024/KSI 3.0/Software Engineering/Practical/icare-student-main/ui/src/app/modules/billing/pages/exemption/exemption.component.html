@@ -1,0 +1,86 @@
+<div
+  class="visit-container"
+  *ngIf="{
+    currentPatient: currentPatient$ | async,
+    bills: bills$ | async,
+    patientsBillsLoadedState: patientsBillsLoadedState$ | async,
+    currentVisit: currentVisit$ | async,
+    exemptionEncounterType: exemptionEncounterType$ | async,
+    exemptionConcept: exemptionConcept$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="!params?.currentPatient || !params?.exemptionConcept"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div class="row" *ngIf="params?.currentPatient && params?.bills">
+    <div class="col-md-12">
+      <app-new-patient-profile
+        *ngIf="params?.exemptionConcept"
+        [currentPatient]="params?.currentPatient"
+      ></app-new-patient-profile>
+    </div>
+
+    <div class="col-md-12 col-sm-12 back-to-client-list">
+      <button
+        class="float-left"
+        mat-stroked-button
+        [routerLink]="'/billing/exemption'"
+        matTooltip="Go to Home page"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        Back to Client List
+      </button>
+      <button
+        class="float-right bg-danger"
+        mat-stroked-button
+        matTooltip="Deny exemption for this patient"
+        (click)="exemptionDenial(params)"
+      >
+        <mat-icon>pan_tool</mat-icon>
+        Deny Exemption
+      </button>
+      <div class="action-buttons" *ngIf="showActionButtons">
+        <button
+          class="float-right mr-5"
+          mat-stroked-button
+          matTooltip="Exempt patient across the whole visit"
+          (click)="exemptFull(params)"
+        >
+          <mat-icon>thumb_up_alt</mat-icon>
+          Full Exempt
+        </button>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <mat-progress-bar
+        *ngIf="!params?.patientsBillsLoadedState"
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <mat-card *ngIf="discountItemsCount > 0">
+        <app-exemption-history
+          [discountItems]="discountItems"
+          [discountItemsCount]="discountItemsCount"
+          [bill]="bill"
+          id="exemptions"
+        >
+        </app-exemption-history>
+      </mat-card>
+    </div>
+    <div class="col-md-12">
+      <mat-progress-bar
+        *ngIf="!params?.patientsBillsLoadedState"
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <mat-card *ngIf="params?.patientsBillsLoadedState">
+        <app-exemption-list
+          [bills]="params?.bills"
+          [currentPatient]="params?.currentPatient"
+          (discountBill)="onDiscountBill($event, params)"
+          (showActionButtons)="onShowActionButtons($event)"
+        >
+        </app-exemption-list>
+      </mat-card>
+    </div>
+  </div>
+</div>

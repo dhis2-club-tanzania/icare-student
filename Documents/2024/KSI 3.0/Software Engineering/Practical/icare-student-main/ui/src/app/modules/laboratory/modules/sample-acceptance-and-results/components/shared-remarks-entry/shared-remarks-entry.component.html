@@ -1,0 +1,7 @@
+<div class="ml-2 mr-2 w-75">
+  <app-form
+    *ngIf="remarksField"
+    [fields]="[remarksField]"
+    (formUpdate)="onFormUpdate($event)"
+  ></app-form>
+</div>

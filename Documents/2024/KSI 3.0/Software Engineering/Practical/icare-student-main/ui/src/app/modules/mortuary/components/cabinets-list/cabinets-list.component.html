@@ -1,0 +1,72 @@
+<div
+  *ngIf="{
+    cabinetsInfo: cabinetsInfo$ | async,
+    diedPatientsVisits: diedPatientsVisits$ | async
+  } as params"
+>
+  <mat-accordion *ngIf="!params?.cabinetsInfo?.areChildLocationsCabinets">
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="
+        let cabinetData of params?.cabinetsInfo?.childLocations;
+        let wardIndex = index
+      "
+      [expanded]="wardIndex === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-between">
+        <mat-panel-title>
+          <span>{{ cabinetData?.display }}</span>
+          <span class="ml-4"></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="row">
+        <div
+          class="col-md-2 col-sm-4 col-sx-6"
+          *ngFor="let cabinet of cabinetData?.childLocations"
+        >
+          <div
+            class="cabinet"
+            [ngClass]="{
+              'bg-light': !params?.diedPatientsVisits[cabinet?.uuid],
+              'bg-warning': params?.diedPatientsVisits[cabinet?.uuid]
+            }"
+            (click)="onGetStatus($event, cabinet)"
+          >
+            <div class="d-flex justify-content-center m-2">
+              <img
+                height="80px"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQVR4nO2bIU4DURgGZ5c6joBswXGCRWJwtXAAroBtwlEIqUUikHABLLXcAEuK6ArySFZ13yzpN0mT7or/n520qXhpA7TADXDCYfEJPM7YPfyDLGOxbYGFbSFyOituvAGvlZZfAJ28lzLAC7CqJLL6JWLtpa20dLIkgC1gkwC2gE0C2AI2CWAL2CSALWCTALaATQLYAjYJYAvYJIAtYJMAtoBNAtgCNglgC9iUJ0P7YAEsgaP++ht4AjbSnEHGCPAMzIt7t8CZNGeQMb4C24nNGWSMT8AVcA0c99dfwFqcM8gYATbA/YTmDHLwvwIJYAvYJIAtYJMAtoBNAtgCNglgC9gkgC1gkwC2gE0C2AI2CWAL2CSALWCTALaATQLYAjblyVAH3FXa3RXvjb1/Alz2r9pYe2nZ83n7P+OjARp2/yA/l2Vq8w6sfwBe9CWBOnt/dgAAAABJRU5ErkJggg=="
+              />
+            </div>
+            <p class="d-flex justify-content-center">{{ cabinet?.display }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <div class="row" *ngIf="params?.cabinetsInfo?.areChildLocationsCabinets">
+    <div
+      class="col-md-2 col-sm-4 col-sx-6"
+      *ngFor="let cabinet of params?.cabinetsInfo?.childLocations"
+    >
+      <div
+        class="cabinet"
+        [ngClass]="{
+          'bg-light': !params?.diedPatientsVisits[cabinet?.uuid],
+          'bg-warning': params?.diedPatientsVisits[cabinet?.uuid]
+        }"
+        (click)="onGetStatus($event, cabinet)"
+      >
+        <div class="d-flex justify-content-center m-2">
+          <img
+            height="60px"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QA/wD/AP+gvaeTAAABS0lEQVR4nO2bIU4DURgGZ5c6joBswXGCRWJwtXAAroBtwlEIqUUikHABLLXcAEuK6ArySFZ13yzpN0mT7or/n520qXhpA7TADXDCYfEJPM7YPfyDLGOxbYGFbSFyOituvAGvlZZfAJ28lzLAC7CqJLL6JWLtpa20dLIkgC1gkwC2gE0C2AI2CWAL2CSALWCTALaATQLYAjYJYAvYJIAtYJMAtoBNAtgCNglgC9iUJ0P7YAEsgaP++ht4AjbSnEHGCPAMzIt7t8CZNGeQMb4C24nNGWSMT8AVcA0c99dfwFqcM8gYATbA/YTmDHLwvwIJYAvYJIAtYJMAtoBNAtgCNglgC9gkgC1gkwC2gE0C2AI2CWAL2CSALWCTALaATQLYAjblyVAH3FXa3RXvjb1/Alz2r9pYe2nZ83n7P+OjARp2/yA/l2Vq8w6sfwBe9CWBOnt/dgAAAABJRU5ErkJggg=="
+          />
+        </div>
+        <p class="d-flex justify-content-center">{{ cabinet?.display }}</p>
+      </div>
+    </div>
+  </div>
+</div>

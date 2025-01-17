@@ -1,0 +1,73 @@
+<div>
+  <div class="border">
+    <mat-toolbar>
+      <button mat-icon-button [routerLink]="''" matTooltip="Go to Home page">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="ml-2">Dispensing</span>
+    </mat-toolbar>
+    <div
+      *ngIf="{
+        generalPrescriptionEncounterType:
+          generalPrescriptionEncounterType$ | async,
+        generalPrescriptionOrderType: generalPrescriptionOrderType$ | async,
+        useGenericPrescription: useGenericPrescription$ | async
+      } as params"
+    >
+      <div
+        *ngIf="
+          params?.useGenericPrescription && params?.generalPrescriptionOrderType
+        "
+      >
+        <mat-tab-group>
+          <mat-tab label="{{ params?.useGenericPrescription && params?.useGenericPrescription === 'true' ? 'Waiting to be verified' : 'To Dispense' }}">
+            <div class="p-2">
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderType]="
+                  params?.useGenericPrescription &&
+                  params?.useGenericPrescription === 'true'
+                    ? params?.generalPrescriptionOrderType
+                    : 'iCARESTS-PRES-1111-1111-525400e4297f'
+                "
+                [orderStatusCode]="'EMPTY'"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </div>
+          </mat-tab>
+          <mat-tab label="To dispense" *ngIf="params?.useGenericPrescription && params?.useGenericPrescription === 'true'">
+            <div class="p-2">
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderType]="'iCARESTS-PRES-1111-1111-525400e4297f'"
+                [orderStatusCode]="'EMPTY'"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </div>
+          </mat-tab>
+          <mat-tab label="Already dispensed">
+            <div class="p-2">
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderType]="'iCARESTS-PRES-1111-1111-525400e4297f'
+                "
+                [orderStatusCode]="'DISPENSED'"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <mat-progress-loader
+        mode="indeterminate"
+        *ngIf="
+          !params?.useGenericPrescription ||
+          !params?.generalPrescriptionOrderType
+        "
+      ></mat-progress-loader>
+    </div>
+  </div>
+</div>

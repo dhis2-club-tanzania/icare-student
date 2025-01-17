@@ -1,0 +1,130 @@
+<ng-container *ngIf="requisitionObjectkeys?.length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="let key of requisitionObjectkeys; let keyIndex = index"
+      [expanded]="keyIndex === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-end">
+        <mat-panel-title>
+          <div class="w-75">
+            <span> <strong>
+              Target Store: {{ key?.targetStore }}
+            </strong></span>
+          </div>
+          <div class="w-25">
+            <span>Requesting Date: {{ key?.date }}</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="items-table">
+        <div style="overflow: auto">
+          <table class="table">
+            <tr>
+              <td>#</td>
+              <td>Item</td>
+              <td>Quantity Requested</td>
+              <td>Requested On</td>
+              <td>Quantity Issued</td>
+              <td>Issued On</td>
+              <td>Requsted From</td>
+              <td>Status</td>
+              <td><span class="float-right">Actions</span></td>
+            </tr>
+            <tr *ngIf="requisitionByStoreAndDate && requisitionByStoreAndDate.length === 0">
+              <td colspan="7">
+                <div class="w-100 d-flex justify-content-center">No data</div>
+              </td>
+            </tr>
+
+            <tr
+              *ngFor="let request of requisitionByStoreAndDate[key?.searchKey]; let requestIndex = index"
+            >
+              <td>{{ requestIndex + 1 }}</td>
+              <td>{{ request?.name }}</td>
+              <td>{{ request?.quantityRequested }}</td>
+              <td>{{ request?.created | date }}</td>
+              <td>{{ request?.quantityIssued || "-" }}</td>
+              <td>
+                {{ request?.quantityIssued ? (request?.issuedDate | date) : "-" }}
+              </td>
+              <td>{{ request?.targetStore?.name }}</td>
+              <td>
+                <div
+                  [ngClass]="{
+                    'text-warning': request?.status === 'PENDING',
+                    'text-success':
+                      request?.status === 'ISSUED' || request?.status === 'RECEIVED',
+                    'text-danger': request?.status === 'REJECTED'
+                  }"
+                >
+                  {{ request?.status }}
+                </div>
+              </td>
+              <td>
+                <div *ngIf="request.status !== 'RECEIVED'">
+                  <div *ngIf="request.status !== 'ISSUED'">
+                    <button
+                      class="float-right"
+                      mat-flat-button
+                      color="warn"
+                      *ngIf="request.status !== 'REJECTED'"
+                      [disabled]="
+                        request?.crudOperationStatus?.status === 'CANCELLING'
+                      "
+                      (click)="onCancelRequisition($event, request?.id)"
+                    >
+                      <mat-spinner
+                        color="primary"
+                        *ngIf="request?.crudOperationStatus?.status === 'CANCELLING'"
+                        [diameter]="20"
+                        style="display: inline-block !important; margin-right: 4px"
+                      ></mat-spinner>
+                      Cancel Request
+                    </button>
+                  </div>
+
+                  <div class="float-right" *ngIf="request.status === 'ISSUED'">
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      [disabled]="
+                        request?.crudOperationStatus?.status === 'CANCELLING'
+                      "
+                      (click)="onReceiveRequisition($event, request)"
+                    >
+                      <mat-spinner
+                        color="primary"
+                        *ngIf="request?.crudOperationStatus?.status === 'CANCELLING'"
+                        [diameter]="20"
+                        style="display: inline-block !important; margin-right: 4px"
+                      ></mat-spinner>
+                      Receive
+                    </button>
+                    <button
+                      mat-flat-button
+                      class="ml-2"
+                      color="warn"
+                      [disabled]="
+                        request?.crudOperationStatus?.status === 'REJECTING'
+                      "
+                      (click)="onRejectRequisition($event, request)"
+                    >
+                      <mat-spinner
+                        color="primary"
+                        *ngIf="request?.crudOperationStatus?.status === 'REJECTING'"
+                        [diameter]="20"
+                        style="display: inline-block !important; margin-right: 4px"
+                      ></mat-spinner>
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+      </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

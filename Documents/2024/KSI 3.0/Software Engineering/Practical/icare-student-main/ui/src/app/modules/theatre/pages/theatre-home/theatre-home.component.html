@@ -1,0 +1,17 @@
+<div>
+  <mat-progress-bar
+    *ngIf="loadingVisit$ | async"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div class="centered-container-patient-list">
+    <div>
+      <app-patient-list
+        [shouldShowParentLocation]="true"
+        [orderType]="'4ae7f8eb-0bd5-11e8-b450-525400e4297f'"
+        [isTabularList]="true"
+        [itemsPerPage]="10"
+        (selectPatient)="onSelectPatient($event)"
+      ></app-patient-list>
+    </div>
+  </div>
+</div>

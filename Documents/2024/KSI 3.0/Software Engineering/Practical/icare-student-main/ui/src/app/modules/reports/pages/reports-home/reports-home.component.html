@@ -1,0 +1,46 @@
+<div
+  class="reports-container"
+  *ngIf="{
+    userPrivileges: userPrivileges$ | async,
+    reportsAccessConfigurations: reportsAccessConfigurations$ | async,
+    reportsCategoriesConfigurations: reportsCategoriesConfigurations$ | async,
+    reportsExtraParams: reportsExtraParams$ | async,
+    reportGroups: reportGroups$ | async,
+    loadedAllRoles: loadedAllRoles$ | async,
+    reportsParametersConfigurations: reportsParametersConfigurations$ | async,
+    standardReports: standardReports$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      !params?.userPrivileges ||
+      !params?.reportsAccessConfigurations ||
+      !params?.reportsCategoriesConfigurations ||
+      !params?.reportsExtraParams ||
+      !params?.reportGroups ||
+      !params?.loadedAllRoles ||
+      !params?.reportsParametersConfigurations ||
+      !params?.standardReports
+    "
+  ></mat-progress-bar>
+  <app-reports-generator
+    *ngIf="
+      params?.userPrivileges &&
+      params?.reportsAccessConfigurations &&
+      params?.reportsCategoriesConfigurations &&
+      params?.reportsExtraParams &&
+      params?.reportGroups &&
+      params?.loadedAllRoles &&
+      params?.reportsParametersConfigurations &&
+      params?.standardReports
+    "
+    [userPrivileges]="params?.userPrivileges"
+    [reportsAccessConfigurations]="params?.reportsAccessConfigurations"
+    [reportsCategoriesConfigurations]="params?.reportsCategoriesConfigurations"
+    [reportsExtraParams]="params?.reportsExtraParams"
+    [reportGroups]="params?.reportGroups"
+    [reportsParametersConfigurations]="params?.reportsParametersConfigurations"
+    [standardReports]="params?.standardReports"
+  ></app-reports-generator>
+</div>

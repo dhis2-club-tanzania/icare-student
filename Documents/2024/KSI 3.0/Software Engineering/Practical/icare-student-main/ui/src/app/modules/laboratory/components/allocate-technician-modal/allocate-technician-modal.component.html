@@ -1,0 +1,55 @@
+<div class="set-technician-contatiner" *ngIf="{ sample: currentSample$ | async, users: users$| async} as allocationDetails">
+  <!-- <div class="header">
+    <h3></h3>
+    <hr/>
+  </div> -->
+  <mat-toolbar color="primary">Allocate Technician</mat-toolbar>
+  
+  <div class="orders-summary-container">
+    <mat-card>
+      <table class="table table-bordered table-stripped" *ngIf="{ sample: currentSample$ | async } as sampleInfo">
+        <thead class="allocation-table-header">
+          <tr>
+            <td style="width: 30px;">SN</td>
+            <td>Test ordered</td>
+            <td>Ordered by</td>
+            <td colspan="2">Actions</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="
+                    let testOrder of allocationDetails?.sample?.orders;
+                    let count = index
+                  ">
+            <td>{{ count + 1 }}</td>
+            <td>{{ testOrder?.concept?.display }}</td>
+            <td>{{ testOrder?.orderer?.name }}</td>
+            <td>
+              <mat-form-field class="w-70 providers-options" *ngIf="!testOrder?.technician">
+                <mat-label>Select Technician</mat-label>
+                <mat-select required (selectionChange)="getValue($event.value)">
+                  <mat-option *ngFor="let option of allocationDetails?.users" [value]="option">
+                    {{ option?.person?.display }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button [disabled]="testOrder?.technician" mat-stroked-button color="primary" (click)="
+                        saveTestAllocation($event, testOrder, sampleInfo?.sample)
+                      " class="mr-2 save-technician-btn">
+                Save
+              </button>
+      
+              <span *ngIf="testOrder?.technician">
+                {{ testOrder?.technician?.display }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card>
+  </div>
+    <button
+      color="primary" mat-stroked-button (click)="onCloseDialog($event)" class="mr-2 close-dialog-btn">
+      Done
+    </button>
+</div>

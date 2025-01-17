@@ -1,0 +1,185 @@
+<div
+  class="row mt-3"
+  *ngIf="{
+    orderType: orderType$ | async,
+    provider: provider$ | async,
+    formFields: currentForm?.formFields,
+    setMembers: currentForm?.setMembers
+  } as orderCreateInfo"
+>
+  <div class="col-md-3">
+    <mat-accordion>
+      <mat-expansion-panel
+        class="mb-2"
+        *ngFor="let departmentGroup of departments"
+        [expanded]="departmentGroup?.id == currentDepartmentGroup?.id"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ departmentGroup?.name }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-nav-list class="mt-2">
+          <mat-list-item
+            class="orders-form-list"
+            [ngClass]="{ 'active-form': currentForm?.id == department?.id }"
+            *ngFor="let department of departmentGroup?.setMembers"
+            (click)="setCurrentForm($event, department)"
+          >
+            <a matLine>{{ department?.name }}</a>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <div
+    [ngClass]="{
+      'col-md-6': orderedItems?.length > 0 || (labOrders$ | async)?.length > 0,
+      'col-md-9': orderedItems?.length == 0 && (labOrders$ | async)?.length == 0
+    }"
+  >
+    <div class="h5 mb-3">{{ currentForm?.name }}</div>
+    <div class="form list-of-items-to-order">
+      <!-- <app-form
+        [fields]="[currentForm?.formField]"
+        (formUpdate)="onFormUpdate($event)"
+        [shouldRenderAsCheckBoxesButton]="true"
+      >
+      </app-form> -->
+      <div *ngIf="orderCreateInfo?.formFields?.length > 0" class="row">
+        <div
+          class="col-md-6 col-sm-12 col-sx-12"
+          *ngFor="let field of orderCreateInfo?.formFields"
+        >
+          <app-orders-options-form
+            [fieldOption]="field"
+            [orderType]="orderCreateInfo?.orderType"
+            [provider]="orderCreateInfo?.provider"
+            (formValues)="onGetFormValue($event)"
+          ></app-orders-options-form>
+        </div>
+      </div>
+
+      <div *ngIf="orderCreateInfo?.formFields?.length == 0" class="row">
+        <div
+          class="col-md-6 col-sm-12 col-sx-12"
+          *ngFor="let field of orderCreateInfo?.setMembers"
+        >
+          <app-orders-options-form
+            [fieldOption]="field"
+            [orderType]="orderCreateInfo?.orderType"
+            [provider]="orderCreateInfo?.provider"
+            (formValues)="onGetFormValue($event)"
+          ></app-orders-options-form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="orderedItems?.length > 0 || (labOrders$ | async)?.length > 0"
+    [ngClass]="{
+      'col-md-3': orderedItems?.length > 0 || (labOrders$ | async)?.length > 0,
+      '': orderedItems?.length == 0 && (labOrders$ | async)?.length == 0
+    }"
+  >
+    <div class="ordered-items-container">
+      <mat-card class="p-0 border">
+        <div class="ordered-items">
+          <mat-toolbar color="primary">Ordered items</mat-toolbar>
+          <div
+            style="padding: 8px !important; max-height: 200px; overflow: auto"
+          >
+            <div
+              *ngFor="let item of labOrders$ | async"
+              style="display: flex; justify-content: space-between"
+            >
+              <span class="w-75">{{ item?.concept?.display }} </span>
+              <span
+                class="remove-item text-danger"
+                (click)="
+                  onDeleteOrder(
+                    $event,
+                    item,
+                    orderCreateInfo?.orderType,
+                    orderCreateInfo?.provider
+                  )
+                "
+              >
+                <mat-icon title="Discontinue {{ item?.concept?.display }} "
+                  >close</mat-icon
+                >
+              </span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="orderedItems?.length > 0">
+          <mat-toolbar color="primary">Items to order</mat-toolbar>
+          <div
+            style="padding: 8px !important; max-height: 180px; overflow: auto"
+          >
+            <div *ngFor="let item of orderedItems">
+              <div
+                *ngIf="
+                  (failedOrders$ | async) && !(failedOrders$ | async)[item?.id]
+                "
+                style="display: flex; justify-content: space-between"
+              >
+                <span class="w-75"
+                  >{{ item?.valueName }}
+                  <span
+                    class="text-danger"
+                    *ngIf="failedOrders[item?.id] == true"
+                    style="font-size: 0.8rem"
+                  >
+                    Failed, not a billable item
+                  </span>
+                </span>
+                <span *ngIf="creatingLabOrderState$ | async">
+                  <mat-spinner
+                    color="primary"
+                    [diameter]="20"
+                    style="display: inline-block !important; margin-right: 4px"
+                  >
+                  </mat-spinner>
+                </span>
+                <span class="remove-item" (click)="onRemoveItem($event, item)">
+                  <mat-icon title="Remove {{ item?.valueName }}"
+                    >close</mat-icon
+                  >
+                </span>
+              </div>
+            </div>
+
+            <div *ngFor="let item of orderedItems">
+              <div
+                *ngIf="
+                  (failedOrders$ | async) && (failedOrders$ | async)[item?.id]
+                "
+                style="display: flex; justify-content: space-between"
+              >
+                <span class="w-75"
+                  >{{ item?.valueName }}
+                  <span style="margin-left: 4px; color: red; font-size: 0.8rem">
+                    Failed, not a billable item
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+    <div style="margin-top: 15px">
+      <button
+        [disabled]="orderedItems?.length == 0 || orders?.length == 0"
+        mat-stroked-button
+        class="mr-2 lab-test-confirm-btn"
+        color="primary"
+        (click)="onSaveOrders($event)"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

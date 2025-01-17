@@ -1,0 +1,57 @@
+
+<div id="page-home">
+  <div class="centered-container" style="margin: auto;width: 80px;padding: 10px;">
+    <mat-spinner></mat-spinner>
+    <br />
+    <br />
+    Loading....
+  </div>
+</div>
+
+<!-- <div id="page-home">
+  <div class="centered-container">
+    <div class="w-100">
+      <div class="search-input-card p-2 border w-100">
+        <mat-icon matPrefix class="text-muted">search</mat-icon>
+        <input
+          class="ml-2 w-100 search-input"
+          matInput
+          autocomplete="off"
+          placeholder="Search Module"
+          (keyup)="searchModules($event)"
+        />
+      </div>
+
+      <div *ngIf="currentLocation$ | async as currentLocation">
+        <div
+          id="icare-modules"
+          *ngIf="
+            apps | filterBy: searchTerm:'id':currentLocation as filteredApps
+          "
+        >
+          <ng-container *ngFor="let app of filteredApps">
+            <mat-card
+              *ngIf="!app?.hidden"
+              class="app-card m-3"
+              (click)="navigateToApp(app.path)"
+            >
+              <div class="app-icon">
+                <img src="{{ app.image }}" style="height: 57px" />
+              </div>
+              <p class="mt-1" style="font-size: 15px">{{ app.name }}</p>
+            </mat-card>
+          </ng-container>
+
+          <div
+            class="no-app-found text-center w-100 mt-5"
+            *ngIf="searchTerm && filteredApps?.length === 0"
+          >
+            <h3 class="text-muted">
+              Module with keyword "{{ searchTerm }}" could not be found
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

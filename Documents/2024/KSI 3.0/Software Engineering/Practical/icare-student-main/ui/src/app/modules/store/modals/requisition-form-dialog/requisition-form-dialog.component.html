@@ -1,0 +1,18 @@
+<div class="w-100">
+  <mat-toolbar color="primary">{{ data?.requisitionItem ? 'Update Requisition Item' : '' }}
+  </mat-toolbar>
+  <app-new-requisition-form
+    [existingRequisitionItem]="data?.requisitionItem"
+    (closePopup)="onClosePopup()"
+  ></app-new-requisition-form>
+  <div class="mt-2 mb-2">
+    <button
+      class="float-right mr-2 mb-2"
+      mat-flat-button
+      color="primary"
+      (click)="onClosePopup($event)"
+    >
+      Close
+    </button>
+  </div>
+</div>

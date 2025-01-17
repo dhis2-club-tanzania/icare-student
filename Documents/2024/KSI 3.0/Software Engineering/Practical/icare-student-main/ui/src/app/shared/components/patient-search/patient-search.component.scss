@@ -1,0 +1,62 @@
+.patient-search-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-search-input-block {
+  //position: absolute;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 25px;
+  background-color: #ffffff;
+  z-index: 100;
+}
+
+.patient-search-input-block:hover,
+.patient-content-available {
+  box-shadow: 1px 0px 3px 0px rgba(0, 0, 0, 0.15);
+}
+
+.no-data {
+  // color: red;
+  font-size: 15px;
+  text-align: center;
+}
+.patient-search-input {
+  position: relative;
+  display: flex;
+  text-align: left;
+  align-items: center;
+
+  mat-icon {
+    line-height: 25px;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.4) !important;
+  }
+
+  #input-search-patient {
+    border: none !important;
+    background-color: transparent;
+  }
+
+  #input-search-patient:focus {
+    outline: none !important;
+  }
+}
+
+#patient-search-list {
+  margin-left: -8px;
+  margin-right: -8px;
+  padding-bottom: 10px;
+
+  mat-option {
+    font-size: 14px;
+    height: 35px;
+  }
+}
+
+.search-spinner {
+  position: absolute;
+  right: 10px;
+}

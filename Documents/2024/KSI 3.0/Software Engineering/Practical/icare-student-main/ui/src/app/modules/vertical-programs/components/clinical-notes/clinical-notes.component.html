@@ -1,0 +1,78 @@
+<div>
+  <div class="row mt-2">
+    <div class="col-2 clinical-form-list">
+      <mat-form-field class="w-100">
+        <input  autocomplete="off" type="text" matInput placeholder="Search forms" />
+      </mat-form-field>
+      <mat-nav-list>
+        <mat-list-item
+          *ngFor="let clinicalForm of forms"
+          (click)="onSetClinicalForm($event, clinicalForm)"
+          class="clinical-form {{
+            currentCustomForm?.id === clinicalForm?.id ? 'active-form' : ''
+          }}"
+          [color]="currentCustomForm?.id === clinicalForm?.id ? 'primary' : ''"
+        >
+          <a matLine>{{ clinicalForm?.name }}</a>
+        </mat-list-item>
+        <!-- <mat-list-item
+          *ngFor="let clinicalForm of clinicalForms"
+          (click)="onSetForm($event, clinicalForm)"
+          class="clinical-form {{
+            currentForm?.id === clinicalForm?.id ? 'active-form' : ''
+          }}"
+          [color]="currentForm?.id === clinicalForm?.id ? 'primary' : ''"
+        >
+          <a matLine>{{ clinicalForm.name }}</a>
+        </mat-list-item> -->
+      </mat-nav-list>
+    </div>
+    <div class="col-10 mt-1 current-clinical-form">
+      <div class="h5 mb-3">{{ currentCustomForm?.name }}</div>
+      <div *ngFor="let formField of currentCustomForm?.formFields">
+        <div
+          *ngIf="formField && formField?.formField && !formField?.formFields"
+        >
+          <app-form
+            [fields]="[formField?.formField]"
+            [isFormHorizontal]="false"
+            [fieldsData]="clinicalObservations"
+            (formUpdate)="onFormUpdate($event)"
+          >
+          </app-form>
+        </div>
+
+        <fieldset *ngIf="formField && formField?.formFields">
+          <legend>{{ formField.name }}</legend>
+          <div>
+            <app-form
+              [fields]="formField?.formFields"
+              [isFormHorizontal]="true"
+              [fieldsData]="clinicalObservations"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <!-- buttons -->
+  <div class="d-flex justify-content-end">
+    <button
+      mat-flat-button
+      (click)="onConfirm($event)"
+      color="primary"
+      [disabled]="savingObservations"
+    >
+      <mat-spinner
+        color="primary"
+        *ngIf="savingObservations"
+        [diameter]="20"
+        style="display: inline-block !important; margin-right: 4px"
+      ></mat-spinner>
+      {{ savingObservations ? "Saving Observations..." : "Save Observations" }}
+    </button>
+  </div>
+</div>

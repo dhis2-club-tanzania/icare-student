@@ -1,0 +1,79 @@
+<div class="p-3">
+  <div class="row">
+    <div class="col-4">
+      <h3>Enrollments</h3>
+      <div
+        *ngIf="{
+          enrolledPrograms: enrolledPrograms$ | async
+        } as params"
+      >
+        <mat-progress-bar
+          *ngIf="!params?.enrolledPrograms"
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <mat-card *ngIf="params?.enrolledPrograms">
+          <span *ngIf="params?.enrolledPrograms?.results?.length == 0"
+            >No data</span
+          >
+
+          <table *ngIf="params?.enrolledPrograms?.results?.length > 0">
+            <tbody>
+              <tr *ngFor="let enrollment of params?.enrolledPrograms?.results">
+                <td>
+                  {{ enrollment?.program?.name }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card>
+      </div>
+    </div>
+
+    <div class="col-4">
+      <h4>New Enrollment</h4>
+      <mat-card>
+        <!-- {{ programs | json }} -->
+
+        <h4>Select Program</h4>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Program</mat-label>
+          <mat-select>
+            <mat-option
+              *ngFor="let program of programs?.results"
+              [value]="program?.uuid"
+              (click)="setProgram(program)"
+            >
+              {{ program?.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <br />
+        <h4 *ngIf="selectedProgram && allowWokrflowSelection">Select stage</h4>
+
+        <mat-form-field
+          appearance="fill"
+          *ngIf="selectedProgram && allowWokrflowSelection"
+          class="w-100"
+        >
+          <mat-label>Stage</mat-label>
+          <mat-select>
+            <mat-option
+              *ngFor="let workflow of selectedProgram?.allWorkflows"
+              [value]="workflow?.uuid"
+              (click)="setWorkflows(workflow)"
+            >
+              {{
+                workflow?.concept?.display || workflow?.concept?.name?.display
+              }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" (click)="enroll()">
+          Enroll
+        </button>
+      </mat-card>
+    </div>
+  </div>
+</div>

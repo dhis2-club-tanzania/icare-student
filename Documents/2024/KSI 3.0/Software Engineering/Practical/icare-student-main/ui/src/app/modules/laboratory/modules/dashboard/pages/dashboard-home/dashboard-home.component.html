@@ -1,0 +1,15 @@
+<div *ngIf="{ datesParameters: datesParameters$ | async } as params">
+  <!-- <app-dashboard
+    *ngIf="params?.datesParameters"
+    [datesParams]="params?.datesParameters"
+  ></app-dashboard> -->
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.datesParameters"
+  ></mat-progress-bar>
+  <app-shared-dashboard-container
+    *ngIf="params?.datesParameters"
+    [datesParams]="params?.datesParameters"
+  >
+  </app-shared-dashboard-container>
+</div>

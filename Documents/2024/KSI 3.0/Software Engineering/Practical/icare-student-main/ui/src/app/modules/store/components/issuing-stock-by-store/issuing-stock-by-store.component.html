@@ -1,0 +1,112 @@
+<ng-container *ngIf="issuingobjectkeys.length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="let key of issuingobjectkeys; let keyIndex = index"
+      [expanded]="keyIndex === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-end">
+        <mat-panel-title>
+          <div class="w-75">
+            <span> <strong>
+              Requesting Store: {{ key?.requestingLocation }}
+            </strong></span>
+          </div>
+          <div class="w-25">
+            <span>Requesting Date: {{ key?.date }}</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="items-table">
+        <div style="overflow: auto">
+      <table class="table">
+        <tr>
+          <td>#</td>
+          <td>Item</td>
+          <td>Quantity Requested</td>
+          <td>Quantity Issued</td>
+          <td>Requesting Store</td>
+          <td>Status</td>
+          <td>Requested Date</td>
+          <td>Actions</td>
+        </tr>
+
+        <tr *ngFor="let issue of issuingByLocationAndDate[key?.searchKey]; let issueIndex = index">
+          <td>{{ issueIndex + 1 }}</td>
+          <td>{{ issue?.name }}</td>
+          <td>{{ issue?.quantityRequested }}</td>
+          <td>{{ issue?.quantityIssued }}</td>
+          <td>{{ issue?.requestingLocation?.name }}</td>
+          <td>
+            <span class="text-warning">{{ issue?.status }}</span>
+          </td>
+          <!-- <td>
+            <div class="text-warning">Waiting</div>
+          </td> -->
+          <td>
+            {{ issue?.requestDate | date: "medium" }}
+          </td>
+          <td>
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="
+                issue?.crudOperationStatus?.status === 'ISSUING' ||
+                issue?.status === 'ISSUED' ||
+                issue?.status === 'CANCELLED' ||
+                issue?.status === 'REJECTED' ||
+                !currentStore
+              "
+              (click)="onIssue($event, issue, currentStore)"
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="issue?.crudOperationStatus?.status === 'ISSUING'"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Issue
+            </button>
+            <button
+              mat-flat-button
+              class="ml-2"
+              color="warn"
+              [disabled]="
+                issue?.crudOperationStatus?.status === 'REJECTING' ||
+                issue?.status === 'ISSUED' ||
+                issue?.status === 'REJECTED' ||
+                issue?.status === 'CANCELLED'
+              "
+              (click)="onReject($event, issue)"
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="
+                  issue?.crudOperationStatus?.status === 'REJECTING' 
+                "
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Reject
+            </button>
+          </td>
+          <td>
+            <section>
+              <mat-checkbox
+                color="primary"
+                [disabled]="issue?.status === 'ISSUED' || 
+                issue?.status === 'CANCELLED' ||
+                issue?.status === 'REJECTED' ||
+                !currentStore"
+                (change)="getSelection($event, issue)"
+                [checked]="selectedIssues[issue?.id]"
+              ></mat-checkbox>
+            </section>
+          </td>
+        </tr>
+        </table>
+      </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

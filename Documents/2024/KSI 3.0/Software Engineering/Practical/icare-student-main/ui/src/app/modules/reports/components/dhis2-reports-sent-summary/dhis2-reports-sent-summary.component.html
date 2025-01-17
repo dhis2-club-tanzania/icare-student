@@ -1,0 +1,33 @@
+<div
+  *ngIf="{ reportsSentToDHIS2: reportsSentToDHIS2$ | async } as params"
+  class="p-3"
+>
+  <div *ngIf="params?.reportsSentToDHIS2">
+    <div class="h4 text-left mt-2">
+      {{ params?.reportsSentToDHIS2[0]?.report_name }} sent to DHIS2
+    </div>
+    <hr />
+    <!-- TODO: Add selector for selecting a report to show -->
+    <div>
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let report of params?.reportsSentToDHIS2">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ report?.periodDefn?.name }}
+            </mat-panel-title>
+            <mat-panel-description>
+              View report sent to DHIS2
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div>
+            {{ report | json }}
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+  <mat-progress-bar
+    *ngIf="!params?.reportsSentToDHIS2"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

@@ -1,0 +1,58 @@
+<div
+  *ngIf="{ authenticationLoading: authenticationLoading$ | async } as params"
+>
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Username</mat-label>
+      <input
+        id="username"
+        class="input-username"
+        matInput
+        placeholder="Enter username"
+        formControlName="username"
+        autocomplete="off"
+        required
+      />
+      <mat-error> Please provide a valid username </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Password</mat-label>
+      <input
+        id="password"
+        class="input-password"
+        matInput
+        placeholder="Enter password"
+        formControlName="password"
+        autocomplete="off"
+        required
+        [type]="hide ? 'password' : 'text'"
+      />
+      <mat-icon style="cursor: pointer" matSuffix (click)="hide = !hide"
+        >{{ hide ? "visibility_off" : "visibility" }}
+      </mat-icon>
+
+      <mat-error> Please provide a valid password </mat-error>
+    </mat-form-field>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <button
+        id="login-btn"
+        mat-flat-button
+        color="primary"
+        [disabled]="params.authenticationLoading"
+        data-test="icare-login-button"
+      >
+        <mat-spinner
+          color="primary"
+          *ngIf="params.authenticationLoading"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        <span>Login</span>
+      </button>
+    </div>
+    <div class="authentication-error" *ngIf="loginErrorStatus$ | async">
+      Wrong username or password
+    </div>
+  </form>
+</div>

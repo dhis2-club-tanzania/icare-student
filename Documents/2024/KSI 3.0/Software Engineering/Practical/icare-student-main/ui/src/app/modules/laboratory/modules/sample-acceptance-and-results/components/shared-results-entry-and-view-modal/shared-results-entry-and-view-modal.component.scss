@@ -1,0 +1,42 @@
+.entry-col {
+  border-right: solid 1px #eee;
+  border-bottom: solid 1px #eee;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 792px) {
+  .parameter-test-default {
+    flex: 0 0 8.333333% !important;
+    max-width: 8.333333% !important;
+  }
+  .parameter-test-text {
+    flex: 0 0 16.666667% !important;
+    max-width: 16.666667% !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .parameter-test-default {
+    flex: 0 0 16.666667% !important;
+    max-width: 16.666667% !important;
+  }
+  .parameter-test-text {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+  }
+}
+
+.test-order-description {
+  font-size: 0.7rem !important;
+}
+
+.side-navigation {
+  position: fixed;
+  right: 10%;
+  bottom: 25%;
+  top: 25%;
+  border: solid 1px #eee;
+  width: 50%;
+  background-color: #f3f3f3;
+  z-index: 1000;
+}

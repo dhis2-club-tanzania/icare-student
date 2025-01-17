@@ -1,0 +1,51 @@
+<div *ngIf="{ currentPatient: currentPatient$ | async } as params">
+  <div class="dispensing-container" *ngIf="params?.currentPatient">
+    <div class="sidebar-container bg-white mat-elevation-z1">
+      <app-patient-profile
+        [patient]="currentPatient$ | async"
+      ></app-patient-profile>
+    </div>
+    <mat-card class="sidebar-content-container">
+      <div class="row">
+        <div class="col-9">
+          <app-dispensing></app-dispensing>
+        </div>
+        <div class="col-3">
+          <mat-accordion>
+            <mat-expansion-panel
+              class="mb-2 border mat-elevation-z0"
+              [expanded]="true"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title> Diagnosis </mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <app-patient-diagnoses-summary></app-patient-diagnoses-summary>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-accordion>
+            <mat-expansion-panel
+              class="border border mat-elevation-z0"
+              [expanded]="true"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title> Allergies </mat-panel-title>
+              </mat-expansion-panel-header>
+              <table class="table">
+                <tr>
+                  <td>ACE inhibitors ⇒ Headache</td>
+                </tr>
+                <tr>
+                  <td>
+                    ARBs (angiotensin II receptor blockers) ⇒ Anaemia ,
+                    Hepatotoxicity
+                  </td>
+                </tr>
+              </table>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

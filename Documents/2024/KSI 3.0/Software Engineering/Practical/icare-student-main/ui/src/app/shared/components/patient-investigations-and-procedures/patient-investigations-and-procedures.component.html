@@ -1,0 +1,195 @@
+<div *ngIf="!tabToShow">
+  <mat-tab-group
+    [selectedIndex]="selectedTab.value"
+    (selectedIndexChange)="selectedTab.setValue($event)"
+  >
+    <mat-tab
+      label="Laboratory"
+      *ngIf="
+        userPrivileges['CLINIC_ADD_LABORATORY_INVESTIGATION'] && !isTheatre
+      "
+    >
+      <div class="mat-tab-container">
+        <ng-template matTabContent>
+          <app-patient-lab-results-summary
+            *ngIf="
+              !clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections ||
+              (clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections &&
+                patientVisit?.hasProvisonalDiagnosis) ||
+              shouldShowLabSection
+            "
+            [observations]="observations"
+            [patientVisit]="patientVisit"
+            [forConsultation]="forConsultation"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [iCareGeneralConfigurations]="iCareGeneralConfigurations"
+            [isInpatient]="isInpatient"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-lab-results-summary>
+        </ng-template>
+      </div>
+    </mat-tab>
+    <mat-tab
+      label="Procedures"
+      *ngIf="userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']"
+    >
+      <div class="mat-tab-container">
+        <ng-template matTabContent>
+          <app-patient-procedures-summary
+            [patientVisit]="patientVisit"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [userPrivileges]="userPrivileges"
+            [forConsultation]="forConsultation"
+            [isInpatient]="isInpatient"
+            [provider]="provider"
+            [orderTypes]="orderTypes"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-procedures-summary>
+        </ng-template></div
+    ></mat-tab>
+    <mat-tab
+      label="Laboratory"
+      *ngIf="userPrivileges['CLINIC_ADD_LABORATORY_INVESTIGATION'] && isTheatre"
+    >
+      <div class="mat-tab-container">
+        <ng-template matTabContent>
+          <app-patient-lab-results-summary
+            *ngIf="
+              !clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections ||
+              (clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections &&
+                patientVisit?.hasProvisonalDiagnosis) ||
+              shouldShowLabSection
+            "
+            [observations]="observations"
+            [patientVisit]="patientVisit"
+            [forConsultation]="forConsultation"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [iCareGeneralConfigurations]="iCareGeneralConfigurations"
+            [isInpatient]="isInpatient"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-lab-results-summary>
+        </ng-template>
+      </div>
+    </mat-tab>
+    <mat-tab
+      label="Radiology"
+      *ngIf="userPrivileges['CLINIC_ADD_RADIOLOGY_INVESTIGATION'] && !isTheatre"
+    >
+      <div class="mat-tab-container">
+        <ng-template matTabContent>
+          <app-patient-radiology-summary
+            [patientVisit]="patientVisit"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [forConsultation]="forConsultation"
+            [isInpatient]="isInpatient"
+            [provider]="provider"
+            [orderTypes]="orderTypes"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-radiology-summary>
+        </ng-template></div
+    ></mat-tab>
+  </mat-tab-group>
+</div>
+<div *ngIf="tabToShow">
+  <ng-container *ngIf="tabToShow === 'laboratory'">
+    <div
+      label="Laboratory"
+      *ngIf="
+        userPrivileges['CLINIC_ADD_LABORATORY_INVESTIGATION'] && !isTheatre
+      "
+    >
+          <app-patient-lab-results-summary
+            *ngIf="
+              !clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections ||
+              (clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections &&
+                patientVisit?.hasProvisonalDiagnosis) ||
+              shouldShowLabSection
+            "
+            [observations]="observations"
+            [patientVisit]="patientVisit"
+            [forConsultation]="forConsultation"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [iCareGeneralConfigurations]="iCareGeneralConfigurations"
+            [isInpatient]="isInpatient"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-lab-results-summary>
+    </div>
+    <div
+      label="Laboratory"
+      *ngIf="userPrivileges['CLINIC_ADD_LABORATORY_INVESTIGATION'] && isTheatre"
+    >
+      <app-patient-lab-results-summary
+            *ngIf="
+              !clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections ||
+              (clinicConfigurations?.provisionalDiagnosis
+                ?.shouldAffectImmediateSections &&
+                patientVisit?.hasProvisonalDiagnosis) ||
+              shouldShowLabSection
+            "
+            [observations]="observations"
+            [patientVisit]="patientVisit"
+            [forConsultation]="forConsultation"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [iCareGeneralConfigurations]="iCareGeneralConfigurations"
+            [isInpatient]="isInpatient"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-lab-results-summary>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="tabToShow === 'procedure'">
+   <div
+      label="Procedures"
+      *ngIf="userPrivileges['CLINIC_ADD_PROCEDURE_ORDER']"
+    >
+          <app-patient-procedures-summary
+            [patientVisit]="patientVisit"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [userPrivileges]="userPrivileges"
+            [forConsultation]="forConsultation"
+            [isInpatient]="isInpatient"
+            [provider]="provider"
+            [orderTypes]="orderTypes"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-procedures-summary>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="tabToShow === 'radiology'">
+    <div
+      label="Radiology"
+      *ngIf="userPrivileges['CLINIC_ADD_RADIOLOGY_INVESTIGATION'] && !isTheatre"
+    >
+      <app-patient-radiology-summary
+            [patientVisit]="patientVisit"
+            [investigationAndProceduresFormsDetails]="
+              investigationAndProceduresFormsDetails
+            "
+            [forConsultation]="forConsultation"
+            [isInpatient]="isInpatient"
+            [provider]="provider"
+            [orderTypes]="orderTypes"
+            (updateConsultationOrder)="onUpdateConsultationOrder()"
+          ></app-patient-radiology-summary>
+        </div>
+  </ng-container>
+</div>

@@ -1,0 +1,39 @@
+<div *ngIf="{ existingMetadata: existingMetadata$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.existingMetadata"
+  ></mat-progress-bar>
+  <div
+    *ngIf="
+      matchedAttributes &&
+      matchedAttributes?.length > 0 &&
+      params?.existingMetadata &&
+      params?.existingMetadata?.length > 0
+    "
+  >
+    <ul class="p-2 w-100" style="list-style: none">
+      <li
+        class="w-100 p-2"
+        *ngFor="let attributeMetadata of params?.existingMetadata"
+      >
+        {{ attributeMetadata?.display }}
+        <span class="ml-2">
+          <button
+            class="float-right"
+            mat-button
+            (click)="onDelete($event, attributeMetadata)"
+          >
+            <mat-icon class="text-muted">delete</mat-icon>
+          </button>
+        </span>
+      </li>
+    </ul>
+  </div>
+  <div
+    *ngIf="matchedAttributes && matchedAttributes?.length === 0"
+    class="alert alert-info"
+    role="alert"
+  >
+    None
+  </div>
+</div>

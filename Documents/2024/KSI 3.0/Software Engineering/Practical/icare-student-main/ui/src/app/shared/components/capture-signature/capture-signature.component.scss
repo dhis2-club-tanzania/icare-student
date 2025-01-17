@@ -1,0 +1,29 @@
+::ng-deep .cdk-global-overlay-wrapper {
+  margin-top: -10px !important;
+}
+::ng-deep .mat-dialog-content {
+  display: block;
+  margin: 0 2px !important;
+  padding: 0 24px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.canvas-for-signature {
+  padding: 6px;
+  bottom: 0;
+  text-align: left;
+  width: 100%;
+  z-index: 1400;
+  position: absolute;
+  height: 160px;
+  color: #000 !important;
+  background-color: #bbb9b9c9;
+}
+
+.action-btns {
+  background-color: #fff;
+}
+
+::ng-deep mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none !important;
+}

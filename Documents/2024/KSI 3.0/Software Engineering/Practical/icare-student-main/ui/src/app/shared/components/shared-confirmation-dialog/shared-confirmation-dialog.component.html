@@ -1,0 +1,14 @@
+<div class="p-3">
+  <div [innerHTML]="dialogData?.header"></div>
+  <div class="d-flex justify-content-end mt-2">
+    <button mat-stroked-button (click)="onClose($event)">Cancel</button>
+    <button
+      mat-stroked-button
+      class="ml-2"
+      (click)="onConfirm($event)"
+      color="primary"
+    >
+      Confirm
+    </button>
+  </div>
+</div>

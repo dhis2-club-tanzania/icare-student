@@ -1,0 +1,16 @@
+<!-- <div class="w-100 text-left ml-2">
+  {{ label }}
+</div> -->
+<app-form
+  class="{{ disabled ? 'disabled' : '' }}"
+  *ngIf="formField && !hasMultipleAnswers"
+  [fields]="[formField]"
+  (formUpdate)="onFormUpdate($event)"
+></app-form>
+
+<app-multiple-results-entry
+  *ngIf="hasMultipleAnswers"
+  [options]="options"
+  [value]="value"
+  (selectedList)="getSelectedItems($event)"
+></app-multiple-results-entry>

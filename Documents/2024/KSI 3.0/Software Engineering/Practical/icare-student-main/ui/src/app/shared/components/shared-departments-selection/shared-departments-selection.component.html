@@ -1,0 +1,23 @@
+<div *ngIf="{ departmentsDetails: departmentsDetails$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    color="primary"
+    *ngIf="!params?.departmentsDetails"
+  ></mat-progress-bar>
+  <mat-form-field appearance="fill" class="w-30 ml-2 float-right">
+    <mat-label>Select Section</mat-label>
+    <mat-select
+      (selectionChange)="onGetSelectedDepartments($event)"
+      [(value)]="selectedItems"
+      multiple
+    >
+      <mat-option>All</mat-option>
+      <mat-option
+        *ngFor="let dept of params?.departmentsDetails"
+        [value]="dept"
+      >
+        {{ dept?.display }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

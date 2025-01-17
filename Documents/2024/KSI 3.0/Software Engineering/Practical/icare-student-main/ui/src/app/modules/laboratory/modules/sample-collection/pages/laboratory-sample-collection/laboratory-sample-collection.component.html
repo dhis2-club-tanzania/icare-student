@@ -1,0 +1,239 @@
+<div
+  class="patient-home-container"
+  *ngIf="{
+    currentPatient: patient$ | async,
+    loadingVisit: loadingVisit$ | async,
+    labDepartments: labDepartments$ | async,
+    visitLoadedState: visitLoadedState$ | async,
+    visit: activeVisit$ | async,
+    specimenSources: specimenSources$ | async,
+    labOrders: labOrders$ | async,
+    patient: patient$ | async,
+    payments: payments$ | async,
+    containers: containers$ | async,
+    datesParameters: datesParameters$ | async
+  } as params"
+>
+  <div
+    class="patient-home-content {{
+      !params?.currentPatient ? 'patient-home-no-patient' : ''
+    }}"
+  >
+    <mat-progress-bar
+      *ngIf="params?.loadingVisit"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <div
+      class="laboratory-sample-collection-container"
+      *ngIf="params?.currentPatient && !params?.loadingVisit"
+    >
+      <app-new-patient-profile
+        *ngIf="params?.patient"
+        [currentPatient]="params?.patient"
+      ></app-new-patient-profile>
+      <div class="row">
+        <div class="col-md-12 col-sm-12 back-to-client-list">
+          <button
+            class="float-left"
+            mat-stroked-button
+            [routerLink]="'/laboratory/sample-collection'"
+            matTooltip="Back to List"
+          >
+            <mat-icon>arrow_back</mat-icon>
+            Back to Client List
+          </button>
+        </div>
+      </div>
+      <div>
+        <mat-progress-bar
+          *ngIf="
+            !params?.payments ||
+            !params?.visitLoadedState ||
+            !params?.specimenSources ||
+            !params?.labOrders ||
+            !params?.visit
+          "
+          mode="indeterminate"
+        ></mat-progress-bar>
+
+        <div class="row">
+          <div class="col-12">
+            <mat-card>
+              <mat-tab-group>
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <span
+                      matBadge="{{ countOfSamplesToCollect }}"
+                      matBadgeColor="accent"
+                      matBadgeOverlap="false"
+                    >
+                      Samples to collect
+                    </span>
+                  </ng-template>
+                  <div class="mat-tab-container">
+                    <div
+                      *ngIf="
+                        params?.payments &&
+                        params?.visitLoadedState &&
+                        params?.specimenSources &&
+                        params?.labOrders &&
+                        params?.visit &&
+                        params?.labDepartments &&
+                        params?.datesParameters
+                      "
+                    >
+                      <app-samples-to-collect
+                        [specimenSources]="params?.specimenSources"
+                        [labOrders]="params?.labOrders"
+                        [patient]="params?.patient"
+                        [visit]="params?.visit"
+                        [containers]="params?.containers"
+                        [payments]="params?.payments"
+                        [labDepartments]="params?.labDepartments"
+                        [datesParameters]="params?.datesParameters"
+                        (isSaveCollectedSample)="onSaveSampleCollection($event)"
+                        (samplesToCollect)="onGetSamplesToCollect($event)"
+                      >
+                      </app-samples-to-collect>
+                    </div>
+                    <mat-progress-bar
+                      class="mt-2"
+                      *ngIf="
+                        !params?.payments ||
+                        !params?.visitLoadedState ||
+                        !params?.specimenSources ||
+                        !params?.labOrders ||
+                        !params?.visit ||
+                        !params?.labDepartments ||
+                        !params?.containers ||
+                        !params?.datesParameters
+                      "
+                      mode="indeterminate"
+                    ></mat-progress-bar>
+                  </div>
+                </mat-tab>
+
+                <mat-tab class="collected-samples">
+                  <ng-template mat-tab-label>
+                    <span
+                      matBadge="{{ (samplesCollected$ | async)?.length }}"
+                      matBadgeColor="accent"
+                      matBadgeOverlap="false"
+                    >
+                      Collected samples
+                    </span>
+                  </ng-template>
+                  <div class="mat-tab-container">
+                    <table class="table table-bordered table-stripped">
+                      <thead>
+                        <tr class="text-center">
+                          <th rowspan="2">SN</th>
+                          <th rowspan="2">Sample ID</th>
+                          <th rowspan="2">Department</th>
+                          <th rowspan="2">Sample / Specimen</th>
+                          <th rowspan="2">MRN</th>
+                          <th colspan="3">Tests Ordered</th>
+                          <th rowspan="2">Status</th>
+                        </tr>
+
+                        <tr class="text-center">
+                          <th>Test</th>
+                          <th>Order No.</th>
+                          <th>Orderer</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container
+                          *ngFor="
+                            let sample of samplesCollected$ | async;
+                            let count = index
+                          "
+                        >
+                          <tr
+                            *ngFor="
+                              let order of sample?.orders;
+                              let ordersCount = index
+                            "
+                          >
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ count + 1 }}
+                            </td>
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ sample?.id }}
+                            </td>
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ sample?.departmentName }}
+                            </td>
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ sample?.specimenSourceName }}
+                            </td>
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ sample?.mrNo }}
+                            </td>
+                            <td>
+                              {{ order?.concept?.display }}
+                            </td>
+                            <td>
+                              {{ order?.orderNumber }}
+                            </td>
+                            <td>
+                              {{ order?.orderer?.name }}
+                            </td>
+                            <td
+                              *ngIf="ordersCount === 0"
+                              [attr.rowspan]="sample?.orders?.length"
+                            >
+                              {{ sample?.status }}
+                            </td>
+                          </tr>
+                        </ng-container>
+                        <ng-container
+                          *ngIf="
+                            (samplesCollected$ | async) &&
+                            (samplesCollected$ | async)?.length === 0
+                          "
+                        >
+                          <tr>
+                            <td colspan="10">
+                              <p class="missing-test-alert text-center">
+                                No tests ordered
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+                </mat-tab>
+              </mat-tab-group>
+              <div class="d-flex justify-content-end">
+                <button
+                  class="ml-2"
+                  mat-stroked-button
+                  [routerLink]="['/laboratory/sample-collection-home']"
+                >
+                  Cancel
+                </button>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

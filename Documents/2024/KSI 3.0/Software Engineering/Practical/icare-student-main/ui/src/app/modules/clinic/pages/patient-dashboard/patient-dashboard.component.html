@@ -1,0 +1,86 @@
+<div
+  style="padding: 0 4px"
+  *ngIf="{
+    formPrivilegesConfigsLoadingState:
+      formPrivilegesConfigsLoadingState$ | async,
+    privilegesConfigs: privilegesConfigs$ | async,
+    currentUser: currentUser$ | async,
+    userPrivileges: userPrivileges$ | async,
+    rolesLoadingState: rolesLoadingState$ | async,
+    loadingVisit: loadingVisit$ | async,
+    activeVisit: activeVisit$ | async,
+    provider: provider$ | async,
+    iCareGeneralConfigurations: iCareGeneralConfigurations$ | async,
+    iCareClinicConfigurations: iCareClinicConfigurations$ | async,
+    currentLocation: currentLocation$ | async,
+    visitEndingControlStatusesConceptUuid:
+      visitEndingControlStatusesConceptUuid$ | async,
+    observations: observations$ | async,
+    IPDRoundConceptUuid: IPDRoundConceptUuid$ | async
+  } as params"
+>
+  <app-shared-patient-dashboard
+    *ngIf="
+      params?.currentUser &&
+      !params?.rolesLoadingState &&
+      params?.privilegesConfigs &&
+      params?.userPrivileges &&
+      params?.activeVisit &&
+      !params?.loadingVisit &&
+      params?.provider &&
+      params?.iCareGeneralConfigurations &&
+      params?.iCareGeneralConfigurations !== '' &&
+      params?.iCareClinicConfigurations &&
+      params?.iCareClinicConfigurations !== '' &&
+      params?.currentLocation &&
+      params?.visitEndingControlStatusesConceptUuid &&
+      params?.observations &&
+      params?.IPDRoundConceptUuid
+    "
+    [formPrivilegesConfigs]="params?.privilegesConfigs"
+    [currentUser]="params?.currentUser"
+    [activeVisit]="params?.activeVisit"
+    [userPrivileges]="params?.userPrivileges"
+    [iCareGeneralConfigurations]="params?.iCareGeneralConfigurations"
+    [clinicConfigurations]="params?.iCareClinicConfigurations"
+    [currentLocation]="params?.currentLocation"
+    [visitEndingControlStatusesConceptUuid]="
+      params?.visitEndingControlStatusesConceptUuid
+    "
+    [observations]="params?.observations"
+    [IPDRoundConceptUuid]="params?.IPDRoundConceptUuid"
+  ></app-shared-patient-dashboard>
+  <div *ngIf="errors">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <!-- <div
+    class="alert alert-danger mt-2"
+    role="alert"
+    *ngIf="params?.iCareGeneralConfigurations === ''"
+  >
+    Missing General iCare Metadata Configurations, Please set "iCare.GeneralMetadata.Configurations" or Contact IT
+  </div>
+
+  <div
+    class="alert alert-danger mt-2"
+    role="alert"
+    *ngIf="params?.iCareClinicConfigurations === ''"
+  >
+    Missing Icare Clinic Configurations. Please set "icare.clinic.configurations" or Contact IT
+  </div> -->
+
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      params?.formPrivilegesConfigsLoadingState ||
+      !params?.userPrivileges ||
+      params?.rolesLoadingState ||
+      params?.loadingVisit ||
+      !params?.provider ||
+      !params?.currentLocation ||
+      !params?.visitEndingControlStatusesConceptUuid ||
+      !params?.observations ||
+      !params?.IPDRoundConceptUuid
+    "
+  ></mat-progress-bar>
+</div>

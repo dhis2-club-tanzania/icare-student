@@ -1,0 +1,11 @@
+<div *ngIf="{conceptItem: conceptItem$ | async} as params">
+  <mat-progress-bar mode="indeterminate" *ngIf="!params"></mat-progress-bar>
+  <ng-container *ngIf="params?.conceptItem"><span class="item-left">{{attributeDisplay}}: </span>> <span
+      class="text-muted">{{
+      params&&params.conceptItem.display?params.conceptItem.display:
+      attributeValue}} </span>
+  </ng-container>
+  <ng-container *ngIf="!params?.conceptItem"><span>{{attributeDisplay}}: </span> <span class="text-muted">{{
+      attributeValue}}</span>
+  </ng-container>
+</div>

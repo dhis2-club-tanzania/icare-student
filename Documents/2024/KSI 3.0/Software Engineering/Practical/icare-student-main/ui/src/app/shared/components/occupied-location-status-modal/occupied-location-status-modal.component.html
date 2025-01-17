@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+  <span>{{ details?.isBed ? "Bed " : "" }} status</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-dialog-content class="mat-typography">
+  <div class="text-center p-3">
+    {{
+      details?.occupied
+        ? "Occupied by " + details?.visit?.patient?.display
+        : "Not occupied"
+    }}
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="m-0 p-3">
+  <button mat-stroked-button [mat-dialog-close]="true">Close</button>
+</mat-dialog-actions>

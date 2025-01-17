@@ -1,0 +1,31 @@
+<mat-form-field appearance="fill" class="w-100">
+  <mat-label>Select Department</mat-label>
+  <mat-select>
+    <mat-option
+      *ngFor="let dept of labDepartments"
+      [value]="dept.uuid"
+      (click)="setDepartment($event, dept)"
+    >
+      {{ dept.display }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<br />
+
+<mat-form-field
+  appearance="fill"
+  class="w-100"
+  *ngIf="departmentTests && departmentTests?.length > 0"
+>
+  <mat-label>Select Test</mat-label>
+  <mat-select>
+    <mat-option
+      *ngFor="let test of departmentTests"
+      [value]="test?.uuid"
+      (click)="selectTest($event, test)"
+    >
+      {{ test?.display }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

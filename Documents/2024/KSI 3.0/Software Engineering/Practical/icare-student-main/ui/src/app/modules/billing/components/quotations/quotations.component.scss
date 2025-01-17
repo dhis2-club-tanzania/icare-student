@@ -1,0 +1,25 @@
+.table__row {
+  cursor: pointer;
+}
+
+tr.table__row:not(.table__expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.table__row:not(.table__expanded-row):active {
+  background: #efefef;
+}
+
+.table__row td {
+  border-bottom-width: 0;
+  border-top: solid 1px #ddd;
+}
+
+.table__expanded-details {
+  overflow: hidden;
+  display: flex;
+}
+
+tr.table__detail-row {
+  height: 0;
+}
