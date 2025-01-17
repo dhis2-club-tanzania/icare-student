@@ -151,13 +151,14 @@ export class MenuComponent implements OnInit {
     localStorage.clear();
     window.localStorage.clear();
     sessionStorage.clear();
+        // functinality to clear all cookies when user logs out
+        document.cookie.split(";").forEach((cookie) => {
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substring(0,eqPos).trim() : cookie.trim();
+          document.cookie = '${name}=; expires = Thur, 01 Jan 2025 00:00:00 GMT;PATH=/';
+        })
     this.store.dispatch(logoutUser());
-    // functinality to clear all cookies when user logs out
-    document.cookie.split(";").forEach((cookie) => {
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substring(0,eqPos).trim() : cookie.trim();
-      document.cookie = '${name}=; expires = Thur, 01 Jan 2025 00:00:00 GMT;PATH=/';
-    })
+
   }
 
   onOpenLocation(e: Event): void {
