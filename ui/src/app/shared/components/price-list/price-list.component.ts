@@ -487,4 +487,73 @@ export class PriceListComponent implements OnInit, OnChanges {
   }
 
   // END CODES FOR DOWNLOADING METHOD
+
+// UPLOAD BUTTON IMPLEMENTATION CODE 
+@Injectable({
+  providedIn: "root",
+})
+export class PricingService {
+  private apiUrl = "YOUR_BACKEND_API_URL"; // Add this line
+
+  constructor(
+    private httpClient: OpenmrsHttpClientService,
+    private http: HttpClient // Add this
+  ) {}
+
+  getItems(filterInfo): Observable<PricingItem[]> {
+    return this.httpClient
+      .get(
+        `icare/item?limit=${filterInfo?.limit}&startIndex=${
+          filterInfo?.limit * filterInfo?.startIndex
+        }${filterInfo?.searchTerm ? "&q=" + filterInfo?.searchTerm : ""}${
+          filterInfo?.conceptSet && !filterInfo?.isDrug
+            ? "&department=" + filterInfo?.conceptSet
+            : ""
+        }${filterInfo?.isDrug ? "&type=DRUG" : ""}`
+      )
+      .pipe(
+        map((itemsResponse) =>
+          itemsResponse?.results.map((item) => {
+            return new PricingItem(item).toJson();
+          })
+        )
+      );
+  }
+
+  getItemPrices(): Observable<any[]> {
+    return this.httpClient.get("icare/itemprice").pipe(
+      map((result) => {
+        return (result || []).map((resultItem) =>
+          new ItemPrice(resultItem).toJson()
+        );
+      })
+    );
+  }
+
+  saveItemPrice(itemPrice: any): Observable<any> {
+    return this.httpClient
+      .post("icare/itemprice", itemPrice)
+      .pipe(map((itemPriceResult) => itemPriceResult));
+  }
+
+  createPricingItem(concept: any, drug: any): Observable<any> {
+    const pricingItem = concept
+      ? {
+          concept: {
+            uuid: concept.uuid,
+          },
+          unit: "Session",
+        }
+      : { drug: { uuid: drug.uuid }, unit: "Drug" };
+    return this.httpClient.post("icare/item", pricingItem).pipe(
+      map((res) => new PricingItem(res).toJson()),
+      catchError((error) => of(error))
+    );
+  }
+
+  // Add this method at the end of the class
+  uploadPriceList(data: any[]): Observable<any> {
+    return this.http.post(${this.apiUrl}/price-list/upload, data);
+  }
 }
+// END OF UPLOAD BUTTON IMPLEMENTATION CODE
