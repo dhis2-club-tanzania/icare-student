@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { getGenericDrugPrescriptionsFromVisit } from "../../helpers/visits.helper";
 import { uniqBy, keyBy } from "lodash";
+import { add, parseISO } from 'date-fns';
 import { Observable } from "rxjs";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import {
@@ -204,21 +205,6 @@ export class GeneralDispensingFormComponent implements OnInit {
   saveOrder(e: any, conceptFields: any) {
     
     const prescriptions = getGenericDrugPrescriptionsFromVisit(this.currentVisit, this.orderType);
-        let drug_names: string[] = [];;
-
-    // Accessing the values
-    prescriptions.forEach(item => {
-      if (this.specificDrugConceptUuid in item.obs){
-        drug_names.push(item.obs[this.specificDrugConceptUuid].comment);
-        console.log(item.obs[this.specificDrugConceptUuid]);
-        
-      }
-    });
-    // prescriptions.forEach(item => {
-      //   if(item.obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display) {
-      //     drug_obs = item.obs
-      //   }
-      // })
     let drug_obs;
     for (const item of prescriptions) {
       if (item.obs[this.specificDrugConceptUuid]?.comment === this.formValues?.drug?.value.drug.display) {
@@ -226,11 +212,7 @@ export class GeneralDispensingFormComponent implements OnInit {
         break; // Exit the loop once the condition is met
       }
     }
-    prescriptions.forEach(item => {
-      if(item.obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display) {
-        drug_obs = item.obs
-      }
-    })
+    
     if (!this.formValues?.drug?.value) {
       this.errors = [];
       setTimeout(() => {
@@ -253,13 +235,18 @@ export class GeneralDispensingFormComponent implements OnInit {
       const unit = drug_obs[this.durationUnitsSettings].display.split(': ')[1].toLowerCase()
       const now = new Date();
       const obs_datetime = drug_obs[this.specificDrugConceptUuid].obsDatetime.replace(/(\+|-)(\d{2})(\d{2})$/, '$1$2:$3')
-      // console.log(drug_obs);
-      
-      // console.log(parseInt(drug_obs[this.generalPrescriptionDurationConcept].display.split(': ')[1], 10));
-      // console.log(drug_obs[this.durationUnitsSettings].display.split(': ')[1].toLowerCase());
-      // console.log(parseISO(obs_datetime))
-      // console.log(now);
-
+    // Define the mapping of units to date-fns duration objects
+      const unitMap: { [key: string]: any } = {
+        minutes: { minutes: duration },
+        hours: { hours: duration },
+        days: { days: duration },
+        weeks: { weeks: duration }, 
+        months: { months: duration },
+        years: { years: duration },
+      };
+      //calculate end date
+      const result_time = add(parseISO(obs_datetime), unitMap[unit]);
+ }
     else {
       this.savingOrder = true;
       let encounterObject = {
