@@ -55,6 +55,8 @@ export class AuthService {
 
   clearCookie() {
     var cookies = document.cookie.split("; ");
+    console.log("cookies" , document.cookie); // consoling the available cookies in the browser
+    this._cookieService.deleteAll() // deleting all the cookies
     for (var c = 0; c < cookies.length; c++) {
       var d = window.location.hostname.split(".");
       while (d.length > 0) {
