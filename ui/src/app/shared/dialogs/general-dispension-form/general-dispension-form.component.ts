@@ -214,6 +214,18 @@ export class GeneralDispensingFormComponent implements OnInit {
         
       }
     });
+    // prescriptions.forEach(item => {
+      //   if(item.obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display) {
+      //     drug_obs = item.obs
+      //   }
+      // })
+    let drug_obs;
+    for (const item of prescriptions) {
+      if (item.obs[this.specificDrugConceptUuid]?.comment === this.formValues?.drug?.value.drug.display) {
+        drug_obs = item.obs;
+        break; // Exit the loop once the condition is met
+      }
+    }
     prescriptions.forEach(item => {
       if(item.obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display) {
         drug_obs = item.obs
