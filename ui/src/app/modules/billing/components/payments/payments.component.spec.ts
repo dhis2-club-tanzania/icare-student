@@ -8,9 +8,11 @@ import { PaymentsComponent } from './payments.component';
 describe('PaymentsComponent', () => {
   let component: PaymentsComponent;
   let fixture: ComponentFixture<PaymentsComponent>;
-
+// Compare this snippet from ui/src/app/modules/billing/components/payments/payments.component.spec.ts:
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+
+      
       declarations: [ PaymentsComponent ]
     })
     .compileComponents();
