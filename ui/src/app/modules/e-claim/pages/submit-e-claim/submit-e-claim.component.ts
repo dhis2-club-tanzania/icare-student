@@ -23,7 +23,9 @@ export class SubmitEClaimComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.patientUuid = params['patientId'];
     });
+  }
 
+  loadPatientData(): void {
     this.activeVisitDetails$ = this.visitService.getActiveVisit(
       this.patientUuid,
       false,
