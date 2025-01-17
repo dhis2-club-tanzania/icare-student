@@ -1,0 +1,15 @@
+{
+  "device": {
+    "id": "uuid"
+  },
+  "label": "Test Label Y",
+  "conceptId": "1",
+  "testAllocationStatuses": [{
+    "status": "",
+    "remarks": "",
+    "changedAt": "",
+    "testAllocation": {
+      "id": ""
+    }
+  }]
+}

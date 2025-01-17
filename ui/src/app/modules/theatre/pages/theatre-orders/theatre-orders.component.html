@@ -1,0 +1,46 @@
+<div
+  *ngIf="{
+    patient: patient$ | async,
+    location: currentLocation$ | async,
+    visit: visit$ | async,
+    provider: provider$ | async,
+    observations: observations$ | async,
+    savingObservations: savingObservations$ | async,
+    vitalSignObservations: vitalSignObservations$ | async,
+    forms: forms$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="
+      !params?.provider ||
+      !params?.location ||
+      !params?.visit ||
+      !params?.patient ||
+      !params?.forms ||
+      (params?.forms && params?.forms?.length == 0)
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div
+    *ngIf="
+      params?.provider &&
+      params?.location &&
+      params?.visit &&
+      params?.patient &&
+      params?.forms &&
+      params?.forms?.length > 0
+    "
+  >
+    <app-theatre-orders-data
+      [patient]="params?.patient"
+      [location]="params?.location"
+      [visit]="params?.visit"
+      [provider]="params?.provider"
+      [forms]="params?.forms"
+      [observations]="params?.observations"
+      [vitalSignObservations]="params?.vitalSignObservations"
+      [savingObservations]="params?.savingObservations"
+      (saveObservations)="onSaveObservations($event, params?.patient)"
+    ></app-theatre-orders-data>
+  </div>
+</div>

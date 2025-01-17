@@ -1,0 +1,196 @@
+<div
+  *ngIf="{
+    vitalSignObservations: vitalSignObservations$ | async,
+    loadingVisit: loadingVisit$ | async,
+    observationsGroupedByConcept: observationsGroupedByConcept$ | async
+  } as params"
+>
+  <!-- {{ params?.vitalSignObservations | json }} -->
+  <!-- <div
+    class="text-center"
+    *ngIf="params?.vitalSignObservations?.length === 0 && !params?.loadingVisit"
+  >
+    No data
+  </div> -->
+
+  <table
+    class="table table-bordered"
+    *ngIf="params?.vitalSignObservations && !params?.loadingVisit"
+  >
+    <tbody>
+      <tr>
+        <th
+          class="text-center"
+          *ngFor="let vitalItem of params?.vitalSignObservations?.noChildren"
+        >
+          {{ vitalItem?.display }}
+          <em class="text-muted" *ngIf="vitalItem?.units">
+            ({{ vitalItem?.units }})
+          </em>
+        </th>
+      </tr>
+      <tr>
+        <td
+          class="text-center"
+          *ngFor="let vitalItem of params?.vitalSignObservations?.noChildren"
+        >
+          {{
+            params?.observationsGroupedByConcept[vitalItem?.id]?.latest
+              ?.value &&
+            !params?.observationsGroupedByConcept[vitalItem?.id]?.latest
+              ?.valueObject
+              ? params?.observationsGroupedByConcept[vitalItem?.id]?.latest
+                  ?.value
+              : params?.observationsGroupedByConcept[vitalItem?.id]?.latest
+                  ?.valueObject
+              ? params?.observationsGroupedByConcept[vitalItem?.id]?.latest
+                  ?.valueObject?.display
+              : " - "
+          }}{{ vitalItem?.value ? vitalItem?.units : "" }}
+        </td>
+      </tr>
+      <ng-container
+        *ngFor="
+          let vitalChildItem of params?.vitalSignObservations?.withChildren
+        "
+      >
+        <tr>
+          <th class="text-left" colspan="100%">
+            {{ vitalChildItem?.display }}
+          </th>
+        </tr>
+        <ng-container *ngFor="let child of vitalChildItem?.children">
+          <tr *ngIf="child?.formField">
+            <td>
+              {{ child?.formField?.name }}
+            </td>
+            <td>
+              {{
+                child?.formField?.value && !child?.formField?.valueObject
+                  ? child?.formField?.value
+                  : child?.formField?.valueObject &&
+                    child?.formField?.valueObject?.display
+                  ? child?.formField?.valueObject?.display
+                  : "-"
+              }}
+            </td>
+          </tr>
+          <tr *ngIf="child?.formFields && child?.formFields?.length > 0">
+            <td *ngFor="let formField of child?.formFields">
+              <span>
+                {{ formField?.label }}
+              </span>
+              <span>
+                <b>
+                  {{
+                    params?.observationsGroupedByConcept[formField?.key]
+                      ? params?.observationsGroupedByConcept[formField?.key]
+                          ?.latest?.value &&
+                        !params?.observationsGroupedByConcept[formField?.key]
+                          ?.latest?.valueObject
+                        ? params?.observationsGroupedByConcept[formField?.key]
+                            ?.latest?.value
+                        : params?.observationsGroupedByConcept[formField?.key]
+                            ?.latest?.valueObject
+                        ? params?.observationsGroupedByConcept[formField?.key]
+                            ?.latest?.valueObject?.display
+                        : "=="
+                      : "-"
+                  }}
+                </b>
+                <!-- {{
+                  params?.observationsGroupedByConcept[formField?.key]?.latest
+                    | json
+                }} -->
+                <em
+                  *ngIf="formField?.min && formField?.max && formField?.value"
+                  class="text-muted range-label"
+                  >({{ formField?.min }}-{{ formField?.max }})</em
+                >
+                <em
+                  *ngIf="formField?.units && formField?.value"
+                  class="text-muted range-label"
+                >
+                  {{ formField?.units }}</em
+                >
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+<!-- <div
+  *ngIf="{
+    vitalSignObservations: vitalSignObservations$ | async,
+    loadingVisit: loadingVisit$ | async,
+    observationsGroupedByConcept: observationsGroupedByConcept$ | async
+  } as params"
+>
+  <div
+    class="text-center"
+    *ngIf="params?.vitalSignObservations?.length === 0 && !params?.loadingVisit"
+  >
+    No data
+  </div>
+
+  <mat-progress-bar
+    *ngIf="params?.loadingVisit || !params?.vitalSignObservations"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <table
+    class="table"
+    *ngIf="!params?.loadingVisit && params?.vitalSignObservations"
+  >
+    <ng-container
+      *ngFor="let vitalObservation of params?.vitalSignObservations"
+    >
+      <tr *ngIf="vitalObservation?.children?.length === 0">
+        <td>{{ vitalObservation.display }}</td>
+        <td class="text-left obs-data-value">
+          {{ vitalObservation.value }}
+          <em
+            *ngIf="vitalObservation?.min || vitalObservation?.max"
+            class="text-muted range-label"
+            >({{ vitalObservation?.min }}-{{ vitalObservation?.max }})</em
+          >
+          <em *ngIf="vitalObservation?.units" class="text-muted range-label">
+            {{ vitalObservation?.units }}</em
+          >
+        </td>
+      </tr>
+      <tr *ngIf="vitalObservation?.children?.length > 0">
+        <td>{{ vitalObservation.display }}</td>
+        <td>
+          <table>
+            <tr *ngFor="let child of vitalObservation?.children">
+              <td *ngFor="let field of child?.formFields">
+                <span>
+                  {{ field?.label }}
+                </span>
+                <span class="text-center obs-data-value">
+                  {{
+                    params?.observationsGroupedByConcept[field?.key]
+                      ? params?.observationsGroupedByConcept[field?.key]?.latest
+                          ?.value
+                      : "-"
+                  }}
+                  <em
+                    *ngIf="field?.min || field?.max"
+                    class="text-muted range-label"
+                    >({{ field?.min }}-{{ field?.max }})</em
+                  >
+                  <em *ngIf="field?.units" class="text-muted range-label">
+                    {{ field?.units }}</em
+                  >
+                </span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </ng-container>
+  </table>
+</div> -->

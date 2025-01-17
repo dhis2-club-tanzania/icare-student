@@ -1,0 +1,31 @@
+<div class="data-history-container">
+  <div class="h4 p-1">
+    {{ elementHeader?.value }} , {{ dataChangesDetails?.key }}
+  </div>
+  <div>
+    <!-- {{ dataChangesDetails | json }} -->
+
+    <!-- {{ elementHeader | json }} -->
+    <!-- TODO: Full data history support-->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Previous data</th>
+          <th>Current data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            {{
+              dataChangesDetails?.matchedDataValue
+                ? dataChangesDetails?.matchedDataValue?.value
+                : ""
+            }}
+          </td>
+          <td>{{ dataChangesDetails?.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

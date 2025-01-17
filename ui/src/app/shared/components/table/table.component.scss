@@ -1,0 +1,35 @@
+.table__row {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.table__row:hover {
+  box-shadow: 0px 3px 5px -1px rgb(0 0 0 / 20%),
+    0px 5px 8px 0px rgb(0 0 0 / 14%), 0px 1px 14px 0px rgb(0 0 0 / 12%);
+}
+
+.table__action-options {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .mat-column-actions div {
+  float: right;
+}
+
+.paid {
+  background-color: #d4edda;
+}
+
+.dispensed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.paid td,
+.dispensed td,
+.paid tr,
+.dispensed tr {
+  border: solid 1px #fff !important;
+}

@@ -1,0 +1,19 @@
+<div
+  class="test-methods-and-specimen-sources"
+  *ngIf="{ conceptDataTypes: conceptDataTypes$ | async } as params"
+>
+  <app-standard-concept-creation
+    *ngIf="params?.conceptDataTypes"
+    [conceptClass]="'Test'"
+    [isSet]="true"
+    [setMembersHeaderName]="'Define all parameters'"
+    [conceptDataTypes]="params?.conceptDataTypes"
+    [standardSearchTerm]="'TEST_METHODS'"
+    [setMembersSearchTerm]="'LIS_TEST_PARAMETER'"
+  ></app-standard-concept-creation>
+
+  <mat-progress-bar
+    *ngIf="!params?.conceptDataTypes"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

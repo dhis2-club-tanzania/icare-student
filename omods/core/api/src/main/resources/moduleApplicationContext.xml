@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Beans to add to the current Application context definition -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  		    http://www.springframework.org/schema/context
+  		    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:component-scan base-package="org.openmrs.module.icare" />
+    <bean id="icare.ICareService"
+            class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.core.impl.ICareServiceImpl">
+                <property name="dao" >
+                    <bean class="org.openmrs.module.icare.core.dao.ICareDao">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="passwordHistoryDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.PasswordHistoryDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="roleDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.RoleDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="privilegeDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.PrivilegeDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="programWorkflowDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.ProgramWorkflowDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="encounterPatientStateDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.EncounterPatientStateDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="encounterPatientProgramDAO">
+                    <bean class="org.openmrs.module.icare.core.dao.EncounterPatientProgramDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.icare.core.ICareService</value>
+                <ref bean="icare.ICareService" />
+            </list>
+        </property>
+    </bean>
+    <bean id="icare.BillingService"
+          class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.billing.BillingServiceImpl">
+                <property name="dao" >
+                    <bean class="org.openmrs.module.icare.core.dao.ICareDao">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="invoiceDAO" >
+                    <bean class="org.openmrs.module.icare.billing.dao.InvoiceDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="paymentDAO">
+                    <bean class="org.openmrs.module.icare.billing.dao.PaymentDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="discountDAO">
+                    <bean class="org.openmrs.module.icare.billing.dao.DiscountDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.icare.billing.services.BillingService</value>
+                <ref bean="icare.BillingService" />
+            </list>
+        </property>
+    </bean>
+    <bean id="icare.LaboratoryService"
+          class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.laboratory.services.LaboratoryServiceImpl">
+                <property name="sampleDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.SampleDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="sampleStatusDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.SampleStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="testAllocationDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.TestAllocationDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="resultDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.ResultDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="testAllocationStatusDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.TestAllocationStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="deviceDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.DeviceDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="sampleOrderDAO" >
+                    <bean class="org.openmrs.module.icare.laboratory.dao.SampleOrderDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="testRangeConfigDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.TestRangeConfigDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="testTimeConfigDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.TestTimeConfigDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="sampleLableDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.SampleLableDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="batchSetDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.BatchSetDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="batchDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.BatchDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="batchSampleDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.BatchSampleDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="batchSetStatusDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.BatchSetStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="batchStatusDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.BatchStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetControlDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetControlDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetDefinitionDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetDefinitionDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetSampleDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetSampleDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetStatusDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="worksheetSampleStatusDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.WorksheetSampleStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="associatedFieldDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.AssociatedFieldDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="testAllocationAssociatedFieldDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.TestAllocationAssociatedFieldDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="associatedFieldResultDAO">
+                    <bean class="org.openmrs.module.icare.laboratory.dao.AssociatedFieldResultDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.icare.laboratory.services.LaboratoryService</value>
+                <ref bean="icare.LaboratoryService" />
+            </list>
+        </property>
+    </bean>
+    <bean id="icare.StoreService"
+          class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.store.services.StoreServiceImpl">
+                <property name="ledgerDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.LedgerDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="stockDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.StockDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="requisitionDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.RequisitionDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="requisitionItemDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.RequisitionItemDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="issueDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.IssueDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="ledgerTypeDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.LedgerTypeDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="dao">
+                    <bean class="org.openmrs.module.icare.core.dao.ICareDao">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="receiptDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.ReceiptDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="requisitionStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.RequisitionStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="requisitionItemStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.RequisitionItemStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="issueStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.IssueStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="issueItemStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.IssueItemStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+                <property name="transactionDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.TransactionDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="reorderLevelDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.ReorderLevelDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="stockInvoiceDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.StockInvoiceDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="supplierDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.SupplierDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="encounterPatientStateDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.EncounterPatientStateDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="encounterPatientProgramDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.EncounterPatientProgramDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="stockInvoiceStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.StockInvoiceStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="stockInvoiceItemDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.StockInvoiceItemDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+                <property name="stockInvoiceItemStatusDAO">
+                    <bean class="org.openmrs.module.icare.store.dao.StockInvoiceItemStatusDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.icare.store.services.StoreService</value>
+                <ref bean="icare.StoreService" />
+            </list>
+        </property>
+    </bean>
+    <bean id="icare.DHIS2Service"
+          class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.report.services.DHIS2ServiceImpl">
+
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.icare.report.services.DHIS2Service</value>
+                <ref bean="icare.DHIS2Service" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="icare.DhisEventTransactionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.dhis.services.DhisEventTransactionServiceImpl">
+                <property name="dhisEventTransactionDAO" >
+                    <bean class="org.openmrs.module.icare.dhis.dao.DhisEventTransactionDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.icare.dhis.services.DhisEventTransactionService</value>
+                <ref bean="icare.DhisEventTransactionService" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="icare.DhisDatasetTransactionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.icare.dhis.services.DhisDatasetTransactionServiceImpl">
+                <property name="dhisDatasetTransactionDAO" >
+                    <bean class="org.openmrs.module.icare.dhis.dao.DhisDatasetTransactionDAO">
+                        <property name="sessionFactory" ref="dbSessionFactory" />
+                    </bean>
+                </property>
+
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.icare.dhis.services.DhisDatasetTransactionService</value>
+                <ref bean="icare.DhisDatasetTransactionService" />
+            </list>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.icare.auditlog.api.AuditLogService</value>
+                <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager" />
+                    </property>
+                    <property name="target">
+                        <bean class="org.openmrs.module.icare.auditlog.api.impl.AuditLogServiceImpl" >
+                            <property name="dao" ref="auditLogDAO" />
+                        </bean>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors" />
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="auditLogDAO" class="org.openmrs.module.icare.auditlog.api.db.hibernate.HibernateAuditLogDAO">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+</beans>

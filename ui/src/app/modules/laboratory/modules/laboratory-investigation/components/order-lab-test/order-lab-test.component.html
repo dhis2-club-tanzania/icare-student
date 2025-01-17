@@ -1,0 +1,52 @@
+<div
+  class="lab-investigation-container"
+  *ngIf="{
+    formEntities: consultationForms$ | async,
+    loadingForms: loadingForms$ | async,
+    currentPatient: currentPatient$ | async,
+    visit: activeVisit$ | async,
+    billableItems: billableItems$ | async
+  } as params"
+>
+  <!-- {{ params?.billableItems | json }} -->
+  <app-new-patient-profile
+    *ngIf="params?.currentPatient"
+    [currentPatient]="params?.currentPatient"
+  ></app-new-patient-profile>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 back-to-client-list">
+      <button
+        class="float-left"
+        mat-stroked-button
+        [routerLink]="'/laboratory/lab-investigation-home'"
+        matTooltip="Back to List"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        Back to Client List
+      </button>
+    </div>
+  </div>
+  <mat-progress-bar
+    *ngIf="
+      params.loadingForms ||
+      !params?.currentPatient ||
+      !params?.billableItems ||
+      !params?.visit
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <app-investigation-procedure
+    *ngIf="
+      !params.loadingForms &&
+      params?.currentPatient &&
+      params?.billableItems &&
+      params?.visit
+    "
+    [investigationAndProceduresFormsDetails]="
+      (params?.formEntities)['All orderables']
+    "
+    [patient]="params?.currentPatient?.patient"
+    [visit]="params?.visit"
+    [billableItems]="params?.billableItems"
+  ></app-investigation-procedure>
+</div>

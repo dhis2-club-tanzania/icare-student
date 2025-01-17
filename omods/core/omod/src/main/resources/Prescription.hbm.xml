@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.icare">
+
+    <joined-subclass name="org.openmrs.module.icare.billing.models.Prescription" extends="org.openmrs.Order"
+                     table="prescription" lazy="false">
+        <key column="order_id" not-null="true" on-delete="cascade"/>
+
+        <property name="dose" type="double" column="dose" length="22"/>
+        <many-to-one name="doseUnits" class="org.openmrs.Concept" column="dose_units" />
+        <many-to-one name="frequency" class="org.openmrs.OrderFrequency" column="frequency" />
+        <property name="quantity" type="double" column="quantity" length="22"/>
+        <many-to-one name="quantityUnits" class="org.openmrs.Concept" column="quantity_units" />
+        <!-- bi-directional many-to-one association to Drug -->
+
+        <many-to-one name="drug" class="org.openmrs.Drug" not-null="false" column="drug_inventory_id" access="field"/>
+        <property name="duration" type="int" column="duration"/>
+        <many-to-one name="durationUnits" class="org.openmrs.Concept" column="duration_units" />
+        <many-to-one name="route" class="org.openmrs.Concept" />
+    </joined-subclass>
+</hibernate-mapping>

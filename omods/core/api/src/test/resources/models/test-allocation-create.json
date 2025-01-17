@@ -1,0 +1,15 @@
+{
+  "container": {
+    "uuid":"uuid"
+  },
+  "label": "identifier for the container",
+  "order": {
+    "uuid":"the uuid of ther order"
+  },
+  "sample": {
+    "uuid": "sample uuid"
+  },
+  "technician": {
+    "uuid": "user to allocate the test to"
+  }
+}

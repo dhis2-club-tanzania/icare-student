@@ -1,0 +1,14 @@
+{
+  "visit": {
+    "uuid": "uuid"
+  },
+  "label": "sample identifier",
+  "concept": {
+    "uuid": "uuid"
+  },
+  "orders": [
+    {
+      "uuid": "orderuuid"
+    }
+  ]
+}

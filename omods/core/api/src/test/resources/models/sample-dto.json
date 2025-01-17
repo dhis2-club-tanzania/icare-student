@@ -1,0 +1,17 @@
+{
+  "visit": {
+    "uuid": "uuid"
+  },
+  "label": "sample identifier",
+  "concept": {
+    "uuid": "uuid"
+  },
+  "technician": {
+    "uuid": "provideruid"
+  },
+  "orders": [
+    {
+      "uuid": "orderuuid"
+    }
+  ]
+}

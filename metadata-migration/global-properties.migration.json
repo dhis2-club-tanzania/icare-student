@@ -1,0 +1,37 @@
+[
+  {
+    "key": "icare.registration.settings.showPatientTypeField",
+    "value": "false",
+    "description": "For hiding or showing patient type form field"
+  },
+  {
+    "key": "icare.registration.form.occupation",
+    "value": "occupationConceptUuid",
+    "description": "Reference to a concept containing occupation information"
+  },
+  {
+    "key": "iCare.registration.form.additionalClientInformation.conceptUuid",
+    "value": "",
+    "description": "Reference to a concept whose set members are additional patient information like Marital Status"
+  },
+  {
+    "key": "iCare.registration.form.clientRelationShipTypes.conceptUuid",
+    "value": "conceptUuid",
+    "description": "Reference to relation types of a patient"
+  },
+  {
+    "key": "iCare.registration.genderOptions.conceptUuid",
+    "value": "conceptUuid",
+    "description": "Reference to gender options"
+  },
+  {
+    "key": "iCare.visits.settings.controlVisitsEndingStatuses.ConceptUuid",
+    "value": "conceptUuid",
+    "description": "Ending visit control"
+  },
+  {
+    "key": "iCare.clinic.settings.patientsListGroups.showAllPatientsTab",
+    "value": "true",
+    "description": "For controlling patients list tab for all patients"
+  }
+]

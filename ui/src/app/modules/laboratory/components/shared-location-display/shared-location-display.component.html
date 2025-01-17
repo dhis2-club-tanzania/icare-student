@@ -1,0 +1,7 @@
+<ng-container *ngIf="{ location: location$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.location"
+  ></mat-progress-bar>
+  {{ params?.location?.display }}
+</ng-container>

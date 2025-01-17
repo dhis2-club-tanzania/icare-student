@@ -1,0 +1,40 @@
+[
+  {
+    "mediatorKey": "HDUAPI",
+    "authReferenceKey": "HDUAPI",
+    "mediatorUrlPath": "/emr-hdu-data",
+    "mediatorMappingReferenceKey": "{}",
+    "authenticationType": "basic",
+    "isActive": true
+  },
+  {
+    "mediatorKey": "SHR",
+    "authReferenceKey": "HDUAPI",
+    "mediatorUrlPath": "/emr-hdu-data",
+    "mediatorMappingReferenceKey": "{}",
+    "authenticationType": "basic",
+    "isActive": true
+  },
+  {
+    "mediatorKey": "GET-SHR",
+    "authReferenceKey": "HDUAPI",
+    "mediatorUrlPath": "/api/v1/hduApi/shr/sharedRecords",
+    "mediatorMappingReferenceKey": "{}",
+    "authenticationType": "basic",
+    "isActive": true
+  },
+  {
+    "mediatorKey": "iAdapter",
+    "mediatorUrlPath": "/api/v1/datastore",
+    "mediatorMappingReferenceKey": "{}",
+    "authenticationType": "none",
+    "isActive": true
+  },
+  {
+    "mediatorKey": "dhis2",
+    "mediatorUrlPath": "/api/tracker?async=false&orgUnitIdScheme=CODE&dataElementIdScheme=CODE",
+    "mediatorMappingReferenceKey": "iCare.surveillance.settings.eventProgramMappings",
+    "authenticationType": "basic",
+    "isActive": true
+  }
+]

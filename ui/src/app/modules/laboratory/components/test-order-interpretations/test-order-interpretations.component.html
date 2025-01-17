@@ -1,0 +1,15 @@
+<p style="text-align: left">
+  <em> <b>Interpretations: </b></em>
+</p>
+<ng-container *ngFor="let interpretation of descriptions">
+  <p style="text-align: left; margin: 2px !important; font-size: 12px">
+    <b>
+      {{ interpretation?.label }}
+    </b>
+  </p>
+  <p style="text-align: left; margin: 2px !important; font-size: 12px">
+    <em>
+      {{ interpretation?.description }}
+    </em>
+  </p>
+</ng-container>

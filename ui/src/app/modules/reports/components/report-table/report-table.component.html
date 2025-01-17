@@ -1,0 +1,53 @@
+<div class="col-12" *ngIf="data?.rows?.length == 0">
+  <p class="alert alert-warning" role="alert">
+    No data for the current selections
+  </p>
+</div>
+<!-- <div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th *ngFor="let column of processedData?.metadata?.columns">
+          {{ column?.label }}
+        </th>
+      </tr>
+    </thead>
+
+    <tr *ngFor="let row of data?.rows">
+      <td *ngFor="let column of processedData?.metadata?.columns">
+        <span
+          style="cursor: pointer"
+          *ngIf="row[column?.name]?.concept"
+          (click)="openConcept($event, row[column?.name]['concept'])"
+          >{{ row[column?.name]?.value }}</span
+        >
+        <span *ngIf="!row[column?.name]?.value">{{ row[column?.name] }}</span>
+      </td>
+    </tr>
+  </table>
+</div> -->
+
+<!-- My implementation -->
+<div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th *ngFor="let column of processedData?.metadata?.columns">
+          {{ column?.label }}
+        </th>
+      </tr>
+    </thead>
+
+    <tr *ngFor="let row of data?.rows">
+      <td *ngFor="let column of processedData?.metadata?.columns">
+        <span
+          style="cursor: pointer"
+          *ngIf="row[column?.name]?.concept"
+          (click)="openConcept($event, row[column?.name]['concept'])"
+          >{{ row[column?.name]?.value }}</span
+        >
+        <span *ngIf="!row[column?.name]?.value">{{ row[column?.name] }}</span>
+      </td>
+    </tr>
+  </table>
+</div>

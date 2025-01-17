@@ -1,0 +1,26 @@
+<div *ngIf="!forRegistration">
+  <div class="row" *ngIf="{ attributesDetails: attributesDetails$ | async } as params">
+    <div *ngFor="let attribute of params?.attributesDetails" class="col item-self p-items">
+      <span>
+        {{ attribute?.visitAttributeDetails?.attributeType?.display }}:
+      </span>
+
+      <span class="text-muted" style="font-size: 0.8rem">
+        {{ attribute?.display }}
+      </span>
+    </div>
+  </div>
+</div>
+<div *ngIf="forRegistration" class="for-registration">
+  <span *ngFor="let attribute of attributes" class="ml-2">
+    <ng-container *ngIf="attribute?.attributeType?.display === 'Insurance ID'; else otherDisplay">
+      {{ attribute?.attributeType?.display }}:
+      <b>{{ insurelanceID }}</b>
+    </ng-container>
+
+    <ng-template #otherDisplay>
+      {{ attribute?.attributeType?.display }}:
+      <b>{{ attribute?.value }}</b>
+    </ng-template>
+  </span>
+</div>

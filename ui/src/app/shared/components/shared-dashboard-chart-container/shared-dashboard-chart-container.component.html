@@ -1,0 +1,9 @@
+<div *ngIf="{ samples: samples$ | async } as params">
+  <mat-progress-bar *ngIf="!params?.samples"></mat-progress-bar>
+  <div class="mat-elevation-z1">
+    <app-shared-dashboard-chart-item
+      *ngIf="params?.samples"
+      [samplesData]="params?.samples"
+    ></app-shared-dashboard-chart-item>
+  </div>
+</div>

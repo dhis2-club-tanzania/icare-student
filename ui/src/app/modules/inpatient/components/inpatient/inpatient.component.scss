@@ -1,0 +1,10 @@
+.active-bed-order {
+  font-weight: 600;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
+::ng-deep .mat-button-disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+}

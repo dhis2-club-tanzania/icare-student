@@ -1,0 +1,40 @@
+<mat-toolbar color="primary">
+  <span>Patient Search</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-dialog-content class="mat-typography">
+  <div>
+    <div class="patient-input-container p-3">
+      <div class="patient-search-input-block p-2 border">
+        <div class="patient-search-input">
+          <mat-icon matPrefix class="text-muted">search</mat-icon>
+          <input
+            class="ml-2 w-100"
+            id="input-search-patient"
+            autofocus
+            autocomplete="off"
+            type="text"
+            placeholder="Search Patient"
+            matInput
+            (keyup)="onSearchPatients($event)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div id="patient-search-list">
+      <app-table
+        [columns]="patientListColumns"
+        [data$]="patients$"
+        [loading]="searching"
+        [loadingDataError]="searchingError"
+        [tableConfig]="tableConfig"
+        (selectRow)="onSelectPatient($event)"
+      ></app-table>
+    </div>
+  </div>
+</mat-dialog-content>

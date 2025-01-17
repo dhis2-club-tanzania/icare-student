@@ -1,0 +1,11 @@
+{
+  "sample": {
+    "uuid": "uuid ? Why UUID and is of what metadata"
+  },
+  "user": {
+    "uuid": ""
+  },
+  "remarks": "",
+  "status": "",
+  "changedAt": null
+}

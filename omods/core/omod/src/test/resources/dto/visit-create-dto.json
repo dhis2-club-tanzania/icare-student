@@ -1,0 +1,19 @@
+{
+  "patient": "1f6959e5-d15a-4025-bb48-340ee9e2c58d",
+  "visitType": "c0c579b0-8e59-401d-8a4a-976a0b183519",
+  "location": "58c57d25-8d39-41ab-8422-108a0c277d98",
+  "attributes": [
+    {
+      "attributeType": "298b75eb-5345-11e8-9c7c-40b0yt63cfee",
+      "value": "e721ec30-5344-11e8-9c7c-40b6etw3cfee"
+    },
+    {
+      "attributeType": "298b75eb-5345-12e8-9c7c-40b0yt63cfee",
+      "value": "e721ec30-5344-11e8-ie7c-40b6etw379ee"
+    },
+    {
+      "attributeType": "298b75eb-er45-12e8-9c7c-40b0yt63cfee",
+      "value": "e7jnec30-5344-11e8-ie7c-40b6etw3cfee"
+    }
+  ]
+}

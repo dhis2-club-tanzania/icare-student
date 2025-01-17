@@ -1,0 +1,105 @@
+<div *ngIf="drugOrderFormsMetadata && provider">
+  <div class="drug-order">
+    <!-- TODO: Find a better way to handle this depending on generic presc settings -->
+    <app-form
+      *ngIf="!fromDispensing"
+      [fields]="[drugFormField]"
+      (formUpdate)="onFormUpdate('drug', $event)"
+    ></app-form>
+
+    <app-form
+      *ngIf="!fromDispensing"
+      [fields]="[drugOrderFormsMetadata?.instructionField]"
+      (formUpdate)="onFormUpdate('instructions', $event)"
+    ></app-form>
+
+    <app-form
+      *ngIf="!fromDispensing && quantityField"
+      [fields]="[quantityField]"
+      (formUpdate)="onFormUpdate('quantity', $event)"
+    ></app-form>
+
+    <div
+      class="alert alert-warning"
+      role="alert"
+      *ngIf="!shouldFeedQuantity && isDrugSet"
+    >
+      The drug is out of stock, continue
+    </div>
+
+    <a
+      *ngIf="!fromDispensing"
+      class="mb-1 mt-1"
+      style="cursor: pointer"
+      (click)="toggleOtherDetails($event)"
+      >{{ !showOtherDetails ? "More details" : "Less details" }}</a
+    >
+    <div *ngIf="showOtherDetails || fromDispensing">
+      <app-form
+        [fields]="drugOrderFormsMetadata?.doseFormFields"
+        [isFormHorizontal]="true"
+        (formUpdate)="onFormUpdate('dose', $event)"
+      ></app-form>
+
+      <app-form
+        [fields]="drugOrderFormsMetadata?.durationFormFields"
+        [isFormHorizontal]="true"
+        (formUpdate)="onFormUpdate('duration', $event)"
+      ></app-form>
+
+      <app-form
+        [fields]="[drugOrderFormsMetadata?.drugRoutesField]"
+        (formUpdate)="onFormUpdate('route', $event)"
+      ></app-form>
+    </div>
+
+    <!-- <app-form
+      [fields]="[drugOrderFormsMetadata?.orderReasonField]"
+      (formUpdate)="onFormUpdate('reason', $event)"
+    ></app-form> -->
+
+    <app-form
+      *ngIf="fromDispensing"
+      [fields]="[drugOrderFormsMetadata?.instructionField]"
+      (formUpdate)="onFormUpdate('instructions', $event)"
+    ></app-form>
+
+    <app-form
+      *ngIf="fromDispensing && quantityField"
+      [fields]="[quantityField]"
+      (enterKeyPressedFields)="onGetEnterKeyResponsedFields($event)"
+      (formUpdate)="onFormUpdate('quantity', $event)"
+    ></app-form>
+  </div>
+
+  <!-- <div class="d-flex justify-content-end mt-2" *ngIf="!hideActionButtons">
+      <button
+        *ngIf="showAddButton"
+        (click)="addDrugOrderToTheList(drugOrderDetails)"
+        mat-flat-button
+        color="primary"
+      >
+        Add
+      </button>
+
+      <button
+        mat-stroked-button
+        *ngIf="!showAddButton"
+        id="btn-cancel-drug-order"
+        (click)="onCancel($event)"
+        class="mr-2"
+      >
+        Cancel
+      </button>
+
+      <button
+        (click)="updateDrugOrder(drugOrder, drugOrderDetails)"
+        *ngIf="!showAddButton"
+        mat-flat-button
+        id="btn-update-drug-order"
+        color="primary"
+      >
+        Update
+      </button>
+    </div> -->
+</div>

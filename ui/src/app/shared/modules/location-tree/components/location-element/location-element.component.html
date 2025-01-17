@@ -1,0 +1,18 @@
+<!-- {{ currentNodeData | json }} -->
+
+<ul>
+  <!-- This is the tree node template for leaf nodes -->
+  <li *ngFor="let node of nodeData">
+    <!-- use a disabled button to provide padding for tree leaf -->
+    <button mat-icon-button (click)="expandTheNode($event, node)">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
+      </mat-icon>
+    </button>
+    {{ node.name }}
+    <app-location-element
+      *ngIf="currentNodeData"
+      [nodeData]="currentNodeData"
+    ></app-location-element>
+  </li>
+</ul>

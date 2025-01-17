@@ -1,0 +1,109 @@
+<div
+  class="store-settings"
+  *ngIf="{
+    mappingSource: mappingSource$ | async,
+    paymentCategories: paymentCategories$ | async,
+    platformProductConfigs: platformProductConfigs$ | async
+  } as params"
+>
+  <mat-tab-group (selectedTabChange)="onTabChanged($event)">
+    <mat-tab label="Drugs">
+      <ng-template matTabContent>
+        <app-drugs-list></app-drugs-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Generic Drugs">
+      <ng-template matTabContent>
+        <app-generic-drugs-list></app-generic-drugs-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Non-Drugs">
+      <ng-template matTabContent>
+        <div class="p-3 mt-2">
+          <div class="h5">Non drug items</div>
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+              <div class="h6">New</div>
+              <app-shared-concept-create
+                [conceptClass]="'Non Drug'"
+                [dataType]="'8d4a4c94-c2cc-11de-8d13-0010c6dffd0f'"
+                [isSet]="false"
+                [showCodesSection]="false"
+                [itemTypeName]="'Non-drug'"
+                [saveOnTheComponent]="true"
+                [isItemStockable]="
+                  params?.platformProductConfigs?.isPharmacy ? true : false
+                "
+              ></app-shared-concept-create>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+              <div class="h6">List of non-drugs</div>
+              <app-standard-concepts-list
+                [stockable]="true"
+                [conceptClass]="'Non Drug'"
+              ></app-standard-concepts-list>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Units of measure">
+      <ng-template matTabContent>
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.mappingSource"
+        ></mat-progress-bar>
+        <app-units-of-measure-settings
+          *ngIf="params?.mappingSource"
+          [mappingSource]="params?.mappingSource"
+        ></app-units-of-measure-settings>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Ledgers">
+      <ng-template matTabContent>
+        <app-ledgers-list></app-ledgers-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Re-orders levels">
+      <ng-template matTabContent>
+        <app-re-order-level-items-list></app-re-order-level-items-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Suppliers">
+      <ng-template matTabContent>
+        <app-suppliers-list></app-suppliers-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="System settings">
+      <ng-template matTabContent>
+        <app-system-settings-list
+          [key]="'iCareConnect.pharmacy.'"
+        ></app-system-settings-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Price list">
+      <ng-template matTabContent>
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.platformProductConfigs"
+        ></mat-progress-bar>
+        <app-price-list-items-container
+          [paymentCategories]="params?.paymentCategories?.setMembers"
+          *ngIf="params?.paymentCategories"
+          [departmentId]="
+            params?.platformProductConfigs?.isPharmacy ? 'Drug' : null
+          "
+          [hideDepartmentsSelection]="
+            params?.platformProductConfigs?.isPharmacy ? true : false
+          "
+        ></app-price-list-items-container>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="User management">
+      <ng-template matTabContent>
+        <app-store-user-management></app-store-user-management>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

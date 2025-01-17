@@ -1,0 +1,16 @@
+<div
+  *ngIf="{ securitySystemSettings: securitySystemSettings$ | async } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.securitySystemSettings"
+  ></mat-progress-bar>
+  <app-shared-manage-user
+    *ngIf="params?.securitySystemSettings"
+    [user]="data"
+    [systemModules]="[]"
+    [securitySystemSettings]="params?.securitySystemSettings"
+    [hideModuleSelection]="true"
+    (cancel)="onCancel($event)"
+  ></app-shared-manage-user>
+</div>

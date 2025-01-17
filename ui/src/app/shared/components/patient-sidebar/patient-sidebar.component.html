@@ -1,0 +1,44 @@
+<div
+  class="patient-sidebar"
+  *ngIf="{
+    provider: provider$ | async,
+    visit: visit$ | async,
+    currentLocation: currentLocation$ | async,
+    privileges: privileges$ | async,
+    observations: observations$ | async
+  } as params"
+>
+  <!-- patient profile -->
+  <!-- <app-patient-profile [patient]="currentPatient"></app-patient-profile> -->
+  <!-- end of patient profile -->
+  <mat-divider class="mt-3 mb-0"></mat-divider>
+
+  <!-- patient menus -->
+  <mat-nav-list *ngIf="currentPatient">
+    <mat-list-item
+      [disabled]="menu?.disabled"
+      *ngFor="let menu of menus"
+      (click)="
+        onOpenForm(
+          $event,
+          menu,
+          params?.provider,
+          params?.privileges,
+          params?.currentLocation,
+          params?.visit,
+          params?.observations
+        )
+      "
+    >
+      <a
+        matLine
+        [disabled]="menu?.disabled"
+        style="font-size: 13px"
+        [ngClass]="{ 'no-click': menu?.disabled }"
+        >{{ menu.name }}</a
+      >
+    </mat-list-item>
+  </mat-nav-list>
+
+  <!-- end of patient menus -->
+</div>

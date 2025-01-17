@@ -1,0 +1,44 @@
+<div
+  *ngIf="{
+    privileges: privileges$ | async,
+    labConfigs: labConfigs$ | async,
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="
+      !params?.labConfigs ||
+      !params?.codedSampleRejectionReasons ||
+      !datesParameters
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div
+    style="margin-top: -20px"
+    class="row"
+    *ngIf="
+      params?.labConfigs &&
+      params?.codedSampleRejectionReasons &&
+      datesParameters
+    "
+  >
+    <div style="margin-top: 15px" class="col-12">
+      <div>
+        <app-sample-acceptance
+          [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
+          [labConfigs]="params?.labConfigs"
+          [datesParameters]="datesParameters"
+          [LISConfigurations]="LISConfigurations"
+          [patients]="patients"
+          [page]="page"
+          [pageCount]="pageCount"
+          [sampleTypes]="sampleTypes"
+          [labSamplesDepartments]="labSamplesDepartments"
+          [labSamplesContainers]="labSamplesContainers"
+          [currentUser]="params?.currentUser"
+        ></app-sample-acceptance>
+      </div>
+    </div>
+  </div>
+</div>

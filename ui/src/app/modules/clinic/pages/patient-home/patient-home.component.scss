@@ -1,0 +1,30 @@
+.patient-sidebar-container {
+  position: fixed;
+  width: 250px;
+  top: 70px;
+  left: 10px;
+  border-radius: 5px;
+}
+
+.patient-home-content {
+  margin-left: 260px;
+  padding-top: 10px;
+  border-radius: 5px;
+}
+
+.patient-home-no-patient {
+  margin-left: 15px !important;
+}
+
+.patient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  top: 64px;
+  left: 0;
+  right: 0;
+  position: fixed;
+  z-index: 200;
+  background-color: #f3f2f3;
+  padding: 5px 15px;
+}

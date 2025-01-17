@@ -1,0 +1,66 @@
+<div
+  class="w-100"
+  *ngIf="{
+    forms: forms$ | async,
+    updatedPatientEnrollmentDetails: updatedPatientEnrollmentDetails$ | async
+  } as params"
+>
+  <div
+    class="mt-5 d-flex justify-content-center w-100"
+    *ngIf="!params?.forms || !params?.updatedPatientEnrollmentDetails"
+  >
+    <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+  </div>
+  <div class="w-100" *ngIf="params?.forms">
+    <div class="loading-overlay" *ngIf="saving">
+      <div class="text-center">
+        <div>Saving ...........</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div class="w-100" *ngIf="!patientWorkflowState && workflowState">
+      <p>
+        This client has never come for this visit. Please set date and click
+        confirm for enrolling into this visit
+      </p>
+      <div class="row">
+        <div class="col-md-6 col-sm-12 col-sx-12">
+          <app-form
+            [fields]="[startDateField]"
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+        </div>
+        <div class="col-md-6 col-sm-12 col-sx-12">
+          <button
+            style="margin-top: 16px"
+            mat-flat-button
+            [disabled]="!startDate"
+            color="primary"
+            (click)="onSettingPatientWorkflowState($event)"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+    <app-workflow-state-forms
+      *ngIf="
+        workflowState &&
+        ((patientWorkflowState &&
+          patientEnrollmentDetails?.states &&
+          patientEnrollmentDetails?.states?.length > 0) ||
+          !patientWorkflowState) &&
+        !saving &&
+        params?.updatedPatientEnrollmentDetails
+      "
+      [forms]="params?.forms"
+      [workflowState]="workflowState"
+      [patientWorkflowState]="patientWorkflowState"
+      [patientEnrollmentDetails]="params?.updatedPatientEnrollmentDetails"
+      [currentLocation]="currentLocation"
+      [provider]="provider"
+    ></app-workflow-state-forms>
+  </div>
+</div>

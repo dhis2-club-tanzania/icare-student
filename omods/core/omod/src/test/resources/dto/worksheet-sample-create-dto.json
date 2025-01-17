@@ -1,0 +1,24 @@
+[
+  {
+    "row": 1,
+    "column": 5,
+    "sample": {
+      "uuid":"x311y666-zz77-11e3-1111-08002007777"
+    },
+    "worksheetDefinition": {
+      "uuid": "iCARE890-TEST-GGGH-9beb-d30dcfc0c635"
+    },
+    "type": "SAMPLE"
+  },
+  {
+    "row": 1,
+    "column": 1,
+    "worksheetControl": {
+      "uuid":"iCARE890-YTYE-IUYT-9beb-d30dcfc0c66e"
+    },
+    "worksheetDefinition": {
+      "uuid": "iCARE890-TEST-GGGH-9beb-d30dcfc0c635"
+    },
+    "type": "CONTROL"
+  }
+]

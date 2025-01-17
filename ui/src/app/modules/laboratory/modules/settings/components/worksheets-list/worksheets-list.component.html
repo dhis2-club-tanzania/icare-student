@@ -1,0 +1,61 @@
+<div class="w-100" *ngIf="{ worksheets: worksheets$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.worksheets"
+  ></mat-progress-bar>
+  <div class="w-100">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Name</th>
+          <th>Code</th>
+          <th>Instrument</th>
+          <th>Test Order</th>
+          <th>Rows</th>
+          <th>Columns</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngIf="params?.worksheets && params?.worksheets?.length > 0"
+        >
+          <tr *ngFor="let worksheet of params?.worksheets; let count = index">
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ worksheet?.name }}
+            </td>
+            <td>
+              {{ worksheet?.code }}
+            </td>
+            <td>
+              {{ worksheet?.instrument?.display }}
+            </td>
+            <td>
+              {{ worksheet?.testOrder?.display }}
+            </td>
+            <td>
+              {{ worksheet?.rows }}
+            </td>
+            <td>
+              {{ worksheet?.columns }}
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container
+          *ngIf="params?.worksheets && params?.worksheets?.length === 0"
+        >
+          <tr>
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">
+                No Defined Worksheets
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

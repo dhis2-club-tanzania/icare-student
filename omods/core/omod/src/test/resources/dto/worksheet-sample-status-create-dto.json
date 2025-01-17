@@ -1,0 +1,11 @@
+{
+  "status": "WORKSHEET-SAMPLE-STATUS",
+  "remarks": "WORKSHEET-SAMPLE-REMARKS",
+  "user": {
+    "uuid": "36b071d8-d5ea-4703-8e56-5b066420b569"
+  },
+  "worksheetSample": {
+    "uuid": "iCARE890-TEST-OSDH-9beb-d30dcfc0c635"
+  },
+  "category": "WORKSHEET-SAMPLE-CATEGORY"
+}

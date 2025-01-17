@@ -1,0 +1,147 @@
+<div
+  class="w-100"
+  *ngIf="{
+    drugOrders: drugOrders$ | async,
+    prices: prices$ | async,
+    totalPrice: totalPrice$ | async,
+    pricesForSelectedDrugOrders: pricesForSelectedDrugOrders$ | async
+  } as params"
+>
+  <div class="p-3">
+    <div class="h5">To send to cashier</div>
+  </div>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.drugOrders"
+  ></mat-progress-bar>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Sending to cashier ...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <table class="table table-bordered">
+    <thead *ngIf="(params?.drugOrders | filterDrugOrders: 'NON')?.length > 0">
+      <tr>
+        <th>Drug</th>
+        <th>Instructions</th>
+        <th>Prescribed By</th>
+        <th>Prescribed On</th>
+        <th>Quantity</th>
+        <th style="text-align: center; width: 150px">Price</th>
+        <th style="text-align: center; width: 100px">
+          <section>
+            <mat-checkbox
+              color="primary"
+              [disabled]="!params?.drugOrders"
+              [checked]="allSelected"
+              (change)="selectAllOrders($event, params?.drugOrders)"
+              >All</mat-checkbox
+            >
+          </section>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container
+        *ngIf="(params?.drugOrders | filterDrugOrders: 'NON')?.length > 0"
+      >
+        <ng-container
+          *ngFor="
+            let drugOrder of params?.drugOrders | filterDrugOrders: 'NON';
+            let count = index
+          "
+        >
+          <tr *ngIf="!drugOrder?.previousOrder?.uuid">
+            <td>
+              {{ drugOrder?.drug?.display }}
+            </td>
+            <td>
+              {{ drugOrder?.instructions }}
+            </td>
+            <td>
+              {{ drugOrder?.orderer?.display }}
+            </td>
+            <td>
+              {{ drugOrder?.dateActivated | date: "medium" }}
+            </td>
+            <td>
+              <input
+                class="quantity-input"
+                type="number"
+                min="0"
+                [value]="drugOrder?.quantity"
+                [ngModel]="drugQuantities[drugOrder?.uuid]"
+                (change)="
+                  setDrugQuantity(
+                    $event,
+                    drugOrder?.uuid,
+                    visit?.uuid,
+                    drugOrder?.drug?.uuid
+                  )
+                "
+              />
+            </td>
+            <td style="text-align: center; width: 150px">
+              {{
+                params?.prices
+                  ? (params?.prices[drugOrder?.uuid] | currency: "TZS":"":".0")
+                  : "-"
+              }}
+            </td>
+            <td style="text-align: center">
+              <section>
+                <mat-checkbox
+                  color="primary"
+                  [checked]="selectedDrugOrders[drugOrder?.uuid]"
+                  (change)="
+                    selectDrugOrder($event, drugOrder, params?.drugOrders)
+                  "
+                ></mat-checkbox>
+              </section>
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="(params?.drugOrders | filterDrugOrders: 'NON')?.length > 0">
+          <th colspan="5" style="text-align: right">TOTAL PRICE</th>
+          <th style="text-align: center; width: 150px">
+            {{ params?.totalPrice | currency: "TZS":"":".0" }}
+          </th>
+          <th style="text-align: center; background-color: green; color: #fff">
+            {{ params?.pricesForSelectedDrugOrders | currency: "TZS":"":".0" }}
+          </th>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="(params?.drugOrders | filterDrugOrders: 'NON')?.length == 0"
+      >
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-warning text-center" role="alert">
+              No drug order to revise or send to cashier
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  <div
+    class="w-100 mb-2 d-flex justify-content-end"
+    *ngIf="(params?.drugOrders | filterDrugOrders: 'NON')?.length > 0"
+  >
+    <button
+      [disabled]="
+        (params?.drugOrders | filterDrugOrders: 'NON')?.length == 0 ||
+        !isSendValid
+      "
+      class="mr-4"
+      mat-flat-button
+      color="primary"
+      (click)="sendToCashier($event, params?.drugOrders)"
+    >
+      Send to cashier
+    </button>
+  </div>
+</div>

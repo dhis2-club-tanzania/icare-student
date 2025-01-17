@@ -1,0 +1,20 @@
+{
+  "invoice": {
+    "uuid": "3d6d2029-f0c9-443e-9055-edbc5a8018e4"
+  },
+  "paymentType": {
+    "uuid": "b210mxed-9ab1-4b57-8a89-c0b09854368d"
+  },
+  "referenceNumber": "RECEIVED BY: The User",
+  "amount": 2000,
+  "items": [
+    {
+      "item": {
+        "uuid": "b210used-9ab1-4b57-8a89-c0b09854368d"
+      },
+      "invoice": {
+        "uuid": "3d6d2029-f0c9-443e-9055-edbc5a8018e4"
+      }
+    }
+  ]
+}

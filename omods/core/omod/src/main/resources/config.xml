@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.4">
+	
+	<!-- Base Module Properties -->
+	<id>${project.parent.artifactId}</id>
+	<name>${project.parent.name}</name>
+	<version>${project.parent.version}</version>
+	<package>org.openmrs.module.icare</package>
+	<author>vincentminde</author>
+	<description>
+			${project.parent.description}
+	</description>
+
+	<activator>org.openmrs.module.icare.ICareActivator</activator>
+	
+	<!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
+	<!-- /Base Module Properties -->
+
+	<require_version>2.0.3</require_version>
+
+	<advice>
+		<point>org.openmrs.api.VisitService</point>
+		<class>org.openmrs.module.icare.billing.aop.VisitBillAdvisor</class>
+	</advice>
+	<advice>
+		<point>org.openmrs.api.OrderService</point>
+		<class>org.openmrs.module.icare.billing.aop.OrderBillAdvisor</class>
+	</advice>
+	<advice>
+		<point>org.openmrs.api.UserService</point>
+		<class>org.openmrs.module.icare.core.aop.PasswordChangeAdvisor</class>
+	</advice>
+	<advice>
+		<point>org.openmrs.api.DiagnosisService</point>
+		<class>org.openmrs.module.icare.core.aop.VisitDiagnosisAdvisor</class>
+	</advice>
+	<globalProperty>
+		<property>icare.billing.serviceAttribute</property>
+		<defaultValue>SERVICE0IIIIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the visit attribute which registers the service.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.paymentSchemeAttribute</property>
+		<defaultValue>PSCHEME0IIIIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the visit attribute which registers the payment scheme to be used.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.paymentTypeAttribute</property>
+		<defaultValue>PTYPE000IIIIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the visit attribute which registers the payment type.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>icare.registration.encounterType</property>
+		<defaultValue>REG00000IIIIIIIIIIIIIIIIIIIIIIIETYPE</defaultValue>
+		<description>
+			UUID for the registration encounter type.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.registration.feeConcept</property>
+		<defaultValue>REG00000IIIIIIIIIIIIIIIIIIIIIIIIIIII</defaultValue>
+		<description>
+			UUID for the fee concept used to make payment.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.orderType</property>
+		<defaultValue>BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE</defaultValue>
+		<description>
+			UUID for the billing order type.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.insuranceAttribute</property>
+		<defaultValue>INSURANCEIIIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the Insurance type.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.insuranceIDAttribute</property>
+		<defaultValue>INSURANCEIDIIIIIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the Insurance ID.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.insuranceAuthorizationAttribute</property>
+		<defaultValue>INSURANCEAUTHNOIIIIIIIIIIIIIIIIATYPE</defaultValue>
+		<description>
+			UUID for the Insurance Authorization Attribute.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgramMappings</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance mappings
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgram.uuid</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance Program
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.dhis2.eventProgramStage.uuid</property>
+		<defaultValue></defaultValue>
+		<description>
+			Surveillance program stage
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.captureDiagnosisData</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			Check for should capture immediate diagnoses when doctor prescribe
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.surveillance.immediate.icdCodedDiagnoses</property>
+		<defaultValue>["A00"]</defaultValue>
+		<description>
+			List of immediate coded diagnoses
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.location.general.systemSettings.formsAttributeTypeUuid</property>
+		<defaultValue>2c266002-2848-4d2b-bf1f-8b59d81e3f29</defaultValue>
+		<description>
+			For location attributes containing form references/uuids
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.visits.types.verticalProgram.uuid</property>
+		<defaultValue>2msir5eb-5ww5-11e8-5555-40b034c3cfee</defaultValue>
+		<description>
+			For vertical program visit type reference
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.mediators.list</property>
+		<defaultValue>[{"mediatorKey":"dhis2","mediatorUrlPath":"","authenticationType":"basic","mediatorMappingReferenceKey":"iCare.interoperability.settings.surveillance.dhis2.eventProgramMappings","isActive":true}]</defaultValue>
+		<description>
+			List of mediators to push data to
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.general.systemSettings.groups</property>
+		<defaultValue></defaultValue>
+		<description>
+			Settings references
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.authentication.authSignature</property>
+		<defaultValue></defaultValue>
+		<description>
+			For GePG Authentication
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.mappings.GFSCODEConceptSource.uuid</property>
+		<defaultValue>GFSCODE_CONCEPT_SOURCE_UUID</defaultValue>
+		<description>
+			For GFSCODE Mapping reference
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.systemCode</property>
+		<defaultValue>90011</defaultValue>
+		<description>
+			GePG System code
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>iCare.GePG.settings.pkcs12Path</property>
+		<defaultValue>certificates/keystore.p12</defaultValue>
+		<description>
+			pkcs12Path from relative certificate folder
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>iCare.GePG.settings.pkcs12Password</property>
+		<defaultValue>dhis2lab</defaultValue>
+		<description>
+			pkcs12Password 
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>iCare.GePG.settings.ServiceProviderCode</property>
+		<defaultValue>SP537</defaultValue>
+		<description>
+			GePG Service Provider Code
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.ServiceCode</property>
+		<defaultValue>1001</defaultValue>
+		<description>
+			GePG Service Code
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.ServiceProviderID</property>
+		<defaultValue>LHGSE001</defaultValue>
+		<description>
+			Service Provider ID
+		</description>
+	</globalProperty>
+    <globalProperty>
+		<property>iCare.GePG.settings.SubServiceProviderCode</property>
+		<defaultValue>1002</defaultValue>
+		<description>
+			Sub Service Provider Code
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.clientPrivateKey</property>
+		<defaultValue></defaultValue>
+		<description>
+			Client Private Key
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.GePG.settings.enginePublicKey</property>
+		<defaultValue></defaultValue>
+		<description>
+			Engine Public Key
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.GePG.setting.baseurlApi</property>
+		<defaultValue>https://</defaultValue>
+		<description>
+			GePG UCC Base API
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>icare.person.attribute.phonenumber</property>
+		<defaultValue>ATTRIBUTE_PHONE_NUMBER</defaultValue>
+		<description>
+			Attribute Phote Number 
+		</description>
+	</globalProperty>
+
+   <globalProperty>
+		<property>icare.email.person.attributeTypeUuid</property>
+		<defaultValue>ATTRIBUTE_EMAIL</defaultValue>
+		<description>
+			Attribute Patience Email 
+		</description>
+	</globalProperty>
+
+
+	<globalProperty>
+		<property>iCare.GePG.settings.GepgUsername</property>
+		<defaultValue></defaultValue>
+		<description>
+			GEPG_USERNAME
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>iCare.GePG.settings.GepgPassword</property>
+		<defaultValue></defaultValue>
+		<description>
+			GEPG_PASSWORD
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>icare.laboratory.concept.mappings.machineIntegration.conceptSourceUuid</property>
+		<defaultValue>machine-integration</defaultValue>
+		<description>
+			For storing concept source used to map test from machine results
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.billing.controlNumberBasedPaymentType.concept.uuid</property>
+		<defaultValue>uuid</defaultValue>
+		<description>
+			Default for GePG
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.allowRemoteHistory</property>
+		<defaultValue>false</defaultValue>
+		<description>
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>iCare.interoperability.settings.exchangeLocationsTag</property>
+		<defaultValue>HDU API Exchange</defaultValue>
+		<description>
+			Location tag for facilities allowed for health data universal exchange
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>icare.location.attributes.hfrCode.attributeUuid</property>
+		<defaultValue>UUID</defaultValue>
+		<description>
+			HFRCODE Location Attribute type UUID
+		</description>
+	</globalProperty>
+
+	<!-- Internationalization -->
+	<!-- All message codes should start with @MODULE_ID@.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+	<!-- Privileges -->
+	<privilege>
+		<name>CLINIC_RETIRE_LABORATORY_INVESTIGATION</name>
+		<description>Access for the clinic module to retire laboratory investigation</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_LABORATORY_INVESTIGATION</name>
+		<description>Access for the clinic module to delete laboratory investigation</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_ADD_RADIOLOGY_INVESTIGATION</name>
+		<description>Access for the clinic module to add radiology investigation</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_RETIRE_RADIOLOGY_INVESTIGRATION</name>
+		<description>Access for the clinic module to retire radiology investigation</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_RADIOLOGY_INVESTIGATION</name>
+		<description>Access for the clinic module to delete radiology investigation</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_ADD_PROCEDURE_ORDER</name>
+		<description>Access for the clinic module to add procedure order</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_RETIRE_PROCEDURE_ORDER</name>
+		<description>Access for the clinic module to retire procedure order</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_PROCEDURE_ORDER</name>
+		<description>Access for the clinic module to delete procedure order</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_ADD_CONFIRMED_DIAGNOSIS</name>
+		<description>Access for the clinic module to add confirmed diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_RETIRE_CONFIRMED_DIAGNOSIS</name>
+		<description>Access for the clinic module to retire confirmed diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_CONFIRMED_DIAGNOSIS</name>
+		<description>Access for the clinic module to delete confirmed diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_ADD_PROVISIONAL_DIAGNOSIS</name>
+		<description>Access for the clinic module to add provisional diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_RETIRE_PROVISIONAL_DIAGNOSIS</name>
+		<description>Access for the clinic module to retire provisional diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_PROVISIONAL_DIAGNOSIS</name>
+		<description>Access for the clinic module to delete provisional diagnosis</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_ADD_PRESCRIPTION</name>
+		<description>Access for the clinic module to add prescription</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_RETIRE_PRESCRIPTION</name>
+		<description>Access for the clinic module to retire prescription</description>
+	</privilege>
+	<privilege>
+		<name>CLINIC_DELETE_PRESCRIPTION</name>
+		<description>Access for the clinic module to delete prescription</description>
+	</privilege>
+	<privilege>
+		<name>ALL</name>
+		<description>Access for the all system functionalities</description>
+	</privilege>
+	<!-- /Priviledges -->
+
+	<mappingFiles>
+		Prescription.hbm.xml
+	</mappingFiles>
+</module>
+

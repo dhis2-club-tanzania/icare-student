@@ -1,0 +1,72 @@
+<div
+  class="w-100"
+  *ngIf="{ standardReports: standardReports$ | async } as params"
+>
+  <div class="w-100 mt-2">
+    <div class="h4">Reports list</div>
+    <div class="w-100">
+      <mat-chip-listbox aria-label="">
+        <mat-chip-option
+          [disabled]="true"
+          [ngClass]="{
+            'selected-category': selectedReportCategory === 'dynamic'
+          }"
+          (click)="onSelectReportCategory($event, 'dynamic')"
+        >
+          Dynamic reports
+        </mat-chip-option>
+        <mat-chip-option
+          [ngClass]="{
+            'selected-category': selectedReportCategory === 'standard'
+          }"
+          (click)="onSelectReportCategory($event, 'standard')"
+        >
+          Standard reports
+        </mat-chip-option>
+      </mat-chip-listbox>
+      <div *ngIf="selectedReportCategory === 'standard'" class="mt-2">
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.standardReports"
+        ></mat-progress-bar>
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th style="width: 40px">SN</th>
+              <th>Name</th>
+              <th style="width: 40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              style="cursor: pointer"
+              *ngFor="let report of params?.standardReports; let count = index"
+              (click)="onViewReport(report)"
+            >
+              <td>
+                {{ count + 1 }}
+              </td>
+              <td>
+                {{ report?.value?.name }}
+              </td>
+              <td>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="onViewReport(report)">
+                    <mat-icon>eye</mat-icon>
+                    <span>View</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="selectedReportCategory === 'dynamic'" class="mt-2">
+        <app-shared-dynamic-reports></app-shared-dynamic-reports>
+      </div>
+    </div>
+  </div>
+</div>

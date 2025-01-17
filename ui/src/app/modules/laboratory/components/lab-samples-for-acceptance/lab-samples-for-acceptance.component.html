@@ -1,0 +1,72 @@
+<div *ngIf="samplesGroupedBymrNo$ | async">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr class="table-header">
+        <td>SN</td>
+        <td>MRNo.</td>
+        <td>Sample ID</td>
+        <td>Sample/Specimen type</td>
+        <td>Actions</td>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container
+        *ngFor="
+          let sampleGroup of samplesGroupedBymrNo$ | async;
+          let count = index
+        "
+      >
+        <ng-container
+          *ngFor="let sample of sampleGroup?.samples; let i = index"
+        >
+          <tr class="sample-acceptance-trs">
+            <td *ngIf="i == 0" [attr.rowspan]="sampleGroup?.samples?.length">
+              #{{ count + 1 }}
+            </td>
+            <td *ngIf="i == 0" [attr.rowspan]="sampleGroup?.samples?.length">
+              {{ sample?.mrNo }}
+            </td>
+            <td>
+              {{ sample?.id }}
+            </td>
+            <td>
+              {{ sample?.specimenSourceName }}
+            </td>
+            <td>
+              <button
+                *ngIf="!sample?.status"
+                mat-stroked-button
+                (click)="setSampleStatus($event, sample, 'ACCEPTED')"
+                class="mr-2 set-status-btn accept-btn"
+              >
+                Accept
+              </button>
+
+              <button
+                *ngIf="!sample?.status"
+                mat-stroked-button
+                (click)="setSampleStatus($event, sample, 'REJECTED')"
+                class="mr-2 set-status-btn reject-btn"
+              >
+                Reject
+              </button>
+              <span class="sample-acceptance-status" *ngIf="sample?.status">
+                {{ sample?.status }}
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="(samplesGroupedBymrNo$ | async)?.length == 0">
+        <tr>
+          <td colspan="6">
+            <p class="text-danger no-sample-text">
+              No samples available
+            </p>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,26 @@
+<div class="w-100">
+  <div class="row">
+    <div
+      [ngClass]="{
+        'col-md-8': !reportToEdit,
+        'col-md-12 ml-3 mr-3': reportToEdit
+      }"
+    >
+      <lib-manage-standard-report
+        *ngIf="report"
+        [report]="report"
+        [additionalKey]="additionalKey"
+        (reloadList)="onGetReloadList($event)"
+      ></lib-manage-standard-report>
+    </div>
+    <div
+      *ngIf="!hideList"
+      class="col-md-4"
+      [ngStyle]="{ display: reportToEdit ? 'none' : 'block' }"
+    >
+      <lib-standard-reports-list
+        (selectedReport)="onGetSelectedStandardReport($event)"
+      ></lib-standard-reports-list>
+    </div>
+  </div>
+</div>

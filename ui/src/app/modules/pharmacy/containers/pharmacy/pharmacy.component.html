@@ -1,0 +1,285 @@
+<div class="pharmacy-container no-print">
+  <ng-container
+    *ngIf="{
+      privileges: privileges$ | async,
+      iCareConnectConfigurations: iCareConnectConfigurations$ | async,
+      currentUser: currentUser$ | async,
+      currentLocation: currentLocation$ | async
+    } as params"
+  >
+    <div
+      class="row"
+      *ngIf="
+        !params?.privileges ||
+        !params?.iCareConnectConfigurations ||
+        !params?.currentUser ||
+        !params?.currentLocation
+      "
+    >
+      <div class="col-12 text-center mt-5 mb-2">
+        <p>Loading Settings</p>
+      </div>
+      <div class="col-12">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+    </div>
+    <div *ngIf="errors.length > 0">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
+    <div
+      class="row"
+      *ngIf="
+        params?.privileges &&
+        params?.iCareConnectConfigurations &&
+        params?.currentUser
+      "
+    >
+      <div
+        [ngClass]="{
+          'col-2':
+            params?.iCareConnectConfigurations?.isPharmacy && showMenuItems,
+          'col-12': !params?.iCareConnectConfigurations?.isPharmacy
+        }"
+        *ngIf="showMenuItems"
+        class="pharmacy-header mat-elevation-z1"
+        [ngStyle]="{
+          height: params?.iCareConnectConfigurations?.isPharmacy
+            ? '95vh'
+            : 'auto',
+          'margin-top': params?.iCareConnectConfigurations?.isPharmacy
+            ? '-15px'
+            : '',
+          'margin-left': params?.iCareConnectConfigurations?.isPharmacy
+            ? '-5px'
+            : ''
+        }"
+      >
+        <mat-chip-listbox
+          class="w-100"
+          cdkDropListOrientation="{{
+            params?.iCareConnectConfigurations &&
+            !params?.iCareConnectConfigurations?.isPharmacy
+              ? 'horizontal'
+              : ''
+          }}"
+          [ngClass]="{
+            'full-width-chip mat-chip-list-stacked':
+              params?.iCareConnectConfigurations?.isPharmacy
+          }"
+        >
+          <div
+            style="border-bottom: solid 1px #f2f2f2; background-color: #f2f2f2"
+            class="w-100 pl-3 pt-1 pb-2"
+            *ngIf="params?.iCareConnectConfigurations?.isPharmacy"
+          >
+            <button mat-button>
+              <mat-icon color="primary">location_on</mat-icon
+              >{{ params?.currentLocation?.display }}
+            </button>
+            <p class="ml-4">
+              {{ params?.currentUser?.person?.display }}
+              <em>({{ params?.currentUser?.username }})</em>
+            </p>
+          </div>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'home')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'home',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Dashboard
+          </mat-chip-option>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="
+              params?.privileges &&
+              params?.currentLocation &&
+              !params?.currentLocation?.isMainStore
+            "
+            (click)="changeRoute($event, 'cashier')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'cashier',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Dispensing
+          </mat-chip-option>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'stock')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'stock',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Stock
+          </mat-chip-option>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'requisition')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'requisition',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Request
+          </mat-chip-option>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'issuing')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'issuing',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Issuing
+          </mat-chip-option>
+
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'reports')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'reports',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Reports
+          </mat-chip-option>
+          <mat-chip-option
+            class="{{
+              params?.iCareConnectConfigurations?.isPharmacy ? 'w-100' : 'w-20'
+            }}"
+            *ngIf="params?.privileges"
+            (click)="changeRoute($event, 'settings')"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'settings',
+              'for-lis-chip': params?.iCareConnectConfigurations?.isPharmacy
+            }"
+            [ngStyle]="{
+              'border-radius': params?.iCareConnectConfigurations?.isPharmacy
+                ? '0 !important'
+                : '',
+              padding: params?.iCareConnectConfigurations?.isPharmacy
+                ? '12px !important'
+                : ''
+            }"
+          >
+            Settings
+          </mat-chip-option>
+        </mat-chip-listbox>
+      </div>
+      <div
+        [ngClass]="{
+          'col-10':
+            params?.iCareConnectConfigurations?.isPharmacy && showMenuItems,
+          'col-12':
+            !params?.iCareConnectConfigurations?.isPharmacy || !showMenuItems
+        }"
+      >
+        <div class="row">
+          <div
+            class="col-12"
+            *ngIf="params?.iCareConnectConfigurations?.isPharmacy"
+          >
+            <div class="d-flex justify-content-left">
+              <button
+                [title]="showMenuItems ? 'Hide side menu' : 'Show side menu'"
+                (click)="toggleMenuItems($event)"
+                mat-icon-button
+                color="primary"
+                style="margin-top: -10px; margin-left: -10px"
+              >
+                <mat-icon>menu</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="pharmacy-home-content w-100">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div
+        class="row"
+        style="margin-top: 20px"
+        *ngIf="params?.sampleTypes?.length > 0"
+      >
+        
+      </div> -->
+  </ng-container>
+</div>

@@ -1,0 +1,6 @@
+<div class="w-100" *ngFor="let formId of formUuids">
+  <app-render-openmrs-form
+    [formId]="formId"
+    (formDataUpdate)="onFormUpdate($event, formId)"
+  ></app-render-openmrs-form>
+</div>

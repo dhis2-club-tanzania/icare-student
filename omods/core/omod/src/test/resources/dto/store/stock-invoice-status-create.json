@@ -1,0 +1,10 @@
+[
+  {
+    "status": "DRAFT",
+    "remarks": "This is a drafted invoice",
+    "stockInvoice": {
+      "uuid": "8800zx3570-8z37-11ff-2234-01102007811",
+      "display": "inv-101"
+    }
+  }
+]

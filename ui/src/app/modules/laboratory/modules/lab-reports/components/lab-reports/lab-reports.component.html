@@ -1,0 +1,20 @@
+<div>
+  <div
+    class="row"
+    *ngIf="{
+      sampleTypes: sampleTypes$ | async,
+      labSamplesAndTestsContainers: labSamplesAndTestsContainers$ | async,
+      labSamplesDepartments: labSamplesDepartments$ | async,
+      codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+      providerDetails: providerDetails$ | async,
+      facilityDetails: facilityDetails$ | async
+    } as params"
+  >
+    <div class="col-12 mt-2">
+      <app-lab-reports-list
+        [reports]="reports"
+        (selectedReport)="onGetSelectedReport($event)"
+      ></app-lab-reports-list>
+    </div>
+  </div>
+</div>

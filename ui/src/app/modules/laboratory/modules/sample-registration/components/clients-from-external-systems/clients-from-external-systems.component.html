@@ -1,0 +1,161 @@
+<div class="row" *ngIf="{ clientsList: clientsList$ | async } as params">
+  <div class="col-md-2">
+    <mat-form-field class="w-100">
+      <mat-label>Select</mat-label>
+      <mat-select
+        required
+        [(ngModel)]="selectedSystem"
+        (selectionChange)="getSelectedSystem($event.value)"
+      >
+        <mat-option [value]="option" *ngFor="let option of systems"
+          >{{ option?.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2" *ngIf="selectedSystem">
+    <mat-form-field class="w-100">
+      <mat-label>Select</mat-label>
+      <mat-select
+        required
+        [(ngModel)]="selectedSearchCriteria"
+        (selectionChange)="getSelectedSearchCriteria($event.value)"
+      >
+        <mat-option
+          [value]="option"
+          *ngFor="let option of selectedSystem?.searchingCriteria"
+          >{{ option?.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2">
+    <!-- <mat-icon matPrefix class="text-muted">search</mat-icon> -->
+
+    <mat-form-field class="w-100">
+      <input
+        class="ml-2 w-100"
+        matInput
+        autocomplete="off"
+        placeholder="Search"
+        (keyup)="getSearchingText($event)"
+      />
+      <button
+        mat-button
+        matSuffix
+        (click)="searchClientsFromExternalSystems($event)"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  <div class="col-12" *ngIf="showClientsList">
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!params?.clientsList && isSearching"
+    ></mat-progress-bar>
+    <div
+      *ngIf="params?.clientsList"
+      style="width: 80%"
+      class="p-2 mat-elevation-z3 list-from-other-systems"
+    >
+      <button mat-button class="float-right" (click)="toggleList($event)">
+        <mat-icon>close</mat-icon>
+      </button>
+      <table class="table">
+        <thead>
+          <tr>
+            <td>SN</td>
+            <td>Test Request Date & Time</td>
+            <td>First name</td>
+            <td>Middle name</td>
+            <td>Last name</td>
+            <td>Gender</td>
+            <td>DoB</td>
+            <td>Phone number</td>
+            <td>Nationality</td>
+            <td>Health facility</td>
+            <td>Has Lab Request</td>
+            <td>Has results</td>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="params?.clientsList?.length === 0">
+            <tr>
+              <td colspan="100%">
+                <div class="alert alert-warning" role="alert">
+                  No client matching the search
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container
+            *ngFor="let client of params?.clientsList; let count = index"
+          >
+            <tr
+              [id]="client?.enrollment"
+              [ngStyle]="{
+                cursor:
+                  client?.hasResults || client?.events?.length === 0
+                    ? 'not-allowed'
+                    : 'pointer'
+              }"
+              [ngClass]="{
+                'client-has-results': client?.hasResults,
+                'client-has-no-lab-request': client?.events?.length === 0
+              }"
+              (click)="
+                onSelectClient(
+                  $event,
+                  client?.events?.length === 0 ? null : client
+                )
+              "
+            >
+              <td>
+                {{ count + 1 }}
+              </td>
+              <td>
+                {{
+                  (client?.testRequestData
+                    ? client?.testRequestData?.created
+                    : client?.enrollmentDate
+                  ) | date: "medium"
+                }}
+              </td>
+              <td>
+                {{ client?.firstName }}
+              </td>
+              <td>
+                {{ client?.middleName }}
+              </td>
+              <td>
+                {{ client?.lastName }}
+              </td>
+              <td>
+                {{ client?.gender }}
+              </td>
+              <td>
+                {{ client?.dob | date }}
+              </td>
+              <td>
+                {{ client?.phoneNumber }}
+              </td>
+              <td>
+                {{ client?.nationality }}
+              </td>
+              <td>
+                {{ client?.orgUnitName }}
+              </td>
+              <td>
+                {{ client?.hasLabRequest ? "True" : "False" }}
+              </td>
+              <td>
+                {{ client?.hasResults ? "True" : "False" }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

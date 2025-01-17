@@ -1,0 +1,231 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<dataset>
+
+    <!-- User-Persons -->
+    <person person_id="500" gender="M" birthdate="1984-05-26" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-08-22 13:56:44" voided="false" uuid="660484f6-0d02-4e2a-8e0e-fd2f71906f81" deathdate_estimated="0" />
+    <person person_id="600" gender="F" birthdate="1993-12-21" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-12-28 11:54:56" voided="false" uuid="ae50cf5e-02bf-4380-9b64-f06b2f944457" deathdate_estimated="0" />
+
+    <!-- User-Person Names -->
+    <person_name person_name_id="500" preferred="1" person_id="500" given_name="Owais" family_name="Hussain"
+                 creator="1" date_created="2016-08-22 13:56:44" voided="false" uuid="b210a5bd-9ab1-4b57-8a89-c0bf2580a68d" />
+    <person_name person_name_id="600" preferred="1" person_id="600" given_name="Tahira" family_name="Niazi" creator="1"
+                 date_created="2016-12-28 11:54:56" voided="false" uuid="ee11bea3-3aad-4266-a5d7-bc6f3a6aaee5" />
+
+    <!-- Users -->
+    <users user_id="300" system_id="300-3" username=""
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-08-22 13:56:44" changed_by="1" date_changed="2017-02-02 11:21:25"
+           person_id="500" retired="false" uuid="36b071d8-d5ea-4703-8e56-5b066420b569" />
+    <users user_id="400" system_id="400-3" username=""
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-12-28 11:54:56" changed_by="1" date_changed="2018-02-22 11:27:15"
+           person_id="600" retired="false" uuid="e4ef4d4d-5cf2-47ff-af6b-bb9abdabdd60" />
+
+    <!-- Providers -->
+    <provider provider_id="300" person_id="500" identifier="OWAIS" creator="1" date_created="2016-08-24 15:36:09"
+              changed_by="1" date_changed="2017-02-07 16:19:01" retired="false" uuid="1a61a0b5-d271-4b00-a803-5cef8b06ba8f" />
+    <provider provider_id="400" person_id="600" identifier="TAHIRA" creator="1" date_created="2017-02-27 12:47:30"
+              changed_by="1" date_changed="2017-02-27 12:49:13" retired="false" uuid="449390a0-d338-4ff2-9b3f-61dc1617c2fe" />
+
+    <!-- Concepts -->
+    <concept_class concept_class_id="500" retired="false" name="Payment Scheme" creator="1"
+                   date_created="2017-02-14 15:51:57.0" uuid="a8102d6d-c528-477a-80bd-acc38ebc6252" />
+    <!-- Concepts -->
+    <concept concept_id="500" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="a8102d6d-c528-477a-80bd-acc38ebc6252" />
+    <concept concept_id="600" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2004-01-01 00:00:57.0" version="" uuid="a9103d6e-d538-488a-81bd-acc38acc6525" />
+    <concept concept_id="700" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="deb16ee8-5344-11e8-9c7c-40b034c3cfee" />
+    <concept concept_id="800" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-5344-11e8-9c7c-40b034c3cfee" />
+    <concept concept_id="1000" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-5344-11e8-9c7c-40b6etw3cfee" />
+
+    <!-- frequency concept -->
+    <concept concept_id="1100" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="7721ec30-5555-1188-9977-40b6etw3cfee" />
+
+    <!-- duration unit concept -->
+    <concept concept_id="1200" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="172aec30-5555-1558-1177-40b6etw333ee" />
+
+    <!-- dose unit concept -->
+    <concept concept_id="1300" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="2000ec30-6666-1558-1177-40b6etw333ee" />
+
+    <!-- route -->
+    <concept concept_id="1400" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="3000ec30-5445-1558-1177-40b6etw333ee" />
+
+
+    <!-- Payment Scheme Concepts -->
+    <concept concept_id="1001" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-5344-11e8-ie7c-40b6etw3cfee" />
+    <concept concept_id="1002" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-5344-11e8-ie7c-40b6etw379ee" />
+
+    <!-- Payment Type Concepts -->
+    <concept concept_id="1003" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e7jnec30-5344-11e8-ie7c-40b6etw3cfee" />
+    <concept concept_id="1004" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-mfy4-11e8-ie7c-40b6etw379ee" />
+    <concept concept_id="1005" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-mfy4-11e8-ie7c-40b69mdy79ee" />
+    <concept concept_id="1006" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2016-01-01 00:00:57.0" version="" uuid="e721ec30-m1y4-11e8-ie7c-40b69mdy79ee" />
+
+    <concept_description concept_description_id="500" concept_id="500"
+                         description="GeneXpert is a type of bacteriology test for Tuberculosis." locale="en_GB" creator="1" date_created="2014-08-12 00:00:00.0"
+                         uuid="5ddd709c-e125-40b7-b449-6e0e739d15d0" />
+    <concept_description concept_description_id="600" concept_id="600" description="Chest X-Ray is a common radiology test."
+                         locale="en_GB" creator="1" date_created="2004-05-12 00:00:00.0" uuid="99e79be4-52b9-11e8-b60d-080027ea421d" />
+    <concept_description concept_description_id="700" concept_id="700" description="Sputum - Specimen type for medical tests."
+                         locale="en_GB" creator="1" date_created="2017-05-12 00:00:00.0" uuid="298b75eb-5345-11e8-9c7c-40b034c3cfee" />
+    <concept_description concept_description_id="800" concept_id="800" description="Lungs." locale="en_GB"
+                         creator="1" date_created="2017-05-12 00:00:00.0" uuid="3209c732-5345-11e8-9c7c-40b034c3cfee" />
+
+    <concept_name concept_name_id="500" concept_id="500" name="General OPD" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="7a49b329-52b9-11e8-b60d-080027ea421d" />
+    <concept_name concept_name_id="600" concept_id="600" name="Diagnostic Service" locale="en_GB" creator="1"
+                  date_created="2004-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="b0de794a-52b9-11e8-b60d-080027ea421d" />
+    <concept_name concept_name_id="700" concept_id="700" name="RCH" locale="en_GB" creator="1"
+                  date_created="2017-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="9f027306-5345-11e8-9c7c-40b034c3cfee" />
+    <concept_name concept_name_id="800" concept_id="800" name="TB" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-40b034c3cfee" />
+
+    <concept_name concept_name_id="1000" concept_id="1000" name="OPD Service" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-40mcpekrcfee" />
+    <concept_name concept_name_id="1001" concept_id="1001" name="Billable Item" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-40b0mskrcfee" />
+    <concept_name concept_name_id="1002" concept_id="1002" name="Fast" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-40b083m3cfee" />
+    <concept_name concept_name_id="1003" concept_id="1003" name="CASH" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-4ybs34c3cfee" />
+    <concept_name concept_name_id="1004" concept_id="1004" name="INSURANCE" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-4ybs34kksdee" />
+    <concept_name concept_name_id="1005" concept_id="1005" name="Registration Fee" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-nso8-9c7c-4ybs34kksdee" />
+    <concept_name concept_name_id="1006" concept_id="1006" name="NHIF" locale="en_GB" creator="1"
+                  date_created="2017-05-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="a457ac00-5345-11e8-9c7c-4ybs34sksdee" />
+
+
+    <!-- Patient-Persons -->
+    <person person_id="1000" gender="M" birthdate="1980-07-31" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-08-19 15:58:32" voided="false" uuid="993c46d2-5007-45e8-9512-969300717761" deathdate_estimated="0" />
+    <person person_id="2000" gender="F" birthdate="1979-09-19" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-09-07 11:44:23" voided="false" uuid="1f6959e5-d15a-4025-bb48-340ee9e2c58d" deathdate_estimated="0" />
+    <person person_id="3000" gender="F" birthdate="1979-09-19" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-09-07 11:44:23" voided="false" deathdate_estimated="0" />
+
+    <!-- Patient-Person Names -->
+    <person_name person_name_id="1000" preferred="1" person_id="1000" given_name="Harry" middle_name="James"
+                 family_name="Potter" creator="1" date_created="2016-08-19 15:58:32" voided="false" uuid="b1090031-0a93-4999-9185-3d28e4ac9b69" />
+    <person_name person_name_id="2000" preferred="1" person_id="2000" given_name="Hermione" middle_name="Jean"
+                 family_name="Granger" creator="1" date_created="2016-09-07 11:44:23" voided="false" uuid="316405e4-bcaa-4f12-ad27-6f2c1a831809" />
+
+    <!-- Patients -->
+    <patient patient_id="1000" creator="1" date_created="2016-08-19 15:58:32" voided="false" allergy_status="Unknown" />
+    <patient patient_id="2000" creator="1" date_created="2016-09-07 11:44:23" voided="false" allergy_status="Unknown" />
+    <patient patient_id="3000" creator="1" date_created="2016-09-07 11:44:23" voided="false" allergy_status="Unknown" />
+
+    <!-- Care Settings -->
+    <care_setting care_setting_id="1" name="Outpatient" description="Out-patient care setting" care_setting_type="OUTPATIENT"
+                  creator="1" date_created="2013-12-27 00:00:00" retired="false" uuid="6f0c9a92-6f24-11e3-af88-005056821db0" />
+    <care_setting care_setting_id="2" name="Inpatient" description="In-patient care setting" care_setting_type="INPATIENT"
+                  creator="1" date_created="2013-12-27 00:00:00" retired="false" uuid="c365e560-c3ec-11e3-9c1a-0800200c9a66" />
+
+    <!-- Item Registry -->
+    <item item_id="1" unit="Vials" concept_id="1000" uuid="b21bhsld-9ab1-4b57-8a89-c0bf2580a68d" date_created="2018-10-14 13:56:44" voided="false" creator="1"/>
+    <item item_id="2" unit="Visit" concept_id="500" uuid="b210a5bd-9ab1-8837-8a89-c0bf2580a68d" date_created="2018-10-14 13:56:44" voided="false" creator="1"/>
+    <item item_id="3" unit="Visit" concept_id="600" uuid="b210used-9ab1-4b57-8a89-c0b00220a68d" date_created="2018-10-14 13:56:44" voided="false" creator="1"/>
+    <!-- Item Registration Fee -->
+    <item item_id="4" unit="Visit" concept_id="1005" uuid="b210used-9ab1-4b57-8a89-c0b09854368d" date_created="2018-10-14 13:56:44" voided="false" creator="1"/>
+    <!-- ASPIRIN Item -->
+    <item item_id="5" unit="Tablets" concept_id="88" uuid="b211used-9ab2-4b57-8a89-c0b09854368d" date_created="2018-10-14 13:56:44" voided="false" creator="1"/>
+
+    <!-- Item Prices -->
+    <bl_item_price item_id="1" payment_type_id="1003" payment_scheme_id="1002" price="5000" />
+    <bl_item_price item_id="4" payment_type_id="1003" payment_scheme_id="1002" price="6000"/>
+    <bl_item_price item_id="5" payment_type_id="1003" payment_scheme_id="1002" price="100"/>
+
+    <visit_type visit_type_id="721" name="OPD" creator="1"  retired="false" uuid="36b071d8-d5ea-1110-8e56-5b066420aaaa" date_created="2018-10-14 13:56:44"/>
+
+    <visit patient_id="2000" visit_id="500" uuid="23863aaa-2b07-4abd-8fd7-a748c957554d" date_started="2020-10-14 13:56:44" visit_type_id="721" creator="1" date_created="2020-10-14 13:56:44" voided="false"/>
+
+    <!-- Visit Attribute Types -->
+    <visit_attribute_type visit_attribute_type_id="100" name="Service" min_occurs="1" uuid="298b75eb-5345-11e8-9c7c-40b0yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+    <visit_attribute_type visit_attribute_type_id="101" name="PaymentScheme" min_occurs="0" uuid="298b75eb-5345-12e8-9c7c-40b0yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+    <visit_attribute_type visit_attribute_type_id="102" name="PaymentCategory" min_occurs="1" uuid="298b75eb-er45-12e8-9c7c-40b0yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+    <visit_attribute_type visit_attribute_type_id="103" name="Insurance" min_occurs="0" uuid="298b75eb-er45-12e8-9c7c-40b1yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+    <visit_attribute_type visit_attribute_type_id="104" name="Insurance ID" min_occurs="0" uuid="298b75eb-er45-12e8-9c7c-42b0yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+    <visit_attribute_type visit_attribute_type_id="105" name="Insurance Authorization Number" min_occurs="0" uuid="298b75eb-5555-12e8-9c7c-42b0yt63cfee" creator="1"
+                          retired="false" date_created="2020-12-27 00:00:00" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype"/>
+
+    <visit_attribute visit_attribute_id="201" visit_id="500" attribute_type_id="100" value_reference="a8102d6d-c528-477a-80bd-acc38ebc6252" uuid="777b7zzz-yyy2-12e8-9c7c-40b0yt63cfee" creator="1" date_created="2020-12-27 00:00:00" voided="false"/>
+    <visit_attribute visit_attribute_id="202" visit_id="500" attribute_type_id="101" value_reference="e721ec30-5344-11e8-ie7c-40b6etw379ee" uuid="990b7xxx-yyy3-12e8-9c7c-40b0yt63cfee" creator="1" date_created="2020-12-27 00:00:00" voided="false"/>
+    <visit_attribute visit_attribute_id="203" visit_id="500" attribute_type_id="102" value_reference="e7jnec30-5344-11e8-ie7c-40b6etw3cfee" uuid="888b7xxx-yyy4-12e8-9c7c-40b0yt63cfee" creator="1" date_created="2020-12-27 00:00:00" voided="false"/>
+
+    <encounter_type encounter_type_id="1" name="Registration"  creator="1"
+                    retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9c7c-40b034c3cfee"/>
+    <encounter_type encounter_type_id="2" name="Diagnosis"  creator="1"
+                    retired="false" date_created="2020-12-27 00:00:00" uuid="33sir5eb-6456-11e8-9878-40b034c3cxxx"/>
+
+    <encounter encounter_type="2" encounter_id="100" patient_id="1000" uuid="333395c-dd07-488d-8fd7-a748c9570000" visit_id="500" encounter_datetime="2020-10-14 13:56:44" date_created="2020-10-14 13:56:44" voided="false"/>
+
+    <order_type order_type_id="1" name="Misc Order"  creator="1" java_class_name="org.openmrs.Order"
+                retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9922-40b034c3cfee"/>
+
+    <!-- Setting up NHIF dependencies -->
+    <concept_reference_source concept_source_id="100" name="NHIF"  creator="1" description="NHIF Mappings"
+                              retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9922-406664c3cfee"/>
+
+    <!-- Setting up NHIF OPD Service -->
+    <concept_reference_term concept_reference_term_id="100" concept_source_id="100" name="General Practitioner Consultation"  creator="1" description="NHIF Mappings"
+                            code="10001" retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9922-406664c3cfee"/>
+
+    <concept_reference_map concept_map_id="100" concept_reference_term_id="100" concept_map_type_id="1"  creator="1"
+                           date_created="2020-12-27 00:00:00" concept_id="500" uuid="2msir5eb-5345-11e8-9922-406664c3cf11"/>
+
+    <!-- Setting up NHIF Registration Fee -->
+    <concept_reference_term concept_reference_term_id="101" concept_source_id="100" name="Registration Fee"  creator="1" description="NHIF Mappings for Registration Fee"
+                            code="10099" retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9922-406664c3cfe2"/>
+
+    <concept_reference_map concept_map_id="101" concept_reference_term_id="101" concept_map_type_id="1"  creator="1"
+                           date_created="2020-12-27 00:00:00" concept_id="1005" uuid="2msir5eb-5345-11e8-9922-406664c3cf12"/>
+
+    <!-- Item Registry -->
+    <item item_id="1" unit="Vials" concept_id="1000" uuid="b21bhsld-9ab1-4b57-8a89-c0bf2580a68d" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <item item_id="2" unit="Visit" concept_id="500" uuid="b210a5bd-9ab1-8837-8a89-c0bf2580a68d" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <item item_id="3" unit="Visit" concept_id="600" uuid="b210used-9ab1-4b57-8a89-c0b00220a68d" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <!-- Item Registration Fee -->
+<!--    <item item_id="4" unit="Visit" concept_id="1005" uuid="b210used-9ab1-4b57-8a89-c0b09854368d" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>-->
+    <item item_id="5" unit="Drug Unit" drug_id="3" stockable="true" uuid="drugused-9ab1-4b57-8a89-c0b098543682" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <!-- Stock -->
+    <st_stock stock_id="1" item_id="5" batch="BATCH1" expiry_date="2020-10-10 00:00:00" quantity="5" location_id="1"/>
+    <!-- Item Prices -->
+    <bl_item_price item_id="1" payment_type_id="1003" payment_scheme_id="1002" price="5000" />
+    <bl_item_price item_id="4" payment_type_id="1003" payment_scheme_id="1002" price="6000"/>
+    <bl_item_price item_id="5" payment_type_id="1003" payment_scheme_id="1002" price="3000" />
+
+</dataset>

@@ -1,0 +1,7 @@
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+::ng-deep .search-input .mat-form-field-flex {
+  border: none !important;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.18) !important;
+  border-radius: 0px !important;
+}

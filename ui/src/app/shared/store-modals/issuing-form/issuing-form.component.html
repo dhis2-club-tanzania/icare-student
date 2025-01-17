@@ -1,0 +1,119 @@
+<div
+  *ngIf="{
+    stockStatusOfTheItemOnRequestedStore:
+      stockStatusOfTheItemOnRequestedStore$ | async,
+    stockStatusOfTheItemOnRequestingStore:
+      stockStatusOfTheItemOnRequestingStore$ | async
+  } as params"
+>
+  <mat-toolbar color="primary">Issuing Form</mat-toolbar>
+  <!-- {{ params?.stockStatusOfTheItemOnRequestedStore | json }} -->
+  <div class="p-3">
+    <h3>
+      Available stock in requesting store:  <b>{{ data?.issue?.requestingLocation?.name }}</b> :
+      <b>{{
+        params?.stockStatusOfTheItemOnRequestingStore?.eligibleQuantity
+      }}</b>
+    </h3>
+    <hr />
+    <div class="requisition-form">
+      <mat-progress-loader
+        mode="indeterminate"
+        *ngIf="!params?.stockStatusOfTheItemOnRequestedStore"
+      ></mat-progress-loader>
+      <app-form
+        *ngIf="params?.stockStatusOfTheItemOnRequestedStore"
+        [fields]="issueFormFields"
+        (formUpdate)="
+          onUpdateForm($event, params?.stockStatusOfTheItemOnRequestedStore)
+        "
+      ></app-form>
+
+      <div
+        class="w-100 ml-2 mr-2 mb-2"
+        *ngIf="params?.stockStatusOfTheItemOnRequestedStore"
+      >
+        Available Stock:
+        <b>
+          {{ params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity }}
+        </b>
+        <div class="w-100 mt-2">
+          <section>
+            <mat-checkbox
+              color="primary"
+              [checked]="autoSelectBatch"
+              (change)="
+                onToggleAutoSelection(
+                  $event,
+                  params?.stockStatusOfTheItemOnRequestedStore
+                )
+              "
+              >Auto select batch</mat-checkbox
+            >
+          </section>
+          <div *ngIf="eligibleBatches?.length > 0">
+            <span class="mr-2" *ngFor="let batch of eligibleBatches">
+              {{ batch?.batch }} ( {{ batch?.expiryDate | date }} ),
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <app-form
+        *ngIf="!autoSelectBatch"
+        [fields]="[batchSelectionField]"
+        (formUpdate)="
+          onUpdateForm($event, params?.stockStatusOfTheItemOnRequestedStore)
+        "
+      ></app-form>
+      <app-form
+        [fields]="[quantityFormField]"
+        (formUpdate)="
+          onUpdateForm($event, params?.stockStatusOfTheItemOnRequestedStore)
+        "
+      ></app-form>
+      <div
+        *ngIf="
+          params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity === 0
+        "
+        class="alert alert-warning"
+        role="alert"
+      >
+        There is zero eligible stock for this item
+      </div>
+      <div
+        *ngIf="
+          (quantityToIssue >
+            params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity &&
+            params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity !==
+              0) ||
+          quantityToIssue > quantityFromEligibleBatches
+        "
+        class="alert alert-warning"
+        role="alert"
+      >
+        You can not issue than eligible quantity
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        class="ml-2"
+        color="primary"
+        mat-flat-button
+        [disabled]="
+          !issuingFormValue?.isValid ||
+          params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity ===
+            0 ||
+          quantityToIssue >
+            params?.stockStatusOfTheItemOnRequestedStore?.eligibleQuantity ||
+          !isFormValid ||
+          quantityToIssue > quantityFromEligibleBatches
+        "
+        (click)="onIssue($event)"
+      >
+        Issue
+      </button>
+    </div>
+  </div>
+</div>

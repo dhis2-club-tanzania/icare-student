@@ -1,0 +1,88 @@
+<div class="row"
+*ngIf="{
+  selectedLabTestDetails: selectedLabTestDetails$ | async
+  
+} as params"
+>
+  <div class="col-6">
+    <div class="h5">New Configuration</div>
+
+    
+
+    <div class="w-100" >
+      <app-form
+            [fields]="[labTestField]"
+            (formUpdate)="onFormUpdateLabTest($event)"
+      ></app-form>
+      <div>
+      <div *ngFor="let tatOption of turnaroundOptions; let i = index">  
+        <p><b>{{tatOption.label}}</b></p>
+        <mat-radio-group [formControl]="dynamicControls[i]" >
+          <mat-radio-button *ngFor="let option of radioOptions" [value]="option.value" color="primary" class="registration-category-btn ml-2"  (change)="onRadioButtonChange(tatOption.value,option.value)">
+            {{ option.label }}
+          </mat-radio-button>
+        </mat-radio-group>
+        
+        <div>
+          <app-form
+          *ngIf="tatOption.value === 'UTAT'"
+          [fields]="urgentTATConfigFields"
+          (formUpdate)="onFormUpdate($event)"
+          [isFormHorizontal]="true"
+          ></app-form>
+
+          <app-form
+          *ngIf="tatOption.value === 'RTAT'"
+          [fields]="routineTATConfigFields"
+          (formUpdate)="onFormUpdate($event)"
+          [isFormHorizontal]="true"
+          ></app-form>
+
+          <app-form
+          *ngIf="tatOption.value === 'REFTAT'"
+          [fields]="referralTATConfigFields"
+          (formUpdate)="onFormUpdate($event)"
+          [isFormHorizontal]="true"
+          ></app-form>
+        </div>
+      </div>    
+      
+     </div> 
+    <div class="w-100" *ngIf="savingMessage">
+      <div class="alert alert-{{ alertType }}" role="alert">
+        {{ savingMessage }}
+      </div>
+    </div>
+
+    <div class="w-100 d-flex justify-content-end mt-2">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        class="ml-2"
+        mat-stroked-button
+        [disabled]="
+          (!isFormValid)
+        "
+        (click)="
+          onSave(
+            $event,
+            params?.selectedLabTestDetails
+          )
+        "
+        color="primary"
+      >
+        {{ !isEditMode ? "Save" : "Update" }}
+      </button>
+    </div>
+
+
+
+    </div>
+    
+
+  </div>
+
+  <div class="col-6">
+    <app-test-target-list *ngIf="!saving"></app-test-target-list>
+    
+  </div>
+</div>

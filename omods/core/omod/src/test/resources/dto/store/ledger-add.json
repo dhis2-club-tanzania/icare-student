@@ -1,0 +1,16 @@
+{
+  "batchNo": "BATCH-XYZ",
+  "item": {
+    "uuid": "8o00d43570-8y37-11f3-1234-08002007777"
+  },
+  "expiryDate": "2021-07-27T21:00:00.000Z",
+  "remarks": "new stock ....",
+  "ledgerType": {
+    "uuid": "8800zx3570-8z37-11ff-2234-01102007887"
+  },
+  "location": {
+    "uuid": "44939999-d333-fff2-9bff-61d11117c22e"
+  },
+  "buyingPrice": 100.5,
+  "quantity": 35.0
+}

@@ -1,0 +1,323 @@
+<div
+  class="issuing-container"
+  *ngIf="{
+    issuingList: issuingList$ | async,
+    stores: stores$ | async,
+    facilityDetails: facilityDetails$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <mat-card appearance="outlined">
+    <div class="d-flex justify-content-between">
+      <div class="w-50">
+        <div class="d-flex">
+          <div class="">
+            <app-invoice-filters
+              (searchingText)="onGetSearchingText($event)"
+              (definedEndDate)="onGetEndDate($event)"
+              (definedStartDate)="onGetStartDate($event)"
+            ></app-invoice-filters>
+          </div>
+          <mat-form-field class="w-25 ml-2" appearance="fill">
+            <mat-label>Filter </mat-label>
+            <mat-select (selectionChange)="onSelectStatus($event)">
+              <mat-option *ngFor="let status of statuses" [value]="status">
+                {{ status }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <mat-form-field class="w-25 float-right">
+        <mat-label>Choose Store</mat-label>
+        <mat-select (selectionChange)="getSelectedStore($event)" name="store">
+          <mat-option [value]="'All'">All</mat-option>
+          <mat-option *ngFor="let store of params?.stores" [value]="store">
+            {{ store.display }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- <div style="height: 60vh; overflow: auto">
+      <table class="table">
+        <tr>
+          <td>#</td>
+          <td>Item</td>
+          <td>Quantity Requested</td>
+          <td>Quantity Issued</td>
+          <td>Requesting Store</td>
+          <td>Status</td> -->
+    <!-- <td>Requester's Status</td> -->
+    <!-- <td>Requested Date</td>
+          <td>Actions</td>
+        </tr>
+
+        <tr *ngIf="params.loadingIssuingList || !params?.currentStore">
+          <td colspan="8">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+
+        <tr
+          *ngIf="!params.loadingIssuingList && params.issuingList?.length === 0"
+        >
+          <td colspan="8">
+            <div class="w-100 d-flex justify-content-center">No data</div>
+          </td>
+        </tr>
+
+        <tr *ngFor="let issue of params?.issuingList; let issueIndex = index">
+          <td>{{ issueIndex + 1 }}</td>
+          <td>{{ issue?.name }}</td>
+          <td>{{ issue?.quantityRequested }}</td>
+          <td>{{ issue?.quantityIssued }}</td>
+          <td>{{ issue?.requestingLocation?.name }}</td>
+          <td>
+            <span class="text-warning">{{ issue?.status }}</span>
+          </td> -->
+    <!-- <td>
+            <div class="text-warning">Waiting</div>
+          </td> -->
+    <!-- <td>
+            {{ issue?.requestDate | date: "medium" }}
+          </td>
+          <td>
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="
+                issue?.crudOperationStatus?.status === 'ISSUING' ||
+                issue?.status === 'ISSUED' ||
+                issue?.status === 'CANCELLED' ||
+                !params?.currentStore
+              "
+              (click)="onIssue($event, issue, params?.currentStore)"
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="issue?.crudOperationStatus?.status === 'ISSUING'"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Issue
+            </button>
+            <button
+              mat-flat-button
+              class="ml-2"
+              color="warn"
+              [disabled]="
+                issue?.crudOperationStatus?.status === 'REJECTING' ||
+                issue?.status === 'ISSUED'
+              "
+              (click)="onReject($event, issue)"
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="
+                  issue?.crudOperationStatus?.status === 'REJECTING' ||
+                  issue?.status === 'REJECTED'
+                "
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Reject
+            </button>
+          </td>
+          <td>
+            <section>
+              <mat-checkbox
+                color="primary"
+                [disabled]="issue?.status === 'ISSUED'"
+                (change)="getSelection($event, issue)"
+                [checked]="selectedIssues[issue?.id]"
+              ></mat-checkbox>
+            </section>
+          </td>
+        </tr>
+      </table>
+    </div> -->
+    <div *ngIf="!params?.issuingList?.length && loadingIssues">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    <mat-paginator
+      [hidden]="!params?.issuingList"
+      [length]="pager?.total"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+    >
+    </mat-paginator>
+    <ng-container
+      *ngFor="let issue of params?.issuingList; let issueIndex = index"
+    >
+      <mat-accordion>
+        <mat-expansion-panel
+          class="border mat-elevation-z0 mt-2"
+          *ngIf="
+            issue?.requisitionStatuses[issue?.requisitionStatuses?.length - 1]
+              ?.status !== 'DRAFT'
+          "
+          [expanded]="
+            viewIssueItems && viewIssueItems === issue?.uuid
+              ? true
+              : issueIndex === 0
+              ? true
+              : false
+          "
+        >
+          <mat-expansion-panel-header class="d-flex justify-content-between">
+            <mat-panel-title>
+              <span>Issue Number: {{ issue?.code }} </span>
+              <span class="ml-4"
+                >Requesting Store:
+                {{ issue?.requestingLocation?.display }}</span
+              >
+              <span class="ml-4 text-small"
+                ><i>
+                  Requested on: {{ issue?.created | date: "dd/MM/yyyy" }}
+                </i></span
+              >
+              <span class="ml-4">
+                Status:
+                {{
+                  issue?.requisitionStatuses[
+                    issue?.requisitionStatuses?.length - 1
+                  ]?.status
+                    ? issue?.requisitionStatuses[
+                        issue?.requisitionStatuses?.length - 1
+                      ]?.status
+                    : "DRAFT"
+                }}
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row mt-2">
+            <div class="col-4"></div>
+            <div class="col-4"></div>
+            <div class="col-4">
+              <div class="float-right">
+                <a
+                  *ngIf="viewIssueItems && viewIssueItems === issue?.uuid"
+                  class="anchor-button ml-2"
+                  color="primary"
+                  (click)="
+                    onPrint(
+                      $event,
+                      issue,
+                      params?.facilityDetails,
+                      params?.currentUser
+                    )
+                  "
+                >
+                  <mat-icon color="primary" matTooltip="Print">print</mat-icon>
+                </a>
+                <a
+                  class="anchor-button ml-2"
+                  color="primary"
+                  (click)="onViewIssueItems(issue?.uuid)"
+                  matTooltip="{{
+                    viewIssueItems && viewIssueItems !== issue?.uuid
+                      ? 'View Issue Items'
+                      : 'Hide Issue Items'
+                  }}"
+                >
+                  <mat-icon
+                    *ngIf="viewIssueItems && viewIssueItems === issue?.uuid"
+                    >visibility_off</mat-icon
+                  >
+                  <mat-icon
+                    *ngIf="!viewIssueItems || viewIssueItems !== issue?.uuid"
+                    >visibility</mat-icon
+                  >
+                </a>
+                <!--
+                  <ng-container *ngIf="issue?.requisitionStatuses[issue?.requisitionStatuses?.length - 1]?.status === 'PENDING'">
+                       <a 
+                      class="anchor-button ml-4" 
+                      color="primary"
+                      matTooltip="Issue all items"
+                    >
+                      <mat-icon>done_all</mat-icon>
+                    </a>
+                    <a
+                        class="anchor-button ml-4" 
+                        color="primary" 
+                        matTooltip="Reject all items"
+                      >
+                          <mat-icon>clear</mat-icon>
+                      </a>
+                    
+                  </ng-container> -->
+              </div>
+            </div>
+          </div>
+          <div
+            class="inv-items-table container-fluid"
+            *ngIf="viewIssueItems && viewIssueItems === issue?.uuid"
+          >
+            <app-issue-items
+              [issue]="issue"
+              [currentLocation]="currentLocation"
+              (rejectRequest)="onReject($event, issue)"
+              (issueRequest)="onIssue($event, issue)"
+              (selectionChange)="getSelection($event)"
+            ></app-issue-items>
+            <div class="w-100" *ngIf="selectedIssuesCount > 0">
+              <div class="float-right">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="issueAllSelected($event, issue)"
+                >
+                  Issue
+                </button>
+                <button
+                  class="ml-3"
+                  mat-flat-button
+                  color="warn"
+                  (click)="rejectAllSelected($event, issue)"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+
+    <!-- <div *ngIf="params?.issuingList?.length && currentLocation">
+      <app-issuing-stock-by-store
+        [issuingStock]="params?.issuingList"
+        [currentStore]="currentLocation"
+        (rejectRequest)="onReject($event)"
+        (issueRequest)="onIssue($event)"
+        (selectionChange)="getSelection($event)"
+      >
+      </app-issuing-stock-by-store>
+    </div> -->
+    <div
+      *ngIf="!params?.issuingList?.length && currentLocation && !loadingIssues"
+    >
+      <table class="table table-striped">
+        <tbody>
+          <tr>
+            <h3 class="text-center">No issuings</h3>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 
+    <div class="d-flex justify-content-end mt-2 mr-2">
+      <button
+        color="primary"
+        mat-flat-button
+        (click)="issueAllSelected($event, selectedIssues)"
+        [disabled]="selectedIssuesCount == 0"
+      >
+        Issue selected items
+      </button>
+    </div> -->
+  </mat-card>
+</div>

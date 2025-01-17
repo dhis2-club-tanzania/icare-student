@@ -1,0 +1,17 @@
+<div *ngIf="{ patientVisits: patientVisits$ | async } as params">
+  <div *ngIf="params?.patientVisits">
+    <div *ngIf="params?.patientVisits.length === 0">
+      <p class="p-4 text-center">No Visit History</p>
+    </div>
+    <div *ngIf="params?.patientVisits.length > 0">
+      <app-procedures-history-summary
+        [patientVisits]="params?.patientVisits"
+      ></app-procedures-history-summary>
+    </div>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="!params?.patientVisits"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

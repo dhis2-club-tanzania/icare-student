@@ -1,0 +1,121 @@
+<div
+  class="w-100 p-2"
+  *ngIf="{
+    collectionDateAndTimeUuids: collectionDateAndTimeUuids$ | async,
+    receptionDateAndTimeUuids: receptionDateAndTimeUuids$ | async,
+    requestedByUuids: requestedByUuids$ | async,
+    clinicalDataUuids: clinicalDataUuids$ | async,
+    testRelationshipConceptSourceUuid:
+      testRelationshipConceptSourceUuid$ | async
+  } as params"
+>
+  <div
+    class="centered-container"
+    *ngIf="
+      !params?.collectionDateAndTimeUuids ||
+      !params?.receptionDateAndTimeUuids ||
+      !params?.requestedByUuids ||
+      !params?.clinicalDataUuids ||
+      !params?.testRelationshipConceptSourceUuid
+    "
+    style="margin: auto; width: 80px; padding: 10px"
+  >
+    <mat-spinner></mat-spinner>
+    <br />
+    <br />
+    Loading....
+  </div>
+  <app-shared-error
+    *ngIf="errors?.length > 0"
+    [errors]="errors"
+  ></app-shared-error>
+  <div
+    *ngIf="
+      params?.collectionDateAndTimeUuids &&
+      params?.receptionDateAndTimeUuids &&
+      params?.requestedByUuids &&
+      params?.clinicalDataUuids &&
+      errors?.length === 0 &&
+      params?.testRelationshipConceptSourceUuid
+    "
+    style="
+      width: 100%;
+      text-align: center;
+      border: solid 1px #e2e2e2;
+      padding: 8px;
+    "
+    id="report"
+    #report
+  >
+    <app-shared-lab-report-header></app-shared-lab-report-header>
+    <div
+      style="margin-top: 24px; width: 100%"
+      *ngFor="let department of data?.patientDetailsAndSamples?.departments"
+    >
+      <app-shared-sample-information
+        [samplesData]="department?.samples"
+        [collectionDateAndTimeUuids]="params?.collectionDateAndTimeUuids"
+        [receptionDateAndTimeUuids]="params?.receptionDateAndTimeUuids"
+        [requestedByUuids]="params?.requestedByUuids"
+        [clinicalDataUuids]="params?.clinicalDataUuids"
+      ></app-shared-sample-information>
+
+      <div
+        style="
+          width: 100%;
+          margin-top: 16px;
+          padding: 16px;
+          border: solid 1px #eee;
+        "
+      >
+        <table
+          style="width: 100%; border: 0"
+          data-pdfmake="{'widths':[200,157,130]}"
+        >
+          <tbody style="width: 100%">
+            <tr style="width: 100%">
+              <td colspan="3">
+                <div style="margin-top: 4px; width: 100%">
+                  <app-shared-sample-orders
+                    [samplesData]="department?.samples"
+                  ></app-shared-sample-orders>
+                </div>
+                <div
+                  style="width: 100%; margin-top: 16px"
+                  *ngIf="
+                    formUuidsReferencesForSampleReportDisplay &&
+                    formUuidsReferencesForSampleReportDisplay.length > 0
+                  "
+                >
+                  <app-shared-lab-report-form-data
+                    [formUuidsReferencesForSampleReportDisplay]="
+                      formUuidsReferencesForSampleReportDisplay
+                    "
+                    [visit]="department?.samples[0]?.visit"
+                  ></app-shared-lab-report-form-data>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top: 8px; width: 100%">
+        <app-shared-sample-order-results
+          [ordersWithResults]="department?.samples[0]?.ordersWithResults"
+          [testRelationshipConceptSourceUuid]="
+            params?.testRelationshipConceptSourceUuid
+          "
+        ></app-shared-sample-order-results>
+      </div>
+    </div>
+
+    <p style="text-align: center" class="mt-2">
+      ....End of laboratory report....
+    </p>
+  </div>
+  <div class="d-flex justify-content-end mt-2">
+    <button mat-flat-button color="primary" (click)="printPDF($event)">
+      Download PDF
+    </button>
+  </div>
+</div>

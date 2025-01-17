@@ -1,0 +1,66 @@
+<div *ngIf="codedOptions$ | async as codedOptions">
+  <table
+    *ngIf="codedOptions"
+    class="table"
+    style="max-height: 120; overflow: auto"
+  >
+    <tbody>
+      <ng-container *ngFor="let item of mappings">
+        <tr
+          [ngClass]="{
+            'retired-reference-term': item?.retired
+          }"
+        >
+          <td>
+            {{ item?.conceptReferenceTerm?.display }}
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Codes' deletion"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                [disabled]="item?.retired || !item?.mappingUuid"
+                (click)="onDeleteMapping($event, item)"
+                mat-menu-item
+              >
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  <app-form
+    [fields]="[codesMappingsSourceField]"
+    (formUpdate)="onFormUpdateForSource($event)"
+  ></app-form>
+  <div *ngIf="(codedOptions$ | async) && (codedOptions$ | async)?.length > 0">
+    <!-- <app-multiple-items-selection
+      *ngIf="codedOptions && codedOptions?.length > 0"
+      [items]="codedOptions"
+      [itemType]="'concept'"
+      [selectedItems]="selectedCodes"
+      (getSelectedItems)="onGetSelectedMembers($event)"
+    ></app-multiple-items-selection> -->
+
+    <app-multiple-items-selection
+      [items]="codedOptions$ | async"
+      [itemType]="'conceptReferenceTerm'"
+      [source]="selectedCodingSource"
+      [selectedItems]="selectedCodes"
+      (getSelectedItems)="onGetSelectedMembers($event)"
+    ></app-multiple-items-selection>
+
+    <mat-progress-bar
+      *ngIf="!codedOptions"
+      mode="indeterminate"
+    ></mat-progress-bar>
+  </div>
+</div>

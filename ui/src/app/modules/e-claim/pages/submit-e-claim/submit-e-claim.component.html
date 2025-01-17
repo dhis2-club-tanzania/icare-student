@@ -1,0 +1,10 @@
+<div *ngIf="activeVisitDetails$ | async as activeVisitDetails">
+  <app-submit-e-claim-dashboard
+    *ngIf="activeVisitDetails"
+    [visitUuid]="activeVisitDetails?.uuid"
+  ></app-submit-e-claim-dashboard>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!activeVisitDetails"
+  ></mat-progress-bar>
+</div>

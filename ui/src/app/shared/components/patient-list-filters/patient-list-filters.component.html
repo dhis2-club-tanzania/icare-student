@@ -1,0 +1,20 @@
+<div *ngIf="filterCategoriesOptions$ | async as filterCategoriesOptions">
+  <!-- {{ filterCategoriesOptions$ | async | json }} -->
+  <!-- (click)="getPaymentTypeSelected($event, null)" -->
+  <div *ngIf="filterCategoriesOptions">
+    <mat-form-field class="float-left mr-2" appearance="fill"
+      *ngFor="let filter of filterCategories, let filterIndex = index">
+      <mat-label>Filter by
+        {{ filterCategoriesOptions[filter?.value]?.display }}</mat-label>
+      <mat-select (selectionChange)="getValue($event)">
+        <mat-option [value]="{visitAttributeType:filter, filterIndex:filterIndex}"> All </mat-option>
+        <mat-option *ngFor="
+            let filterOption of filterCategoriesOptions[filter?.value]
+              ?.setMembers
+          " [value]="{visitAttributeType:filter, value:filterOption, filterIndex:filterIndex}">
+          {{ filterOption?.display }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

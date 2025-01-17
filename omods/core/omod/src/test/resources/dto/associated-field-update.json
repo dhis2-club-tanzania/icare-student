@@ -1,0 +1,6 @@
+{
+  "name": "f field",
+  "description": "This is the f field",
+  "field_type": "TEXT",
+  "voided" : false
+}

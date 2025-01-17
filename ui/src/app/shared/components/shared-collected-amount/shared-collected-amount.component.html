@@ -1,0 +1,67 @@
+<div
+  *ngIf="{
+    soldItemsByAmountDetails: soldItemsByAmountDetails$ | async
+  } as params"
+>
+  <mat-spinner
+    color="primary"
+    *ngIf="!params.soldItemsByAmountDetails"
+    [diameter]="20"
+    style="display: inline-block !important; margin-right: 4px"
+  ></mat-spinner>
+  <div>
+    <!-- <mat-checkbox
+      color="primary"
+      (change)="onToggleAll($event)"
+      [checked]=""
+      [indeterminate]="selection.hasValue() && !isAllSelected"
+    >
+      Toda
+    </mat-checkbox> -->
+    <!-- {{ params?.soldItemsByAmountDetails | json }} -->
+    <section>
+      <mat-radio-group>
+        <mat-radio-button
+          color="primary"
+          [checked]="userCategory === 'me'"
+          value="me"
+          (change)="onSetUserToFilterData($event)"
+          >me</mat-radio-button
+        >
+        <mat-radio-button
+          color="primary"
+          [checked]="userCategory === 'other'"
+          value="other"
+          (change)="onSetUserToFilterData($event)"
+          >Others</mat-radio-button
+        >
+      </mat-radio-group>
+    </section>
+
+    <section class="example-section">
+      <mat-checkbox color="primary" (change)="onToggleToday($event)"
+        >Today</mat-checkbox
+      >
+    </section>
+    <table class="table">
+      <tbody>
+        <tr *ngFor="let itemData of params?.soldItemsByAmountDetails">
+          <td>
+            {{ itemData?.item?.display }}
+          </td>
+          <td>
+            {{
+              itemData?.totalAmount
+                ? itemData?.totalAmount
+                : itemData?.overAllTotal
+                ? itemData?.overAllTotal
+                : itemData?.overallTotal
+                ? itemData?.overallTotal
+                : 0
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

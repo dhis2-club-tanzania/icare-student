@@ -1,0 +1,312 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<dataset>
+    <!-- User-Persons -->
+    <person person_id="500" gender="M" birthdate="1984-05-26" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-08-22 13:56:44" voided="false" uuid="660484f6-0d02-4e2a-8e0e-fd2f71906f81" deathdate_estimated="0" />
+    <person person_id="600" gender="F" birthdate="1993-12-21" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-12-28 11:54:56" voided="false" uuid="ae50cf5e-02bf-4380-9b64-f06b2f944457" deathdate_estimated="0" />
+
+    <!-- User-Person Names -->
+    <person_name person_name_id="500" preferred="1" person_id="500" given_name="Owais" family_name="Hussain"
+                 creator="1" date_created="2016-08-22 13:56:44" voided="false" uuid="b210a5bd-9ab1-4b57-8a89-c0bf2580a68d" />
+    <person_name person_name_id="600" preferred="1" person_id="600" given_name="Tahira" family_name="Niazi" creator="1"
+                 date_created="2016-12-28 11:54:56" voided="false" uuid="ee11bea3-3aad-4266-a5d7-bc6f3a6aaee5" />
+
+    <!-- Users -->
+    <users user_id="300" system_id="300-3" username="administrator"
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-08-22 13:56:44" changed_by="1" date_changed="2017-02-02 11:21:25"
+           person_id="500" retired="false" uuid="36b071d8-d5ea-4703-8e56-5b066420b569" />
+    <users user_id="400" system_id="400-3" username=""
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-12-28 11:54:56" changed_by="1" date_changed="2018-02-22 11:27:15"
+           person_id="600" retired="false" uuid="e4ef4d4d-5cf2-47ff-af6b-bb9abdabdd60" />
+
+
+    <!-- Patient Persons -->
+    <person person_id="1000" gender="M" birthdate="1980-07-31" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-08-19 15:58:32" voided="false" uuid="993c46d2-5007-45e8-9512-969300717761" deathdate_estimated="0" />
+    <person person_id="2000" gender="F" birthdate="1979-09-19" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-09-07 11:44:23" voided="false" uuid="1f6959e5-d15a-4025-bb48-340ee9e2c58d" deathdate_estimated="0" />
+
+    <!-- Patient-Person Names -->
+    <person_name person_name_id="1000" preferred="1" person_id="1000" given_name="Harry" middle_name="James"
+                 family_name="Potter" creator="1" date_created="2016-08-19 15:58:32" voided="false" uuid="b1090031-0a93-4999-9185-3d28e4ac9b69" />
+    <person_name person_name_id="2000" preferred="1" person_id="2000" given_name="Hermione" middle_name="Jean"
+                 family_name="Granger" creator="1" date_created="2016-09-07 11:44:23" voided="false" uuid="316405e4-bcaa-4f12-ad27-6f2c1a831809" />
+
+    <!-- Patients -->
+    <patient patient_id="600" creator="1" date_created="2016-08-19 15:58:32" voided="false" allergy_status="Unknown" />
+    <patient patient_id="500" creator="1" date_created="2016-09-07 11:44:23" voided="false" allergy_status="Unknown" />
+
+    <!-- Provider -->
+    <!-- Providers -->
+    <provider provider_id="200" person_id="1000" identifier="OWAIS" creator="400" date_created="2016-08-24 15:36:09"
+              changed_by="1" date_changed="2017-02-07 16:19:01" retired="false" uuid="1a61a0b5-d271-4b00-a803-5cef8b06ba8f" />
+
+
+    <visit_type visit_type_id="721" name="OPD" creator="400"  retired="false" uuid="36b071d8-d5ea-0000-8e56-5b066420aaaa" date_created="2018-10-14 13:56:44"/>
+
+    <visit patient_id="500" visit_id="500" uuid="d9c1d8ac-2b8e-427f-804d-b858c52e6f11" date_started="2020-10-14 13:56:44" visit_type_id="721" creator="400" date_created="2020-10-14 13:56:44" voided="false"/>
+
+    <visit_attribute_type visit_attribute_type_id="1" name="Refering Doctor Email" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" retired="false" uuid="36b071d8-d5ea-0000-8e56-5b066420aaa1" min_occurs="0" creator="1" date_created="2020-10-14 13:56:44"/>
+    <visit_attribute_type visit_attribute_type_id="2" name="Refering Doctor Names" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" retired="false" uuid="36b071d8-d5ea-0000-8e56-5b066420aaa2" min_occurs="0" creator="1" date_created="2020-10-14 13:56:44"/>
+    <!-- Encounters -->
+    <visit_attribute visit_attribute_id="1" visit_id="500" attribute_type_id="2" value_reference="Gilbert James" uuid="36b071d8-d5ea-0000-8e56-5b066420aaa3" creator="1" date_created="2020-10-14 13:56:44" voided="false"/>
+
+    <encounter encounter_id="100" patient_id="500" uuid="444395c-dd07-488d-8fd7-a748c9570000" visit_id="500" encounter_datetime="2020-10-14 13:56:44" date_created="2020-10-14 13:56:44" voided="false"/>
+
+    <encounter_type encounter_type_id="1" name="Registration"  creator="1"
+                    retired="false" date_created="2020-12-27 00:00:00" uuid="2msir5eb-5345-11e8-9c7c-40b034c3cfee"/>
+
+    <!-- concept class -->
+    <concept_class concept_class_id="15" name="LIS Instrument" creator="1"
+                   retired="false" date_created="2020-12-27 00:00:00" uuid="YUsir5eb-5345-11e8-9c7c-40b034cCOBAS" />
+    <!-- Concepts -->
+    <concept concept_id="500" retired="false" datatype_id="3" class_id="7" is_set="true" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="a8102d6d-c528-477a-80bd-acc38ebc6252" />
+    <concept concept_id="501" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="11102d6d-c528-477a-80bd-acc38ebc6252" />
+    <concept_set concept_set_id="1" concept_id="501" date_created="2024-01-12 00:00:00.0" sort_weight="1" concept_set="500" creator="1" uuid="a8102d6d-c528-477a-80bd-acc38ebc6252"/>
+
+
+    <concept concept_id="600" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="11yt2d6d-nkjd-477a-8u8u-acc38ebc6252" />
+
+
+    <concept concept_id="700" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="111111xx-0000-477a-8u8u-acc38ebc6252" />
+
+    <!-- container concept -->
+    <concept concept_id="800" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="333111zz-0011-477v-8y8y-acc38ebc6252" />
+
+
+
+    <concept_name concept_name_id="500" concept_id="800" name="mrdt" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8889b329-52b9-11e8-b60d-880027ae421d" />
+
+    <concept_name concept_name_id="501" concept_id="500" name="COVID PCR Test" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8889b311-52b9-11e8-b60d-880027ae421d" />
+
+    <concept_name concept_name_id="502" concept_id="501" name="COVID-19" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="2289b311-52b9-11e8-b60d-880027ae421d" />
+
+    <!-- instrument concept -->
+    <concept concept_id="810" retired="false" datatype_id="3" class_id="15" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="123111zz-0011-477v-8y8y-acc38ebc6252" />
+
+    <concept_name concept_name_id="510" concept_id="810" name="Cobas Taqman" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="1239b329-52b9-11e8-b60d-880027ae421d" />
+
+    <concept concept_id="819" retired="false" datatype_id="2" class_id="15" is_set="true" creator="1"
+             date_created="2023-02-14 15:51:57.0" version="" uuid="123111zz-0011-477v-8y8y-acc38ebc6222" />
+
+    <concept_name concept_name_id="519" concept_id="819" name="Test Department" locale="en_GB" creator="1"
+                  date_created="2013-02-15 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="1239b329-52b9-11e8-b60d-880027ae4222" />
+
+    <!-- results concept * note the data type determines * -->
+    <concept concept_id="900" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="334112yz-0111-488v-8yyy-acc38ebc6252" />
+
+    <concept_name concept_name_id="600" concept_id="900" name="mrdt result" locale="en_GB" creator="1"
+                  date_created="2023-02-27 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="9999bbb9-52b9-11zz-b60d-880027ae421d" />
+
+    <concept concept_id="904" retired="false" datatype_id="2" class_id="7" is_set="true" creator="1"
+             date_created="2023-02-28 15:51:57.0" version="" uuid="323111zz-0011-477v-8y8y-acc38ebc6215" />
+
+    <concept_name concept_name_id="600" concept_id="904" name="Specimen source" locale="en_GB" creator="1"
+                  date_created="2023-02-27 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8987bbb9-52b9-11zz-b60d-880027ae421d" />
+
+    <!-- concept attribute type-->
+    <concept_attribute_type concept_attribute_type_id="1"  name="Related metadata type" datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" retired="false" creator="1" min_occurs="0" max_occurs="1" date_created="2023-02-27 00:00:00.0" uuid="8987bbb9-52b9-11zz-b60d-880027ae421d1" />
+
+    <!-- concept attribute -->
+    <concept_attribute concept_attribute_id="1" concept_id="500" attribute_type_id="1" value_reference="11102d6d-c528-477a-80bd-acc38ebc6252"  creator="1"  voided="false" date_created="2023-02-27 00:00:00.0" uuid="8987bbb9-52b9-11zz-b60d-880027ae421d" />
+
+    <concept_attribute concept_attribute_id="1" concept_id="500" attribute_type_id="1" value_reference="11102d6d-c528-477a-80bd-acc38ebc6252"  creator="1"  voided="false" date_created="2023-02-27 00:00:00.0" uuid="8987bbb9-52b9-11zz-b60d-880027ae421d" />
+
+    <concept_map_type concept_map_type_id="1" name="SAME-AS" creator="1" date_created="2023-02-27 00:00:00.0" retired="false" is_hidden="false" uuid="8987bbb9-52b9-11zz-b60d-880027ae4212" description="SAME AS DESCRIPTION" />
+
+    <concept_reference_source concept_source_id="1" name="SNOMED" description="THIS IS SNOMED" hl7_code="SCT" creator="1" date_created="2023-02-27 00:00:00.0" retired="false" uuid="8987bbb9-52b9-11zz-b60d-880027ae421s"/>
+
+    <concept_reference_term concept_reference_term_id="2"  concept_source_id="1" code="123" creator="1" date_created="2023-02-27 00:00:00.0"  retired="false"  uuid="8987bbb9-52b9-11zz-b60d-880027ae4211"/>
+    <concept_reference_term concept_reference_term_id="201"  concept_source_id="1" code="COBAS" creator="1" date_created="2023-02-27 00:00:00.0"  retired="false"  uuid="COBASbb9-52b9-11zz-b60d-880027ae4211"/>
+
+    <concept_reference_map concept_map_id="1" concept_reference_term_id="2" concept_map_type_id="1" creator="1" date_created="2023-02-27 00:00:00.0" concept_id="501" uuid="8987bbb9-52b9-11zz-b60d-880027ae4211"/>
+
+    <concept_reference_map concept_map_id="101" concept_reference_term_id="201" concept_map_type_id="1" creator="1" date_created="2023-02-27 00:00:00.0" concept_id="810" uuid="7897bbb9-5222-11zz-b60d-880027ae4211"/>
+
+    <!--order -->
+    <order_type order_type_id="211" name="Laboratory Order"  creator="400" java_class_name="org.openmrs.TestOrder"
+                retired="false" date_created="2018-12-27 00:00:00" uuid="2msisdeb-5345-11e8-9922-40b034c3cfee"/>
+    <orders orderer="200" concept_id ="500" creator="400" date_activated="2018-12-27 00:00:00" order_number="123" urgency="ROUTINE" care_setting="1" order_action="NEW" voided="false" order_type_id="211" date_created="2019-10-14 13:56:44" uuid="6746395c-1117-4abd-8fd7-a748c9575abcd" order_id="300" patient_id="500" encounter_id="100"/>
+
+    <orders orderer="200" concept_id ="500" creator="400" date_activated="2018-12-27 00:00:00" order_number="124" urgency="ROUTINE" care_setting="1" order_action="NEW" voided="false" order_type_id="211" date_created="2019-10-14 13:56:44" uuid="7634gd66-3333-4abd-8fd7-a748c9575abcd" order_id="301" patient_id="500" encounter_id="100"/>
+    <orders orderer="200" concept_id ="500" creator="400" date_activated="2022-11-21 00:00:00" order_number="124" urgency="ROUTINE" care_setting="1" order_action="NEW" voided="false" order_type_id="211" date_created="2019-10-14 13:56:44" uuid="7634gd66-3333-4abd-8fd7-a748c9575abaa" order_id="301" patient_id="500" encounter_id="100"/>
+
+
+
+    <orders orderer="200" concept_id ="500" creator="400" date_activated="2018-12-27 00:00:00" order_number="125" urgency="ROUTINE" care_setting="1" order_action="NEW" voided="false" order_type_id="211" date_created="2019-10-14 13:56:44" uuid="8634xx66-3444-4acc-8qd7-6648c9575abcd" order_id="302" patient_id="500" encounter_id="100"/>
+
+    <!-- Batch set -->
+    <lb_batch_set batch_set_id ="602" uuid = "iCARE890-TEST-MOTR-9beb-d30dcfc0c665" name = "My batch set" description = "Testing batchset" date_created="2022-12-09 15:51:57.0" voided="0" creator="1" />
+
+    <!-- Batch  -->
+    <lb_batch batch_id ="601" uuid = "iCARE890-TEST-MOTR-9beb-d30dcfc0c635" name = "My batch" label="batch-label" description = "Testing batch" batch_set_id="602" date_created="2022-12-10 15:51:57.0" voided="0" creator="1" />
+
+    <!-- Batch Sample -->
+    <lb_batch_sample batch_sample_id ="1" uuid = "iCARE890-TEST-GGGH-9beb-d30dcfc0cd35" code="BS01"  batch_id="601" date_created="2022-12-10 15:51:57.0" voided="0" creator="1" />
+
+
+    <!-- Care Settings -->
+    <care_setting care_setting_id="1" name="Outpatient" description="Out-patient care setting" care_setting_type="OUTPATIENT"
+                  creator="400" date_created="2013-12-27 00:00:00" retired="false" uuid="6f0c9a92-6f24-11e3-af88-005056821db0" />
+    <care_setting care_setting_id="2" name="Inpatient" description="In-patient care setting" care_setting_type="INPATIENT"
+                  creator="400" date_created="2013-12-27 00:00:00" retired="false" uuid="c365e560-c3ec-11e3-9c1a-0800200c9a66" />
+
+
+    <item item_id="666" uuid="1odcd43560-z337-11e3-1234-08002007777" concept_id="500" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <lb_sample uuid="d365e560-zz77-11e3-1111-08002007777" sample_id="201" visit_id="500" label="Sample Label y" concept_id="819" date_created="2020-12-27 00:00:00" voided="false" creator="1" batch_sample_id="1"/>
+
+    <lb_sample uuid="x311y666-zz77-11e3-1111-08002007777" sample_id="202" visit_id="500" label="LIS/23/0221" concept_id="600" date_created="2020-12-27 00:00:00" date_time="2023-04-27 12:02:11" voided="false" creator="1" />
+
+    <lb_sample uuid="231vb22d-zcy7-11e3-1111-08002007777" sample_id="203" visit_id="500" label="Sample Label x" concept_id="600" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <lb_sample uuid="ec2c9ec1-e742-4f89-979a-01560a607d0" sample_id="204" visit_id="500" label="LB/22/00078" concept_id="600" creator="1" date_created="2022-11-21 00:00:00" voided="false" date_time="2022-11-21 00:00:00"/>
+
+    <lb_sample uuid="ec2c9ec1-e742-4f89-979a-01560a60734" sample_id="205" visit_id="500" label="LB/22/00070" specimen_source_id="904" concept_id="600" creator="1" date_created="2022-11-21 00:00:00" voided="false" date_time="2022-11-21 00:00:00"/>
+
+    <!-- Sample Status    -->
+    <lb_sample_status sample_status_id="1" sample_id="201" status="RECEIVED" category="RECEIVED" timestamp="2020-12-27 00:00:00" user_id="400" />
+
+    <lb_sample_status sample_status_id="2" sample_id="201" status="REJECTED" category="RECEIVED" timestamp="2020-12-27 00:00:00" user_id="400" />
+
+    <lb_sample_status sample_status_id="3" sample_id="202" status="RESULTS" category="HAS_RESULTS" timestamp="2020-12-27 00:00:00" user_id="400" />
+
+    <lb_sample_status sample_status_id="4" sample_id="202" status="REJECTED" category="REJECTED" timestamp="2020-12-27 00:00:00" user_id="400" />
+
+    <st_device_type device_type_id="201" uuid="245ff55-2200-11e3-1111-0sndiu87hsju" name="lab devices" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <!--<lb_device device_id="123" uuid="d365e560-zz77-11e3-1111-0sndiu87hsju" item_id="666" device_type="201" name="mrt test device" serial_no="6563"/>-->
+    <lb_device device_id="123"  uuid="d365e560-zz77-11e3-1111-0sndiu87hsju"  item_id="666" device_type_id="201" name="mrt test device"  serial_no="6563" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <lb_sample_order sample_id="202" order_id="301"/>
+
+    <lb_sample_order sample_id="203" order_id="302" />
+
+    <lb_sample_order sample_id="203" order_id="300" />
+
+    <lb_sample_order sample_id="204" order_id="300"/>
+
+    <!--<lb_test_allocation test_allocation_id="322" uuid="111xxx60-7777-11e3-1111-0sndiu87hsju" device_id="123" sample_id="202" order_id="301" label="Allocation Label Y"/> -->
+
+    <lb_test_allocation test_allocation_id="322" uuid="111xxx60-7777-11e3-1111-0sndiu87hsju" sample_id="202" order_id="301" label="Allocation Label Y" concept_id="501" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <lb_test_allocation test_allocation_id="324" uuid="222yyy70-7777-11e3-1221-0sndiu87hsja" sample_id="203" order_id="300" label="Allocation Lable z" concept_id="501"  date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <!-- test allocation with results -->
+    <lb_test_allocation test_allocation_id="323" uuid="222yyy70-7777-11e3-1221-0sndiu87hsju" sample_id="203" order_id="302" label="Allocation Lable x" concept_id="501"  date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+
+    <lb_test_result uuid="222yyy70-7777-11e3-1221-0sndiu87hsj3" test_result_id="123" test_allocation_id="323" concept_id="900" value_text="positive" date_created="2020-12-27 00:00:00" voided="false" void_reason="" creator="1" instrument_id="10"/>
+
+    <lb_test_result uuid="223yyy70-7777-11e3-1221-0sndiu87hsj3" test_result_id="223" test_allocation_id="322" concept_id="500" value_text="positive" date_created="2020-12-27 00:00:00" voided="false" creator="1" instrument_id="10"/>
+    <lb_test_result uuid="245yyy70-7777-11e3-1221-0sndiu87hsj3" test_result_id="223" test_allocation_id="322" concept_id="501" value_text="DETECTED" date_created="2020-12-27 00:00:00" voided="false" creator="1" instrument_id="810"/>
+
+    <lb_test_allocation_status test_allocation_status_id="1" test_allocation_id="323" user_id="400" status="APPROVED" remarks="" timestamp="2020-10-14 13:56:44" />
+
+    <!-- Location -->
+    <location location_id ="602" uuid = "iCARE890-TEST-MOTR-9beb-d30dcfc0c66e" name = "My location" description = "Testing" date_created="2017-02-14 15:51:57.0" retired="false" />
+
+    <!-- Worksheet -->
+    <lb_worksheet worksheet_id="1" name="worksheet3" code="W1" uuid="iCARE890-YTRE-IUYT-9beb-d30dcfc0c66e" rows="10" columns="12" description="Test worksheet" instrument_id="810" test_order_id="800" date_created="2022-12-10 15:51:57.0" retired="false" creator="1"/>
+
+    <!-- WorksheetControl -->
+    <lb_worksheet_control worksheet_control_id="1" name="worksheetControl3" code="W1" uuid="iCARE890-YTYE-IUYT-9beb-d30dcfc0c66e"  description="Test worksheet control"  test_order_id="800" date_created="2022-12-10 15:51:57.0" retired="false" creator="1"/>
+
+    <!-- WorksheetDefinition -->
+    <lb_worksheet_definition worksheet_definition_id ="1" uuid = "iCARE890-TEST-GGGH-9beb-d30dcfc0c635" expiration_date_time="2023-01-23 15:51:57.0" code="WD"  worksheet_id="1" date_created="2022-12-10 15:51:57.0" voided="0" creator="1" />
+
+    <!-- WorksheetSample -->
+    <lb_worksheet_sample worksheet_sample_id ="1" code="ABC" uuid = "iCARE890-TEST-OSDH-9beb-d30dcfc0c635" rows="10" columns="20" type="SAMPLE"  worksheet_definition_id="1" sample_id="201"  date_created="2022-12-10 15:51:57.0" voided="0" creator="1" />
+
+    <lb_worksheet_sample worksheet_sample_id ="2" code="BCD" uuid = "iCARE890-TEST-OSDH-9beb-d30dcfc0c631" rows="1" columns="1" type="CONTROL"  worksheet_definition_id="1"  control_id="1" date_created="2022-12-10 15:51:57.0" voided="0" creator="1" />
+
+    <global_property property="icare.laboratory.settings.sample.id.format" property_value="NPHL/WS/D{YYYY}/COUNT:5" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c631" description="For sample label format" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2022-12-10 15:51:57.0" changed_by="1" />
+
+    <!-- AssociatedField  -->
+    <lb_associated_field associated_field_id="1" name="assoc-field" description="assoc description" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c636" creator="1" voided="0" date_created="2022-12-10 15:51:57" />
+
+    <global_property property="icare.email.person.attributeTypeUuid" property_value="iCARE110-TEST-YUDA-1234-d30dcfc0c632" uuid="iCARE110-TEST-YUDA-9beb-d30dcfc0c632" description="Email attribute type" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-21 15:51:57.0" changed_by="1" />
+
+    <person_attribute_type person_attribute_type_id="1" uuid="iCARE110-TEST-YUDA-1234-d30dcfc0c632" name="email" description="Person email" format="org.openmrs.String" searchable="true" creator="1" date_created="2023-04-21 15:51:57.0" changed_by="1" date_changed="2023-04-21 15:51:57.0" retired="false" />
+
+    <person_attribute person_attribute_id="1" person_id="500" uuid="iCARE110-TEST-11DA-1234-d30dcfc0c632" value="josephatjulius24@gmail.com" person_attribute_type_id="1" creator="1" date_created="2023-04-21 15:51:57.0" changed_by="1" date_changed="2023-04-21 15:51:57.0" voided="false" />
+
+    <global_property property="mail.icare.laboratory.results.subject.html" property_value="TESTING SENDING AUTHORIZED RESULTS" uuid="iCARE110-TEST-2341-9ueb-d30dcfc0c632" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-21 15:51:57.0" changed_by="1" />
+    <global_property property="mail.icare.laboratory.results.body.header.html" property_value="TESTING SENDING AUTHORIZED RESULTS" uuid="iCARE110-TEST-9272-9beb-d30dcfc0c632" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-21 15:51:57.0" changed_by="1" />
+    <global_property property="mail.icare.laboratory.results.body.testorder.html" property_value="Test" uuid="iCARE110-TEST-0292-9beb-d30dcfc0c632" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-21 15:51:57.0" changed_by="1" />
+    <global_property property="mail.debug" property_value="false" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c111" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.default_content_type" property_value="text/plain" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c222" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.from" property_value="josephatjulius24@gmail.com" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c555" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.password" property_value="test" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c333" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.smtp.starttls.enable" property_value="false" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c666" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.smtp_auth" property_value="false" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c444" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.smtp_host" property_value="localhost" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c777" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.transport_protocol" property_value="smtp" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c888" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.smtp_port" property_value="25" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c616" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+    <global_property property="mail.user" property_value="test" uuid="iCARE110-TEST-OSDH-9beb-d30dcfc0c999" description="DEBUGGING" datatype_config="" preferred_handler="" datatype="TEXT" date_changed="2023-04-18 09:51:57.0" changed_by="1" />
+
+
+
+    <concept concept_id="1111111" retired="false" datatype_id="3" class_id="7" is_set="true" creator="1"
+             date_created="2020-02-14 15:51:57.0" version="" uuid="33898765-0011-477v-8y8y-acc38ebc6252" />
+
+    <!--    Stool urinalysis-->
+    <concept concept_id="166378" retired="false" datatype_id="3" class_id="7" is_set="true" creator="1"
+             date_created="2024-02-14 15:51:57.0" version="" uuid="16428b09-98a6-4326-af9a-295a4b478b8a" />
+    <concept_name concept_name_id="500889" concept_id="166378" name="Stool analysis" locale="en_GB" creator="1"
+                  date_created="2024-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="1123b329-52b9-11e8-b60d-880027ae8765" />
+
+    <concept concept_id="220016" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1"
+             date_created="2024-02-14 15:51:57.0" version="" uuid="2c3e31be-d167-4c63-942c-21c3440b2675" />
+    <concept_name concept_name_id="500229" concept_id="220016" name="Macro appearance" locale="en_GB" creator="1"
+                  date_created="2024-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="1123b329-52b9-1158-b60d-880027ae8765" />
+
+    <concept concept_id="220018" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1"
+             date_created="2024-02-14 15:51:57.0" version="" uuid="449bef8e-3ea3-4eb1-9d00-38e5fff132ff" />
+    <concept_name concept_name_id="500729" concept_id="220018" name="RBCs" locale="en_GB" creator="1"
+                  date_created="2024-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="1123b329-5209-11e8-b60d-880027a89876" />
+
+    <concept_set concept_set_id="1030303" concept_id="220016" concept_set="166378" sort_weight="3" date_created="2024-01-12 00:00:00.0" creator="1" uuid="894y6354-c528-477a-80bd-acc38ebc6252"/>
+    <concept_set concept_set_id="1030304" concept_id="220018" concept_set="166378" sort_weight="4" date_created="2024-01-12 00:00:00.0"  creator="1" uuid="894y6354-8977-477a-80bd-acc38ebc6252"/>
+
+    <orders orderer="1" concept_id ="166378" creator="400" date_activated="2024-02-27 00:00:00" order_number="1205" urgency="ROUTINE" care_setting="1" order_action="NEW" voided="false" order_type_id="211" date_created="2019-10-14 13:56:44" uuid="8634xx66-2220-4acc-8qd7-6648c9575abcd" order_id="30002" patient_id="500" encounter_id="100"/>
+
+    <lb_sample uuid="898767yt-9000-11e3-1111-08002007777" sample_id="20001" visit_id="500" label="Stool Sample" concept_id="166378" date_created="2024-02-27 00:00:00" specimen_source_id="1111111" batch_sample_id="1" voided="false" date_time="2024-02-27 08:10:00" creator="1" />
+
+    <lb_sample_status sample_status_id="100001" sample_id="20001" status="COLLECTED" category="COLLECTED" timestamp="2024-03-27 00:00:00" user_id="1" />
+
+    <lb_sample_order sample_id="20001" order_id="30002"/>
+
+    <lb_test_allocation test_allocation_id="11321" uuid="111xxx60-8498-11e3-1111-0sndiu87hsju" sample_id="20001" order_id="30002" label="Allocation Label AAA" concept_id="220016" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <lb_test_allocation test_allocation_id="11324" uuid="222yyy70-8398-11e3-1221-0sndiu87hsja" sample_id="20001" order_id="30002" label="Allocation Label EEE" concept_id="220018"  date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <lb_test_result uuid="223yyy70-9303-11e3-1221-0sndiu87hsj3" test_result_id="22113" test_allocation_id="11321" concept_id="220016" value_text="Blue" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+    <lb_test_result uuid="245yyy70-7181-11e3-1221-0sndiu87hsj3" test_result_id="22112" test_allocation_id="11324" concept_id="220018" value_text="123" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <!--ENd of stool analysis-->
+</dataset>

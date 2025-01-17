@@ -1,0 +1,18 @@
+<div>
+  <mat-toolbar color="primary">Confirm Rejection</mat-toolbar>
+  <div class="p-3" style="text-align: left">
+    <p class="p-1">
+      Are you sure you want to reject this {{ data }}?
+
+      <mat-form-field appearance="fill" class="w-100 my-1">
+        <input  autocomplete="off" matInput [(ngModel)]="reason" />
+      </mat-form-field>
+    </p>
+    <p class="p-1" style="text-align: right">
+      <button mat-flat-button (click)="onCancel()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="onConfirmRejection()">
+        Confirm
+      </button>
+    </p>
+  </div>
+</div>

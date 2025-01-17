@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <global_property property="auditlog.auditingStrategy" property_value="NONE_EXCEPT" uuid="abc05786-9019-11e1-aaa4-00248140a5eb" />
+    <global_property property="auditlog.exceptions" property_value="org.openmrs.Concept, org.openmrs.EncounterType,org.openmrs.PatientIdentifierType" uuid="bbc05786-9019-11e1-aaa4-00248140a5eb" />
+
+    <concept_description concept_description_id="100" concept_id="7" description="Yes in french" locale="fr" creator="1" date_created="2008-08-15 13:52:53.0" uuid="ce3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+    <concept_description concept_description_id="101" concept_id="7" description="Yes in spanish" locale="es" creator="1" date_created="2008-08-15 13:52:53.0" uuid="de3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+    <concept_description concept_description_id="102" concept_id="7" description="Yes in spanish" locale="it" creator="1" date_created="2008-08-15 13:52:53.0" uuid="ee3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+
+    <person_name person_name_id="100" person_id="2" given_name="some given name" family_name="some family name" preferred="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="fe3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+    <person_name person_name_id="101" person_id="2" given_name="some given name1" family_name="some family name1" preferred="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="ge3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+    <person_name person_name_id="102" person_id="2" given_name="some given name2" family_name="some family name2" preferred="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="he3321b3-c1c7-4339-aaca-1b60db12e1df"/>
+</dataset>

@@ -1,0 +1,11 @@
+{{
+  result?.valueCoded
+    ? result?.valueCoded?.display
+    : result?.valueDateTime
+    ? result?.valueDateTime
+    : result?.valueNumeric
+    ? result?.valueNumeric
+    : result?.valueText
+    ? result?.valueText
+    : ""
+}}

@@ -1,0 +1,140 @@
+<!-- {{ dialogData | json }} -->
+
+<div class="p-3" *ngIf="{ location: location$ | async } as params">
+  <div class="h4 text-left">
+    {{
+      !dialogData?.location
+        ? "Add new location"
+        : "Edit " + dialogData?.location?.display
+    }}
+  </div>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving location details...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="location-form" *ngIf="!saving">
+    <div class="mt-2">
+      <app-form
+        [fields]="locationFields"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form>
+    </div>
+    <div class="ml-2 mr-2">
+      <div class="row">
+        <div class="col-md-4 col-sm-12 col-sx-12">
+          <mat-tab-group>
+            <mat-tab label="New service">
+              <ng-template matTabContent>
+                <div class="p-3">
+                  <app-form
+                    [fields]="[serviceConceptsField]"
+                    (formUpdate)="onFormUpdateForServices($event)"
+                  ></app-form>
+                </div>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Existig" *ngIf="params?.location">
+              <ng-template matTabContent>
+                <app-shared-location-attributes-manager
+                  [attributes]="params?.location?.attributes"
+                  [attributeType]="'d6794daf-f62f-454e-89eb-6ea98188352f'"
+                  [metadataType]="'concept'"
+                  [location]="params?.location"
+                  (loadLocation)="shouldLoadLocation($event)"
+                ></app-shared-location-attributes-manager>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="col-md-4 col-sm-12 col-sx-12">
+          <mat-tab-group>
+            <mat-tab label="Consultation Charge">
+              <ng-template matTabContent>
+                <div class="p-3">
+                  <app-form
+                    [fields]="[billingConceptsField]"
+                    (formUpdate)="onFormUpdate($event)"
+                  ></app-form>
+                </div>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Existig" *ngIf="params?.location">
+              <ng-template matTabContent>
+                <app-shared-location-attributes-manager
+                  [attributes]="params?.location?.attributes"
+                  [attributeType]="'iCAR7002-UDSM-attr-8efe-a0db56f09676'"
+                  [metadataType]="'concept'"
+                  [location]="params?.location"
+                  (loadLocation)="shouldLoadLocation($event)"
+                ></app-shared-location-attributes-manager>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="col-md-4 col-sm-12 col-sx-12">
+          <mat-tab-group>
+            <mat-tab label="New form">
+              <ng-template matTabContent>
+                <div class="p-3">
+                  <app-form
+                    [fields]="[formsField]"
+                    (formUpdate)="onFormUpdate($event)"
+                  ></app-form>
+                </div>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Existing" *ngIf="params?.location">
+              <ng-template matTabContent>
+                <div class="p-3">
+                  <app-shared-location-attributes-manager
+                    [attributes]="params?.location?.attributes"
+                    [attributeType]="'2c266002-2848-4d2b-bf1f-8b59d81e3f29'"
+                    [metadataType]="'form'"
+                    [location]="params?.location"
+                    (loadLocation)="shouldLoadLocation($event)"
+                  ></app-shared-location-attributes-manager>
+                </div>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-2 mr-2">
+      <div class="h6">Location Tags</div>
+      <section style="height: 130px; overflow: auto">
+        <mat-checkbox
+          class="mr-2"
+          color="primary"
+          style="font-size: 0.8rem"
+          [disabled]="tag?.uuid === dialogData?.locationTag?.uuid"
+          [checked]="tag?.uuid === dialogData?.locationTag?.uuid"
+          (change)="getSelectedValue($event, tag?.uuid)"
+          *ngFor="let tag of dialogData?.locationTags"
+          >{{ tag?.display }}</mat-checkbox
+        >
+      </section>
+    </div>
+    <app-shared-error
+      *ngIf="errors && errors?.length > 0"
+      [errors]="errors"
+    ></app-shared-error>
+  </div>
+  <div class="mt-2 d-flex justify-content-end" *ngIf="!saving">
+    <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+    <button
+      mat-stroked-button
+      class="ml-2"
+      color="primary"
+      [disabled]="!isFormValid"
+      (click)="onSave($event)"
+    >
+      Save
+    </button>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div>
+  <div *ngIf="signOff == 'FIRST'">
+    <table class="table" *ngIf="{ sample: updateSample$ | async } as sampleInfo">
+      <tr>
+        <td>Test</td>
+        <td>Container</td>
+        <td>Result</td>
+        <td>{{ signOff }} sign off</td>
+      </tr>
+      <tr *ngFor="let testOrder of sampleInfo?.sample?.orders">
+        <td>{{ testOrder?.display }}</td>
+
+        <td>{{ testOrder?.container?.display }}</td>
+        <td>
+          {{ testOrder?.result }}
+        </td>
+        <td>
+          <button *ngIf="!testOrder?.signOff" (click)="
+              saveSignOff($event, testOrder, signOff, sampleInfo?.sample)
+            " mat-stroked-button class="mr-2">
+            Approve
+          </button>
+          <span *ngIf="testOrder?.signOff">
+            First
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div *ngIf="signOff != 'FIRST'">
+    <table *ngIf="{ sample: updateSample$ | async } as sampleInfo" class="table">
+      <tr>
+        <td>Test</td>
+        <td>Container</td>
+        <td>Result</td>
+        <td>{{ signOff }} sign off</td>
+      </tr>
+      <ng-container *ngFor="let testOrder of sampleInfo?.sample?.orders">
+        <tr *ngIf="testOrder.signOff">
+          <td>{{ testOrder.display }}</td>
+
+          <td>{{ testOrder?.container?.display }}</td>
+          <td>
+            {{ testOrder?.result }}
+          </td>
+          <td>
+            <button *ngIf="!testOrder?.signOff || testOrder?.signOff == 'FIRST'" (click)="
+                saveSignOff($event, testOrder, signOff, sampleInfo?.sample)
+              " mat-stroked-button class="mr-2">
+              Approve
+            </button>
+            <span *ngIf="testOrder?.signOff && testOrder?.signOff == 'SECOND'">
+              {{ testOrder?.signOff }}
+            </span>
+          </td>
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+</div>

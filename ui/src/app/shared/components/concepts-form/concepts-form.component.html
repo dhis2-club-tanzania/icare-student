@@ -1,0 +1,8 @@
+<div *ngIf="conceptFieldsMap">
+    <div *ngFor="let conceptField of conceptFieldsMap">
+        <app-form
+        [fields]="[conceptField]"
+        (formUpdate)="onFormUpdate($event)"
+        ></app-form>
+    </div>
+</div>

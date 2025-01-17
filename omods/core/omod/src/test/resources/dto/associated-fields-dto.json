@@ -1,0 +1,12 @@
+[
+  {
+    "name": "first field",
+    "description": "This is the first field",
+    "field_type": "TEXT"
+  },
+  {
+    "name": "second field",
+    "description": "This is the second field",
+    "field_type": "LOCATION"
+  }
+]

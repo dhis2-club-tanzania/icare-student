@@ -1,0 +1,11 @@
+{
+  "status": "BATCH-STATUS",
+  "remarks": "BATCH-STATUS-REMARKS",
+  "user": {
+    "uuid": "36b071d8-d5ea-4703-8e56-5b066420b569"
+  },
+  "batch": {
+    "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c635"
+  },
+  "category": "BATCH-STATUS-CATEGORY"
+}

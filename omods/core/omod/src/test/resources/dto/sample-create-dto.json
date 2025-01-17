@@ -1,0 +1,23 @@
+{
+  "visit": {
+    "uuid": "d9c1d8ac-2b8e-427f-804d-b858c52e6f11"
+  },
+  "concept": {
+    "uuid": "a8102d6d-c528-477a-80bd-acc38ebc6252"
+  },
+  "specimenSource": {
+    "uuid": "323111zz-0011-477v-8y8y-acc38ebc6215"
+  },
+  "label": "Create Sample Test",
+  "orders": [
+    {
+      "uuid": "6746395c-1117-4abd-8fd7-a748c9575abcd"
+    }
+  ],
+  "location":{
+    "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c66e"
+  },
+  "batch": {
+    "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c635"
+  }
+}

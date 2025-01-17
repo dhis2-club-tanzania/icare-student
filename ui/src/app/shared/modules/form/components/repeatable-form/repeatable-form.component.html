@@ -1,0 +1,16 @@
+<div class="repeatable-form-container">
+  <div class="form-data-list">
+    <app-form *ngFor="let formDataItem of formData" [fields]="formObject?.formFields" [isFormHorizontal]="true"
+      (formUpdate)="onFormUpdate($event)">
+    </app-form>
+  </div>
+  <div class="form-block d-flex">
+    <div style="width: 95%">
+      <app-form [fields]="formObject?.formFields" [isFormHorizontal]="true" (formUpdate)="onFormUpdate($event)">
+      </app-form>
+    </div>
+    <button mat-stroked-button style="height: 35px; margin-top: 5px; margin-left: 5px;">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>

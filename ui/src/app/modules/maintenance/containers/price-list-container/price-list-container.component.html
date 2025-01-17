@@ -1,0 +1,17 @@
+<div *ngIf="{ paymentTypes: paymentTypes$ | async } as params">
+  <mat-progress-bar
+    *ngIf="!params?.paymentTypes"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <app-price-list
+    [paymentTypes]="params?.paymentTypes"
+    [departmentId]="currentDepartmentId"
+    *ngIf="params?.paymentTypes && params?.paymentTypes.length > 0"
+  ></app-price-list>
+  <div
+    class="text-danger text-center"
+    *ngIf="params?.paymentTypes && params?.paymentTypes.length === 0"
+  >
+    <p>Payment types not set</p>
+  </div>
+</div>

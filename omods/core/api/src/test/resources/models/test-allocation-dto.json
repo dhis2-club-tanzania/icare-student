@@ -1,0 +1,9 @@
+{
+  "container": {
+    "uuid": "containeruuid"
+  },
+  "label": "identifier for the container",
+  "order": {
+    "uuid": "orderuuid"
+  }
+}

@@ -1,0 +1,17 @@
+::ng-deep .mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none !important;
+}
+
+.constructed-message {
+  border-bottom: solid 1px #eee;
+  padding: 3px;
+}
+
+.messages-container {
+  height: 200px;
+  overflow: auto;
+}
+
+::ng-deep .mat-expansion-panel-header {
+  padding: 0 4px !important;
+}

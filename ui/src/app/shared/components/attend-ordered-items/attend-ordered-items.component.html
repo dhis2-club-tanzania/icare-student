@@ -1,0 +1,160 @@
+<div
+  class="ordered-items-container"
+  *ngIf="{
+    orderedProcedures: orderedProcedures$ | async,
+    activeVisit: activeVisit$ | async
+  } as params"
+>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th *ngIf="conceptsWithDepartmentsDetails">Department</th>
+        <th>{{ orderTypeName }}</th>
+        <th>Instructions</th>
+        <th>Order Date & Time</th>
+        <th>Ordered By</th>
+        <th>Source</th>
+        <th>Payment Status</th>
+        <th>Attend</th>
+        <th style="width: 20%">Comments</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="!params?.orderedProcedures">
+        <tr>
+          <td colspan="100%">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          params?.orderedProcedures && params?.orderedProcedures?.length > 0
+        "
+      >
+        <ng-container *ngFor="let orderedItem of params?.orderedProcedures | filterOrdersByOrder: orderedItems">
+          <tr [ngClass]="{ 'text-danger': !orderedItem?.paid }">
+            <td *ngIf="conceptsWithDepartmentsDetails">
+              {{
+                departmentsDetailsKeyedBySetmembers[orderedItem?.concept?.uuid]
+                  ?.department?.display
+              }}
+            </td>
+            <td>
+              {{ orderedItem?.display }}
+            </td>
+            <td>
+              {{ orderedItem?.instructions }}
+            </td>
+            <td>
+              {{ orderedItem?.dateActivated | date: "medium" }}
+            </td>
+            <td>
+              {{ orderedItem?.orderer?.display }}
+            </td>
+            <td>
+              {{ orderedItem?.location?.display }}
+            </td>
+            <td>{{ orderedItem?.paid ? "PAID" : "NOT PAID" }}</td>
+            <td>
+              <section>
+                <mat-checkbox
+                  [checked]="orderedItem?.value && orderedItem?.value"
+                  [disabled]="
+                    (!orderedItem?.paid &&
+                      !params.activeVisit?.isAdmitted &&
+                      !params.activeVisit?.isEnsured &&
+                      !params.activeVisit?.isEmergency) ||
+                    (orderedItem?.value && orderedItem?.value)
+                  "
+                  (change)="onCheck($event, orderedItem)"
+                  >Yes</mat-checkbox
+                >
+              </section>
+            </td>
+            <td>
+              <mat-form-field class="w-100" *ngIf="!orderedItem?.remarks">
+                <mat-label>Remarks</mat-label>
+                <textarea
+                  [disabled]="
+                    !orderedItem?.paid &&
+                    !params.activeVisit.isAdmitted &&
+                    !params.activeVisit?.isEnsured &&
+                    !params.activeVisit?.isEmergency
+                  "
+                  [(ngModel)]="comments[orderedItem?.concept?.uuid]"
+                  matInput
+                ></textarea>
+              </mat-form-field>
+              <p>
+                {{ orderedItem?.remarks }}
+              </p>
+            </td>
+            <td>
+              <button
+                [disabled]="
+                  (!orderedItem?.paid &&
+                    !params.activeVisit.isAdmitted &&
+                    !params.activeVisit?.isEnsured &&
+                    !params.activeVisit?.isEmergency) ||
+                  (orderedItem?.value && orderedItem?.value === 'True') ||
+                  !status[orderedItem?.concept?.uuid]
+                "
+                mat-button
+                (click)="saveObservationForThisOrder($event, orderedItem)"
+              >
+                Save
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          params?.orderedProcedures && params?.orderedProcedures?.length === 0
+        "
+      >
+        <tr>
+          <td colspan="100%" class="text-center text-warning">
+            NO ordered {{ orderTypeName }}
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container>
+        <tr *ngIf="nursingConfigurations">
+          <td colspan="100% d-flex justify-content-end">
+            <button
+              mat-stroked-button
+              (click)="addNew($event)"
+              class="float-right"
+            >
+              Add
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="shouldAddNew">
+          <td colspan="9">
+            <app-add-procedure
+              [nursingConfigurations]="nursingConfigurations"
+              (isFormValid)="onGetFormValidity($event)"
+              (procedures)="onGetDefinedProcedures($event)"
+            ></app-add-procedure>
+
+            {{ params?.creatingOrderResponse | json }}
+          </td>
+          <td>
+            <button
+              (click)="onSave($event, proceduresSelected)"
+              class="float-right"
+              mat-stroked-button
+              [disabled]="!isFormValid"
+            >
+              Save
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,10 @@
+<div>
+  <app-multiple-items-selection
+    [items]="[]"
+    [itemType]="'concept'"
+    [standardSearchTerm]="'LIS_CODED_ANSWERS'"
+    [selectedItems]="selectedItems"
+    [conceptClass]="'Coded answer'"
+    (getSelectedItems)="onGetSelectedAnswers($event)"
+  ></app-multiple-items-selection>
+</div>

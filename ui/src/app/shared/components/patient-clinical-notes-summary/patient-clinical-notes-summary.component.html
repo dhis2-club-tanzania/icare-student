@@ -1,0 +1,31 @@
+<div
+  class="w-100 clinical-notes-summary"
+  *ngIf="{ observations: observations$ | async } as params"
+>
+  <mat-accordion>
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="let form of forms; let count = index"
+      [expanded]="count === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-between">
+        <mat-panel-title>
+          <span>Form: {{ form?.name }}</span>
+          <!-- <span class="ml-4">Discount {{ bill?.discount }}</span> -->
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-progress-bar
+        *ngIf="!params?.observations"
+        mode="indeterminate"
+      ></mat-progress-bar>
+
+      <app-capture-form-data
+        *ngIf="params?.observations"
+        [form]="form"
+        [isReport]="true"
+        [observations]="params?.observations"
+      ></app-capture-form-data>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

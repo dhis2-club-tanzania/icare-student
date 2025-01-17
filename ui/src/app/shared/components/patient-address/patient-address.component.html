@@ -1,0 +1,47 @@
+<div *ngIf="personDetails$ | async as personDetails">
+  <p class="person-address" *ngIf="personDetails">
+    <span>
+      <b> Address: </b>
+      <span *ngIf="personDetails?.addresses"
+        ><span
+          *ngIf="
+            !personDetails?.addresses[0]?.cityVillage &&
+            !personDetails?.addresses[0]?.stateProvince
+          "
+        >
+          {{
+            personDetails?.addresses[0]
+              ? personDetails?.addresses[0]?.address1
+                ? personDetails?.addresses[0]?.address1 + ", "
+                : "" +
+                  personDetails?.addresses[0]?.address2 +
+                  ", " +
+                  personDetails?.addresses[0]?.address3 +
+                  ", " +
+                  personDetails?.addresses[0]?.address4
+              : " - "
+          }}
+        </span>
+        <span
+          *ngIf="
+            personDetails?.addresses[0]?.cityVillage &&
+            personDetails?.addresses[0]?.stateProvince
+          "
+        >
+          {{
+            personDetails?.addresses[0]
+              ? personDetails?.addresses[0]?.cityVillage +
+                ", " +
+                personDetails?.addresses[0]?.countyDistrict +
+                ", " +
+                personDetails?.addresses[0]?.stateProvince +
+                ", " +
+                personDetails?.addresses[0]?.address1
+              : " - "
+          }}
+        </span>
+      </span>
+      <span *ngIf="personDetails?.addresses?.length === 0"> - </span>
+    </span>
+  </p>
+</div>

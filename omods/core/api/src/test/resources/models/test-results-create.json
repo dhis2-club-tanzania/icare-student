@@ -1,0 +1,11 @@
+{
+  "test": {
+    "uuid": "test allocation uuid"
+  },
+  "result": "value",
+  "concept": {
+    "uuid": "uuid of concept with results details"
+  },
+  "comments": "any associated comments",
+  "sigOff": "Can be represented by a number,i.e null means no signoff, 1 means first sigoff, 2 means second sign off"
+}

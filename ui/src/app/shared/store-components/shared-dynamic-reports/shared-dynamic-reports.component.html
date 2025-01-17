@@ -1,0 +1,10 @@
+<div
+  class="w-100"
+  *ngIf="{ summaryReportCost: summaryReportCost$ | async } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.summaryReportCost"
+  ></mat-progress-bar>
+  {{ params?.summaryReportCost | json }}
+</div>

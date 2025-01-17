@@ -1,0 +1,11 @@
+{
+  "test": {
+    "uuid": "test allocation uuid"
+  },
+  "user": {
+    "uuid": ""
+  },
+  "remarks": "",
+  "status": "",
+  "timestamp": null
+}

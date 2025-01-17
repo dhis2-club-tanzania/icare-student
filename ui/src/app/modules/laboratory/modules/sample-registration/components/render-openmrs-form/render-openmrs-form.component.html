@@ -1,0 +1,19 @@
+<div
+  *ngIf="{
+    customForm: customForm$ | async,
+    formValidationRules: formValidationRules$ | async
+  } as params"
+>
+  <mat-progress-bar
+    color="primary"
+    mode="indeterminate"
+    *ngIf="!params?.customForm || !params?.formValidationRules"
+  ></mat-progress-bar>
+  <app-capture-form-data
+    *ngIf="params?.customForm"
+    [form]="params?.customForm"
+    [isLIS]="true"
+    [formValidationRules]="params?.formValidationRules"
+    (formDataUpdate)="onFormUpdate($event)"
+  ></app-capture-form-data>
+</div>

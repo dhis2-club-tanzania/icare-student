@@ -1,0 +1,46 @@
+<div
+  class="reports-container"
+  *ngIf="{
+    userPrivileges: userPrivileges$ | async,
+    reportsAccessConfigurations: reportsAccessConfigurations$ | async,
+    reportsCategoriesConfigurations: reportsCategoriesConfigurations$ | async,
+    reportsExtraParams: reportsExtraParams$ | async,
+    reportGroups: reportGroups$ | async,
+    loadedAllRoles: loadedAllRoles$ | async,
+    reportsParametersConfigurations: reportsParametersConfigurations$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      !params?.userPrivileges ||
+      !params?.reportsAccessConfigurations ||
+      !params?.reportsCategoriesConfigurations ||
+      !params?.reportsExtraParams ||
+      !params?.reportGroups ||
+      !params?.loadedAllRoles ||
+      !params?.reportsParametersConfigurations ||
+      !params?.currentUser
+    "
+  ></mat-progress-bar>
+  <div
+    class="w-100"
+    *ngIf="
+      params?.userPrivileges &&
+      params?.reportsAccessConfigurations &&
+      params?.reportsCategoriesConfigurations &&
+      params?.reportsExtraParams &&
+      params?.reportGroups &&
+      params?.loadedAllRoles &&
+      params?.reportsParametersConfigurations &&
+      params?.currentUser
+    "
+  >
+    <div class="w-100">
+      <app-shared-reports-list
+        [currentUser]="params?.currentUser"
+      ></app-shared-reports-list>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+:host ::ng-deep .mat-badge-content {
+  top: 0 !important;
+  right: -30px !important;
+}
+
+button {
+  background-color: #2a8fd1;
+  color: #fff;
+}
+
+.back-to-client-list {
+  padding: 10px 15px;
+}
+
+.button-faint {
+  pointer-events: none;
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+.pale-green {
+  background-color: #cfedd7;
+}
+
+.white-background {
+  background-color: white;
+}
+
+.pale-orange {
+  background-color: rgba(255, 166, 0, 0.527); 
+}
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row)
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  background-color: #9cbfd6;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+.expanded-content-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.example-element-detail table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.example-element-detail th,
+.example-element-detail td {
+  text-align: left;
+  padding: 8px;
+  border: 0.5px solid white; 
+}
+
+.example-element-detail th {
+  background-color: #9cbfd6; 
+}

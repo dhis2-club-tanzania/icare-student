@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col" *ngFor="let encounter of formattedEncountersData">
+    <div class="w-100" *ngFor="let formField of encounter?.form?.formFields">
+      <ng-container
+        *ngIf="
+          formField?.field?.concept?.setMembers?.length === 0 &&
+          encounter?.keyedObs[formField?.field?.concept?.uuid]
+        "
+      >
+        <p style="text-align: left; font-weight: 600">
+          <b> {{ formField?.field?.display }} : </b>
+          <b>
+            {{
+              !encounter?.keyedObs[formField?.field?.concept?.uuid]
+                ? "-"
+                : encounter?.keyedObs[formField?.field?.concept?.uuid] &&
+                  encounter?.keyedObs[formField?.field?.concept?.uuid]?.latest
+                    ?.value?.display
+                ? formField?.field?.concept?.datatype?.display === "Datetime" ||
+                  fieldConcept?.datatype?.display === "Date"
+                  ? (encounter?.keyedObs[formField?.field?.concept?.uuid]
+                      ?.latest?.value?.display | date: "medium")
+                  : encounter?.keyedObs[formField?.field?.concept?.uuid]?.latest
+                      ?.value?.display
+                : formField?.field?.concept?.datatype?.display === "Datetime" ||
+                  fieldConcept?.datatype?.display === "Date"
+                ? (encounter?.keyedObs[formField?.field?.concept?.uuid]?.latest
+                    ?.value | date: "medium")
+                : encounter?.keyedObs[formField?.field?.concept?.uuid]?.latest
+                    ?.value
+            }}
+          </b>
+        </p>
+      </ng-container>
+
+      <ng-container *ngIf="formField?.field?.concept?.setMembers?.length > 0">
+        <ng-container *ngIf="formField?.atLeastOnFormFieldSetMemberHasData">
+          <div class="w-100" style="text-align: left">
+            <p style="text-align: left">
+              <b> {{ formField?.field?.display }} : </b>
+            </p>
+          </div>
+          <div class="w-100">
+            <table class="table" style="border: 0">
+              <tbody style="border: 0">
+                <tr style="border: 0">
+                  <td
+                    style="border: 0"
+                    *ngFor="
+                      let fieldConcept of formField?.field?.concept?.setMembers
+                    "
+                  >
+                    <div
+                      *ngIf="encounter?.keyedObs[fieldConcept?.uuid]"
+                      class="col"
+                    >
+                      <!-- {{ fieldConcept | json }} -->
+                      <p style="text-align: left">
+                        {{ fieldConcept?.display }}:
+                        <b>
+                          {{
+                            !encounter?.keyedObs[fieldConcept?.uuid]
+                              ? "-"
+                              : encounter?.keyedObs[fieldConcept?.uuid] &&
+                                encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                                  ?.value?.display
+                              ? fieldConcept?.datatype?.display ===
+                                  "Datetime" ||
+                                fieldConcept?.datatype?.display === "Date"
+                                ? (encounter?.keyedObs[fieldConcept?.uuid]
+                                    ?.latest?.value?.display | date: "medium")
+                                : encounter?.keyedObs[fieldConcept?.uuid]
+                                    ?.latest?.value?.display
+                              : fieldConcept?.datatype?.display ===
+                                  "Datetime" ||
+                                fieldConcept?.datatype?.display === "Date"
+                              ? (encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                                  ?.value | date: "medium")
+                              : encounter?.keyedObs[fieldConcept?.uuid]?.latest
+                                  ?.value
+                          }}
+                        </b>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>

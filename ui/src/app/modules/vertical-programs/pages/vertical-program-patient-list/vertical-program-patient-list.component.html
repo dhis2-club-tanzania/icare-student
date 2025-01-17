@@ -1,0 +1,20 @@
+<div
+  *ngIf="{
+    currentLocation: currentLocation$ | async,
+    programs: programs$ | async
+  } as params"
+>
+  <div
+    class="mt-5 d-flex justify-content-center w-100"
+    *ngIf="!params?.currentLocation || !params?.programs"
+  >
+    <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+  </div>
+  <div class="w-100 mt-4" *ngIf="params?.currentLocation && params?.programs">
+    <app-enrolled-patients-list
+      [currentLocation]="params?.currentLocation"
+      [programs]="params?.programs"
+      (selectedPatient)="onSelectPatient($event)"
+    ></app-enrolled-patients-list>
+  </div>
+</div>

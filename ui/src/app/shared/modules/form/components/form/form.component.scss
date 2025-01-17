@@ -1,0 +1,26 @@
+.form-horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.hidden-field {
+  display: none;
+}
+
+.units-and-ranges span {
+  font-size: 0.7rem;
+}
+
+.for-warning {
+  margin-left: 8px;
+}
+
+.field-descriptions {
+  font-size: 0.7rem !important;
+  text-align: left !important;
+  margin-left: 6px !important;
+}
+
+.padding-right-from-units {
+  padding-right: 2px;
+}

@@ -1,0 +1,19 @@
+[
+  {
+  "label": "Test1-Batch",
+  "name" : "Test1-Batch-Name",
+  "description": "This is a test1-batch",
+  "fields" : "{dynamic1:{ name:dynamic-name,uuid:123},fixed1:{ name:fixed-name,uuid:124}}",
+  "batchSet": {
+    "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c665",
+    "name": "Test batchSet1"
+  }
+  },
+  {
+    "label": "Test2-Batch",
+    "name" : "Test2-Batch-Name",
+    "description": "This is a test2-batch",
+    "fields" : "{dynamic1:{ name:dynamic2-name,uuid:125},fixed1:{ name:fixed2-name,uuid:126}}"
+
+  }
+]

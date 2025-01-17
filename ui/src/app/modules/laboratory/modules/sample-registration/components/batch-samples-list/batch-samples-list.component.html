@@ -1,0 +1,47 @@
+<div
+  class="w-100"
+  *ngIf="{ batchSampleDetails: batchSampleDetails$ | async } as params"
+>
+  <!-- {{ params?.batchSampleDetails | json }} -->
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.batchSampleDetails"
+  ></mat-progress-bar>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>Lab No</th>
+        <th>File No</th>
+        <th>Patient/Client</th>
+        <th>Test Order</th>
+        <th>Date Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="
+          let sample of params?.batchSampleDetails?.samples;
+          let count = index
+        "
+      >
+        <td>{{ count + 1 }}</td>
+        <td>{{ sample?.label }}</td>
+        <td>
+          {{ sample?.patient?.identifiers[0]?.id }}
+        </td>
+        <td>
+          {{ sample?.patient?.givenName }} {{ sample?.patient?.familyName }}
+        </td>
+        <td>
+          <span *ngFor="let orderDetails of sample?.orders" class="ml-2">
+            {{ orderDetails?.order?.concept?.display }}
+          </span>
+        </td>
+        <td>
+          {{ sample?.dateCreated | date }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,11 @@
+<div>
+  <mat-chip-listbox aria-label="Program">
+    <mat-chip-option
+      *ngFor="let program of filteredPrograms"
+      color="primary"
+      [selected]="keyedSelectedPrograms[program?.uuid]"
+      (click)="onGetProgram($event, program)"
+      >{{ program?.name }}</mat-chip-option
+    >
+  </mat-chip-listbox>
+</div>

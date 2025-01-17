@@ -1,0 +1,17 @@
+<div
+  class="parameters-dashboard"
+  *ngIf="{
+    conceptDataTypes: conceptDataTypes$ | async,
+    conceptSources: conceptSources$ | async
+  } as params"
+>
+  <app-parameters
+    *ngIf="params?.conceptDataTypes && params?.conceptSources"
+    [conceptDataTypes]="params?.conceptDataTypes"
+    [conceptSources]="params?.conceptSources"
+  ></app-parameters>
+  <mat-progress-bar
+    *ngIf="!params?.conceptDataTypes || !params?.conceptSources"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

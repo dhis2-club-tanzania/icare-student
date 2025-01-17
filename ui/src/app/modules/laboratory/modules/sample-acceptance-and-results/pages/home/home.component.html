@@ -1,0 +1,64 @@
+<div
+  *ngIf="{
+    datesParameters: datesParameters$ | async,
+    visitReferences: visitReferences$ | async,
+    visitsLoadedState: visitsLoadedState$ | async,
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    sampleTypes: sampleTypes$ | async,
+    labSamplesDepartments: labSamplesDepartments$ | async,
+    labSamplesContainers: labSamplesContainers$ | async,
+    configs: configs$ | async,
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    LISConfigurations: LISConfigurations$ | async
+  } as params"
+>
+  <div
+    *ngIf="
+      params?.datesParameters &&
+      params?.labSamplesDepartments &&
+      params?.labSamplesContainers &&
+      params?.configs &&
+      params?.codedSampleRejectionReasons &&
+      params?.LISConfigurations &&
+      params?.sampleTypes
+    "
+  >
+    <div class="mb-2">
+      <app-shared-samples-summary-dashboard
+        [datesParams]="params?.datesParameters"
+        [dashboardSingleValueDataSetsReferenceKey]="
+          'iCare.laboratory.sampleAcceptanceAndResults.dashboard.settings.samples.singleValue'
+        "
+      ></app-shared-samples-summary-dashboard>
+    </div>
+    <div class="w-100 mt-2">
+      <app-sample-acceptance-dashboard
+        [datesParameters]="params?.datesParameters"
+        [patients]="params?.visitReferences"
+        [labSamplesDepartments]="params?.labSamplesDepartments"
+        [sampleTypes]="params?.sampleTypes"
+        [labSamplesContainers]="params?.labSamplesContainers"
+        [configs]="params?.configs"
+        [LISConfigurations]="params?.LISConfigurations"
+        [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
+      ></app-sample-acceptance-dashboard>
+    </div>
+
+    <!-- herhe -->
+  </div>
+
+  <!-- {{
+    params | json
+  }} -->
+
+  <mat-progress-bar
+    *ngIf="
+      !params?.sampleTypes ||
+      !params?.labSamplesDepartments ||
+      !params?.labSamplesDepartments ||
+      !params?.codedSampleRejectionReasons ||
+      !params?.LISConfigurations
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

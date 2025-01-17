@@ -1,0 +1,86 @@
+<div
+  *ngIf="{
+    sendingDataToDHIS2HasErrorState: sendingDataToDHIS2HasErrorState$ | async,
+    sendingDataToDHIS2Error: sendingDataToDHIS2Error$ | async,
+    sendingToDHIS2State: sendingToDHIS2State$ | async,
+    sentDataSuccessState: sentDataSuccessState$ | async,
+    sendingDataResponse: sendingDataResponse$ | async
+  } as reportParams"
+>
+  <div *ngIf="!reportParams?.sentDataSuccessState" class="loader">
+    <div class="cm-spinner" style="margin-left: calc(50% - 75px)"></div>
+    <div class="p-1 h5 text-center">Sending data ...</div>
+  </div>
+  <div
+    *ngIf="
+      reportParams?.sentDataSuccessState && reportParams?.sendingDataResponse
+    "
+  >
+    <svg
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="-150 -20 420.2 320.2"
+    >
+      <circle
+        class="path circle"
+        fill="none"
+        [attr.stroke]="
+          reportParams?.sendingDataResponse?.status !== 'WARNING'
+            ? '#73AF55'
+            : '#b22c2c'
+        "
+        stroke-width="6"
+        stroke-miterlimit="10"
+        cx="65.1"
+        cy="65.1"
+        r="62.1"
+      />
+      <polyline
+        *ngIf="reportParams?.sendingDataResponse?.status !== 'WARNING'"
+        class="path check"
+        fill="none"
+        [attr.stroke]="
+          reportParams?.sendingDataResponse?.status !== 'WARNING'
+            ? '#73AF55'
+            : '#b22c2c'
+        "
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-miterlimit="10"
+        points="100.2,40.2 51.5,88.8 29.8,67.5 "
+      />
+    </svg>
+    <div style="margin-top: -150px" class="p-1 h5 text-center">
+      <div class="d-flex justify-content-center p-2">
+        <div class="text-center text-success p-1 import-summary">
+          Imported:
+          {{ reportParams?.sendingDataResponse?.importCount?.imported }}
+        </div>
+        <div class="text-center p-1 import-summary">
+          Updated: {{ reportParams?.sendingDataResponse?.importCount?.updated }}
+        </div>
+        <div class="text-center text-danger p-1 import-summary">
+          Ignored: {{ reportParams?.sendingDataResponse?.importCount?.ignored }}
+        </div>
+      </div>
+      <div
+        class="import-summary text-center"
+        *ngIf="reportParams?.sendingDataResponse?.status === 'WARNING'"
+      >
+        <a (click)="viewMoreDetails($event, reportParams?.sendingDataResponse)">
+          More
+        </a>
+      </div>
+      <div class="h6 description p-1">
+        {{ reportParams?.sendingDataResponse?.status }}
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+      <button mat-stroked-button class="mr-2" (click)="onCancel($event)">
+        Close
+      </button>
+    </div>
+  </div>
+  <!-- <div *ngIf="reportParams?.sendingDataToDHIS2HasErrorState"></div> -->
+</div>

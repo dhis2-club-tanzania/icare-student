@@ -1,0 +1,165 @@
+<div
+  class="w-100"
+  *ngIf="{
+    report: report$ | async,
+    facilityDetails: facilityDetails$ | async,
+    excelDownloadFormat: excelDownloadFormat$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.report || !params?.excelDownloadFormat"
+  ></mat-progress-bar>
+  <div class="w-100" *ngIf="params?.report">
+    <div class="w-100 d-flex justify-content-between">
+      <div class="w-50 justify-content-left">
+        <button
+          mat-flat-button
+          [routerLink]="'/laboratory/reports'"
+          matTooltip="Go to list"
+          color="primary"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          Back to Reports List
+        </button>
+      </div>
+      <div class="w-50 d-flex justify-content-end">
+        <mat-form-field
+          appearance="fill"
+          class="ml-2 mt-1"
+          floatLabel="always"
+          *ngIf="params?.report?.useDefaultPeFilter"
+        >
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              placeholder="Start date"
+              [(ngModel)]="startDate"
+              (dateInput)="dateRangeSelect()"
+            />
+            <input
+              matEndDate
+              placeholder="End date"
+              [(ngModel)]="endDate"
+              (dateInput)="dateRangeSelect()"
+            />
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="w-100 d-flex justify-content-end mt-1 mb-2">
+      <!-- <button
+          (click)="onDownloadCSV($event)"
+          mat-stroked-button
+          color="primary"
+        >
+          CSV
+        </button> -->
+      <button
+        (click)="
+          onDownloadXLS(
+            $event,
+            params?.report?.renderAs && params?.report?.renderAs === 'iframe'
+              ? 'iframe_id'
+              : 'report-to-download',
+            params?.report?.name,
+            params?.report?.renderAs,
+            params?.excelDownloadFormat?.value
+          )
+        "
+        [disabled]="
+          ((!selectionDates || !dateChanged) &&
+            params?.report?.useDefaultPeFilter) ||
+          !params?.excelDownloadFormat
+        "
+        mat-flat-button
+        color="primary"
+      >
+        <mat-icon>
+          <img height="24px" src="assets/material/excel_white.png" />
+        </mat-icon>
+        Excel
+      </button>
+
+      <button
+        [disabled]="
+          (!selectionDates || !dateChanged) &&
+          params?.report?.useDefaultPeFilter
+        "
+        (click)="onPrint($event)"
+        class="ml-2"
+        mat-flat-button
+        color="primary"
+      >
+        <mat-icon>print</mat-icon>
+        Print
+      </button>
+    </div>
+    <div *ngIf="!params?.report?.hardCoded" id="report-to-download">
+      <div class="row">
+        <div class="col-2" style="display: inline-block; width: 16.67%">
+          <img [src]="params?.facilityDetails?.logo" height="90" />
+        </div>
+        <div class="col-8" style="display: inline-block; width: 66.67%">
+          <h4 style="text-align: center">
+            <b>
+              {{ params?.facilityDetails?.display }}
+              <br />
+              <span> {{ params?.facilityDetails?.description }}<br /> </span>
+              <small>
+                <span
+                  *ngIf="
+                    params?.facilityDetails &&
+                    params?.facilityDetails?.postalCode
+                  "
+                >
+                  P.O BOX: {{ params?.facilityDetails?.postalCode }}
+                </span></small
+              ><br />
+            </b>
+          </h4>
+        </div>
+      </div>
+      <div
+        class="header text-center h3 p-3"
+        *ngIf="params?.report && params?.report?.category !== 'standard'"
+      >
+        {{ params?.report?.name }}
+      </div>
+      <div
+        *ngIf="
+          (params?.report?.useDefaultPeFilter &&
+            selectionDates &&
+            dateChanged) ||
+          !params?.report?.useDefaultPeFilter
+        "
+      >
+        <app-custom-reports
+          *ngIf="
+            params?.report &&
+            (!params?.report?.category ||
+              params?.report?.category !== 'standard')
+          "
+          [report]="params?.report"
+          [selectionDates]="selectionDates"
+        ></app-custom-reports>
+        <ngx-standard-report
+          *ngIf="
+            params?.report &&
+            params?.report?.category == 'standard' &&
+            ((params?.report?.renderAs !== 'iframe' && selectionDates) ||
+              params?.report?.renderAs === 'iframe')
+          "
+          [parameters]="selectionDates"
+          [report]="params?.report"
+        ></ngx-standard-report>
+      </div>
+    </div>
+  </div>
+</div>

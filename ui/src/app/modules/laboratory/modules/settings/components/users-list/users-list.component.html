@@ -1,0 +1,71 @@
+<div class="w-100 mat-elevation-z0">
+  <table class="w-100" mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef>No.</th>
+      <td mat-cell *matCellDef="let user; let i = index">
+        {{ i + 1 + (page - 1) * pageCount }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fullName">
+      <th mat-header-cell *matHeaderCellDef>Full Name</th>
+      <td mat-cell *matCellDef="let user">{{ user.person?.display }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="display">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let user">{{ user.display }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef>Username</th>
+      <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="systemId">
+      <th mat-header-cell *matHeaderCellDef>System ID</th>
+      <td mat-cell *matCellDef="let user">{{ user.systemId }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let user; let i = index">
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="getRecord($event, user)">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button
+            mat-menu-item
+            (click)="onCaptureSignature($event, currentUser, user)"
+          >
+            <mat-icon>
+              <img src="assets/icons/signature_30.png" />
+            </mat-icon>
+            <span>Capture Signature</span>
+          </button>
+          <!-- <button mat-menu-item (click)="onOpenDetails($event)">
+                <mat-icon>details</mat-icon>
+                <span>Details</span>
+              </button>
+              <button mat-menu-item (click)="onDeleteChild($event)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button> -->
+        </mat-menu>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <!-- <mat-paginator
+    [pageSizeOptions]="[10, 20, 40, 60, 80, 100]"
+    showFirstLastButtons
+    aria-label="Select Number of Users Per Page"
+  >
+  </mat-paginator> -->
+</div>

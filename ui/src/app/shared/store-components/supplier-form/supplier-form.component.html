@@ -1,0 +1,34 @@
+<div class="content">
+  <mat-toolbar color="primary">{{data?.supplier ? 'Update' : 'Add'}} Supplier</mat-toolbar>
+  <div class="m-3">
+    <div class="row mt-2">
+      <mat-progress-bar mode="indeterminate" *ngIf="!supplierFields?.length "></mat-progress-bar>
+      <div class="col-12" *ngIf="supplierFields?.length">
+        <app-form [fields]="supplierFields" (formUpdate)="onFormUpdate($event)"></app-form>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        *ngIf="!data?.supplier"
+        color="primary"
+        mat-flat-button
+        color="primary"
+        class="ml-3"
+        (click)="onSaveSupplier($event)"
+      >
+        Save
+      </button>
+      <button
+        *ngIf="data?.supplier"
+        color="primary"
+        mat-flat-button
+        color="primary"
+        class="ml-3"
+        (click)="onUpdateSupplier($event)"
+      >
+        Update
+      </button>
+    </div>
+  </div>
+</div>

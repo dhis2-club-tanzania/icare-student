@@ -1,0 +1,23 @@
+{
+  "encounter": "ae3e2c71-705c-4875-98c2-bc7cdb616793",
+  "orderType": "131168f4-15f5-102d-96e4-000c29c2a5d7",
+  "concept": "15f83cd6-64e9-4e06-a5f9-364d3b14a43d",
+  "drug": "05ec820a-d297-44e3-be6e-698531d9dd3f",
+  "action": "NEW",
+  "urgency": "ROUTINE",
+  "type": null,
+  "duration": null,
+  "durationUnits": "e10ffe54-5184-4efe-8960-cd565ec1cdf8",
+  "orderer": "449390a0-d338-4ff2-9b3f-61dc1617c2fe",
+  "patient": "1f6959e5-d15a-4025-bb48-340ee9e2c58d",
+  "dose": 10,
+  "instructions": "Instructions for testing",
+  "doseUnits": "5a2aa3db-68a3-11e3-bd76-0800271c1b75",
+  "route": "e10ffe54-5184-4efe-8960-cd565ec1cdf8",
+  "frequency": "28090760-7c38-11e3-baa7-0800200c9a66",
+  "quantity": 100,
+  "careSetting": "OUTPATIENT",
+  "quantityUnits": "557b9699-68a3-11e3-bd76-0800271c1b75",
+  "numRefills": 1,
+  "previousOrder": null
+}

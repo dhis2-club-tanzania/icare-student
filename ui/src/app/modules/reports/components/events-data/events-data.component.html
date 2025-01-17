@@ -1,0 +1,64 @@
+<div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Firstname</th>
+        <th>Midlename</th>
+        <th>Lastname</th>
+        <th>Gender</th>
+        <th>MRN</th>
+        <th>Age in Yrs</th>
+        <th>Age in Months</th>
+        <th>Age in Days</th>
+        <th>Immediate cause</th>
+        <th>Underlying cause</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-count="index" let-deathData [ngForOf]="reportData">
+        <tr *ngIf="deathData?.response?.patient_first_name">
+          <td>
+            {{ deathData?.response?.patient_first_name }}
+          </td>
+          <td>
+            {{ deathData?.response?.middle_name }}
+          </td>
+          <td>
+            {{ deathData?.response?.family_name }}
+          </td>
+          <td>
+            {{ deathData?.response?.gender }}
+          </td>
+          <td>
+            {{ deathData?.response?.identifier }}
+          </td>
+          <td>
+            {{ deathData?.response?.age_years }}
+          </td>
+          <td>
+            {{ deathData?.response?.months }}
+          </td>
+          <td>
+            {{ deathData?.response?.days }}
+          </td>
+          <td>
+            {{ deathData?.response?.immediate_cause }}
+          </td>
+          <td>
+            {{ deathData?.response?.underlying_cause }}
+          </td>
+          <td>
+            <button
+              (click)="sendEvent($event, deathData)"
+              class="send-to-dhis2-btn"
+              mat-stroked-button
+            >
+              Send
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+</div>

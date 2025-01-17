@@ -1,0 +1,29 @@
+<div>
+  <mat-form-field style="width: 45%; float: left" appearance="fill">
+    <mat-label>Start date</mat-label>
+    <input
+      style="padding: 2px !important"
+      matInput
+      [matDatepicker]="start_date"
+      [min]="minStartDate"
+      [max]="maxStartDate"
+      [(ngModel)]="startDate"
+      (dateInput)="getDate($event.value, 'start_date')"
+    />
+    <mat-datepicker-toggle matSuffix [for]="start_date"></mat-datepicker-toggle>
+    <mat-datepicker #start_date></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field style="width: 45%; float: right" appearance="fill">
+    <mat-label>End date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="end_date"
+      [min]="minEndDate"
+      [max]="maxEndDate"
+      [(ngModel)]="endDate"
+      (dateInput)="getDate($event.value, 'end_date')"
+    />
+    <mat-datepicker-toggle matSuffix [for]="end_date"></mat-datepicker-toggle>
+    <mat-datepicker #end_date></mat-datepicker>
+  </mat-form-field>
+</div>

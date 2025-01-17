@@ -1,0 +1,954 @@
+<div
+  id="page-patient-registration"
+  *ngIf="{
+    currentLocation: currentLocation$ | async,
+    updateCurrentMRNSystemSettingsResponse:
+      updateCurrentMRNSystemSettingsResponse$ | async,
+    genderOptions: genderOptions$ | async,
+    additionalPatientInformation: additionalPatientInformation$ | async,
+    occupationInfo: occupationInfo$ | async,
+    relationTypeOptions: relationTypeOptions$ | async,
+    showPatientType: showPatientType$ | async,
+    residenceDetailsLocation: residenceDetailsLocation$ | async,
+    patients: patients$ | async
+  } as params"
+>
+  <h2>{{ editMode ? "Edit Patient" : "Register New Patient" }}</h2>
+
+  <mat-progress-bar
+    *ngIf="loadingForm || !params?.showPatientType"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <div class="alert alert-danger" *ngIf="loadingFormError">
+    Problem Opening registration form
+  </div>
+  <div class="registration-form" *ngIf="!loadingForm && !loadingFormError">
+    <div class="row">
+      <div class="col-8">
+        <mat-checkbox
+          *ngIf="!editMode"
+          color="primary"
+          class="mb-3"
+          (change)="setRegistrationMode($event.checked)"
+          >Emergency Registration</mat-checkbox
+        >
+
+        <!-- patient identification -->
+        <!-- <div class="row mt-3">
+          <div class="col-sm-3">
+            <label for="patient-identification">Identification</label>
+          </div>
+          <div class="col-sm-9">
+            <div *ngIf="patientIdentifierTypes" class="mt-3">
+              <mat-form-field
+                *ngIf="patientIdentifierTypes[0] as primaryIdentifier"
+                appearance="fill"
+                class="w-75"
+              >
+                <mat-label>{{ primaryIdentifier?.name }}</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Text"
+                  [required]="primaryIdentifier.required"
+                  [disabled]="primaryIdentifier.disabled && !mrnIsEditable"
+                  [(ngModel)]="patient[primaryIdentifier.id]"
+                />
+              </mat-form-field>
+              &nbsp;
+            </div>
+          </div>
+        </div> -->
+        <div
+          class="row mt-3"
+          *ngIf="
+            params?.showPatientType && params?.showPatientType?.value === 'true'
+          "
+        >
+          <div class="col-sm-3">
+            <label for="pat`ient-type">Patient Type</label>
+          </div>
+          <div class="col-sm-9">
+            <div class="w-100 d-flex mt-1">
+              <mat-form-field class="w-50" appearance="fill">
+                <mat-label>Select Patient Type</mat-label>
+                <mat-select
+                  id="patientType"
+                  name="patientType"
+                  required
+                  [(ngModel)]="patient['patientType']"
+                  (selectionChange)="
+                    getPatientType($event.value, params?.occupationInfo)
+                  "
+                  placeholder="Select Patient Type"
+                  [disabled]="addingPatient && !patientAdded"
+                >
+                  <mat-option
+                    [value]="option?.display"
+                    *ngFor="let option of params?.occupationInfo?.answers"
+                  >
+                    {{ option?.display }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="w-100 d-flex mt-1">
+              <mat-form-field appearance="fill" class="w-100 mr-2">
+                <mat-label>Select Identification</mat-label>
+                <mat-select
+                  multiple="true"
+                  placeholder="Select Identification"
+                  [ngModel]="definedIdentifierTypes"
+                  [disabled]="disabledIDType"
+                  (selectionChange)="onSelectOtherIdentifier($event)"
+                >
+                  <mat-option
+                    *ngFor="let identifier of otherPatientIdentifierTypes"
+                    [value]="identifier"
+                    >{{ identifier.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+              <!-- {{ definedIdentifierType | json }} -->
+              <mat-form-field
+                appearance="fill"
+                class="w-100 mr-2"
+                *ngFor="let definedIdentifierType of definedIdentifierTypes"
+              >
+                <mat-label>{{
+                  definedIdentifierType?.name
+                    ? definedIdentifierType?.name
+                    : definedIdentifierType?.display
+                }}</mat-label>
+                <input
+                  matInput
+                  id="patientTypeID"
+                  [pattern]="definedIdentifierType?.format"
+                  [placeholder]="definedIdentifierType?.format"
+                  [required]="definedIdentifierType?.required"
+                  [(ngModel)]="patient[definedIdentifierType?.id]"
+                  [value]="patient[definedIdentifierType?.id]"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <!-- end of patient identification -->
+
+        <!-- patient names -->
+        <div class="row mt-4">
+          <div class="col-sm-3">Names</div>
+
+          <div class="col-sm-9">
+            <div class="d-flex w-100">
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>First Name</mat-label>
+                <input
+                  name="fname"
+                  id="fname"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Enter First name"
+                  [(ngModel)]="patient['fname']"
+                  [disabled]="addingPatient && !patientAdded"
+                  required
+                  (keyup)="validateNamesInputs(patient['fname'], 'fname')"
+                  (change)="onChangeLname($event)"
+                />
+                <mat-error> First name is a mandatory field </mat-error>
+                <mat-hint
+                  class="text-danger"
+                  *ngIf="
+                    patient['fname']?.length > 1 &&
+                    validatedTexts['fname'] &&
+                    validatedTexts['fname'] === 'invalid'
+                  "
+                >
+                  Not a valid name
+                </mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100 ml-3">
+                <mat-label>Middle Name</mat-label>
+                <input
+                  name="mname"
+                  id="mname"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Enter Middle name"
+                  [(ngModel)]="patient['mname']"
+                  [disabled]="addingPatient && !patientAdded"
+                  (keyup)="validateNamesInputs(patient['mname'], 'mname')"
+                  (change)="onChangeLname($event)"
+                />
+                <mat-hint
+                  class="text-danger"
+                  *ngIf="
+                    patient['mname']?.length > 1 &&
+                    validatedTexts['mname'] &&
+                    validatedTexts['mname'] === 'invalid'
+                  "
+                >
+                  Not a valid name
+                </mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100 ml-3">
+                <mat-label>Last Name</mat-label>
+                <input
+                  matInput
+                  autocomplete="off"
+                  placeholder="Enter Last name"
+                  [(ngModel)]="patient['lname']"
+                  name="lname"
+                  id="lname"
+                  [disabled]="addingPatient && !patientAdded"
+                  required
+                  (keyup)="validateNamesInputs(patient['lname'], 'lname')"
+                  (change)="onChangeLname($event)"
+                />
+                <mat-error> Last name is a mandatory field </mat-error>
+                <mat-hint
+                  class="text-danger"
+                  *ngIf="
+                    patient['lname']?.length > 1 &&
+                    validatedTexts['lname'] &&
+                    validatedTexts['lname'] === 'invalid'
+                  "
+                >
+                  Not a valid name
+                </mat-hint>
+              </mat-form-field>
+            </div>
+            <div
+              *ngIf="params?.patients?.length > 0 && showList && !continueReg"
+              class="w-100"
+            >
+              <div class="w-100 d-flex">
+                <p class="alert alert-danger mt-1 w-75">
+                  Patient with the same name exits. Click the patient to Start
+                  Visit &nbsp;&nbsp; OR
+                </p>
+                <button
+                  class="ml-3 mt-1 w-25"
+                  style="height: 42px"
+                  mat-flat-button
+                  color="primary"
+                  (click)="onContinueRegistrion()"
+                >
+                  Register New
+                </button>
+              </div>
+              <table
+                mat-table
+                [dataSource]="params?.patients"
+                class="mat-elevation-z2 w-100"
+              >
+                <!-- No Column -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef>No</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    {{ i + 1 }}
+                  </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+                </ng-container>
+
+                <!-- Gender Column -->
+                <ng-container matColumnDef="gender">
+                  <th mat-header-cell *matHeaderCellDef>Gender</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.gender }}
+                  </td>
+                </ng-container>
+
+                <!-- Age Column -->
+                <ng-container matColumnDef="age">
+                  <th mat-header-cell *matHeaderCellDef>Age</th>
+                  <td mat-cell *matCellDef="let element">{{ element.age }}</td>
+                </ng-container>
+                <!-- Phone Column -->
+                <ng-container matColumnDef="phone">
+                  <th mat-header-cell *matHeaderCellDef>Phone</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.phone ? "0" + element.phone : "" }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumn"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumn"
+                  style="cursor: pointer"
+                  (click)="onSelectPatient($event, row)"
+                ></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- end of patient names -->
+
+        <!-- patient sex -->
+        <div class="row mt-4">
+          <div class="col-sm-3">
+            <label for="">Gender</label>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="fill">
+              <mat-label>Gender</mat-label>
+              <mat-select
+                id="sex"
+                name="sex"
+                [(ngModel)]="patient['gender']"
+                name="gender"
+                required="required"
+                placeholder="Select Gender"
+                [disabled]="addingPatient && !patientAdded"
+              >
+                <mat-option
+                  [value]="option?.code ? option?.code : option?.display"
+                  *ngFor="let option of params?.genderOptions?.answers"
+                >
+                  {{ option?.display }}
+                </mat-option>
+              </mat-select>
+              <mat-error> Gender is a mandatory field </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <!-- end of patient sex -->
+
+        <!-- patient birth information -->
+        <div class="row mt-4">
+          <div class="col-sm-3">
+            <label for="">Birth information & Tribe</label>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center">
+              <mat-form-field appearance="fill" class="w-25">
+                <mat-label>Age (Years)</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Age"
+                  [(ngModel)]="patient['age']['years']"
+                  (keyup)="calculateDateOfBirth()"
+                  name="age"
+                  id="ageYears"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-25 ml-1">
+                <mat-label>Age (Months)</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Age"
+                  [(ngModel)]="patient['age']['months']"
+                  (keyup)="calculateDateOfBirth()"
+                  name="age"
+                  id="ageMonths"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-25 ml-1">
+                <mat-label>Age (Days)</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Age"
+                  [(ngModel)]="patient['age']['days']"
+                  (keyup)="calculateDateOfBirth()"
+                  name="age"
+                  id="ageDays"
+                />
+              </mat-form-field>
+              <div class="ml-4 mr-4 h6">OR</div>
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Select Date of birth</mat-label>
+                <input
+                  matInput
+                  readonly="readonly"
+                  [matDatepicker]="picker"
+                  [(ngModel)]="patient['dob']"
+                  (dateChange)="dateSet()"
+                  name="dob"
+                  [max]="maxDateForDateOfBirth"
+                  placeholder="Date of birth"
+                  [disabled]="addingPatient && !patientAdded"
+                  id="dob"
+                  required
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                  id="input-date-picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <!-- <mat-form-field appearance="fill" class="w-100">
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [(ngModel)]="patient['dob']"
+                  (dateInput)="dateSet()"
+                  name="dob"
+                  [max]="maxDateForDateOfBirth"
+                  placeholder="Select Date of birth"
+                  [disabled]="addingPatient && !patientAdded"
+                  id="dob"
+                  required
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker touchUi="true" #picker></mat-datepicker>
+              </mat-form-field> -->
+            </div>
+
+            <div *ngIf="!emergencyRegistration">
+              <div *ngIf="showOtherBirthDetails">
+                <mat-form-field appearance="fill" class="w-100 mt-3">
+                  <mat-label>Place of birth</mat-label>
+                  <input
+                    matInput
+                    placeholder="Enter Place of birth"
+                    [(ngModel)]="patient['birthplace']"
+                    name="birthplace"
+                    [disabled]="addingPatient && !patientAdded"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="w-100 mt-3">
+                  <mat-label>Tribe</mat-label>
+                  <input
+                    matInput
+                    placeholder="Enter Tribe"
+                    [(ngModel)]="patient['tribe']"
+                    name="tribe"
+                    [disabled]="addingPatient && !patientAdded"
+                  />
+                </mat-form-field>
+              </div>
+
+              <a
+                class="text-primary"
+                (click)="onToggleOtherBirthDetails($event)"
+                >{{ showOtherBirthDetails ? "Less" : "More" }} birth details</a
+              >
+            </div>
+          </div>
+        </div>
+        <!-- end of patient birth information -->
+
+        <!-- contact details -->
+        <div class="row mt-4">
+          <div class="col-sm-3">
+            <label for="">Contact Details</label>
+          </div>
+          <div class="col-sm-9">
+            <app-form
+              [fields]="[primaryPhoneNumberFormField]"
+              (formUpdate)="onPrimaryMobileNumberFormUpdate($event)"
+            ></app-form>
+
+            <!-- residence location options with input form field -->
+            <div class="d-flex mt-1" *ngIf="!emergencyRegistration">
+              <!-- Area of Residence -->
+              <app-form
+                [fields]="[residenceField]"
+                (formUpdate)="onResidenceUpdate($event)"
+              ></app-form>
+              <app-form
+                [fields]="[wardField]"
+                (formUpdate)="onResidenceUpdate($event)"
+              ></app-form>
+              <app-form
+                [fields]="[districtField]"
+                (formUpdate)="onResidenceUpdate($event)"
+              ></app-form>
+              <app-form
+                [fields]="[regionField]"
+                (formUpdate)="onResidenceUpdate($event)"
+              ></app-form>
+              <!-- <mat-form-field class="ml-1" appearance="fill">
+                <mat-label>Area Of Residence</mat-label>
+                <mat-select
+                  (click)="addOptionVillage.disabled = true"
+                  (selectionChange)="onSelectArea($event)"
+                  [(ngModel)]="patient['village']"
+                >
+                  <mat-option
+                    *ngFor="let location of patientLocation"
+                    [value]="location.STREET"
+                  >
+                    {{ location.STREET }}
+                  </mat-option>
+                  <mat-option [value]="newArea">{{ newArea }}</mat-option>
+                  <mat-option #addOptionVillage>
+                    <mat-form-field>
+                      <mat-label>Add New Area </mat-label>
+                      <input
+                        matInput
+                        #newCat
+                        type="text"
+                        [(ngModel)]="newArea"
+                      />
+                      <mat-icon
+                        (click)="addOptionVillage.disabled = false"
+                        matSuffix
+                        >done_outline</mat-icon
+                      >
+                    </mat-form-field>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field> -->
+              <!-- End of Area of Residence-->
+              <!-- District -->
+              <!-- <mat-form-field class="ml-1" appearance="fill">
+                <mat-label>District</mat-label>
+                <mat-select
+                  (click)="addOptionDistrict.disabled = true"
+                  [(ngModel)]="patient['district']"
+                >
+                  <mat-option
+                    *ngFor="
+                      let location of residenceDistrict;
+                      let index = index
+                    "
+                    [value]="location"
+                    (click)="onSelectDistrict($event, index)"
+                  >
+                    {{ location }}
+                  </mat-option>
+                  <mat-option [value]="newDistrict">{{
+                    newDistrict
+                  }}</mat-option>
+
+                  <mat-option #addOptionDistrict>
+                    <mat-form-field>
+                      <mat-label>Add New District</mat-label>
+                      <input
+                        matInput
+                        #newCat
+                        type="text"
+                        [(ngModel)]="newDistrict"
+                      />
+                      <mat-icon
+                        (click)="addOptionDistrict.disabled = false"
+                        matSuffix
+                        >done_outline</mat-icon
+                      >
+                    </mat-form-field>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field> -->
+              <!-- End of District -->
+              <!-- <mat-form-field class="ml-1" appearance="fill">
+                <mat-label>Region</mat-label>
+                <mat-select
+                  (click)="addOption.disabled = true"
+                  [(ngModel)]="patient['region']"
+                >
+                  <mat-option
+                    *ngFor="
+                      let location of residenceRegion;
+                      let regionindex = index
+                    "
+                    [value]="location"
+                    (click)="onSelectRegion($event, regionindex)"
+                  >
+                    {{ location }}
+                  </mat-option>
+                  <mat-option [value]="newreg">{{ newreg }}</mat-option>
+                  <mat-option #addOption>
+                    <mat-form-field>
+                      <mat-label>Add New Region</mat-label>
+                      <input
+                        matInput
+                        #newCat
+                        type="text"
+                        [(ngModel)]="newreg"
+                      />
+                      <mat-icon (click)="addOption.disabled = false" matSuffix
+                        >done_outline</mat-icon
+                      >
+                    </mat-form-field>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field> -->
+              <!-- End of Region -->
+
+              <!--End of residence location options with input form field -->
+            </div>
+
+            <!-- <div class="mt-3" *ngIf="showMoreContactDetails">
+                <div class="d-flex">
+                  <div>
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Street/ Village/ Hall</mat-label>
+                    <input
+                      matInput
+                      placeholder="Enter Village"
+                      [(ngModel)]="patient['village']"
+                      id="village"
+                      name="village"
+                      [disabled]="addingPatient && !patientAdded"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Ward</mat-label>
+                    <input
+                      matInput
+                      placeholder="Enter Ward"
+                      [(ngModel)]="patient['ward']"
+                      name="ward"
+                      [disabled]="addingPatient && !patientAdded"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div *ngIf="!emergencyRegistration">
+                  <mat-form-field appearance="fill" class="w-100 ml-3">
+                    <mat-label>Council/District</mat-label>
+                    <input
+                      matInput
+                      placeholder="Enter District"
+                      [(ngModel)]="patient['district']"
+                      name="district"
+                      [disabled]="addingPatient && !patientAdded"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill" class="w-100 ml-3">
+                    <mat-label>Region</mat-label>
+                    <input
+                      matInput
+                      placeholder="Enter Region"
+                      [(ngModel)]="patient['region']"
+                      name="region"
+                      [disabled]="addingPatient && !patientAdded"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+
+            </div> -->
+
+            <!-- <a
+              id="showMoreDetailsToggle"
+              class="text-primary"
+              (click)="onToggleOtherContactDetails($event)"
+              >{{ showMoreContactDetails ? "Less" : "More" }} contact details</a
+            > -->
+          </div>
+        </div>
+        <!-- end of contact details -->
+
+        <div class="row mt-4" *ngIf="!emergencyRegistration">
+          <div class="col-sm-3">
+            <label for="">Additional Patient Information</label>
+          </div>
+          <div class="col-sm-9 d-flex">
+            <!--<div>
+                 <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Occupation</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let occupation of []"
+                    [value]="occupation"
+                    (click)="setOccupation(occupation)"
+                  >
+                    {{ occupation }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Education Details</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let education of []"
+                    [value]="education"
+                    (click)="setEducationDetails(education)"
+                  >
+                    {{ education }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Marital Status</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let maritalStatus of []"
+                    [value]="maritalStatus"
+                    (click)="setMaritalStatus(maritalStatus)"
+                  >
+                    {{ maritalStatus }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              -->
+            <!-- <div class="w-100">
+                <app-dynamic-reg-form
+                  *ngIf="params?.occupationInfo"
+                  [concepts]="[params?.occupationInfo]"
+                  (selectedValue)="setOccupation($event)"
+                >
+                </app-dynamic-reg-form>
+              </div>
+              <div class="w-100">
+                <app-dynamic-reg-form
+                  *ngIf="params?.educationInfo"
+                  [concepts]="[params?.educationInfo]"
+                  (selectedValue)="setEducationDetails(event$)"
+                >
+                </app-dynamic-reg-form>
+              </div>
+              <div class="w-100">
+                <app-dynamic-reg-form
+                  *ngIf="params?.maritalstatusInfo"
+                  [concepts]="[params?.maritalstatusInfo]"
+                  (selectedValue)="setMaritalStatus(event$)"
+                >
+                </app-dynamic-reg-form>
+              </div>
+            </div> -->
+            <div>
+              <app-dynamic-reg-form
+                *ngIf="params?.additionalPatientInformation"
+                [concepts]="params?.additionalPatientInformation.setMembers"
+                (selectedValue)="getAdditionalInformationValues($event)"
+                [patientInformation]="patientInformation"
+                [editMode]="editMode"
+              >
+              </app-dynamic-reg-form>
+
+              <!-- <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Religion</mat-label>
+                <input
+                  name="Religion"
+                  id="Religion"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Religion"
+                  [(ngModel)]="patient['religion']"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field> -->
+
+              <!-- <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Names of Area leader/Neighbour</mat-label>
+                <input
+                  name="areaLeader"
+                  id="areaLeader"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Enter Name of Area leader/Neighbour"
+                  [(ngModel)]="patient['areaLeader']"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field>
+
+              <app-form
+                [fields]="[primaryPhoneNumberAreaLeaderFormField]"
+                (formUpdate)="onPrimaryMobileNumberAreaLeaderFormUpdate($event)"
+              ></app-form> -->
+
+              <!-- <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Phone Number of Area leader/Neighbour</mat-label>
+                <input
+                  name="areaLeaderNumber"
+                  id="areaLeaderNumber"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Enter Number of Area leader/Neighbour"
+                  [(ngModel)]="patient['areaLeaderNumber']"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field> -->
+            </div>
+
+            <!-- <div class="ml-3">
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>File Number</mat-label>
+                <input
+                  name="fileNo"
+                  id="fileNo"
+                  autocomplete="off"
+                  matInput
+                  placeholder="Enter File Number"
+                  [(ngModel)]="patient['fileNo']"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field> -->
+
+            <!-- <mat-form-field appearance="fill" class="w-100">
+                <mat-label>New Patient</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let newPatient of newPatientOptions"
+                    [value]="newPatient"
+                    (click)="setNewPatient(newPatient)"
+                  >
+                    {{ newPatient }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field> -->
+            <!-- </div> -->
+          </div>
+        </div>
+
+        <div class="row mt-4" *ngIf="!emergencyRegistration">
+          <!-- next of kin -->
+          <div class="col-sm-3">
+            <label for="">Next of kin</label>
+          </div>
+          <div class="col-sm-9 d-flex">
+            <div>
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>First Name</mat-label>
+                <input
+                  matInput
+                  id="kfname"
+                  placeholder="Enter Text"
+                  [(ngModel)]="patient['kinFname']"
+                  name="kinFname"
+                  (keyup)="validateNamesInputs(patient['lname'], 'lname')"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field>
+
+              <div class="d-flex">
+                <app-form
+                  [fields]="[primaryPhoneNumberNextOfKinFormField]"
+                  (formUpdate)="
+                    onPrimaryMobileNumberNextOfKinFormUpdate($event)
+                  "
+                ></app-form>
+              </div>
+
+              <!-- <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Contact number</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Text"
+                  [(ngModel)]="patient['kinPhone']"
+                  name="kinPhone"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field> -->
+            </div>
+
+            <div>
+              <mat-form-field appearance="fill" class="w-100 ml-2">
+                <mat-label>Last Name</mat-label>
+                <input
+                  matInput
+                  id="klname"
+                  placeholder="Enter Text"
+                  [(ngModel)]="patient['kinLName']"
+                  name="kinLName"
+                  (keyup)="validateNamesInputs(patient['lname'], 'lname')"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field>
+              <!-- <mat-form-field appearance="fill" class="w-100 ml-2">
+                <mat-label>Relationship with patient</mat-label>
+                <input
+                  matInput
+                  placeholder="Enter Text"
+                  [(ngModel)]="patient['kinRelationship']"
+                  name="kinRelationship"
+                  [disabled]="addingPatient && !patientAdded"
+                />
+              </mat-form-field> -->
+
+              <mat-form-field appearance="fill" class="w-100 ml-2">
+                <mat-label>Relationship Type</mat-label>
+                <!-- <mat-select>
+                  <mat-option
+                    *ngFor="let relationshipType of []"
+                    [value]="relationshipType"
+                    (click)="setRelationshipType(relationshipType)"
+                  >
+                    {{ relationshipType }}
+                  </mat-option>
+                </mat-select> -->
+                <mat-select
+                  id="relationshipType"
+                  name="relationshipType"
+                  placeholder="Select Relationship Type"
+                  [disabled]="addingPatient && !patientAdded"
+                  [(ngModel)]="patient['RelationshipType']"
+                >
+                  <mat-option
+                    [value]="option?.display"
+                    *ngFor="let option of params?.relationTypeOptions?.answers"
+                  >
+                    {{ option?.display }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="col-4 d-flex justify-content-end"
+        *ngIf="!emergencyRegistration"
+      >
+        <div
+          class="patient-photo"
+          style="
+            background-image: url('../../../../../assets/images/person_image.png');
+            cursor: not-allowed;
+          "
+        >
+          <div class="float-right pt-2 pr-2">
+            <mat-icon>photo_camera</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Alerts -->
+    <div *ngIf="errors?.length > 0">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
+    <!-- End Alerts -->
+
+    <div class="row mt-4">
+      <div class="offset-2 pl-3">
+        <!-- <div class="w-100 mb-2 mt-2" *ngIf="errorAddingPatient">
+          <p class="text-left text-danger">
+            {{ errorMessage }}
+          </p>
+        </div> -->
+        <button
+          mat-flat-button
+          style="height: 45px"
+          color="primary"
+          [disabled]="addingPatient || mandatoryFieldsMissing"
+          (click)="savePatient($event, params)"
+        >
+          <mat-spinner
+            *ngIf="addingPatient && !patientAdded"
+            [diameter]="20"
+            style="display: inline-block !important; margin-right: 4px"
+          ></mat-spinner>
+          {{ editMode ? "Save Changes" : "Save Registration" }}
+        </button>
+        <button
+          style="height: 45px"
+          class="ml-3"
+          mat-stroked-button
+          [routerLink]="['/registration']"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

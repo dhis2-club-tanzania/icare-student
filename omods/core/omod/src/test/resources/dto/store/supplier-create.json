@@ -1,0 +1,9 @@
+[
+  {
+    "name": "DHIS-SUPPLIER",
+    "description": "This is the supplier for DHIS2",
+    "location": {
+      "uuid": "44939999-d333-fff2-9bff-61d11117c22e"
+    }
+  }
+]

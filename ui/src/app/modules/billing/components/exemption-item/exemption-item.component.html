@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-3" *ngIf="exemptionForm.criteria">
+    <!--{{exemptionForm | json}}-->
+    <app-form
+      [fields]="[exemptionForm.criteria]"
+      (formUpdate)="onFormUpdate($event)"
+    ></app-form>
+    <div>
+      <input
+        type="file"
+        style="border: none; background-color: transparent"
+        class="form-control"
+        name="file"
+        accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+        id="file-selector"
+        (change)="fileSelection($event)"
+      />
+    </div>
+    <div class="mt-3">
+      <app-form
+        id="select-exemption-type"
+        [fields]="[exemptionForm.exemptionType]"
+        (formUpdate)="onFormUpdate($event)"
+      >
+      </app-form>
+    </div>
+    <div class="mt-3">
+      <app-form
+        [fields]="[exemptionForm.remarks]"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form>
+    </div>
+  </div>
+  <div class="col-9" *ngIf="bill">
+    <table class="table table-striped">
+      <tr>
+        <td>#</td>
+        <td>Item</td>
+        <td>Quantity</td>
+        <td>Unit Price</td>
+        <td>Amount</td>
+        <td>Discount</td>
+        <td>Payable</td>
+        <!-- <td>
+          <mat-checkbox [checked]="bill.allItemsConfirmed" (change)="onConfirmAll($event, bill?.id)">
+          </mat-checkbox>
+        </td> -->
+        <!-- <td></td> -->
+      </tr>
+      <tr *ngFor="let item of billItems; let itemIndex = index">
+        <td>{{ itemIndex + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item?.quantity || "-" }}</td>
+        <td>{{ item?.price }}</td>
+        <td>{{ item?.payable }}</td>
+        <td>
+          <mat-form-field appearance="fill">
+            <input
+              id="input-exemption-discount-{{ itemIndex }}"
+              [value]="item.discount"
+              matInput
+              autocomplete="off"
+              (change)="onDiscountUpdate($event, item)"
+              [disabled]="item?.discounted"
+            />
+          </mat-form-field>
+        </td>
+        <td>
+          {{ item?.payable }}
+        </td>
+        <!-- <td></td> -->
+        <!-- <td>
+          <mat-checkbox [checked]="item.confirmed" (change)="onConfirmBillItem($event, item)"> </mat-checkbox>
+        </td> -->
+      </tr>
+    </table>
+    <div class="d-flex justify-content-end mt-3">
+      <mat-form-field>
+        <mat-label>Discount</mat-label>
+        <input
+          autocomplete="off"
+          type="text"
+          matInput
+          [value]="totalBillDiscount"
+          disabled
+        />
+      </mat-form-field>
+
+      <mat-form-field class="ml-4">
+        <mat-label>Payable</mat-label>
+        <input
+          id="payable-summary"
+          type="text"
+          matInput
+          autocomplete="off"
+          [value]="totalPayableBill"
+          disabled
+        />
+      </mat-form-field>
+
+      <button
+        id="btn-confirm-exemption"
+        (click)="onConfirmExemption($event)"
+        mat-flat-button
+        color="primary"
+        [disabled]="bill?.discounted"
+      >
+        {{ bill.confirming ? "Confirming Exemption..." : "Confirm Exemption" }}
+      </button>
+    </div>
+  </div>
+</div>

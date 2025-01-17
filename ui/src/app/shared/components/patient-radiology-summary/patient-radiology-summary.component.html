@@ -1,0 +1,183 @@
+<div
+  *ngIf="{
+    orders: orders$ | async
+  } as params"
+>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">SN</th>
+        <th>Radiology order</th>
+        <th>Results</th>
+        <th>Date & Time</th>
+        <th style="width: 160px">Remarks</th>
+        <th style="width: 160px"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container
+        *ngIf="params?.orders && params?.orders?.length > 0 && !addingOrder"
+      >
+        <ng-container *ngFor="let order of params?.orders; let count = index">
+          <tr
+            [ngClass]="{
+              'voided-item': order?.dateStopped || order?.autoExpireDate
+            }"
+          >
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ order?.display }}
+            </td>
+            <td *ngIf="order?.values?.length">
+              <div *ngFor="let link of order.values">
+                <a
+                  *ngIf="link?.links?.uri.split('openmrs').length > 2"
+                  href="{{ '/openmrs' + link?.links?.uri.split('openmrs')[2] }}"
+                >
+                  Download Result
+                </a>
+                <a
+                  *ngIf="link?.links?.uri.split('openmrs').length == 2"
+                  href="{{ '/openmrs' + link?.links?.uri.split('openmrs')[1] }}"
+                >
+                  Download Result
+                </a>
+                <button
+                  class="ml-2"
+                  mat-button
+                  (click)="previewUploadPDF($event, link?.links?.uri, 'iframe')"
+                >
+                  Preview
+                </button>
+              </div>
+            </td>
+            <!-- <td *ngIf="order?.value?.display">
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
+                }}"
+              >
+                Download Results
+              </a>
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
+                }}"
+              >
+                Download Results
+              </a>
+              <button
+                class="ml-2"
+                mat-button
+                (click)="
+                  previewUploadPDF($event, order?.value?.links?.uri, 'iframe')
+                "
+              >
+                Preview 
+              </button>
+            </td> -->
+            <td *ngIf="!order?.value?.display && order?.values?.length <= 0">
+              No results
+            </td>
+            <td *ngIf="!order?.value?.display && order?.value?.length">
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length > 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[2]
+                }}"
+              >
+                Download Results
+              </a>
+              <a
+                *ngIf="order?.value?.links?.uri.split('openmrs').length == 2"
+                href="{{
+                  '/openmrs' + order?.value?.links?.uri.split('openmrs')[1]
+                }}"
+              >
+                Download Results
+              </a>
+            </td>
+            <td>
+              {{ order?.dateActivated | date: "medium" }}
+            </td>
+            <td>
+              {{order?.remarks}}
+            </td>
+            <td>
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Options"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  [disabled]="order?.value"
+                  mat-menu-item
+                  (click)="onDeleteOrder($event, order)"
+                >
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!params?.orders || addingProcedure">
+        <tr>
+          <td colspan="100%">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          params?.orders &&
+          params?.orders.length === 0 &&
+          !addingOrder &&
+          !hasError
+        "
+      >
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-warning" role="alert">
+              NO Radiology service ordered
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="errors">
+        <td colspan="100%">
+          <app-shared-error [errors]="errors"></app-shared-error>
+        </td>
+      </tr>
+      <ng-container *ngIf="forConsultation && !isInpatient && formFields">
+        <tr>
+          <td colspan="4">
+            <app-form
+              [fields]="formFields"
+              [isFormHorizontal]="false"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </td>
+          <td>
+            <button
+              mat-stroked-button
+              [disabled]="!isFormValid || addingOrder"
+              (click)="onSave($event)"
+            >
+              Add
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

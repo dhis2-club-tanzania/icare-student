@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <title>Title</title>
+    <style>
+        @page { size: 470mm 288mm; margin:0;padding:0}
+table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table td, table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+table tr:nth-child(even){background-color: #f2f2f2;}
+
+table tr:hover {background-color: #ddd;}
+
+table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2a8fd1;
+  color: white;
+}
+
+
+    </style>
+</head>
+<body>
+<h3><center>Patient File</center></h3>
+<table>
+    <tr><td rowspan="5"></td><td colspan="2">{Name} ({Gender} | {Years} Years | {BirthDate})</td></tr>
+    <tr><td>MRN</td><td>{Identifier}</td></tr>
+    <tr><td>Email</td><td>{Email}</td></tr>
+    <tr><td>Phone Number</td><td>{PhoneNumber}</td></tr>
+</table>
+<table>
+    <thead>
+    <tr>
+        <th>
+            Date
+        </th>
+        <th>
+            Hour
+        </th>
+        <th>
+            Observation
+        </th>
+        <th>
+            Comment
+        </th>
+    </tr>
+    </thead>
+    {Observation}
+</table>
+</body>
+</html>

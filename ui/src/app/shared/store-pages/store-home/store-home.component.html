@@ -1,0 +1,77 @@
+<div
+  *ngIf="{
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async,
+    currentStore: currentStore$ | async,
+    privileges: privileges$ | async,
+    currentUser: currentUser$ | async,
+    isCurrentLocationPharmacy: isCurrentLocationPharmacy$ | async
+  } as params"
+  class="container-fluid"
+>
+
+  <div
+    *ngIf="!params?.settingCurrentLocationStatus || !params?.currentUser"
+    class="pt-2 store-container row"
+  >
+    <!-- store sidebar -->
+    <div class="store-sidebar col-2">
+      <h3 class="pl-3 pt-3">Store: {{ params?.currentStore?.name }}</h3>
+      <mat-nav-list>
+        <ng-container *ngFor="let storePage of storePages">
+          <ng-container
+            *ngIf="
+             ( (!params?.currentStore?.isMainStore && params?.isCurrentLocationPharmacy &&
+                storePage?.id !== 'settings') ||
+              (params?.currentStore?.isMainStore &&
+                storePage?.id !== 'requisition' &&
+                storePage?.id !== 'received' ) )|| (!params?.currentStore?.isMainStore && !params?.isCurrentLocationPharmacy && storePage?.id !== 'issuing' && storePage?.id !== 'settings') 
+            "
+          >
+            <mat-list-item
+              *ngIf="
+                (storePage?.privilege &&
+                  params?.currentUser?.userPrivileges[storePage?.privilege]) ||
+                params?.currentUser?.userPrivileges['ALL'] ||
+                params?.currentUser?.userPrivileges['STORE_ALL']
+              "
+              [ngClass]="{
+                'not-allowed-menu-item':
+                  params?.currentStore?.isMainStore &&
+                  (storePage?.id === 'requisition' ||
+                    storePage?.id === 'received'),
+                'store-active': storePage?.id === currentStorePage?.id,
+                page: true
+              }"
+              (click)="onChangeRoute($event, storePage.url, storePage)"
+              routerLinkActive="store-active"
+            >
+              <a matLine>{{ storePage?.name }}</a>
+            </mat-list-item>
+          </ng-container>
+        </ng-container>
+      </mat-nav-list>
+    </div>
+    <!-- end of store sidebar -->
+
+    <!-- Stock Metrics -->
+    <!-- store-content -->
+    <div
+      class="store-content col-10"
+      *ngIf="showStoreMetrics && params?.currentStore && currentStorePage"
+    >
+      <app-stock-metrics
+        [currentStorePage]="currentStorePage"
+        [currentStore]="params?.currentStore"
+        (changeRoute)="onChangeRoute($event)"
+      ></app-stock-metrics>
+      <!-- end of stock summary -->
+      <router-outlet></router-outlet>
+    </div>
+    <!-- end of store content -->
+  </div>
+
+  <mat-progress-bar
+    *ngIf="params?.settingCurrentLocationStatus"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

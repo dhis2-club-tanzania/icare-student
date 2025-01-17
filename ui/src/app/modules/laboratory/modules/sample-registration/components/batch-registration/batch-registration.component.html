@@ -1,0 +1,389 @@
+<div
+  *ngIf="{
+    batchSampleCodeFormatReference: batchSampleCodeFormatReference$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!isFormInstantiated"
+  ></mat-progress-bar>
+  <div *ngIf="isFormInstantiated">
+    <!-- <app-shared-error
+      [errors]="[warning]"
+      [dismissible]="false"
+    ></app-shared-error> -->
+    <app-shared-error
+      *ngIf="errors?.length"
+      [errors]="errors"
+      [dismissible]="true"
+    ></app-shared-error>
+    <fieldset>
+      <div class="row">
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <h3>Batch Information</h3>
+        </div>
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <h3>Fixed Fields</h3>
+        </div>
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <h3>Static Fields</h3>
+        </div>
+        <div *ngIf="fromMaintenance" class="col-3">
+          <h3>Dynamic Fields</h3>
+        </div>
+      </div>
+      <div class="row">
+        <!--  Bach Information -->
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <div class="row">
+            <div
+              class="col-12 d-flex ml-1"
+              *ngIf="existingBatchsets?.length && fromMaintenance"
+            >
+              <h4 class="w-75">Use existing batch set</h4>
+              <mat-slide-toggle
+                [color]="'primary'"
+                class="example-margin w-25"
+                (click)="onUseExisting($event, 'batchset')"
+              >
+              </mat-slide-toggle>
+            </div>
+            <div class="col-12">
+              <app-form
+                [fields]="
+                  useExistingBatchset
+                    ? [existingBatchsetField]
+                    : [batchsetNameField]
+                "
+                (formUpdate)="
+                  onFormUpdate(
+                    $event,
+                    useExistingBatchset
+                      ? 'Existing Batchset'
+                      : 'New Batchset Name'
+                  )
+                "
+              ></app-form>
+              <p class="text-danger" *ngIf="!validBatchsetName">
+                This batchset already exists
+              </p>
+            </div>
+            <div class="col-12">
+              <app-form
+                [fields]="[batchsetDescription]"
+                (formUpdate)="onFormUpdate($event)"
+              ></app-form>
+            </div>
+            <div
+              class="col-12 d-flex ml-1"
+              *ngIf="
+                existingBatches?.length &&
+                existingBatchField?.options?.length &&
+                fromMaintenance
+              "
+            >
+              <h4 class="w-75">Use existing batch</h4>
+              <mat-slide-toggle
+                [color]="'primary'"
+                class="example-margin w-25"
+                (click)="onUseExisting($event, 'batch')"
+              >
+              </mat-slide-toggle>
+            </div>
+            <div class="col-12">
+              <app-form
+                [fields]="
+                  useExistingBatch &&
+                  existingBatchField?.options?.length &&
+                  !fromMaintenance
+                    ? [existingBatchField]
+                    : [batchNameField]
+                "
+                (formUpdate)="
+                  onFormUpdate(
+                    $event,
+                    useExistingBatch ? 'Existing Batch' : 'New Batch Name'
+                  )
+                "
+              ></app-form>
+              <p class="text-danger" *ngIf="!validBatchName">
+                This batch already exists
+              </p>
+            </div>
+            <div class="col-12">
+              <app-form
+                [fields]="[batchDescription]"
+                (formUpdate)="onFormUpdate($event)"
+              ></app-form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed fields -->
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <div class="row">
+            <ng-container *ngIf="selectedFixedFields?.length > 0">
+              <ng-container
+                *ngFor="let selectedFixedField of selectedFixedFields"
+              >
+                <div class="col-12">
+                  <app-form
+                    *ngIf="!selectedFixedField?.allowCustomDateTime"
+                    [fields]="[selectedFixedField]"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedFixedField',
+                        selectedFixedField.key
+                      )
+                    "
+                  ></app-form>
+                  <app-date-time-field
+                    *ngIf="selectedFixedField?.allowCustomDateTime"
+                    [dateTimeField]="selectedFixedField"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedFixedField',
+                        selectedFixedField.key
+                      )
+                    "
+                  ></app-date-time-field>
+                </div>
+              </ng-container>
+            </ng-container>
+            <div class="col-12">
+              <mat-progress-bar
+                *ngIf="!addFixedField?.options?.length"
+                mode="indeterminate"
+              >
+              </mat-progress-bar>
+              <!-- <app-form
+                *ngIf="addFixedField?.options?.length > 0"
+                [fields]="[addFixedField]"
+                (formUpdate)="onFormUpdate($event, 'Fixed')"
+              ></app-form> -->
+              <app-multiple-results-entry
+                *ngIf="readyToRender['fixedFields']"
+                [options]="
+                  fixedFieldsOptions
+                    | filterFields: selectedStaticFields:selectedDynamicFields
+                "
+                [value]="selectedFixedFields"
+                (selectedList)="getSelectedFixedFields($event)"
+              ></app-multiple-results-entry>
+            </div>
+          </div>
+        </div>
+
+        <!-- Static fields -->
+        <div class="{{ fromMaintenance ? 'col-3' : 'col-4' }}">
+          <div class="row">
+            <ng-container *ngIf="selectedStaticFields?.length > 0">
+              <ng-container
+                *ngFor="let selectedStaticField of selectedStaticFields"
+              >
+                <div class="col-12">
+                  <app-form
+                    *ngIf="!selectedStaticField?.allowCustomDateTime"
+                    [fields]="[selectedStaticField]"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedStaticField',
+                        selectedStaticField.key
+                      )
+                    "
+                  ></app-form>
+                  <app-date-time-field
+                    *ngIf="selectedStaticField?.allowCustomDateTime"
+                    [dateTimeField]="selectedStaticField"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedStaticField',
+                        selectedStaticField.key
+                      )
+                    "
+                  ></app-date-time-field>
+                </div>
+                <!-- <div class="col-1" *ngIf="!useExistingBatchset && !useExistingBatch">
+                                    <button class="remove-field" mat-button matTooltip="Remove '{{ selectedStaticField?.label }}' from Static fields"><mat-icon>delete_outline</mat-icon></button>
+                                </div> -->
+              </ng-container>
+            </ng-container>
+            <div class="col-12">
+              <mat-progress-bar
+                *ngIf="!addStaticField?.options?.length"
+                mode="indeterminate"
+              >
+              </mat-progress-bar>
+              <!-- <app-form
+                *ngIf="addStaticField?.options?.length > 0"
+                [fields]="[addStaticField]"
+                (formUpdate)="onFormUpdate($event, 'Static')"
+              ></app-form> -->
+              <app-multiple-results-entry
+                *ngIf="readyToRender['staticFields']"
+                [options]="
+                  staticFieldsOptions
+                    | filterFields: selectedFixedFields:selectedDynamicFields
+                "
+                [value]="selectedStaticFields"
+                (selectedList)="getSelectedStaticFields($event)"
+              ></app-multiple-results-entry>
+            </div>
+            <!-- <div class="col-2">
+                            <button 
+                            [disabled]="!selectedStaticFields?.length" 
+                            class="save-field" 
+                            mat-flat-button 
+                            color="primary" 
+                            matTooltip="Save all static fields"
+                            (click)="onSave($event, 'Static')"
+                            > Save </button>
+                        </div> -->
+          </div>
+        </div>
+        <!-- Dynamic fields -->
+        <div class="col-3" *ngIf="fromMaintenance">
+          <div class="row">
+            <ng-container *ngIf="selectedDynamicFields?.length > 0">
+              <ng-container
+                *ngFor="let selectedDynamicField of selectedDynamicFields"
+              >
+                <div
+                  class="{{
+                    useExistingBatchset || useExistingBatch
+                      ? 'col-12'
+                      : 'col-10'
+                  }}"
+                >
+                  <app-form
+                    *ngIf="!selectedDynamicField?.allowCustomDateTime"
+                    [fields]="[selectedDynamicField]"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedDynamicField',
+                        selectedDynamicField.key
+                      )
+                    "
+                  ></app-form>
+                  <app-date-time-field
+                    *ngIf="selectedDynamicField?.allowCustomDateTime"
+                    [dateTimeField]="selectedDynamicField"
+                    (formUpdate)="
+                      onFormUpdate(
+                        $event,
+                        'SelectedDynamicField',
+                        selectedDynamicField.key
+                      )
+                    "
+                  ></app-date-time-field>
+                </div>
+                <!-- <div class="col-1" *ngIf="!useExistingBatchset && !useExistingBatch">
+                                    <button class="remove-field" mat-button matTooltip="Remove '{{ selectedDynamicField?.label }}' from Dynamic fields"><mat-icon>delete_outline</mat-icon></button>
+                                </div> -->
+              </ng-container>
+            </ng-container>
+            <div class="col-12">
+              <mat-progress-bar
+                *ngIf="!addDynamicField?.options?.length"
+                mode="indeterminate"
+              >
+              </mat-progress-bar>
+              <!-- <app-form
+                *ngIf="addDynamicField?.options?.length > 0"
+                [fields]="[addDynamicField]"
+                (formUpdate)="onFormUpdate($event, 'Dynamic')"
+              ></app-form> -->
+
+              <app-multiple-results-entry
+                *ngIf="readyToRender['dynamicFields']"
+                [options]="
+                  dynamicFieldsOptions
+                    | filterFields: selectedFixedFields:selectedStaticFields
+                "
+                [value]="selectedDynamicFields"
+                (selectedList)="getSelectedDynamicFields($event)"
+              ></app-multiple-results-entry>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="fromMaintenance">
+        <div class="col-12">
+          <div class="d-flex justify-content-end">
+            <div class="w-25 d-flex justify-content-end">
+              <button
+                [disabled]="!validForm"
+                mat-flat-button
+                color="primary"
+                matTooltip="Save batch information"
+                (click)="onSave($event)"
+              >
+                Save Batch
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset
+      *ngIf="
+        selectedDynamicFields.length &&
+        fieldsObjectValues?.fixedFieldsWithValues?.length ===
+          selectedFixedFields.length &&
+        fieldsObjectValues?.staticFieldsWithValues?.length ===
+          selectedStaticFields.length &&
+        (batchNameField.value || existingBatchField.value) &&
+        selectedBatch &&
+        !fromMaintenance
+      "
+    >
+      <button
+        mat-flat-button
+        style="border: 1px solid #cecece"
+        (click)="onAddAnotherSample($event)"
+      >
+        {{ addAnotherSample ? "Hide sample form" : "Show sample form" }}
+      </button>
+      <div class="dynamic-fields mt-4" *ngIf="addAnotherSample">
+        <div class="dynamic-form row">
+          <div class="col-12">
+            <app-sample-in-batch-registration
+              [fieldsObject]="fieldsObjectValues"
+              [allRegistrationFields]="allRegistrationFields"
+              [referringDoctorAttributes]="referringDoctorAttributes"
+              [mrnGeneratorSourceUuid]="mrnGeneratorSourceUuid"
+              [preferredPersonIdentifier]="preferredPersonIdentifier"
+              [provider]="provider"
+              [agencyConceptConfigs]="agencyConceptConfigs"
+              [referFromFacilityVisitAttribute]="
+                referFromFacilityVisitAttribute
+              "
+              [currentUser]="currentUser"
+              [labNumberCharactersCount]="labNumberCharactersCount"
+              [labSections]="labSections"
+              [specimenSources]="specimenSources"
+              [testsFromExternalSystemsConfigs]="
+                testsFromExternalSystemsConfigs
+              "
+              [barcodeSettings]="barcodeSettings"
+              [batchSampleCodeFormatReference]="
+                params?.batchSampleCodeFormatReference
+              "
+              [LISConfigurations]="LISConfigurations"
+              [personPhoneAttributeTypeUuid]="personPhoneAttributeTypeUuid"
+              [personEmailAttributeTypeUuid]="personEmailAttributeTypeUuid"
+              [batch]="selectedBatch"
+            ></app-sample-in-batch-registration>
+          </div>
+          <div class="col-11"></div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</div>

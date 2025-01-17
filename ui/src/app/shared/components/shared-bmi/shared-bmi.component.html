@@ -1,0 +1,6 @@
+<ng-container *ngIf="bmi$ | async as bmi">
+    <div *ngIf="bmi">
+        <div class="bmi"> BMI: {{bmi}} kg/m<sup>2</sup>
+        </div>
+    </div>
+</ng-container>

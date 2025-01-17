@@ -1,0 +1,33 @@
+.bar-code {
+  margin: 0 0 20px 30px !important;
+}
+.bar-code-texts {
+  font-weight: 600;
+  font-size: 0.6rem !important;
+  // z-index: 1200;
+  line-height: 0.6rem !important;
+  width: 80%;
+}
+.sample-info{
+ margin-left: 20px;
+}
+.sample-info .text-left {
+  float: left;
+}
+.sample-info .text-right {
+  float: right;
+}
+
+.sample-tests-list {
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.dotted {
+  background-color: transparent;
+  border-top: dotted 1px;
+}
+
+// #barcode {
+//   display: none;
+// }

@@ -1,0 +1,165 @@
+<ng-container
+  *ngIf="{
+    parentLocation: parentLocation$ | async,
+    logoLocationAttributeTypeUuid: logoLocationAttributeTypeUuid$ | async,
+    visit: visit$ | async
+  } as params"
+  
+>
+  <div class="loading-overlay" *ngIf="savingData">
+    <div class="text-center">
+      <div>Saving discharge details...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <mat-toolbar color="primary">
+    <span>Discharge Patient</span>
+    <span class="toolbar-spacer"></span>
+    <span class="float-right"></span>
+    <button mat-icon-button mat-dialog-close matTooltip="close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content class="mat-typography">
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!params?.visit"
+    ></mat-progress-bar>
+    <ng-container *ngIf="params?.visit">
+      <!-- <div>{{params?.visit | json}}</div> -->
+      <div >
+        <div
+          class="alert alert-warning"
+          role="alert"
+          *ngIf="visitDetails?.invoice?.length > 0"
+        >
+          This patient has pending bills/Invoice?
+        </div>
+        <div
+          class="d-flex justify-content-end"
+          *ngIf="visitDetails?.invoice?.length > 0"
+        >
+          <button
+            mat-button
+            (click)="toggleInvoiceDetails($event, visitDetails?.invoice)"
+          >
+            {{ showInvoiceDetails ? "Hide bill details" : "View bill details" }}
+          </button>
+        </div>
+
+        <div class="w-100" style="max-height: 40vh; overflow: auto">
+          <table class="table" *ngIf="showInvoiceDetails">
+            <thead>
+              <tr>
+                <th>SN</th>
+                <th>Payment mode</th>
+                <th>Service/Order</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngFor="let invoice of visitDetails?.invoice; let count = index"
+              >
+                <tr
+                  *ngFor="
+                    let item of invoice?.billDetails?.items;
+                    let itemsCount = index
+                  "
+                >
+                  <td
+                    *ngIf="itemsCount === 0"
+                    [attr.rowspan]="invoice?.items?.length"
+                  >
+                    {{ count + 1 }}
+                  </td>
+                  <td
+                    *ngIf="itemsCount === 0"
+                    [attr.rowspan]="invoice?.items?.length"
+                  >
+                    {{ invoice?.billDetails?.paymentMode?.display }}
+                  </td>
+                  <td>
+                    {{ item?.item?.concept?.name }}
+                  </td>
+                  <td>
+                    {{ item?.quantity }}
+                  </td>
+                  <td>
+                    {{ item?.price }}
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+        <div
+          class="w-100 pl-2 pr-2"
+          style="overflow: auto"
+          *ngIf="
+            params?.parentLocation && params?.logoLocationAttributeTypeUuid
+          "
+        >
+          <app-shared-patient-discharge-details
+            [parentLocation]="params?.parentLocation"
+            [locationLogoAttributeTypeUuid]="
+              params?.logoLocationAttributeTypeUuid
+            "
+            [visitDetails]="visitDetails"
+            [activeVisit]="params?.visit"
+            [dischargeFormUuid]="dischargeFormUuid"
+            [currentUser]="visitDetails?.currentUser"
+            (observationData)="onGetObservationData($event)"
+            (readyToConfirmDischarge)="onGetConfirmDischargeStatus($event)"
+          ></app-shared-patient-discharge-details>
+        </div>
+        <!-- <p class="text-center">Are you sure to discharge this patient?</p> -->
+      </div>
+      <div *ngIf="!errors && errors?.length !== 0">
+        <div class="errors && errors?.length > 0">
+          <app-shared-error [erros]="errors"></app-shared-error>
+        </div>
+      </div>
+      
+    </ng-container>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="m-0 p-3">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      class="ml-2"
+      mat-flat-button
+      [disabled]="!dischargeSummaryNotesFed"
+      color="primary"
+      (click)="onSaveDischargeSummary($event)"
+      cdkFocusInitial
+    >
+      Save discharge summary
+    </button>
+    <button
+      class="ml-2"
+      mat-stroked-button
+      [disabled]="
+        !params?.parentLocation || !dischargeSummaryNotesFed || !params?.visit
+      "
+      (click)="onPrint($event, params?.parentLocation, params?.visit)"
+    >
+      <mat-icon>print</mat-icon>
+      Print
+    </button>
+    <button
+      class="ml-2"
+      mat-flat-button
+      [disabled]="!readyToConfirmDischarge"
+      color="primary"
+      (click)="onConfirm($event, dischargeObjects)"
+      cdkFocusInitial
+    >
+      Confirm
+    </button>
+  </mat-dialog-actions>
+</ng-container>

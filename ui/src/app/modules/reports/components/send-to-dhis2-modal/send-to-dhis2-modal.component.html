@@ -1,0 +1,84 @@
+<div
+  class="confirmation-modal"
+  *ngIf="{
+    report: report$ | async,
+    sendingDataToDHIS2HasErrorState: sendingDataToDHIS2HasErrorState$ | async,
+    sendingDataToDHIS2Error: sendingDataToDHIS2Error$ | async,
+    sendingToDHIS2State: sendingToDHIS2State$ | async,
+    sentDataSuccessState: sentDataSuccessState$ | async,
+    facilityConfigs: facilityConfigs$ | async,
+    currentReportLogs: currentReportLogs$ | async
+  } as reportParams"
+>
+  <div class="h5 text-left">
+    You are about to send data to DHIS2, are you sure?
+  </div>
+  <div style="min-height: 30px; max-height: 70px; overflow: auto">
+    <!-- <div
+      class="text-danger text-center"
+      *ngIf="reportParams?.sendingDataToDHIS2HasErrorState"
+    >
+      <p>{{ reportParams?.sendingDataToDHIS2Error?.message }}</p>
+    </div>
+
+    <mat-progress-bar
+      *ngIf="reportParams?.sendingToDHIS2State"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <div class="text-center" *ngIf="reportParams?.sentDataSuccessState">
+      <p style="color: green"><b>Successful sent data to DHIS2</b></p>
+    </div> -->
+    <!-- {{ reportParams?.facilityConfigs | json }} -->
+    <mat-progress-bar
+      *ngIf="!reportParams?.facilityConfigs"
+      mode="indeterminate"
+    ></mat-progress-bar>
+  </div>
+
+  <!-- report - {{ reportParams | json }} -->
+  <!-- {{ reportParams?.report | json }} -->
+  <div
+    class="btns d-flex justify-content-end"
+    *ngIf="
+      (reportParams?.facilityConfigs &&
+        reportConfigs?.reportingFrequency !== 'Range' &&
+        reportParams?.report &&
+        reportParams?.report['headers']) ||
+      (reportParams?.facilityConfigs &&
+        reportConfigs?.reportingFrequency === 'Range' &&
+        currentReport)
+    "
+  >
+    <button
+      mat-stroked-button
+      class="mr-2 float-right"
+      (click)="onCancel($event)"
+    >
+      Close
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      class="mr-2 float-right confirm-btn"
+      (click)="
+        onConfirm(
+          $event,
+          reportParams?.report ? reportParams?.report : currentReport,
+          reportParams?.facilityConfigs
+        )
+      "
+      [disabled]="
+        reportParams?.sentDataSuccessState || reportParams?.sendingToDHIS2State
+      "
+    >
+      <mat-spinner
+        *ngIf="reportParams?.sendingToDHIS2State"
+        color="primary"
+        [diameter]="20"
+        style="display: inline-block !important; margin-right: 4px"
+      >
+      </mat-spinner>
+      Confirm
+    </button>
+  </div>
+</div>

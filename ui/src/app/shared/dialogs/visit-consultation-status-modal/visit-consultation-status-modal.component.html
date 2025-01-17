@@ -1,0 +1,36 @@
+<div>
+  <mat-toolbar color="primary">Visit end status</mat-toolbar>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="p-3">
+    <div>
+      <app-form
+        [fields]="[formField]"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form>
+    </div>
+    <app-shared-error
+      *ngIf="errors && errors?.length > 0"
+      [errors]="errors"
+    ></app-shared-error>
+    <p class="text-right" *ngIf="shouldConfirm">Please confirm</p>
+    <div class="d-flex justify-content-end mt-2">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+      <button
+        [disabled]="!isFormValid"
+        mat-flat-button
+        color="primary"
+        class="ml-2"
+        (click)="onSave($event, shouldConfirm)"
+      >
+        {{ shouldConfirm ? "Confirm" : "Save" }}
+      </button>
+    </div>
+  </div>
+</div>

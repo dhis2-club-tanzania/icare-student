@@ -1,0 +1,188 @@
+<div
+  *ngIf="{
+    codedAnswers: codedAnswers$ | async,
+    conceptSources: conceptSources$ | async
+  } as params"
+>
+  <div class="w-100">
+    <mat-radio-group class="category">
+      <mat-radio-button
+        (change)="getSelection($event)"
+        class="category-btn"
+        [value]="'List'"
+        [checked]="category === 'List'"
+        color="primary"
+      >
+        List
+      </mat-radio-button>
+      <mat-radio-button
+        (change)="getSelection($event)"
+        class="category-btn ml-2"
+        [value]="'New'"
+        [checked]="category === 'New'"
+        color="primary"
+      >
+        New
+      </mat-radio-button>
+    </mat-radio-group>
+    <div *ngIf="category === 'New'">
+      <div class="loading-overlay" *ngIf="saving">
+        <div class="text-center">
+          <div>Saving data</div>
+          <div class="mt-3 d-flex justify-content-center w-100">
+            <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-danger" *ngIf="hasError" role="alert">
+        {{ error }}
+      </div>
+      <div *ngIf="alertMessage" class="alert alert-danger" role="alert">
+        {{ alertMessage }}
+      </div>
+      <div *ngIf="!hasError">
+        <app-shared-concept-create
+          *ngIf="params?.conceptSources"
+          [conceptClass]="conceptClass"
+          [standardSearchTerm]="standardSearchTerm"
+          [dataType]="'N/A'"
+          [setMembersHeaderName]="''"
+          [isSet]="false"
+          [conceptData]="conceptBeingEdited"
+          [conceptSources]="params?.conceptSources"
+          [saveOnTheComponent]="false"
+          [multipleSelectionCompHeight]="'10vh'"
+          (conceptToCreate)="onGetConceptToCreate($event)"
+        ></app-shared-concept-create>
+        <mat-progress-loader
+          color="primary"
+          *ngIf="!params?.conceptSources"
+        ></mat-progress-loader>
+        <!-- <app-form
+          [fields]="codedAnswersFields"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-form> -->
+
+        <div class="w-100 d-flex justify-content-end mt-2">
+          <button
+            mat-stroked-button
+            [disabled]="!formData?.name?.value || !formData?.shortName?.value"
+            (click)="onSave($event)"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="category === 'List'">
+      <div class="d-flex justify-content-between w-100 mt-2">
+        <mat-form-field
+          class="w-100"
+          apperance="fill"
+          style="font-size: 0.9rem"
+        >
+          <mat-label>Search</mat-label>
+          <mat-icon matPrefix>search</mat-icon
+          ><input
+            type="text"
+            placeholder="Search"
+            class="search-input"
+            matInput
+            autocomplete="off"
+            (keyup)="searchConcept($event)"
+          />
+        </mat-form-field>
+      </div>
+      <div *ngIf="params?.codedAnswers">
+        <table class="w-100 table-striped">
+          <thead>
+            <tr>
+              <th>SN</th>
+              <th>Answer</th>
+              <th>Date created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="params?.codedAnswers?.results?.length > 0">
+              <tr
+                *ngFor="
+                  let codedAnswer of params?.codedAnswers?.results;
+                  let count = index
+                "
+                [ngClass]="{ retired: codedAnswer?.retired }"
+              >
+                <td>{{ count + 1 + (page - 1) * pageSize }}</td>
+                <td>
+                  {{ codedAnswer?.display }}
+                </td>
+                <td>
+                  {{ codedAnswer?.dateCreated | date }}
+                </td>
+                <td>
+                  <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <button
+                      [disabled]="codedAnswer?.retired"
+                      mat-menu-item
+                      (click)="onEdit($event, codedAnswer)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      [disabled]="codedAnswer?.retired"
+                      mat-menu-item
+                      (click)="onDelete($event, codedAnswer)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                      <span>Retire (Disable)</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="onPermanentDelete($event, codedAnswer)"
+                    >
+                      <mat-icon>delete_forever</mat-icon>
+                      <span>Delete</span>
+                    </button>
+                    <button
+                      [disabled]="!codedAnswer?.retired"
+                      mat-menu-item
+                      (click)="onEnable($event, codedAnswer)"
+                    >
+                      <mat-icon>done</mat-icon>
+                      <span>Enable</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-container *ngIf="params?.codedAnswers?.results?.length === 0">
+              <tr>
+                <td colspan="100%">
+                  <div class="alert alert-warning" role="alert">No items</div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+      <div class="w-100 mt-2">
+        <mat-paginator
+          [hidden]="!pageCounts"
+          [length]="params?.codedAnswers?.pager?.total"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageCounts"
+          (page)="getList($event)"
+        >
+        </mat-paginator>
+      </div>
+      <mat-progress-bar
+        *ngIf="!params?.codedAnswers"
+        mode="indeterminate"
+      ></mat-progress-bar>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div
+  *ngIf="{
+    paymentCategories: paymentCategories$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="!params?.paymentCategories"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <app-lab-price-list-home
+    [paymentCategories]="params?.paymentCategories?.setMembers"
+    *ngIf="params?.paymentCategories"
+  ></app-lab-price-list-home>
+</div>

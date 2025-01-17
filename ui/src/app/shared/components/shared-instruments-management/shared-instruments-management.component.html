@@ -1,0 +1,32 @@
+<div *ngIf="{ conceptSources: conceptSources$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.conceptSources"
+  ></mat-progress-bar>
+  <div class="row" *ngIf="params?.conceptSources">
+    <div class="col-md-8 col-sx-12 col-sm-12">
+      <app-shared-concept-create
+        *ngIf="params?.conceptSources && conceptComponentReady"
+        [conceptClass]="conceptClass"
+        [standardSearchTerm]="standardSearchTerm"
+        [dataType]="'N/A'"
+        [setMembersHeaderName]="'Tests Performed'"
+        [isSet]="false"
+        [conceptData]="conceptToEdit"
+        [conceptSources]="params?.conceptSources"
+        [saveOnTheComponent]="true"
+        [multipleSelectionCompHeight]="'10vh'"
+        (conceptCreated)="onGetConceptCreatedStatus($event)"
+      ></app-shared-concept-create>
+    </div>
+    <div class="col-md-4 col-sx-12 col-sm-12">
+      <app-standard-concepts-list
+        *ngIf="showList"
+        [standardSearchTerm]="standardSearchTerm"
+        [selectedConceptUuid]="conceptUuid"
+        [conceptClass]="conceptClass"
+        (conceptToEdit)="onEditInstrument($event)"
+      ></app-standard-concepts-list>
+    </div>
+  </div>
+</div>
