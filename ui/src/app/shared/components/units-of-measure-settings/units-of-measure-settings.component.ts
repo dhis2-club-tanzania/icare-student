@@ -97,7 +97,9 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
         }
       });
   }
-
+  //Errors were found in this part. where we found the "onEdit" function 
+  // which was empty and could not allow user to make editing.
+  
   // fixed error on edit-unit-of-measure
   onEdit(event: Event, drug): void {
     this.dialog
