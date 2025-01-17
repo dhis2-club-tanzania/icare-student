@@ -1,26 +1,39 @@
-<div *ngIf="{
-  exemptionOrderType: orderType$ | async
-} as params">
+<div *ngIf="{ exemptionOrderType: orderType$ | async } as params">
   <div class="border">
     <mat-toolbar>
-      <button mat-icon-button [routerLink]="''" matTooltip="Go to Home page">
+      <button
+        mat-icon-button
+        [routerLink]="''"
+        matTooltip="Go to Home page"
+      >
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <span class="ml-2">Exemption</span>
+      <button class="ml-4 bg-primary btn text-white rounded-pill" (click)="getExemptionVisits()"><span >Exemption</span></button>
+      <button class="ml-4 bg-success btn text-white rounded-pill" (click)="getGrantedExemptions()"><span >Granted</span></button>
+      <button class="ml-4 bg-danger btn text-white rounded-pill" (click)="getDeniedExemptions()"><span >Denial</span></button>
     </mat-toolbar>
+    
+    <!-- Progress bar -->
     <mat-progress-bar
-      mode="indeterminate"
       *ngIf="loading || !params?.exemptionOrderType"
+      mode="indeterminate"
     ></mat-progress-bar>
-    <!-- patient list -->
-    <div class="mat-elevation-z1" *ngIf="visitsLength > 0">
-      <app-table [columns]="billingColumns" [loading]="loadingVisits" [loadingDataError]="loadingVisitsError"
-        [tableConfig]="tableConfig" [data$]="visits$" (selectRow)="onSelectVisit($event)"></app-table>
+    
+    <!-- Patient list -->
+    <div *ngIf="visitsLength > 0" class="mat-elevation-z1">
+      <app-table
+        [columns]="billingColumns"
+        [loading]="loadingVisits"
+        [loadingDataError]="loadingVisitsError"
+        [tableConfig]="tableConfig"
+        [data$]="visits$"
+        (selectRow)="onSelectVisit($event)"
+      ></app-table>
     </div>
-    <div class="no-exemptions" *ngIf="visitsLength == 0">
-      <h4>
-        No Exemption Requests at the moment
-      </h4>
+    
+    <!-- No exemptions message -->
+    <div *ngIf="visitsLength === 0" class="no-exemptions">
+      <h4>No Exemption Requests at the moment</h4>
     </div>
   </div>
 </div>
