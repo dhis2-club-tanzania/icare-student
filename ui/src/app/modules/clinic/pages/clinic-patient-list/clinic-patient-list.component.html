@@ -141,7 +141,7 @@
           <mat-tab
             label="All Patients"
             *ngIf="
-              params?.showAllPatientsTab?.value === 'true' &&
+              params?.showAllPatientsTab?.value === 'true' ||
               (params?.userPrivileges['CLINIC_VIEW_ALL_CLIENTS'] ||
                 params?.userPrivileges['ALL'])
             "
