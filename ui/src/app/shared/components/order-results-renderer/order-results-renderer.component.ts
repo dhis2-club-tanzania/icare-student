@@ -94,6 +94,10 @@ export class OrderResultsRendererComponent implements OnInit {
       },
     ];
     this.voidingLabOrderState$ = this.store.select(getLabOrderVoidingState);
+
+    this.labOrdersResultsInformation = this.labOrdersResultsInformation.filter(
+      labTest => !labTest.voided
+    );
   }
 
   toggleParametes(event: Event, labTest: any): void {
@@ -206,7 +210,7 @@ export class OrderResultsRendererComponent implements OnInit {
                 this.labOrdersResultsInformation = this.labOrdersResultsInformation.filter(
                   (order) => order.uuid !== labOrder.uuid
                 );
-                this.reloadOrderComponent;
+                this.reloadOrderComponent.emit();
               }
               if (response?.error) {
                 this.errors = [...this.errors, response?.error];
