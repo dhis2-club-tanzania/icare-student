@@ -27,6 +27,7 @@ import { TestParameterEntryComponent } from "../test-parameter-entry/test-parame
 import { calculateFieldValueFromCalculationExpression } from "src/app/core/helpers/autocalculation.helper";
 import { getDataValuesEntities } from "src/app/store/selectors";
 import { upsertEnteredDataValues } from "src/app/store/actions";
+import { ResultsSyncService } from "src/app/shared/services/results-sync.service";
 
 @Component({
   selector: "app-shared-results-entry-and-view-modal",
@@ -77,7 +78,8 @@ export class SharedResultsEntryAndViewModalComponent implements OnInit {
     private store: Store<AppState>,
     private sampleService: SamplesService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private resultsSyncService: ResultsSyncService
   ) {}
 
   ngOnInit(): void {
@@ -570,6 +572,12 @@ export class SharedResultsEntryAndViewModalComponent implements OnInit {
               this.saving = false;
               this.getAllocations();
             }, 200);
+       this.sampleAllocationService.saveResultsViaAllocations(data).subscribe((response) => {
+    if (response) {
+      this.resultsSyncService.emitResultsUpdate(response);
+    }
+  });
+}       
           }
         });
     }
