@@ -83,6 +83,14 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   applyFilter(event: Event): void {
     event.stopPropagation();
     const filterValue = (event.target as HTMLInputElement).value;
+    
+    if (!this.isOnline) {
+      console.log("Search attempted while offline.");
+      alert('You are offline. Please check your network connection.');
+      return;
+    }
+    console.log(`Filtering users with term: "${filterValue}"`);
+    
     this.users$ = this.service.getUsers({ q: filterValue });
   }
 
