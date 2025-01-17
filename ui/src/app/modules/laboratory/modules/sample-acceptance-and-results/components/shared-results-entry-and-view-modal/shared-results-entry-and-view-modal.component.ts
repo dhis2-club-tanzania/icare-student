@@ -28,6 +28,8 @@ import { calculateFieldValueFromCalculationExpression } from "src/app/core/helpe
 import { getDataValuesEntities } from "src/app/store/selectors";
 import { upsertEnteredDataValues } from "src/app/store/actions";
 
+import { NotificationService, NotificationInterface } from 'src/app/shared/services/notification.service'; // Import the service and interface
+
 @Component({
   selector: "app-shared-results-entry-and-view-modal",
   templateUrl: "./shared-results-entry-and-view-modal.component.html",
@@ -77,7 +79,8 @@ export class SharedResultsEntryAndViewModalComponent implements OnInit {
     private store: Store<AppState>,
     private sampleService: SamplesService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -799,6 +802,11 @@ export class SharedResultsEntryAndViewModalComponent implements OnInit {
       // console.log(this.data?.currentUser);
       //finalResultsFedBy
     }
+    const notification = {
+      message: `${order.sample.patient.givenName} ${order.sample.patient.familyName}'s ${order.concept.display} results are ready!`,
+      details: 'Please review and take the necessary actions.',
+    };
+    this.notificationService.show(notification);
   }
 
   onCancelAuthorize(event: Event): void {
