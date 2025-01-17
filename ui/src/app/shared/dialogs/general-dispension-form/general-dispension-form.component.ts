@@ -244,7 +244,23 @@ export class GeneralDispensingFormComponent implements OnInit {
           },
         ];
       });
-    } else {
+    } 
+    
+ if(drug_obs &&
+      drug_obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display
+    ) {
+      const duration = parseInt(drug_obs[this.generalPrescriptionDurationConcept].display.split(': ')[1], 10)
+      const unit = drug_obs[this.durationUnitsSettings].display.split(': ')[1].toLowerCase()
+      const now = new Date();
+      const obs_datetime = drug_obs[this.specificDrugConceptUuid].obsDatetime.replace(/(\+|-)(\d{2})(\d{2})$/, '$1$2:$3')
+      // console.log(drug_obs);
+      
+      // console.log(parseInt(drug_obs[this.generalPrescriptionDurationConcept].display.split(': ')[1], 10));
+      // console.log(drug_obs[this.durationUnitsSettings].display.split(': ')[1].toLowerCase());
+      // console.log(parseISO(obs_datetime))
+      // console.log(now);
+
+    else {
       this.savingOrder = true;
       let encounterObject = {
         patient: this.currentPatient?.id,
