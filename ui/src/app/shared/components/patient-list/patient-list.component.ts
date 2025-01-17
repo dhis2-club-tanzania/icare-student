@@ -34,6 +34,7 @@ import { SystemSettingsService } from "src/app/core/services/system-settings.ser
 })
 export class PatientListComponent implements OnInit, OnChanges {
   @Input() currentLocation: any;
+  @Input() currentPage: number = 1;
   @Input() isTabularList: boolean;
   @Input() visits: Visit[];
   @Input() shouldShowParentLocation: boolean;
@@ -49,6 +50,7 @@ export class PatientListComponent implements OnInit, OnChanges {
   @Input() orderByDirection: string;
   @Input() doNotUseLocation: boolean;
   @Input() encounterType: string;
+  @Output() pageChange = new EventEmitter<number>();
 
   page: number = 0;
   visits$: Observable<Visit[]>;
@@ -312,5 +314,8 @@ export class PatientListComponent implements OnInit, OnChanges {
           }
         })
       );
+  }
+  onPageChanged(page: number): void {
+    this.pageChange.emit(page);
   }
 }
