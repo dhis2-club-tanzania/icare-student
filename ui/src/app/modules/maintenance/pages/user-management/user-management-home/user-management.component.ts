@@ -45,6 +45,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.updateOnlineStatus();
+    window.addEventListener('online', this.updateOnlineStatus);
+    window.addEventListener('offline', this.updateOnlineStatus);
     // TODO: current user to be used for privilages control
     this.currentUser$ = this.store.select(getCurrentUserDetails);
   }
