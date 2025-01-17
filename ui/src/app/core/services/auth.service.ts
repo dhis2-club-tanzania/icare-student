@@ -20,9 +20,11 @@ import { CurrentUserDetailsService } from "..";
 })
 export class AuthService {
   private _session: Subject<any> = new ReplaySubject(1);
+  cookieValue: any; // cookie value declaration
   constructor(
     private httpClient: OpenmrsHttpClientService,
-    private currentUserService: CurrentUserDetailsService
+    private currentUserService: CurrentUserDetailsService,
+    private cookieService : CookieService // imported and injected CookieService in the constructor
   ) {
     this.getSession().subscribe(
       (session) => {
@@ -123,6 +125,8 @@ export class AuthService {
         sessionStorage.clear();
         localStorage.clear();
         this.clearCookie();
+        this.cookieService.set("JSESSIONID" ,"0"); // setting the JSESSION cookie to 0 when user logs out
+        this.cookieValue = this.cookieService.get("JSESSIONID") //printing the sessionid
       })
     );
   }
