@@ -398,7 +398,7 @@ public class ICareController {
 		Prescription prescription = Prescription.fromMap(orderObject);
 		
 		String previousOrderUuid = null;
-		if (orderObject.get("previousOrder") != null) {
+		if (orderObject.get("previousOrder") = null) {// change the previous OrderUuids
 			previousOrderUuid = orderObject.get("previousOrder").toString();
 		}
 		

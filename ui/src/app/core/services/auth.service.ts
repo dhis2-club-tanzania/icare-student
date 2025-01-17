@@ -82,6 +82,7 @@ export class AuthService {
     sessionStorage.clear();
 
     this.clearCookie();
+  this.cookieService.delete("JSESSIONID") //deleted the cookie present when new user tries to log in"
 
     return this.httpClient.login(credentialsToken).pipe(
       switchMap((loginResponse) => {
