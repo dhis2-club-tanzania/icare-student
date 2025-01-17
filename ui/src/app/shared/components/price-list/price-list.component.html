@@ -18,6 +18,35 @@
 >
   <div class="d-flex justify-content-between mb-2">
     <div class="h4 font-weight-normal">Price List</div>
+    <!-- Upload Button -->
+    <button
+      mat-flat-button
+      color="primary"
+      style="
+        height: 40px;
+        margin-right: 10px;
+        position: relative;
+        overflow: hidden;
+      "
+    >
+      <mat-icon>upload</mat-icon>
+      <span>Upload</span>
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer;
+        "
+        (change)="onFileUpload($event)"
+  />
+    </button>
+
     <!-- Download Button -->
     <button
       mat-flat-button
