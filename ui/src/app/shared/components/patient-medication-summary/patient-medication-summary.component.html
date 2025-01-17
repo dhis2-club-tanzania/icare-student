@@ -244,7 +244,32 @@
         <div class="mat-tab-container">
           <ng-template matTabContent>
             <div>
-              Hello World!!!
+              <table class="w-100 table table-bordered">
+                <tbody>
+                  <tr class="p-4">
+                    <app-current-prescriptions
+                      *ngIf="
+                        drugParams?.currentVisit &&
+                        drugParams?.generalPrescriptionOrderType
+                      "
+                      [visit]="drugParams?.currentVisit"
+                      [genericPrescriptionOrderType]="
+                        drugParams?.generalPrescriptionOrderType
+                      "
+                      [fromClinic]="forConsultation"
+                      (loadVisit)="loadVisit($event)"
+                    ></app-current-prescriptions>
+                    <mat-progress-bar
+                      *ngIf="
+                        !drugParams?.currentVisit ||
+                        !drugParams?.generalPrescriptionOrderType
+                      "
+                      mode="indeterminate"
+                    >
+                    </mat-progress-bar>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </ng-template>
         </div>
