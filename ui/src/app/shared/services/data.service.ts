@@ -37,6 +37,10 @@ export class DataService {
     );
   }
 
+  getMedicatedPatients(): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'medicatedPatients');
+  }
+
   getBillingInformation(): Observable<any> {
     return this.httpClient.get(
       this.BASE_URL +
