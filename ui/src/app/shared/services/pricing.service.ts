@@ -81,6 +81,16 @@ export class PricingService {
     );
   }
 
+// Download Price List Start
+  downloadPriceList(): void {
+  this.pricingItems$.subscribe((items) => {
+    // Handle pricing items data here
+    console.log(items);
+  });
+ } 
+
+//Download price list End  
+
 //Upload Service Start
   uploadPriceListV2(file: File, departmentId: string): Observable<any> {
     const formData = new FormData();
