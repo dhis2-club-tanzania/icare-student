@@ -1,99 +1,64 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
-import { catchError, map } from "rxjs/operators";
-import { ItemPrice } from "src/app/modules/maintenance/models/item-price.model";
-import { PricingItem } from "src/app/modules/maintenance/models/pricing-item.model";
-import { OpenmrsHttpClientService, HttpConfig } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
-import { HttpClient } from '@angular/common/http';
 
+import * as _ from "lodash";
+import { HttpClient } from "@angular/common/http";
+import { from, Observable, of } from "rxjs";
+import { BASE_URL } from "../constants/constants.constants";
+import { OpenmrsHttpClientService } from "../modules/openmrs-http-client/services/openmrs-http-client.service";
+import { catchError, map } from "rxjs/operators";
+import { Api } from "../resources/openmrs";
 
 @Injectable({
   providedIn: "root",
 })
-export class PricingService {
-  pricingItems$: any;
-  http: any;
-  apiUrl: any;
-  uploadPriceList(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/upload`, formData);
-  }
-  priceListResourceUrl: any;
-  constructor(private httpClient: OpenmrsHttpClientService) {}
+export class PatientService {
+  constructor(
+    private httpClient: HttpClient,
+    private openMRSHttpClient: OpenmrsHttpClientService,
+    private API: Api
+  ) {}
 
-  getItems(filterInfo): Observable<PricingItem[]> {
-    console.log(
-      "TEST",
-      `icare/item?limit=${filterInfo?.limit}&startIndex=${
-        filterInfo?.limit * filterInfo?.startIndex
-      }${filterInfo?.searchTerm ? "&q=" + filterInfo?.searchTerm : ""}${
-        filterInfo?.conceptSet && !filterInfo?.isDrug
-          ? "&department=" + filterInfo?.conceptSet
-          : ""
-      }${filterInfo?.isDrug ? "&type=DRUG" : ""}`
-    );
-    return this.httpClient
+  getPatientsDetails(id): Observable<any> {
+    return this.httpClient.get(BASE_URL + "patient/" + id + "?v=full");
+  }
+
+  getPatientPhone(patientUuid) {
+    return this.openMRSHttpClient
       .get(
-        `icare/item?limit=${filterInfo?.limit}&startIndex=${
-          filterInfo?.limit * filterInfo?.startIndex
-        }${filterInfo?.searchTerm ? "&q=" + filterInfo?.searchTerm : ""}${
-          filterInfo?.conceptSet && !filterInfo?.isDrug
-            ? "&department=" + filterInfo?.conceptSet
-            : ""
-        }${filterInfo?.isDrug ? "&type=DRUG" : ""}`
+        `reportingrest/dataSet/15cfe953-1a62-4fc7-8ccc-d2b6351406f2?patientUuid=${patientUuid}`
       )
       .pipe(
-        map((itemsResponse) =>
-          itemsResponse?.results.map((item) => {
-            return new PricingItem(item).toJson();
-          })
-        )
+        map((response) => {
+          return response?.rows.map((row) => row?.value).join(", ") || [];
+        }),
+        catchError((error) => of(error))
       );
   }
 
-  getItemPrices(): Observable<any[]> {
-    return this.httpClient.get("icare/itemprice").pipe(
-      map((result) => {
-        return (result || []).map((resultItem) =>
-          new ItemPrice(resultItem).toJson()
-        );
+  getPatientObservations(parameters): Observable<any> {
+    return this.openMRSHttpClient.get(
+      `obs?patient=${parameters?.patientUuid}&v=custom:(encounter:(visit,location:(uuid,display),obs:(uuid,display,obsDatetime,concept:(display),groupMembers:(uuid,display,concept,value,groupMembers:(uuid,concept:(display),value)))))&concept=${parameters?.conceptUuid}`
+    );
+  }
+
+  getAllPatientsObses(parameters): Observable<any> {
+    return from(this.API.obs.getAllObses(parameters));
+  }
+  getPatientSummary() {
+    return this.openMRSHttpClient.get("icare/summary").pipe(
+      map((response) => {
+        return {
+          ...response,
+          locations: response?.locations?.filter(
+            (location) =>
+              (
+                location?.tags?.filter(
+                  (tag) => tag?.name === "Treatment Room"
+                ) || []
+              )?.length > 0
+          ),
+        };
       })
     );
   }
-
-  saveItemPrice(itemPrice: any): Observable<any> {
-    return this.httpClient
-      .post("icare/itemprice", itemPrice)
-      .pipe(map((itemPriceResult) => itemPriceResult));
-  }
-
-  createPricingItem(concept: any, drug: any): Observable<any> {
-    const pricingItem = concept
-      ? {
-          concept: {
-            uuid: concept.uuid,
-          },
-          unit: "Session",
-        }
-      : { drug: { uuid: drug.uuid }, unit: "Drug" };
-    return this.httpClient.post("icare/item", pricingItem).pipe(
-      map((res) => new PricingItem(res).toJson()),
-      catchError((error) => of(error))
-    );
-  }
-
-  
-//Download Service Start
-  
-  downloadPriceList(): void {
-    this.pricingItems$.subscribe((items) => {
-      // Handle pricing items data here
-      console.log(items);
-    });
-  } 
-// Download Service End
-  
-
-
-
-
 }
