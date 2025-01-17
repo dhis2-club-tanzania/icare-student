@@ -4,12 +4,18 @@ import { catchError, map } from "rxjs/operators";
 import { ItemPrice } from "src/app/modules/maintenance/models/item-price.model";
 import { PricingItem } from "src/app/modules/maintenance/models/pricing-item.model";
 import { OpenmrsHttpClientService } from "src/app/shared/modules/openmrs-http-client/services/openmrs-http-client.service";
+import { HttpClient } from "@angular/common/http"; // Add this import
 
 @Injectable({
   providedIn: "root",
 })
 export class PricingService {
-  constructor(private httpClient: OpenmrsHttpClientService) {}
+  private apiUrl = "YOUR_BACKEND_API_URL"; // Add this line
+
+  constructor(
+    private httpClient: OpenmrsHttpClientService,
+    private http: HttpClient // Add this
+  ) {}
 
   getItems(filterInfo): Observable<PricingItem[]> {
     return this.httpClient
@@ -60,5 +66,10 @@ export class PricingService {
       map((res) => new PricingItem(res).toJson()),
       catchError((error) => of(error))
     );
+  }
+
+  // Add this method at the end of the class
+  uploadPriceList(data: any[]): Observable<any> {
+    return this.http.post(${this.apiUrl}/price-list/upload, data);
   }
 }
