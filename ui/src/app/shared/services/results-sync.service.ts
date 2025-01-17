@@ -9,4 +9,12 @@ export class ResultsSyncService {
   emitResultsUpdate(updatedResults: any) {
     this.resultsUpdated.next(updatedResults);
   }
+  emitResultsUpdate(updatedResults: any) {
+  if (!updatedResults) {
+    console.error('No results to update');
+    return;
+  }
+  this.resultsUpdated.next(updatedResults);
+}
+
 }
