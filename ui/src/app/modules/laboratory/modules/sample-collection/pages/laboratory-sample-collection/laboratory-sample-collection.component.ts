@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from '@angular/router';
 import { Observable, of } from "rxjs";
 import { Patient } from "src/app/shared/resources/patient/models/patient.model";
 import { select, Store } from "@ngrx/store";
@@ -52,7 +53,8 @@ export class LaboratorySampleCollectionComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private sampleTypesService: SampleTypesService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -103,5 +105,12 @@ export class LaboratorySampleCollectionComponent implements OnInit {
 
   onGetSamplesToCollect(count: number): void {
     this.countOfSamplesToCollect = count;
+  }
+  onReturn(): void {
+    const previousPage = sessionStorage.getItem('sampleCollectionPage') || '1';
+    // Navigate back to the sample collection home with the page query parameter
+    this.router.navigate(['/laboratory/sample-collection'], {
+      queryParams: { page: previousPage }
+    });
   }
 }
