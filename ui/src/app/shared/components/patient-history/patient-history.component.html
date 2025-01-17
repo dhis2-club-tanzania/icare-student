@@ -3,6 +3,8 @@
   *ngIf="{
     visits: visits$ | async,
     customForms: customForms$ | async,
+    admissionStatus: add$ ,
+    admissionStatus1: add1$ | async,
     generalPrescriptionOrderType: generalPrescriptionOrderType$ | async,
     prescriptionArrangementFields: prescriptionArrangementFields$ | async,
     specificDrugConceptUuid: specificDrugConceptUuid$ | async,
@@ -17,6 +19,20 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
   <div *ngIf="params?.visits?.length && !loadingData && params?.provider">
+    
+    <div class="notification">
+      <h4>
+        Patient Status: 
+        <span *ngIf="params?.admissionStatus">Admitted</span>
+        <span *ngIf="!params?.admissionStatus">Discharged</span>
+      </h4>
+      <h5>
+        Patient Status1: 
+        <span *ngIf="params?.admissionStatus1">Admitted</span>
+        <span *ngIf="!params?.admissionStatus1">Discharged</span>
+      </h5>
+    </div>
+    
     <mat-vertical-stepper [linear]="false" #stepper>
       <mat-step *ngFor="let visit of params?.visits">
         <ng-template matStepLabel>
@@ -28,7 +44,16 @@
           <span *ngIf="!visit?.visit?.stopDatetime">
             <i>(On going visit)</i>
           </span>
+
+          <span *ngIf="visit?.visit?.stopDatetime && visit?.visit?.startDatetime">
+            <i>(On going visit Stopped)</i>
+          </span>
+
         </ng-template>
+
+        
+
+
 
         <!-- <div *ngFor="let form of params?.customForms">
 
