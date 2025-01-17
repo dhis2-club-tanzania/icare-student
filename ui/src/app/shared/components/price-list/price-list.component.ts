@@ -267,44 +267,6 @@ export class PriceListComponent implements OnInit, OnChanges {
       }
     });
   }
-    /** START CODES FOR  DOWNLOADING METHOD */
-
-    downloadExcel(): void {
-      this.pricingItems$.subscribe((allPricingItems) => {
-        if (allPricingItems && allPricingItems.length > 0) {
-          const worksheetData = allPricingItems.map(item => ({
-            'Item Name': item.display,  
-            'Price': item.prices      
-          }));
-  
-          const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
-  
-          const maxItemNameLength = Math.max(...worksheetData.map(item => item['Item Name'].length));
-          const maxPriceLength = Math.max(...worksheetData.map(item => item['Price'].toString().length));
-  
-          ws['!cols'] = [
-            { width: maxItemNameLength + 2 },  
-            { width: Math.min(maxPriceLength + 2, 15) }, 
-          ];
-  
-          const wb: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, 'Price List');
-  
-          const excelBuffer: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  
-          const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-  
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(data);
-          link.download = 'Price_List.xlsx';  
-          link.click();  
-        } else {
-          console.warn('No pricing items to download');
-        }
-      });
-    }
-    
-  /** END CODES FOR  DOWNLOADING METHOD */
 
   onFormUpdate(
     formValue: FormValue,
@@ -488,72 +450,180 @@ export class PriceListComponent implements OnInit, OnChanges {
 
   // END CODES FOR DOWNLOADING METHOD
 
-// UPLOAD BUTTON IMPLEMENTATION CODE 
-@Injectable({
-  providedIn: "root",
-})
-export class PricingService {
-  private apiUrl = "YOUR_BACKEND_API_URL"; // Add this line
 
-  constructor(
-    private httpClient: OpenmrsHttpClientService,
-    private http: HttpClient // Add this
-  ) {}
 
-  getItems(filterInfo): Observable<PricingItem[]> {
-    return this.httpClient
-      .get(
-        `icare/item?limit=${filterInfo?.limit}&startIndex=${
-          filterInfo?.limit * filterInfo?.startIndex
-        }${filterInfo?.searchTerm ? "&q=" + filterInfo?.searchTerm : ""}${
-          filterInfo?.conceptSet && !filterInfo?.isDrug
-            ? "&department=" + filterInfo?.conceptSet
-            : ""
-        }${filterInfo?.isDrug ? "&type=DRUG" : ""}`
-      )
-      .pipe(
-        map((itemsResponse) =>
-          itemsResponse?.results.map((item) => {
-            return new PricingItem(item).toJson();
-          })
-        )
-      );
-  }
+  // START CODES FOR UPLOADING METHOD 
 
-  getItemPrices(): Observable<any[]> {
-    return this.httpClient.get("icare/itemprice").pipe(
-      map((result) => {
-        return (result || []).map((resultItem) =>
-          new ItemPrice(resultItem).toJson()
-        );
-      })
-    );
-  }
+  uploadExcel(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  saveItemPrice(itemPrice: any): Observable<any> {
-    return this.httpClient
-      .post("icare/itemprice", itemPrice)
-      .pipe(map((itemPriceResult) => itemPriceResult));
-  }
+    // Track analytics
+    this.trackActionForAnalytics("Upload Price List Excel");
 
-  createPricingItem(concept: any, drug: any): Observable<any> {
-    const pricingItem = concept
-      ? {
-          concept: {
-            uuid: concept.uuid,
-          },
-          unit: "Session",
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      try {
+        // Read the Excel file
+        const workBook: XLSX.WorkBook = XLSX.read(e.target.result, { type: 'array' });
+        const workSheet: XLSX.WorkSheet = workBook.Sheets[workBook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(workSheet);
+
+        // Get existing pricing items for reference
+        this.pricingItems$.pipe(take(1)).subscribe(pricingItems => {
+          const priceUpdates = [];
+
+          jsonData.forEach((row: any) => {
+            // Find matching item by name
+            const matchingItem = pricingItems.find(item => 
+              item.display === row['Item'] || item.name === row['Item']
+            );
+
+            if (matchingItem) {
+              // Process Cash prices
+              if (row['Cash - Normal track'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Normal track',
+                  row['Cash - Normal track']
+                ));
+              }
+
+              if (row['Cash - Fast Track'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Fast Track',
+                  row['Cash - Fast Track']
+                ));
+              }
+
+              if (row['Cash - Post Graduate'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Post Graduate',
+                  row['Cash - Post Graduate']
+                ));
+              }
+
+              if (row['Cash - Undergraduate'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Undergraduate',
+                  row['Cash - Undergraduate']
+                ));
+              }
+
+              // Process NHIF price
+              if (row['NHIF:1001'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'NHIF:1001',
+                  row['NHIF:1001']
+                ));
+              }
+
+              // Process Gepg price
+              if (row['Gepg'] !== undefined) {
+                priceUpdates.push(this.createPriceUpdate(
+                  matchingItem.uuid,
+                  'Gepg',
+                  row['Gepg']
+                ));
+              }
+            }
+          });
+
+          // Save all price updates
+          if (priceUpdates.length > 0) {
+            this.saveBatchPriceUpdates(priceUpdates);
+          } else {
+            this.errors = [...this.errors, {
+              error: {
+                message: 'No valid price updates found',
+                detail: 'Please check the Excel file format and data'
+              }
+            }];
+          }
+        });
+
+      } catch (error) {
+        console.error('Error processing Excel file:', error);
+        this.errors = [...this.errors, {
+          error: {
+            message: 'Failed to process Excel file',
+            detail: error.message
+          }
+        }];
+      }
+    };
+
+    reader.onerror = (error) => {
+      this.errors = [...this.errors, {
+        error: {
+          message: 'Failed to read Excel file',
+          detail: error
         }
-      : { drug: { uuid: drug.uuid }, unit: "Drug" };
-    return this.httpClient.post("icare/item", pricingItem).pipe(
-      map((res) => new PricingItem(res).toJson()),
-      catchError((error) => of(error))
-    );
+      }];
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+  trackActionForAnalytics(arg0: string) {
+    throw new Error("Method not implemented.");
   }
 
-  // Add this method at the end of the class
-  uploadPriceList(data: any[]): Observable<any> {
-    return this.http.post(${this.apiUrl}/price-list/upload, data);
+  private createPriceUpdate(itemUuid: string, schemeName: string, price: any): any {
+    const scheme = this.paymentTypesAndSchemes.find(s => 
+      s.name === schemeName || s.display === schemeName
+    );
+
+    if (!scheme) return null;
+
+    return {
+      item: { uuid: itemUuid },
+      paymentScheme: { uuid: scheme.uuid },
+      paymentType: scheme.paymentType,
+      price: price !== '' ? parseFloat(price) : 0
+    };
+  }
+
+  private saveBatchPriceUpdates(updates: any[]): void {
+    const validUpdates = updates.filter(update => update !== null);
+    
+    if (validUpdates.length === 0) {
+      this.errors = [...this.errors, {
+        error: {
+          message: 'No valid price updates to save',
+          detail: 'Please check the payment scheme names in your Excel file'
+        }
+      }];
+      return;
+    }
+
+    this.pricingService.saveItemPrice(validUpdates).pipe(
+      take(1)
+    ).subscribe(
+      (response) => {
+        if (response?.error) {
+          this.errors = [...this.errors, {
+            error: {
+              message: 'Failed to save price updates',
+              detail: response.error
+            }
+          }];
+        } else {
+          // Refresh the price list
+          this.loadData();
+        }
+      },
+      (error) => {
+        this.errors = [...this.errors, {
+          error: {
+            message: 'Failed to save price updates',
+            detail: error
+          }
+        }];
+      }
+    );
   }
 }
-// END OF UPLOAD BUTTON IMPLEMENTATION CODE
