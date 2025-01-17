@@ -147,6 +147,7 @@ export class PatientHistoryComponent implements OnInit {
       .pipe(
         map((response) => {
           this.loadingData = false;
+          console.log('Fetched visits:',response);
           if (!response?.error) {
             return response?.map((visit) => {
               let obs = [];
