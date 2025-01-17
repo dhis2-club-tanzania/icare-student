@@ -97,7 +97,8 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
         }
       });
   }
-   onEdit(event: Event, drug): void {
+  // this is where we fix an error. 
+  onEdit(event: Event, drug): void {
       this.dialog
         .open(ManageUnitOfMeasureModalComponent, {
           minWidth: "40%",
