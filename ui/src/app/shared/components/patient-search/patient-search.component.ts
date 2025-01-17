@@ -73,6 +73,12 @@ export class PatientSearchComponent implements OnInit {
         })
       );
 
+      this.patients$ = this.patientService.getPatients(e.target.value).pipe(
+  map(results => results.filter(res => res.patient.medications?.some(med => med.toLowerCase().includes(e.target.value.toLowerCase())))),
+  tap(() => { this.searching = false; this.showList = true; })
+);
+
+
       if (e.target.value.length > 0) {
         this.focused = true;
       } else {
