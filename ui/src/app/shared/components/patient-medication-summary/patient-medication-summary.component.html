@@ -237,6 +237,18 @@
           </ng-template>
         </div>
       </mat-tab>
+      <mat-tab
+        label="Stopped Medication"
+        *ngIf="!previous"
+      >
+        <div class="mat-tab-container">
+          <ng-template matTabContent>
+            <div>
+              Hello World!!!
+            </div>
+          </ng-template>
+        </div>
+      </mat-tab>
       <mat-tab label="Drugs" *ngIf="previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
