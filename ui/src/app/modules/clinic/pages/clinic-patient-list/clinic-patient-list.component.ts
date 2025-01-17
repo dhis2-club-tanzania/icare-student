@@ -70,6 +70,10 @@ export class ClinicPatientListComponent implements OnInit {
     this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
 
     this.savedSelectedTab = localStorage.getItem("activeTab");
+
+    if(this.savedSelectedTab != null) {
+      this.selectedTab.setValue(parseInt(this.savedSelectedTab));
+    }
   }
 
   onSelectPatient(patient: any) {
