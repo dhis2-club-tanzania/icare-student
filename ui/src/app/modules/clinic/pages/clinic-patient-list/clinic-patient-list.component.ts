@@ -67,6 +67,8 @@ export class ClinicPatientListComponent implements OnInit {
         `iCare.clinic.settings.patientsListGroups.showAllPatientsTab`
       );
     this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
+
+    this.savedSelectedTab = localStorage.getItem("activeTab");
   }
 
   onSelectPatient(patient: any) {
