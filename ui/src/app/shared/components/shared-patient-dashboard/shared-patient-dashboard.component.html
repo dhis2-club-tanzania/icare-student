@@ -99,6 +99,21 @@
             <div class="mr-2">
               <app-shared-bmi></app-shared-bmi>
             </div>
+            //created a button for discharging a patient
+            <button
+            *ngIf="!isInpatient"
+            class="mr-2"
+            (click)="onDischargePatient($event, dashboardParams?.patientInvoice)"
+            [ngStyle]="{
+              'background-color':
+                dashboardParams?.countOfVitalsElementsFilled === 0 ? '#F00' : 'transparent',
+              color:
+                dashboardParams?.countOfVitalsElementsFilled === 0 ? '#FFF' : '#222'
+            }"
+            mat-stroked-button
+          >
+            Discharge
+          </button>
             <button
               *ngIf="!isInpatient"
               class="mr-2"
