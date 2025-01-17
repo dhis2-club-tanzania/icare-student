@@ -245,31 +245,24 @@
           <ng-template matTabContent>
             <div>
               <table class="w-100 table table-bordered">
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>Prescription</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr class="p-4">
-                    <app-current-prescriptions
-                      *ngIf="
-                        drugParams?.currentVisit &&
-                        drugParams?.generalPrescriptionOrderType
-                      "
-                      [visit]="drugParams?.currentVisit"
-                      [genericPrescriptionOrderType]="
-                        drugParams?.generalPrescriptionOrderType
-                      "
-                      [fromClinic]="forConsultation"
-                      (loadVisit)="loadVisit($event)"
-                    ></app-current-prescriptions>
-                    <mat-progress-bar
-                      *ngIf="
-                        !drugParams?.currentVisit ||
-                        !drugParams?.generalPrescriptionOrderType
-                      "
-                      mode="indeterminate"
-                    >
-                    </mat-progress-bar>
+                  <tr *ngFor="let prescription of prescriptions; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ prescription.name }}</td>
+                    <td>{{ prescription.remarks }}</td>
                   </tr>
                 </tbody>
               </table>
+              <div *ngIf="prescriptions.length === 0">
+                No stopped medications available.
+              </div>
             </div>
           </ng-template>
         </div>
