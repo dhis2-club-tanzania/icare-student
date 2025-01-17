@@ -7,6 +7,7 @@ import {
 import { BillConfirmationComponent } from './bill-confirmation.component';
 
 describe('BillConfirmationComponent', () => {
+  
   let component: BillConfirmationComponent;
   let fixture: ComponentFixture<BillConfirmationComponent>;
 

@@ -24,6 +24,7 @@ describe('ExemptionConfirmationComponent', () => {
   });
 // change  expect**ExemptionFullConfirmationComponent** to **ExemptionConfirmationComponent**
   it('should create', () => {
+    
     expect(component).toBeTruthy();
   });
 });
