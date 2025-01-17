@@ -87,6 +87,7 @@ export class ClinicPatientListComponent implements OnInit {
 
   changeTab(index) {
     this.selectedTab.setValue(index);
+    localStorage.setItem("activeTab", index.toString());
     index == 0
       ? this.trackActionForAnalytics(`Awaiting Consultation : Open`)
       : index == 1
