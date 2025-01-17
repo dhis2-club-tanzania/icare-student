@@ -22,6 +22,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   addingUserItem: boolean;
   currentUser$: Observable<any>;
   loading: boolean = true;
+  isOnline: boolean = navigator.onLine; 
   displayedColumns: string[] = [
     "index",
     "display",
