@@ -246,8 +246,21 @@ export class GeneralDispensingFormComponent implements OnInit {
       };
       //calculate end date
       const result_time = add(parseISO(obs_datetime), unitMap[unit]);
+      if (now < result_time) {
+      console.log('tumezuia kurudia dawa mda haujaisha');
+      setTimeout(() => {
+        this.errors = [
+          ...this.errors,
+          {
+            error: {
+              message: "The selected drug is already in the current prescription!",
+            },
+          },
+        ];
+      });
+      return; // Exit early if the condition is met
+     }
  }
-    else {
       this.savingOrder = true;
       let encounterObject = {
         patient: this.currentPatient?.id,
@@ -370,5 +383,4 @@ export class GeneralDispensingFormComponent implements OnInit {
 
       this.updateConsultationOrder.emit();
     }
-  }
 }
