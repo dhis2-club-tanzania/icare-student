@@ -12,6 +12,8 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true,
     "paths": {
       "tslib" : ["./node_modules/tslib/tslib.d.ts"]
     },
