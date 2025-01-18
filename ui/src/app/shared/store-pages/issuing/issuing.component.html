@@ -154,10 +154,6 @@
       <mat-accordion>
         <mat-expansion-panel
           class="border mat-elevation-z0 mt-2"
-          *ngIf="
-            issue?.requisitionStatuses[issue?.requisitionStatuses?.length - 1]
-              ?.status !== 'DRAFT'
-          "
           [expanded]="
             viewIssueItems && viewIssueItems === issue?.uuid
               ? true
