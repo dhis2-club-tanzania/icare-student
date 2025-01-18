@@ -131,27 +131,34 @@
           ></app-visits-history-for-patient>
         </div>
       </mat-tab>
+
+
       <mat-tab>
-        <ng-template mat-tab-label>
-          <span>Update Consultation Room </span>
-        </ng-template>
-        <div class="p-2" *ngIf="selectedTab.value === 3">
-          <div
-            class="alert alert-warning"
-            role="alert"
-            *ngIf="!params?.currentPatientVisit"
-          >
-            Update can only be done for client with active visit
-          </div>
-          <app-update-doctors-room
-            *ngIf="params?.currentPatientVisit"
-            [currentVisit]="params?.currentPatientVisit"
-            [patient]="patient"
-            [treatmentLocations]="params?.treatmentLocations"
-            (closeDialog)="onCloseDialog($event, params?.currentPatientVisit)"
-          ></app-update-doctors-room>
-        </div>
-      </mat-tab>
+          <ng-template mat-tab-label>
+            <span>Update Payment Category</span>
+          </ng-template>
+
+
+              <div *ngIf="patient">
+                <p><strong>Patient Name:</strong> {{ patient.name }}</p>
+                <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+              </div>
+
+              <!-- Form to update payment category -->
+              <div>
+                <label for="payment-category">Select Payment Category:</label>
+                <select id="payment-category" [(ngModel)]="paymentCategory">
+
+                      <option value="cash">Cash</option>
+                      <option value="insurance">Insurance</option>
+
+                </select>
+              </div>
+
+              <!-- Update button -->
+              <button (click)="updatePaymentCategory()">Update Payment Category</button>
+  </mat-tab>
+
     </mat-tab-group>
   </div>
   <div *ngIf="errors?.length > 0">

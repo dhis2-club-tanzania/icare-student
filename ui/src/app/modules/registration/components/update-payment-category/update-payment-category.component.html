@@ -1,0 +1,22 @@
+<!-- Show patient details if available -->
+<div>
+      <div *ngIf="patient">
+        <p><strong>Patient Name:</strong> {{ patient.name }}</p>
+        <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+      </div>
+
+      <!-- Form to update payment category -->
+      <div>
+        <label for="payment-category">Select Payment Category:</label>
+        <select id="payment-category" [(ngModel)]="paymentCategory">
+          <option value="" disabled selected>Select a category</option>
+          <option value="cash">Cash</option>
+          <option value="insurance">Insurance</option>
+          <option value="credit">Credit</option>
+        </select>
+      </div>
+
+      <!-- Update button -->
+      <button (click)="updatePaymentCategory()">Update Payment Category</button>
+
+</div>
