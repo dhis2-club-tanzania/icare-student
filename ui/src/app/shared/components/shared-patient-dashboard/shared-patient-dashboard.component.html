@@ -65,33 +65,9 @@
               <mat-icon>arrow_back</mat-icon>
               Back to Client List
             </button>
-      
-            <div class="row">
-              <div *ngFor="let form of dashboardParams?.forms" class="form-button-wrapper">
-                <button
-                class="buttonstyle"
-                  mat-stroked-button
-                  [ngClass]="{
-                    'selected-form':
-                      (selectedForm &&
-                        !showHistoryDetails &&
-                        selectedForm?.uuid === form?.uuid) ||
-                      (!selectedForm &&
-                        !showHistoryDetails &&
-                        dashboardParams?.forms[0] &&
-                        dashboardParams?.forms[0]?.uuid === form?.uuid)
-                  }"
-                  (click)="getSelectedForm($event, form)"
-                >
-                  {{ form?.name }}
-                </button>
-              </div>
-            </div>
-            
-
-            <!-- <a mat-icon-button class="mr-4" (click)="toggleSideBarMenu($event)">
+            <a mat-icon-button class="mr-4" (click)="toggleSideBarMenu($event)">
               <mat-icon>menu</mat-icon>
-            </a> -->
+            </a>
             <ng-container *ngIf="!useSideBar"> </ng-container>
           </div>
 
@@ -533,7 +509,6 @@
                         [shouldUseOwnFormSelection]="false"
                         [clinicConfigurations]="clinicConfigurations"
                         [provider]="dashboardParams?.provider"
-                        [clearingFormTime]="clearingFormTime"
                         (updateConsultationOrder)="onUpdateConsultationOrder()"
                         [selectedForm]="
                           selectedForm

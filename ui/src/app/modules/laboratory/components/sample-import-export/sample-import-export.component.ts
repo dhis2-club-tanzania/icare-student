@@ -782,8 +782,13 @@ export class SampleImportExportComponent implements OnInit {
   async createVisit(sampleDetails: any) {
     let visit = sampleDetails?.visit;
     let visitResponse;
+  
     await this.patientService
-      .getPatients(sampleDetails?.patient?.identifiers[0]?.identifier)
+      .getPatients(
+        sampleDetails?.patient?.identifiers[0]?.identifier,  // searchTerm
+        100,  // pageSize (you can adjust this value if needed)
+        0     // currentPage (you can adjust this value if needed)
+      )
       .pipe((response: any) => response)
       .toPromise()
       .then((patientResponse: any) => {
@@ -806,7 +811,7 @@ export class SampleImportExportComponent implements OnInit {
         }
       });
   }
-
+  
   async createEncountersAndOrders(sampleDetails: any, visitResponse: any) {
     let encounterObject = sampleDetails?.encounter;
     encounterObject["visit"] = visitResponse?.uuid;

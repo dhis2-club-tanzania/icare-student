@@ -48,9 +48,11 @@ export class PatientListDialogComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     this.searching = true;
     const searchTerm = e.target.value;
+    const pageSize = 100;  // You can adjust this value
+    const currentPage = 0; // You can adjust this value based on pagination
+  
     this.patientSearchSubscription = this.patientService
-      .getPatients(e?.target?.value)
-
+      .getPatients(searchTerm, pageSize, currentPage)  // Passing all three arguments
       .subscribe(
         (patients: any[]) => {
           this.searching = false;
@@ -71,6 +73,7 @@ export class PatientListDialogComponent implements OnInit, OnDestroy {
         }
       );
   }
+  
 
   onSelectPatient(patient: Patient) {
     this.dialogRef.close({ action: 'PATIENT_SELECT', patient });

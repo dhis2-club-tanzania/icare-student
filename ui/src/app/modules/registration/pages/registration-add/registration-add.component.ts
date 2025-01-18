@@ -1135,6 +1135,7 @@ export class RegistrationAddComponent implements OnInit {
   onChangeLname(e) {
     e.stopPropagation();
     this.continueReg = false;
+  
     if (e) {
       if (
         this?.patient?.fname &&
@@ -1148,10 +1149,16 @@ export class RegistrationAddComponent implements OnInit {
             ? " " + this?.patient?.mname + " "
             : " ") +
           this?.patient?.lname;
-
+  
         this.searching = true;
         this.showList = false;
-        this.patients$ = this.patientService.getPatients(searchText).pipe(
+  
+        // Pass the pageSize and currentPage as arguments
+        this.patients$ = this.patientService.getPatients(
+          searchText,  // searchTerm
+          100,         // pageSize (you can adjust this value)
+          0            // currentPage (you can adjust this value)
+        ).pipe(
           tap(() => {
             this.searching = false;
             this.showList = true;
@@ -1160,6 +1167,7 @@ export class RegistrationAddComponent implements OnInit {
       }
     }
   }
+  
 
   onSelectPatient(e: Event, patient: Patient): void {
     if (e) {

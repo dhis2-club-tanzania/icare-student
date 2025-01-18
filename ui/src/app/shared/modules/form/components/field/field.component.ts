@@ -175,9 +175,7 @@ export class FieldComponent implements AfterViewInit {
   }
 
   onListenKeyEvent(event: KeyboardEvent, fieldtype: any): void {
-    console.log("test in ----",fieldtype);
     if (fieldtype === "number") {
-
       if (
         event.key === "Backspace" ||
         event.key === "ArrowLeft" ||
