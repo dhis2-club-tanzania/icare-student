@@ -437,177 +437,114 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
 `);
     }
 
-    if (
-      this.visitHistory?.visitOrderedData?.find(
-        (visitData) => visitData.category === "DRUG_ORDER"
-      )
-    ) {
-      frameDoc.document.write(`
-  <div>
-           <h5>Medication</h5>
-         </div>
-         <table id="table">
-           <thead>
-             <tr>
-               <th>Item Name</th>
-               <th>Description</th>
-               <th>Prescribed On</th>
-               <th>Provider</th>
-             </tr>
-           </thead>
-           <tbody>`);
-    }
-    this.visitHistory?.visitOrderedData?.forEach((visitData) => {
-      if (visitData?.category === "DRUG_ORDER") {
-        frameDoc.document.write(`
-<tr><td>
-      ${visitData?.name}
-      </td>
-      <td>      ${visitData?.description}
+    // Medication Section
+if (
+  this.visitHistory?.visitOrderedData?.find(
+    (visitData) => visitData.category === "DRUG_ORDER"
+  )
+) {
+  frameDoc.document.write(`
+    <div>
+        <h5>Medication</h5>
+    </div>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Description</th>
+                <th>Prescribed On</th>
+                <th>Provider</th>
+            </tr>
+        </thead>
+        <tbody>`);
+}
 
-      </td>
-      <td>  
-      ${visitData?.date} ${visitData?.time}
-      </td>
-      <td>       ${visitData?.provider}
+this.visitHistory?.visitOrderedData?.forEach((visitData) => {
+  if (visitData?.category === "DRUG_ORDER") {
+    frameDoc.document.write(`
+    <tr>
+        <td>${visitData?.name || 'N/A'}</td>
+        <td>${visitData?.description || 'N/A'}</td>
+        <td>${visitData?.date ? formatDateToString(new Date(visitData?.date)) : 'N/A'} ${visitData?.time || ''}</td>
+        <td>${visitData?.provider || 'N/A'}</td>
+    </tr>`);
+  }
+});
 
-      </td>
-</tr>`);
-      }
-    });
+frameDoc.document.write(`</tbody></table>`);
 
-    frameDoc.document.write(`</tbody></table>`);
+// Laboratory Orders Section
+if (
+  this.visitHistory?.visitOrderedData?.find(
+    (visitData) => visitData.category === "LAB_ORDER"
+  )
+) {
+  frameDoc.document.write(`
+    <div>
+        <h5>Laboratory</h5>
+    </div>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Ordered By</th>
+                <th>Results</th>
+                <th>Fed By</th>
+            </tr>
+        </thead>
+        <tbody>`);
+}
 
-    // -------------------lab orders-------------
+this.visitHistory?.visitOrderedData?.forEach((visitData) => {
+  if (visitData?.category === "LAB_ORDER") {
+    frameDoc.document.write(`
+    <tr>
+        <td>${visitData?.order?.display || 'N/A'}</td>
+        <td>${visitData?.provider} on ${visitData?.date ? formatDateToString(new Date(visitData?.date)) : 'N/A'} ${visitData?.time || ''}</td>
+        <td>${visitData?.results?.length ? visitData?.results.map(result => `${result?.concept?.display}: ${result?.value?.display || result?.value}`).join(', ') : 'No results found'}</td>
+        <td>${visitData?.results[0]?.provider?.display?.split('-')[1] ? visitData?.results[0]?.provider?.display.split('-')[1] + " on " : '-'} ${visitData?.results[0]?.obsDatetime ? formatDateToString(new Date(visitData?.results[0]?.obsDatetime)) : 'N/A'}</td>
+    </tr>`);
+  }
+});
 
-    if (
-      this.visitHistory?.visitOrderedData?.find(
-        (visitData) => visitData.category === "LAB_ORDER"
-      )
-    ) {
-      frameDoc.document.write(`
-<div>
-       <h5>Laboratory</h5>
-     </div>
-     <table id="table">
-       <thead>
-         <tr>
-           <th>Order</th>
-           <th>Ordered By</th>
-           <th>Results</th>
-           <th>Fed By</th>
-         </tr>
-       </thead>
-       <tbody>`);
-    }
-    this.visitHistory?.visitOrderedData?.forEach((visitData) => {
-      if (visitData?.category === "LAB_ORDER") {
-        frameDoc.document.write(`
-<tr><td>
-      ${visitData?.order?.display}
-      </td>
-      <td>  ${visitData?.provider} on 
-      ${visitData?.date} ${visitData?.time}
-      </td> <td>
-      `);
-        if (visitData?.results?.length > 0) {
-          visitData?.results?.forEach((result) => {
-            if (!result?.value?.links?.uri) {
-              frameDoc.document.write(` ${result?.concept?.display} - 
-                          ${
-                            result?.value?.display
-                              ? result?.value?.display
-                              : result?.value
-                          }, &nbsp;&nbsp;
-    `);
-            }
-          });
-        } else if (!visitData?.results?.length) {
-          frameDoc.document.write(` No results found
-    `);
-        }
-        frameDoc.document.write(`</td>`);
-        frameDoc.document.write(`
-      <td>${
-        visitData?.results[0]?.provider?.display?.split("-")[1]
-          ? visitData?.results[0]?.provider?.display?.split("-")[1] + " on "
-          : "-"
-      } ${
-          visitData?.results[0]?.obsDatetime
-            ? formatDateToString(new Date(visitData?.results[0]?.obsDatetime))
-            : "-"
-        } 
-        </td>
-</tr>`);
-      }
-    });
+frameDoc.document.write(`</tbody></table>`);
 
-    frameDoc.document.write(`</tbody></table>`);
+// Radiology Orders Section
+if (
+  this.visitHistory?.visitOrderedData?.find(
+    (visitData) => visitData.category === "RADIOLOGY_ORDER"
+  )
+) {
+  frameDoc.document.write(`
+    <div>
+        <h5>Radiology</h5>
+    </div>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Ordered By</th>
+                <th>Results</th>
+                <th>Fed By</th>
+            </tr>
+        </thead>
+        <tbody>`);
+}
 
-    // -------------------Radiology orders-------------
-    if (
-      this.visitHistory?.visitOrderedData?.find(
-        (visitData) => visitData.category === "RADIOLOGY_ORDER"
-      )
-    ) {
-      frameDoc.document.write(`
-<div>
-       <h5>Radiology</h5>
-     </div>
-     <table id="table">
-       <thead>
-         <tr>
-           <th>Order</th>
-           <th>Ordered By</th>
-           <th>Results</th>
-           <th>Fed By</th>
-         </tr>
-       </thead>
-       <tbody>`);
-    }
-    this.visitHistory?.visitOrderedData?.forEach((visitData) => {
-      if (visitData?.category === "RADIOLOGY_ORDER") {
-        frameDoc.document.write(`
-<tr><td>
-      ${visitData?.order?.display}
-      </td>
-      <td>  ${visitData?.provider} on 
-      ${visitData?.date} ${visitData?.time}
-      </td> <td>
-      `);
-        if (visitData?.results?.length > 0) {
-          visitData?.results?.forEach((result) => {
-            if (!result?.value?.links?.uri) {
-              frameDoc.document.write(` ${result?.concept?.display} - 
-                          ${
-                            result?.value?.display
-                              ? result?.value?.display
-                              : result?.value
-                          }, &nbsp;&nbsp;
-    `);
-            }
-          });
-        } else if (!visitData?.results?.length) {
-          frameDoc.document.write(` No results found
-    `);
-        }
-        frameDoc.document.write(`</td>`);
-        frameDoc.document.write(`
-      <td>${
-        visitData?.results[0]?.provider?.display?.split("-")[1]
-          ? visitData?.results[0]?.provider?.display?.split("-")[1] + " on "
-          : "-"
-      } ${
-          visitData?.results[0]?.obsDatetime
-            ? formatDateToString(new Date(visitData?.results[0]?.obsDatetime))
-            : "-"
-        } 
-        </td>
-</tr>`);
-      }
-    });
+this.visitHistory?.visitOrderedData?.forEach((visitData) => {
+  if (visitData?.category === "RADIOLOGY_ORDER") {
+    frameDoc.document.write(`
+    <tr>
+        <td>${visitData?.order?.display || 'N/A'}</td>
+        <td>${visitData?.provider} on ${visitData?.date ? formatDateToString(new Date(visitData?.date)) : 'N/A'} ${visitData?.time || ''}</td>
+        <td>${visitData?.results?.length ? visitData?.results.map(result => `${result?.concept?.display}: ${result?.value?.display || result?.value}`).join(', ') : 'No results found'}</td>
+        <td>${visitData?.results[0]?.provider?.display?.split('-')[1] ? visitData?.results[0]?.provider?.display.split('-')[1] + " on " : '-'} ${visitData?.results[0]?.obsDatetime ? formatDateToString(new Date(visitData?.results[0]?.obsDatetime)) : 'N/A'}</td>
+    </tr>`);
+  }
+});
 
-    frameDoc.document.write(`</tbody></table>`);
+frameDoc.document.write(`</tbody></table>`);
+
 
     // -------------------Procedure orders-------------
     if (
@@ -630,8 +567,11 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
            </thead>
            <tbody>`);
     }
+        // Visit note.....
+
+
     this.visitHistory?.visitOrderedData?.forEach((visitData) => {
-      if (visitData?.category === "PROCEDURE_ORDER") {
+      if (visitData?.category === "OBSERVATIONS") {
         frameDoc.document.write(`
 <tr><td>
       ${visitData?.concept?.display}
@@ -670,6 +610,50 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
         </td>
 </tr>`);
       }
+    }); 
+
+    //end of visit note
+
+    this.visitHistory?.visitOrderedData?.forEach((visitData) => {
+      if (visitData?.category === "PROCEDURE_ORDER") {
+        frameDoc.document.write(`
+<tr><td>
+      ${visitData?.concept?.display}
+      </td>
+      <td>  ${visitData?.provider} on 
+      ${visitData?.date} ${visitData?.time}
+      </td> <td>
+      `);
+   
+      //................Handle Empty or Undefined Data...............
+
+      if (visitData?.results?.length > 0) {
+        visitData.results.forEach((result) => {
+          if (!result?.value?.links?.uri) {
+            frameDoc.document.write(` ${result?.concept?.display || 'N/A'} - 
+                                      ${result?.value?.display || result?.value || 'N/A'}, &nbsp;&nbsp;`);
+          }
+        });
+      } else {
+        frameDoc.document.write(` Not Attended `);
+      }
+
+      //....................End of Handling Data..................
+
+        frameDoc.document.write(`</td>`);
+        frameDoc.document.write(`
+      <td>${
+        visitData?.results[0]?.provider?.display?.split("-")[1]
+          ? visitData?.results[0]?.provider?.display?.split("-")[1] + "on"
+          : "-"
+      } ${
+          visitData?.results[0]?.obsDatetime
+            ? formatDateToString(new Date(visitData?.results[0]?.obsDatetime))
+            : "-"
+        } 
+        </td>
+</tr>`);
+      }
     });
 
     frameDoc.document.write(`</tbody></table>`);
@@ -677,31 +661,37 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
     let observationForm = this.visitHistory?.visitOrderedData?.find(
       (visitData) => visitData.category === "OBSERVATIONS"
     );
-    if (observationForm) {
-      this.visitHistory?.visitOrderedData?.forEach((visitData) => {
-        if (visitData?.category === "OBSERVATIONS") {
-          frameDoc.document.write(`
-          <div style="margin-top:2px">
-           <h5>${visitData?.form}</h5>
-         </div>
-         <table id="table">
-           <thead>
-               <tr ><th colspan="2">
-            Values <span style="font-weight:normal;"> &nbsp; - &nbsp; <i>written on ${visitData?.date} ${visitData?.time}  By ${visitData?.provider}
-          </i></span>
-               </th></tr>
-             
-           </thead>
-           <tbody>`);
+      if (observationForm) {
+    this.visitHistory?.visitOrderedData?.forEach((visitData) => {
+      if (visitData?.category === "OBSERVATIONS") {
+        frameDoc.document.write(`
+        <div style="margin-top:2px">
+         <h5>${visitData?.form}</h5>
+       </div>
+       <table id="table">
+         <thead>
+             <tr ><th colspan="2">
+          Values <span style="font-weight:normal;"> &nbsp; - &nbsp; <i>written on ${visitData?.date} ${visitData?.time}  By ${visitData?.provider}
+        </i></span>
+             </th></tr>
+         </thead>
+         <tbody>`);
 
-          visitData?.obs?.forEach((ob) => {
-            frameDoc.document.write(`<tr><td> ${ob?.concept?.display} </td><td> 
-            ${ob?.value?.display ? ob?.value?.display : ob?.value}
-              </td></tr>`);
+        // .............Snippet to process observation..............
+        if (visitData?.obs?.length > 0) {
+          visitData.obs.forEach((ob) => {
+            frameDoc.document.write(`<tr><td>${ob?.concept?.display || 'N/A'}</td><td>
+                                     ${ob?.value?.display || ob?.value || 'N/A'}
+                                     </td></tr>`);
           });
+        } else {
+          frameDoc.document.write(`<tr><td colspan="2">No Observations Found</td></tr>`);
         }
-      });
-    }
+
+        frameDoc.document.write(`</tbody></table>`);
+      }
+    });
+  }
 
     // this.visitHistory?.visitOrderedData?.forEach((visitData) => {
     //   if (visitData?.category === "OBSERVATIONS") {
@@ -716,8 +706,9 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
     //   }
     // });
 
-    frameDoc.document.write(`</tbody></table>`);
-    if (this.visitHistory?.diagnoses?.PROVISIONAL?.length) {
+    //......Checking both provisional & confirmed are rendered.............
+
+    if (Array.isArray(this.visitHistory?.diagnoses?.PROVISIONAL) && this.visitHistory?.diagnoses?.PROVISIONAL.length) {
       frameDoc.document.write(`<div>
     <h4>Provisional Diagnoses</h4>
     `);
@@ -738,19 +729,19 @@ ${this.visitHistory?.visitStopDateTime?.date} at ${this.visitHistory?.visitStopD
       });
     }
 
-    frameDoc.document.write(`
-          <div class="footer">
-            <div class="userDetails">
-              <p class="name">Printed By: ${
-                this.currentUser?.person?.display
-              }</p>
-              <p class="signature">Signature : ..............................</p>
-            </div>
+// ......End of Rendering.............
 
-            <div class=""printDate>
-              <p>Printed on: ${formatDateToString(new Date())}</p>
-            </div>
-          </div>
+    frameDoc.document.write(`
+    <div class="footer">
+  <div class="userDetails">
+    <p class="name">Printed By: ${this.currentUser?.person?.display || 'Unknown User'}</p>
+    <p class="signature">Signature : ..............................</p>
+  </div>
+
+  <div class="printDate">
+    <p>Printed on: ${formatDateToString(new Date()) || 'N/A'}</p>
+  </div>
+</div>
         </div>
       </body>
     </html>`);
