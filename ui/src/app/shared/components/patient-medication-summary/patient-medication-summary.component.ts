@@ -35,6 +35,7 @@ export class PatientMedicationSummaryComponent implements OnInit {
   patientDrugOrdersStatuses$: Observable<any>;
   filteredDrugOrders$: Observable<any>;
   visitDetails$: Observable<any>;
+
   constructor(
     private store: Store<AppState>,
     private ordersService: OrdersService,
@@ -145,32 +146,54 @@ export class PatientMedicationSummaryComponent implements OnInit {
 
   onAddOrder(e: Event) {
     e.stopPropagation();
-    const dialog = this.dialog.open(DispensingFormComponent, {
-      width: "80%",
-      disableClose: true,
-      data: {
-        drugOrder: null,
-        patient: this.patientVisit?.patientUuid,
-        patientUuid: this.patientVisit?.patientUuid,
-        visit: this.patientVisit,
-        location: localStorage.getItem("currentLocation")
-          ? JSON.parse(localStorage.getItem("currentLocation"))
-          : null,
-        encounterUuid: JSON.parse(localStorage.getItem("patientConsultation"))[
-          "encounterUuid"
-        ],
-        fromDispensing: this.fromDispensing,
-        showAddButton: false,
-        forConsultation: this.forConsultation,
-      },
-    });
+    
+    // Check for active orders before allowing new order
+    const activeOrders = this.filteredDrugOrders$; // You already have the filtered drug orders
+    activeOrders.subscribe((ordersData) => {
+      const activeMedication = ordersData.toBeDispensedDrugOrders.find(
+        (order) => new Date(order.stopDatetime) > new Date()
+      );
 
-    dialog.afterClosed().subscribe((data) => {
-      this.loadVisit();
-      if (data?.updateConsultationOrder) {
-        this.updateMedicationComponent.emit();
-        this.updateConsultationOrder.emit();
+      if (activeMedication) {
+        // Show error dialog: There's an active medication that needs to be completed
+        this.dialog.open(DispensingFormComponent, {
+          width: "80%",
+          disableClose: true,
+          data: {
+            message: "Cannot add a new dosage until the previous one is completed.",
+          },
+        });
+        return; // Prevent adding a new dosage
       }
+
+      // Proceed to open the dispensing form if no active medication is found
+      const dialog = this.dialog.open(DispensingFormComponent, {
+        width: "80%",
+        disableClose: true,
+        data: {
+          drugOrder: null,
+          patient: this.patientVisit?.patientUuid,
+          patientUuid: this.patientVisit?.patientUuid,
+          visit: this.patientVisit,
+          location: localStorage.getItem("currentLocation")
+            ? JSON.parse(localStorage.getItem("currentLocation"))
+            : null,
+          encounterUuid: JSON.parse(localStorage.getItem("patientConsultation"))[
+            "encounterUuid"
+          ],
+          fromDispensing: this.fromDispensing,
+          showAddButton: false,
+          forConsultation: this.forConsultation,
+        },
+      });
+
+      dialog.afterClosed().subscribe((data) => {
+        this.loadVisit();
+        if (data?.updateConsultationOrder) {
+          this.updateMedicationComponent.emit();
+          this.updateConsultationOrder.emit();
+        }
+      });
     });
   }
 }
