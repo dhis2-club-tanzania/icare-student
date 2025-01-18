@@ -43,6 +43,8 @@ export class SharedCustomReportComponent implements OnInit, OnChanges {
           this.reportData = data?.rows?.map((row) => {
             return {
               ...row,
+              visitNotes: row.visitNotes || "No visit notes", //Ensure a default value
+              services: row.services || "No services", //Ensure a default value
               searchingText: _.map(Object.keys(row), (key) => {
                 return row[key];
               }).join(" "),

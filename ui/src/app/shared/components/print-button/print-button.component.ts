@@ -17,6 +17,7 @@ export class PrintButtonComponent implements OnInit {
   @Input() iconName: string;
   @Input() classesList: string[];
   @Input() ElementToBePrinted: any;
+  @Input() serviceRecords: any[]; //service record added to be printed
 
   @Output() print = new EventEmitter();
   currentUser: any;
@@ -56,6 +57,7 @@ export class PrintButtonComponent implements OnInit {
     if (this.ElementToBePrinted) {
       this.ElementToBePrinted["CurrentUser"] = this.currentUser;
       this.ElementToBePrinted["PrintingDate"] = this.todaysDate;
+      this.ElementToBePrinted["ServiceRecords"] = this.serviceRecords; //service records to be printed
     } else {
       this.ElementToBePrinted = {
         CurrentUser: this.currentUser,
