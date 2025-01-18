@@ -146,7 +146,7 @@ export class PatientMedicationSummaryComponent implements OnInit {
 
   onAddOrder(e: Event) {
     e.stopPropagation();
-    
+    // prevent prescription of a new dose when current one is still active.
     // Check for active orders before allowing new order
     const activeOrders = this.filteredDrugOrders$; // You already have the filtered drug orders
     activeOrders.subscribe((ordersData) => {
