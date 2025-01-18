@@ -11,18 +11,19 @@ export class UnitFieldComponent implements OnInit {
   @Input() durationUnits: any;
   @Input() drugRoutes: any;
   @Input() dosingFrequencies: any;
-
+  @Input() selectedValue: any;
   @Output() formUpdate = new EventEmitter();
   unitField: Dropdown;
 
   constructor() {}
 
   ngOnInit(): void {
+    console.log( this.selectedValue);
     if (this.dosingUnits) {
       this.unitField = new Dropdown({
         id: "dosingUnit",
         key: "dosingUnit",
-        label: `Dose Unit`,
+        label:  this.selectedValue? this.selectedValue:`Dose Unit`,
         conceptClass: this.dosingUnits?.conceptClass?.display,
         value: null,
         required: true,
