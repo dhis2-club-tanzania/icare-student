@@ -1,0 +1,292 @@
+<div class="laboratory-home-container">
+  <ng-container
+    *ngIf="{
+      sampleTypes: sampleTypes$ | async,
+      specimenSources: specimenSources$ | async,
+      privileges: privileges$ | async,
+      userRoles: userRoles$ | async,
+      LISConfigurations: LISConfigurations$ | async,
+      currentUser: currentUser$ | async,
+      currentLocation: currentLocation$ | async
+    } as params"
+  >
+    <div
+      class="row"
+      *ngIf="
+        !params?.sampleTypes ||
+        !params?.privileges ||
+        !params?.userRoles ||
+        (params?.userRoles && params?.userRoles.length == 0) ||
+        !params?.LISConfigurations
+      "
+    >
+      <div class="col-12 text-center mt-5 mb-2">
+        <p>Loading Lab Settings</p>
+      </div>
+      <div class="col-12">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+    </div>
+
+    <div
+      class="row"
+      *ngIf="
+        params?.sampleTypes &&
+        params?.privileges &&
+        params?.userRoles &&
+        params?.userRoles.length > 0 &&
+        params?.LISConfigurations
+      "
+    >
+      <div
+        [ngClass]="{
+          'col-2': params?.LISConfigurations?.isLIS && showMenuItems,
+          'col-12': !params?.LISConfigurations?.isLIS
+        }"
+        *ngIf="showMenuItems"
+        class="laboratory-header mat-elevation-z1"
+        [ngStyle]="{
+          height: params?.LISConfigurations?.isLIS ? '95vh' : 'auto',
+          'margin-top': params?.LISConfigurations?.isLIS ? '-15px' : '',
+          'margin-left': params?.LISConfigurations?.isLIS ? '-5px' : ''
+        }"
+      >
+        <mat-chip-list
+          class="w-100"
+          cdkDropListOrientation="{{
+            params?.LISConfigurations && !params?.LISConfigurations?.isLIS
+              ? 'horizontal'
+              : ''
+          }}"
+          [ngClass]="{
+            'full-width-chip mat-chip-list-stacked':
+              params?.LISConfigurations?.isLIS
+          }"
+        >
+          <div
+            style="border-bottom: solid 1px #f2f2f2; background-color: #f2f2f2"
+            class="w-100 pl-3 pt-1 pb-2"
+            *ngIf="params?.LISConfigurations?.isLIS"
+          >
+            <button mat-button>
+              <mat-icon color="primary">location_on</mat-icon
+              >{{ params?.currentLocation?.display }}
+            </button>
+            <p class="ml-4">
+              {{ params?.currentUser?.person?.display }}
+              <em>({{ params?.currentUser?.username }})</em>
+            </p>
+          </div>
+          <mat-chip
+            class="w-20"
+            *ngIf="params?.privileges && params?.LISConfigurations?.isLIS"
+            (click)="changeRoute($event, 'dashboard-lab', true)"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'dashboard-lab',
+              'for-lis-chip': params?.LISConfigurations?.isLIS
+            }"
+            [ngStyle]="{
+              'border-radius': params?.LISConfigurations?.isLIS
+                ? '0 !important'
+                : '',
+              padding: params?.LISConfigurations?.isLIS ? '12px !important' : ''
+            }"
+          >
+            Dashboard
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            *ngIf="
+              params?.privileges &&
+              params?.privileges['Laboratory Orders'] &&
+              params?.LISConfigurations?.isLIS
+            "
+            (click)="changeRoute($event, 'sample-registration', false)"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'sample-registration'
+            }"
+          >
+            Sample Reception & Registration
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            *ngIf="
+              params?.privileges &&
+              params?.privileges['Laboratory Diagnostic Orders'] &&
+              !params?.LISConfigurations?.isLIS
+            "
+            (click)="changeRoute($event, 'lab-investigation-home', true)"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'lab-investigation-home'
+            }"
+          >
+            Diagnostic Orders/Services
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            *ngIf="
+              params?.privileges &&
+              params?.privileges['Sample Collection'] &&
+              !params?.LISConfigurations?.isLIS
+            "
+            (click)="changeRoute($event, 'sample-collection', true)"
+            routerLinkActive="active-route"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'sample-collection'
+            }"
+          >
+            Sample collection
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'sample-acceptance-and-results', true)"
+            [ngClass]="{
+              'active-route':
+                currentRoutePath === 'sample-acceptance-and-results'
+            }"
+            *ngIf="
+              params?.privileges &&
+              params?.privileges['Sample Acceptance and Results']
+            "
+          >
+            Sample Testing & Results
+          </mat-chip>
+          <mat-chip
+            *ngIf="params?.LISConfigurations?.isLIS"
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'sample-results-list', true)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'sample-results-list'
+            }"
+          >
+            Results
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'sample-tracking', true)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'sample-tracking'
+            }"
+            *ngIf="params?.privileges && params?.privileges['Sample Tracking']"
+          >
+            Sample Tracking
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            *ngIf="
+              params?.privileges &&
+              params?.privileges['Laboratory Orders'] &&
+              params?.LISConfigurations?.isLIS
+            "
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'sample-storage', true)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'sample-storage'
+            }"
+          >
+            Sample Storage & Disposal
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'settings', true)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'settings'
+            }"
+            *ngIf="params?.privileges && params?.privileges['Tests Settings']"
+          >
+            Maintenance
+          </mat-chip>
+          <mat-chip
+            class="w-20"
+            routerLinkActive="active-route"
+            (click)="changeRoute($event, 'reports', false)"
+            [ngClass]="{
+              'active-route': currentRoutePath === 'reports'
+            }"
+            *ngIf="
+              params?.privileges && params?.privileges['Laboratory Reports']
+            "
+          >
+            Reports
+          </mat-chip>
+        </mat-chip-list>
+      </div>
+      <div
+        [ngClass]="{
+          'col-10': params?.LISConfigurations?.isLIS && showMenuItems,
+          'col-12': !params?.LISConfigurations?.isLIS || !showMenuItems
+        }"
+      >
+        <div class="row">
+          <div class="col-2" *ngIf="params?.LISConfigurations?.isLIS">
+            <div class="d-flex justify-content-left">
+              <button
+                [title]="showMenuItems ? 'Hide side menu' : 'Show side menu'"
+                (click)="toggleMenuItems($event)"
+                mat-icon-button
+                color="primary"
+                style="margin-top: -10px; margin-left: -10px"
+              >
+                <mat-icon>menu</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div
+            [ngClass]="{
+              'col-10': params?.LISConfigurations?.isLIS,
+              'col-12': !params?.LISConfigurations?.isLIS
+            }"
+          >
+            <div
+              class="w-100 no-print d-flex justify-content-end"
+              *ngIf="showDate"
+            >
+              <mat-form-field appearance="fill" floatLabel="always">
+                <mat-label>Select a date range</mat-label>
+                <mat-date-range-input [rangePicker]="visitDatePicker">
+                  <input
+                    matStartDate
+                    placeholder="Start date"
+                    autocomplete="off"
+                    [(ngModel)]="startDate"
+                    (dateInput)="onDateChange()"
+                  />
+                  <input
+                    matEndDate
+                    placeholder="End date"
+                    autocomplete="off"
+                    [(ngModel)]="endDate"
+                    (dateInput)="onDateChange(true)"
+                  />
+                </mat-date-range-input>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="visitDatePicker"
+                ></mat-datepicker-toggle>
+                <mat-date-range-picker #visitDatePicker></mat-date-range-picker>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="laboratory-home-content w-100">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div
+      class="row"
+      style="margin-top: 20px"
+      *ngIf="params?.sampleTypes?.length > 0"
+    >
+      
+    </div> -->
+  </ng-container>
+</div>

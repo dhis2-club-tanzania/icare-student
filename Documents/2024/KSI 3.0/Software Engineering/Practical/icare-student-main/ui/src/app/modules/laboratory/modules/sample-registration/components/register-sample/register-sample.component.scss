@@ -1,0 +1,9 @@
+.single-sample-registration,
+.batch-sample-registration {
+  transition: width 5s, height 2s, background-color 2s, transform 5s;
+  transition-duration: 3s, 5s;
+}
+
+.selected-tab-group {
+  background-color: #eee;
+}

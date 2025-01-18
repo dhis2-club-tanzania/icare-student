@@ -1,0 +1,91 @@
+<div
+  *ngIf="{
+    currentPatient: currentPatient$ | async,
+    bills: bills$ | async,
+    pendingBills: pendingBills$ | async,
+    payments: payments$ | async
+  } as params"
+  class="visit-container"
+>
+  <!-- patient sidebar -->
+
+  <div *ngIf="!params?.currentPatient" class="centered-container-patient-list">
+    <app-patient-search
+      (selectPatient)="onSelectPatient($event)"
+    ></app-patient-search>
+  </div>
+
+  <div *ngIf="params?.currentPatient">
+    <div class="sidebar-container visit-sidebar bg-white mat-elevation-z1">
+      <app-patient-profile
+        [patient]="params?.currentPatient"
+      ></app-patient-profile>
+    </div>
+    <!-- end of patient sidebar -->
+    <div class="sidebar-content-container">
+      <mat-card>
+        <mat-tab-group>
+          <mat-tab label="Quotations ({{ params.bills?.length }})">
+            <mat-progress-bar
+              *ngIf="loadingBills$ | async"
+              mode="indeterminate"
+            ></mat-progress-bar>
+
+            <div
+              *ngIf="params?.bills?.length == 0"
+              class="py-4"
+              style="text-align: center"
+            >
+              No pending bills
+            </div>
+            <app-quotations
+              [bills]="params?.bills"
+              (updateBillItems)="onUpdateBillItems($event)"
+              (confirmPayment)="onConfirmBillPayment($event)"
+            ></app-quotations>
+          </mat-tab>
+          <mat-tab label="Pending Payments ({{ params.pendingBills?.length }})">
+            <mat-progress-bar
+              *ngIf="loadingBills$ | async"
+              mode="indeterminate"
+            ></mat-progress-bar>
+
+            <div
+              *ngIf="params?.pendingBills?.length == 0"
+              class="py-4"
+              style="text-align: center"
+            >
+              No pending payments
+            </div>
+
+            <app-quotations
+              [bills]="params?.pendingBills"
+              [disableControls]="true"
+              [paymentTypes]="paymentTypes$ | async"
+              [currentUser]="currentUser$ | async"
+              (updateBillItems)="onUpdateBillItems($event)"
+              (confirmPayment)="onConfirmBillPayment($event)"
+            >
+            </app-quotations>
+          </mat-tab>
+          <mat-tab label="Payments ({{ params?.payments?.length }})">
+            <mat-progress-bar
+              *ngIf="loadingPayments$ | async"
+              mode="indeterminate"
+            ></mat-progress-bar>
+
+            <div
+              *ngIf="params?.payments?.length == 0"
+              class="py-4"
+              style="text-align: center"
+            >
+              No completed payments
+            </div>
+
+            <app-payments [payments]="params?.payments"></app-payments>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    </div>
+  </div>
+</div>

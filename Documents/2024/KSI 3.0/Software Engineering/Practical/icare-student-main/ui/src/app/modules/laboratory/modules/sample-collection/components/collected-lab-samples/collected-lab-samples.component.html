@@ -1,0 +1,162 @@
+<div
+  class="laboratory-collected-samples-container row"
+  *ngIf="{
+    specimenSources: specimenSources$ | async,
+    provider: provider$ | async,
+    currentUser: currentUser$ | async
+  } as sampleData"
+>
+  <div class="col-md-12">
+    <h2 style="text-align: left">Sample acceptance</h2>
+  </div>
+  <div class="col-md-9">
+    <mat-card>
+      <mat-tab-group
+        [selectedIndex]="selectedTab.value"
+        (selectedIndexChange)="selectedTab.setValue($event)"
+      >
+        <mat-tab label="Samples waiting acceptance" (click)="changeTab(0)">
+          <div class="mat-tab-container" *ngIf="selectedTab.value == 0">
+            <div class="d-flex justify-content-between">
+              <mat-form-field appearance="fill">
+                <input  autocomplete="off" type="text" matInput placeholder="Search" />
+              </mat-form-field>
+            </div>
+            <div
+              *ngIf="
+                sampleData?.specimenSources &&
+                sampleData?.specimenSources?.setMembers?.length > 0
+              "
+            >
+              <app-lab-samples-for-acceptance
+                [provider]="sampleData?.provider"
+                [currentUser]="sampleData?.currentUser"
+              ></app-lab-samples-for-acceptance>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Accepted samples" (click)="changeTab(1)">
+          <div
+            class="mat-tab-container"
+            *ngIf="
+              selectedTab.value == 1 && (acceptedSamplesGroupedBymrNo$ | async)
+            "
+          >
+            <table class="table table-bordered table-striped">
+              <tr class="table-header">
+                <td>SN</td>
+                <td>MRNo.</td>
+                <td>Laboratory ID</td>
+                <td>Sample/Specimen type</td>
+                <td>Status</td>
+              </tr>
+              <ng-container
+                *ngFor="
+                  let sampleGroup of acceptedSamplesGroupedBymrNo$ | async;
+                  let count = index
+                "
+              >
+                <tr *ngFor="let sample of sampleGroup?.samples; let i = index">
+                  <td
+                    *ngIf="i == 0"
+                    [attr.rowspan]="sampleGroup.samples.length"
+                  >
+                    #{{ count + 1 }}
+                  </td>
+                  <td
+                    *ngIf="i == 0"
+                    [attr.rowspan]="sampleGroup.samples.length"
+                  >
+                    {{ sample.mrNo }}
+                  </td>
+                  <td>
+                    {{ sample.id }}
+                  </td>
+                  <td>
+                    {{ sample.specimenSourceName }}
+                  </td>
+                  <td>
+                    {{ sample?.status }}
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-container
+                *ngIf="(acceptedSamplesGroupedBymrNo$ | async)?.length == 0"
+              >
+                <tr>
+                  <td colspan="6">
+                    <p class="text-danger no-sample-text">
+                      No samples available
+                    </p>
+                  </td>
+                </tr>
+              </ng-container>
+            </table>
+          </div>
+        </mat-tab>
+        <mat-tab label="Rejected samples" (click)="changeTab(2)">
+          <div class="mat-tab-container" *ngIf="selectedTab.value == 2">
+            <table class="table table-bordered table-striped">
+              <tr class="table-header">
+                <td>SN</td>
+                <td>MRNo.</td>
+                <td>Laboratory ID</td>
+                <td>Sample/Specimen type</td>
+                <td>Status</td>
+                <td>Comments</td>
+              </tr>
+              <ng-container
+                *ngFor="
+                  let sampleGroup of rejectedSamplesGroupedBymrNo$ | async;
+                  let count = index
+                "
+              >
+                <tr *ngFor="let sample of sampleGroup?.samples; let i = index">
+                  <td
+                    *ngIf="i == 0"
+                    [attr.rowspan]="sampleGroup.samples.length"
+                  >
+                    #{{ count + 1 }}
+                  </td>
+                  <td
+                    *ngIf="i == 0"
+                    [attr.rowspan]="sampleGroup.samples.length"
+                  >
+                    {{ sample.mrNo }}
+                  </td>
+                  <td>
+                    {{ sample.id }}
+                  </td>
+                  <td>
+                    {{ sample.specimenSourceName }}
+                  </td>
+                  <td>
+                    {{ sample?.status }}
+                  </td>
+                  <td>
+                    {{ sample?.comments }}
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container
+                *ngIf="(rejectedSamplesGroupedBymrNo$ | async)?.length == 0"
+              >
+                <tr>
+                  <td colspan="7">
+                    <p class="text-danger no-sample-text">
+                      No samples available
+                    </p>
+                  </td>
+                </tr>
+              </ng-container>
+            </table>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+  <div class="col-md-3">
+    <app-lab-samples-statuses></app-lab-samples-statuses>
+  </div>
+</div>

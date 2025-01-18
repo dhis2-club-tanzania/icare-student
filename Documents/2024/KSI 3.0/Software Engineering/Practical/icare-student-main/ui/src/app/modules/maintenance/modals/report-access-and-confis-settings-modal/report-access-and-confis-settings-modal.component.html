@@ -1,0 +1,77 @@
+<ng-container>
+  <mat-toolbar color="primary"> {{ data?.name }} Settings</mat-toolbar>
+  <div class="p-3">
+    <div class="loading-overlay" *ngIf="saving">
+      <div class="text-center">
+        <div>Saving ...</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div class="w-100">
+      <mat-tab-group>
+        <mat-tab label="Parameters">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <div *ngIf="data?.parameters?.length > 0">
+                <div *ngIf="datesParams?.length > 0">
+                  <mat-radio-group aria-label="Select an option">
+                    <mat-radio-button
+                      (change)="getSelectedPeriodType($event)"
+                      [value]="periodType"
+                      *ngFor="let periodType of periodTypes"
+                      class="ml-2"
+                    >
+                      {{ periodType?.name }}
+                    </mat-radio-button>
+                  </mat-radio-group>
+                  <div
+                    *ngIf="selectedPeriodType && selectedPeriodType?.categories"
+                  >
+                    <app-form
+                      [fields]="[defaultPeriodCategoryField]"
+                      (formUpdate)="onFormUpdate($event)"
+                    ></app-form>
+                  </div>
+                </div>
+                <div *ngIf="otherParameters?.length > 0">
+                  <app-parameter-configuration-form
+                    *ngFor="let parameter of otherParameters"
+                    [parametersConfigurations]="data?.parametersConfigurations"
+                    [parameter]="parameter"
+                  ></app-parameter-configuration-form>
+                </div>
+              </div>
+              <div
+                *ngIf="data?.parameters?.length === 0"
+                class="alert alert-warning"
+                role="alert"
+              >
+                No parameters for this report
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Access Control">
+          <ng-template matTabContent>
+            <div class="p-3"></div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!isFormValid"
+        class="ml-2"
+        (click)="onSave($event)"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</ng-container>

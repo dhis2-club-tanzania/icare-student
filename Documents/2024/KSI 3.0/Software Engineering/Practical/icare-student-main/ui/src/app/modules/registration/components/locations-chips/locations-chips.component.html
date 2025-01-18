@@ -1,0 +1,33 @@
+<div
+  class="w-100"
+  *ngIf="currentPatientService$ | async as currentPatientService"
+>
+  <mat-form-field class="w-100">
+    <input matInput placeholder="Search Rooms" (keyup)="searchRoom($event)" />
+  </mat-form-field>
+  <mat-chip-list aria-label="Locations" *ngIf="locations?.length > 0">
+    <mat-chip
+      *ngFor="let room of locations | filterBy: searchTerm:'name'"
+      (click)="onSelectRoom($event, room)"
+      color="{{
+        room?.uuid === currentRoom?.uuid ||
+        room?.uuid === currentVisit?.location?.uuid
+          ? 'primary'
+          : ''
+      }}"
+      [selected]="
+        room?.uuid === currentRoom?.uuid ||
+        room?.uuid === currentVisit?.location?.uuid
+      "
+    >
+      {{ room.name }}
+    </mat-chip>
+  </mat-chip-list>
+
+  <div class="alert alert-warning" role="alert" *ngIf="locations?.length === 0">
+    NO Doctor's Room available for the save service
+    <b>
+      {{ currentPatientService?.display }}
+    </b>
+  </div>
+</div>

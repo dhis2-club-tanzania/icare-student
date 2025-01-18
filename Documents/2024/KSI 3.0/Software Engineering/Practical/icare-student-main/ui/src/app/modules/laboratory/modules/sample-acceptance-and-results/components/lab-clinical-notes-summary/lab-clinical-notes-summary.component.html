@@ -1,0 +1,18 @@
+<div *ngIf="{ visitData: visitData$ | async } as params">
+  <div *ngIf="params?.visitData">
+    <ng-container *ngFor="let visitDetails of params?.visitData">
+      <ng-container *ngFor="let encounter of visitDetails?.visit?.encounters">
+        <ng-container *ngIf="encounter?.diagnoses?.length > 0">
+          <div *ngFor="let diagnosis of encounter?.diagnoses">
+            ICD 10 Diagnosis: <b>{{ diagnosis?.display }}</b>
+          </div></ng-container
+        >
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="!params?.visitData"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

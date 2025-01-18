@@ -1,0 +1,27 @@
+::ng-deep .cdk-global-overlay-wrapper {
+  margin-top: -50px !important;
+}
+
+:host ::ng-deep .mat-badge-content {
+  top: 0 !important;
+  right: -30px !important;
+}
+
+.patient-basic-information {
+  margin: -6px;
+  padding-top: 4px;
+  background-color: #2a8fd1 !important;
+  color: #fff !important;
+}
+
+.patient-basic-information div {
+  padding: 4px 4px 5px 8px;
+}
+
+.patient-basic-information .demographic-details {
+  font-size: 1.6rem;
+}
+
+.patient-basic-information .other-patient-details {
+  font-size: 1.1rem;
+}

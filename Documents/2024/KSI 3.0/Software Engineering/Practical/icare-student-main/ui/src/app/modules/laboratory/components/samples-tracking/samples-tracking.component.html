@@ -1,0 +1,76 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2 style="text-align: left">Sample tracking</h2>
+  </div>
+  <div class="col-md-9">
+    <div>
+      <mat-card>
+        <table class="table table-bordered table-striped">
+          <tr class="table-header">
+            <td style="width: 20px">SN</td>
+            <td>MRNo.</td>
+            <td>Sample ID</td>
+            <td>Sample/Specimen type</td>
+            <td>Accepted/Rejected</td>
+            <td>Acted by</td>
+            <td colspan="2">Actions</td>
+            <td
+              [attr.rowspan]="6"
+              width="50%"
+              *ngIf="expandedRow > 0 && (currentSample$ | async)"
+              class="mat-elevation-z1"
+            >
+              
+            </td>
+          </tr>
+          <ng-container
+            *ngFor="
+              let sampleGroup of samplesGroupedBymrNo$ | async;
+              let count = index
+            "
+          >
+            <tr *ngFor="let sample of sampleGroup?.samples; let i = index">
+              <td *ngIf="i == 0" [attr.rowspan]="sampleGroup.samples.length">
+                #{{ count + 1 }}
+              </td>
+              <td *ngIf="i == 0" [attr.rowspan]="sampleGroup.samples.length">
+                {{ sample.mrNo }}
+              </td>
+              <td>
+                {{ sample.id }}
+              </td>
+              <td>
+                {{ sample.specimenSourceName }}
+              </td>
+              <td>
+                {{ sample.status }}
+              </td>
+              <td>
+                <span *ngIf="sample?.user && sample?.user?.name">
+                  {{ sample?.user?.name }}
+                </span>
+                <span *ngIf="!sample?.user">
+                  No User
+                </span>
+              </td>
+              <td>
+                <button
+                  [disabled]="!sample?.user"
+                  (click)="viewSampleTrackingInfo($event,sample)"
+                  mat-stroked-button
+                  class="mr-2"
+                >
+                  View
+                </button>
+              </td>
+              <!-- <td style="width: 100px; border-bottom: none !important"></td> -->
+            </tr>
+          </ng-container>
+        </table>
+      </mat-card>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <app-lab-samples-statuses></app-lab-samples-statuses>
+  </div>
+</div>

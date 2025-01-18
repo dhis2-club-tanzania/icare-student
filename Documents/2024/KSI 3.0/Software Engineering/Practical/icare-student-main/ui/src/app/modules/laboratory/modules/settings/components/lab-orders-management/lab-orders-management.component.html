@@ -1,0 +1,24 @@
+<div
+  *ngIf="{
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    sampleTypes: SampleTypes$ | async,
+    tests: test$ | async,
+    labConfigs: labConfigs$ | async
+  } as params"
+>
+  <app-sample-types-list
+    *ngIf="params?.sampleTypesLoadedState && params?.labConfigs"
+    [sampleTypes]="params?.sampleTypes"
+    [groupedSampleTypes]="params?.tests"
+    [labConfigs]="params?.labConfigs"
+  ></app-sample-types-list>
+  <!-- <app-lab-orders-management-dashboard
+    [labConfigs]="labConfigs$ | async"
+    [sampleTypes]="SampleTypes$ | async"
+  ></app-lab-orders-management-dashboard> -->
+
+  <mat-progress-bar
+    *ngIf="!params?.sampleTypesLoadedState || !params?.labConfigs"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

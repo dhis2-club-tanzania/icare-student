@@ -1,0 +1,104 @@
+.report-item-list {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.report-item {
+  border-radius: 5px;
+}
+
+.report-item:hover {
+  color: #000;
+}
+
+.current-item,
+.current-item:hover {
+  background-color: #2a8fd1;
+  color: #ffffff;
+}
+
+.toggle-button {
+  border: none;
+  background-color: transparent !important;
+}
+
+.toggle-button:hover,
+.toggle-button:focus {
+  border: none;
+  outline: none !important;
+}
+
+::ng-deep .mat-expansion-panel-spacing {
+  margin: 0 !important;
+}
+
+::ng-deep .mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none !important;
+}
+
+::ng-deep .mat-expansion-panel-header {
+  padding: 0 12px !important;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0 10px 16px !important;
+}
+
+::ng-deep .mt-1,
+.my-1 {
+  margin: 0 !important;
+}
+
+::ng-deep .mat-accordion .mat-expansion-panel {
+  border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.side-menu-panel {
+  border-right: solid 1px #eee;
+  min-height: 80vh;
+}
+
+.menu-and-report-sepatator {
+  padding: 4px;
+  margin-left: -10px;
+  margin-right: -10px;
+  border-bottom: solid 1px #eee;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
+  padding: 0 0.75em 0 0.75em !important;
+  margin-top: -0.25em !important;
+  position: initial !important;
+}
+
+.selected-btn {
+  background-color: #2a8fd1 !important;
+  color: #fff;
+}
+
+.report-dimensions-summary {
+  border-bottom: solid 1px #eee;
+  padding: 4px;
+}
+
+.reports-sent-status-btn {
+  border: none !important;
+  background-color: #fff;
+  outline: none !important;
+  padding: 8px 8px;
+}
+
+.reports-sent-status-btn:hover {
+  outline: none !important;
+}
+
+/* .rotated-scroll,
+.rotated-scroll .content {
+  transform: rotateX(180deg);
+}
+.content {
+  height: 70vh;
+  overflow: auto;
+}
+ */

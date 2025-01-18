@@ -1,0 +1,47 @@
+<ng-container
+  *ngIf="{
+    locations: locations$ | async,
+    patientLoad: patientLoad$ | async
+  } as params"
+>
+  <mat-toolbar color="primary">
+    <span>Doctor room</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button mat-dialog-close matTooltip="close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content class="mat-typography">
+    <div class="p-3">
+      <mat-form-field class="w-100">
+        <input
+          matInput
+          placeholder="Search Rooms"
+          (keyup)="searchRoom($event)"
+        />
+      </mat-form-field>
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="loadingPatientLoad"
+      ></mat-progress-bar>
+      <mat-chip-list
+        aria-label="Locations"
+        *ngIf="params?.locations && !loadingPatientLoad"
+      >
+        <mat-chip
+          *ngFor="let room of params?.locations | filterBy: searchTerm:'name'"
+          (click)="onSelectRoom($event, room)"
+          color="{{ room.id === currentRoom ? 'primary' : '' }}"
+          [selected]="room.id === currentRoom"
+        >
+          <span
+            class="patient-load-badge"
+            *ngIf="params?.patientLoad[room.id] as patientLoad"
+            >{{ patientLoad }}</span
+          >
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+  </mat-dialog-content>
+</ng-container>

@@ -1,0 +1,95 @@
+<div class="row">
+  <div
+    class="col-lg-12 col-md-12 col-sx-12 col-sm-12"
+    style="border-right: solid 1px #eee"
+  >
+    <div *ngIf="itemTypeName && showItemTypeName">
+      <div class="h5">New {{ itemTypeName }}</div>
+      <hr />
+    </div>
+    <div class="loading-overlay" *ngIf="saving">
+      <div class="text-center">
+        <div>Saving data</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div class="w-100">
+          <app-form
+            [fields]="basicConceptFields"
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+        </div>
+        <div *ngIf="isSet">
+          <div class="h6">
+            {{ setMembersHeaderName }}
+          </div>
+          <!-- <app-concept-set-members
+            [setMembersSearchTerm]="setMembersSearchTerm"
+            [selectedSetMembersItems]="selectedSetMembers"
+            [standardSearchTerm]="standardSearchTerm"
+            [testMethodUuid]="testMethodUuid"
+            [setMembersListFromTestMethod]="
+              params?.selectedTestMethodDetails?.setMembers
+            "
+            (selectedSetMembers)="onGetSelectedSetMembers($event)"
+          ></app-concept-set-members> -->
+          <app-multiple-items-selection
+            [items]="[]"
+            [itemType]="'concept'"
+            [standardSearchTerm]="setMembersSearchTerm"
+            [selectedItems]="selectedSetMembers"
+            [multipleSelectionCompHeight]="multipleSelectionCompHeight"
+            (getSelectedItems)="onGetSelectedSetMembers($event)"
+          ></app-multiple-items-selection>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <fieldset>
+          <legend>{{ itemTypeName }} Codes</legend>
+          <div>
+            <app-form
+              [fields]="[codesMappingsSourceField]"
+              (formUpdate)="onFormUpdateForSource($event)"
+            ></app-form>
+            <app-multiple-items-selection
+              *ngIf="selectedCodingSource"
+              [items]="[]"
+              [itemType]="'conceptReferenceTerm'"
+              [source]="selectedCodingSource"
+              [selectedItems]="selectedItems"
+              [multipleSelectionCompHeight]="multipleSelectionCompHeight"
+              (getSelectedItems)="onGetSelectedMembers($event)"
+            ></app-multiple-items-selection>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="w-100" *ngIf="savingMessage">
+      <div class="alert alert-{{ alertType }}" role="alert">
+        {{ savingMessage }}
+      </div>
+    </div>
+    <div
+      *ngIf="saveOnTheComponent"
+      class="w-100 d-flex justify-content-end mt-2"
+    >
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        class="ml-2"
+        mat-stroked-button
+        [disabled]="!isFormValid"
+        (click)="onSave($event, null)"
+        color="primary"
+      >
+        {{ !conceptUuid ? "Save" : "Update" }}
+      </button>
+    </div>
+    <div *ngIf="errors?.length > 0">
+      <shared-error [errors]="errors"></shared-error>
+    </div>
+  </div>
+</div>

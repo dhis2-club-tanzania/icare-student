@@ -1,0 +1,41 @@
+<div class="procedures-histroy" *ngIf="previouslyOrderedProcedures">
+  <div *ngIf="previouslyOrderedProcedures?.length === 0">
+    <p class="p-4 text-center text-warning">No Previously ordered procedures</p>
+  </div>
+  <div *ngIf="previouslyOrderedProcedures?.length > 0">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Procedure</th>
+          <th>Order Date & Time</th>
+          <th>Ordered By</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th style="width: 20%">Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let procedure of previouslyOrderedProcedures">
+          <td>
+            {{ procedure?.concept?.display }}
+          </td>
+          <td>
+            {{ procedure?.dateActivated | date: "medium" }}
+          </td>
+          <td>
+            {{ procedure?.orderer?.display }}
+          </td>
+          <td>
+            {{ procedure?.location?.display }}
+          </td>
+          <td>
+            Done at {{ procedure?.observation?.obsDatetime | date: "medium" }}
+          </td>
+          <td>
+            {{ procedure?.observation?.comment }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

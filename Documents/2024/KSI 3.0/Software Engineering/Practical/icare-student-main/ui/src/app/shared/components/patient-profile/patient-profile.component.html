@@ -1,0 +1,20 @@
+<div class="patient-profile" *ngIf="privileges$ | async as privileges">
+  <mat-icon class="text-muted" style="font-size: 150px">person</mat-icon>
+  <div class="patient-profile-details ml-3" *ngIf="patient">
+    <h6 class="font-weight-normal">{{ patient.identifier }}</h6>
+    <h5 class="text-muted font-weight-normal mb-1">{{ patient.name }}</h5>
+    <h5 class="mb-1">{{ patient.gender }}</h5>
+    <h5 class="mb-2">
+      {{  getAge() }}
+      <span class="text-muted">({{ patient.dob | date }})</span>
+    </h5>
+    <p
+      style="text-align: left"
+      *ngIf="privileges && privileges['Edit Patients']"
+    >
+      <a mat-flat-button href="#/registration/edit">Edit Patient</a>
+    </p>
+    <!-- <a class="text-primary">See more</a> -->
+  </div>
+  <div *ngIf="!patient" class="p-3 text-muted">Search Patient to continue</div>
+</div>

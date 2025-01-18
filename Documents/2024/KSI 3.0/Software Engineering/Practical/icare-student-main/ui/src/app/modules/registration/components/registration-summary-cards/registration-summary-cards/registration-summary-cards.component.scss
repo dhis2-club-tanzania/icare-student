@@ -1,0 +1,30 @@
+.summary-card {
+  background-color: rgba(66, 171, 237, 0.3);
+  color: #4e73df;
+  border-left: 0.25rem solid #4e73df !important;
+  border-collapse: collapse;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid #e3e6f0;
+  // border-radius: 0.35rem;
+}
+p {
+  font-size: 20px;
+  color: #4e73df;
+}
+.div-line {
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 100%;
+  border-bottom: 1px solid #000405;
+}
+
+.location-details-card {
+  cursor: pointer;
+}

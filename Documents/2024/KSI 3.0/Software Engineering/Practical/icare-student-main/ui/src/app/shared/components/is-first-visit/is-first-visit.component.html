@@ -1,0 +1,5 @@
+<div class="new-visit-check" *ngIf="isFirstVisit$ | async as isFirstVisit">
+  <b>
+    {{ isFirstVisit ? "New" : "Revisit" }}
+  </b>
+</div>

@@ -1,0 +1,38 @@
+<div class="loading-overlay" *ngIf="saving">
+  <div class="text-center">
+    <div>Saving new added item ...</div>
+    <div class="mt-3 d-flex justify-content-center w-100">
+      <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+    </div>
+  </div>
+</div>
+<mat-toolbar color="primary">
+  <span>New Received Stock</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-dialog-content class="mat-typography">
+  <div class="p-3 w-100">
+    <div>
+      <app-form
+        [fields]="formFields"
+        (formUpdate)="onUpdateForm($event)"
+      ></app-form>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="d-flex justify-content-end mr-2 mb-2 mt-2">
+  <button mat-stroked-button (click)="onClose($event)">Close</button>
+  <button
+    [disabled]="!isFormValid"
+    mat-stroked-button
+    (click)="onSave($event)"
+    color="primary"
+  >
+    Save
+  </button>
+</mat-dialog-actions>

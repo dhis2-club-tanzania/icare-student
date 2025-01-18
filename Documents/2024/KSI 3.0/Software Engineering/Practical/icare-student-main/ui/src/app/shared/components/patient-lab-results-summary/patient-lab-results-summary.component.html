@@ -1,0 +1,97 @@
+<div>
+  <table class="table" *ngIf="filteredLabTestsResults && !patientVisit">
+    <ng-container
+      *ngIf="filteredLabTestsResults && filteredLabTestsResults?.length > 0"
+    >
+      <tr>
+        <th>#</th>
+        <th>Test</th>
+        <th>Result</th>
+        <th>SI - unit</th>
+      </tr>
+      <tr
+        *ngFor="let test of filteredLabTestsResults; let i = index"
+        [attr.data-index]="i"
+      >
+        <td>{{ i + 1 }}</td>
+        <td>{{ test?.name }}</td>
+        <td *ngIf="test?.value">{{ test?.value?.value }}</td>
+        <td *ngIf="test?.value">{{ test?.concept?.units || "N/A" }}</td>
+        <td *ngIf="test?.parameters" colspan="2">
+          <div>
+            <p>Parameters</p>
+            <table class="table">
+              <tr *ngFor="let param of test?.parameters">
+                <td>{{ param?.name }}</td>
+                <td>{{ param?.value?.value }}</td>
+                <td *ngIf="test?.value">
+                  {{ param?.concept?.units || "N/A" }}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+    <ng-container
+      *ngIf="filteredLabTestsResults && filteredLabTestsResults?.length == 0"
+    >
+      <tr>
+        <td class="text-left" colspan="4">No data</td>
+      </tr>
+    </ng-container>
+  </table>
+  <div
+    *ngIf="{
+      codedResultsData: codedResultsData$ | async,
+      testSetMembersDetails: testSetMembersDetails$ | async,
+      orderTypes: orderTypes$ | async,
+      provider: provider$ | async
+    } as params"
+  >
+    <div *ngIf="loadedLabOrders">
+      <div *ngIf="labOrdersResultsInformation">
+        <mat-progress-bar
+          *ngIf="
+            (labOrdersResultsInformation?.length > 0 &&
+              (!params?.testSetMembersDetails || !params?.codedResultsData)) ||
+            !params?.orderTypes ||
+            !params?.provider
+          "
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <!-- {{ labOrdersResultsInformation | json }} -->
+        <app-order-results-renderer
+          *ngIf="
+            ((labOrdersResultsInformation?.length > 0 &&
+              params?.testSetMembersDetails &&
+              params?.codedResultsData) ||
+              labOrdersResultsInformation?.length === 0) &&
+            params?.provider &&
+            params?.orderTypes &&
+            params?.orderTypes?.length > 0
+          "
+          [testSetMembersDetails]="params?.testSetMembersDetails"
+          [codedResultsData]="params?.codedResultsData"
+          [observationsKeyedByConcept]="observations"
+          [labOrdersResultsInformation]="labOrdersResultsInformation"
+          [investigationAndProceduresFormsDetails]="
+            investigationAndProceduresFormsDetails
+          "
+          [forConsultation]="forConsultation"
+          [isInpatient]="isInpatient"
+          [orderTypes]="params?.orderTypes"
+          [provider]="params?.provider"
+          [visit]="patientVisit"
+          [iCareGeneralConfigurations]="iCareGeneralConfigurations"
+          (updateConsultationOrder)="onUpdateConsultationOrder()"
+          (reloadOrderComponent)="loadLabResultsComponent()"
+        ></app-order-results-renderer>
+      </div>
+    </div>
+    <mat-progress-bar
+      *ngIf="!loadedLabOrders"
+      mode="indeterminate"
+    ></mat-progress-bar>
+  </div>
+</div>

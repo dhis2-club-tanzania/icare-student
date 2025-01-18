@@ -1,0 +1,28 @@
+.maintenance-sidebar {
+  top: 50px;
+  bottom: 0;
+  left: 0;
+  border-radius: 0;
+  background: #fff;
+}
+
+// .page-container {
+//   // border: 1px solid rgba(0, 0, 0, 0.5);
+// }
+.page-sidenav-content {
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+.maintenance-sidenav {
+  user-select: none;
+}
+.full-width {
+  width: 100%;
+}
+
+.selected-menu-item,
+.selected-menu-item:hover {
+  background-color: #42abed !important;
+  color: #fff !important;
+}

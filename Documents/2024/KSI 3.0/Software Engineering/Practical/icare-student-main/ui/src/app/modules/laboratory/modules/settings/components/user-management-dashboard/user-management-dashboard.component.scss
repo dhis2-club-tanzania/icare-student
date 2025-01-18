@@ -1,0 +1,21 @@
+.example-container {
+    height: 400px;
+    overflow: auto;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  tr {
+    cursor: pointer;
+  }
+  
+  button {
+    outline: none !important;
+  }
+  
+  button:hover {
+    outline: none !important;
+  }
+  

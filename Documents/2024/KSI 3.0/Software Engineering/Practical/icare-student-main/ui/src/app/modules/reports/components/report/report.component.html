@@ -1,0 +1,95 @@
+<div
+  *ngIf="{
+    report: report$ | async,
+    reportLoadedState: reportLoadedState$ | async,
+    error: reportErrorState$ | async,
+    loading: reportLoadingState$ | async
+  } as params"
+>
+  <!-- report loaded - {{ params?.reportLoadedState }} -->
+
+  <!-- id dataset : {{ reportConfigs.isDataSet }} <br />
+  loaded rpt : {{ params?.reportLoadedState }} <br />
+  report dta : {{ params?.report | json }} -->
+  <div class="row" *ngIf="params?.reportLoadedState">
+    <div class="col-12">
+      <!-- {{ params?.report | json }} -->
+      <div *ngIf="reportConfigs.isDataSet" style="width: 100%; overflow: auto">
+        <table class="table table-bordered">
+          <thead class="custom-table-header">
+            <tr>
+              <th
+                class="text-center"
+                *ngFor="let reportHeader of params?.report?.reportHeades"
+              >
+                {{ reportHeader?.name }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of params?.report?.headers">
+              <td
+                class=""
+                [ngClass]="{ 'text-center': count !== 0 }"
+                *ngFor="
+                  let reportHeader of params?.report?.reportHeades;
+                  let count = index
+                "
+              >
+                <input
+                  *ngIf="count !== 0"
+                  readonly="readonly"
+                  [disabled]="
+                    !params?.report?.data[row?.index][reportHeader?.id]?.changed
+                  "
+                  style="width: 3.5rem; text-align: center; padding: 4px"
+                  value="{{
+                    params?.report?.data[row?.index][reportHeader?.id]?.value
+                  }}"
+                  [ngClass]="{
+                    'with-changes':
+                      params?.report?.data[row?.index][reportHeader?.id]
+                        ?.changed
+                  }"
+                  (click)="
+                    onOpenChangesModal(
+                      $event,
+                      params?.report?.data[row?.index][reportHeader?.id],
+                      params?.report?.data[row?.index][
+                        params?.report?.reportHeades[0]?.id
+                      ]
+                    )
+                  "
+                />
+                <span *ngIf="count == 0">
+                  {{
+                    params?.report?.data[row?.index][reportHeader?.id]?.value
+                  }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!reportConfigs.isDataSet">
+        <app-events-data
+          [reportObject]="params?.report"
+          (eventData)="onSendEventData($event)"
+        ></app-events-data>
+      </div>
+    </div>
+  </div>
+
+  <!-- report loaded - {{ params?.reportLoadedState }} -->
+
+  <div *ngIf="params?.error" class="alert alert-danger p-2 mt-2">
+    Error Code: {{ params?.error?.status }} <br />
+    Error Message:
+    <small>{{ params?.error?.message }} </small>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="params?.loading"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

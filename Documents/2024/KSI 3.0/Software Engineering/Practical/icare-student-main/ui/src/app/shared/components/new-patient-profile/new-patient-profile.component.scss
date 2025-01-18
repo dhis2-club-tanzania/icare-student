@@ -1,0 +1,39 @@
+.patient-profile-container {
+  background-color: #f5f5f5;
+  padding: 5px;
+}
+
+.patient-prifile-header {
+  padding: 5px 0;
+  border-bottom: solid 2px #bdbdbd;
+  margin: 0 1px !important;
+}
+
+.patient-prifile-header .client-names {
+  font-size: 1.2rem;
+  color: #2a8fd1;
+}
+
+.patient-prifile-header .age-and-gender-details {
+  font-size: 1.1rem;
+  color: #2a8fd1;
+}
+
+.other-demographic-details {
+  font-size: 0.8rem;
+  padding: 5px 0px !important;
+}
+
+.other-demographic-details .p-items {
+  padding: 3px 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100%3);
+  flex-wrap: wrap;
+}
+.item {
+  height: calc(100%3);
+}

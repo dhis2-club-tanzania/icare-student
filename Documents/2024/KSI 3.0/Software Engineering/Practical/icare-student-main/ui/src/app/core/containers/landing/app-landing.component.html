@@ -1,0 +1,17 @@
+<div
+  class="app-container"
+  *ngIf="{
+    LISConfigurations: LISConfigurations$ | async,
+    userLocations: locationsForCurrentUser$ | async
+  } as params"
+>
+  <app-menu></app-menu>
+  <div
+    [ngClass]="{
+      contents: !params?.LISConfigurations?.isLIS,
+      'lis-contents': params?.LISConfigurations?.isLIS
+    }"
+  >
+    <router-outlet></router-outlet>
+  </div>
+</div>

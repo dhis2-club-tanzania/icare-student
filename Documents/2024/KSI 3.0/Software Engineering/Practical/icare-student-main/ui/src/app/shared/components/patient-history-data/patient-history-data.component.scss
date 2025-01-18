@@ -1,0 +1,135 @@
+.visit {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.faint-small-text {
+  color: #555555;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+ul {
+  list-style: none !important;
+}
+
+/* Base */
+
+strong {
+  font-weight: 600;
+}
+
+.text-small {
+  font-size: small;
+  color: #555555;
+}
+
+#timeline-content {
+  text-align: center;
+}
+
+/* Timeline */
+.timeline {
+  border-left: 4px solid rgb(80, 138, 196);
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+  background: fade(white, 3%);
+  color: fade(#000000, 80%);
+  margin: 0px auto;
+  letter-spacing: 0.5px;
+  position: relative;
+  line-height: 1.4em;
+  font-size: 1.03em;
+  padding: 30px 50px;
+  list-style: none;
+  text-align: left;
+  max-width: 70%;
+  left: 50px;
+
+  .event {
+    border-bottom: 1px dashed fade(white, 10%);
+    padding-bottom: (10px * 0.5);
+    margin-bottom: 30px;
+    position: relative;
+
+    &:last-of-type {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border: none;
+    }
+
+    &:before,
+    &:after {
+      position: absolute;
+      display: block;
+      top: 0;
+    }
+
+    &:before {
+      left: (((120px * 0.6) + 50px + 7px + 30px + (4px * 2)) * 1.5) * -1;
+      color: fade(white, 40%);
+      content: attr(data-date);
+      text-align: right;
+      min-width: 120px;
+    }
+
+    &:after {
+      box-shadow: 0 0 0 4px fade(rgb(80, 138, 196), 100%);
+      left: (50px + 7px + (30px * 0.35)) * -1;
+      background: lighten(rgb(80, 138, 196), 5%);
+      border: 3px solid rgb(80, 138, 196);
+      border-radius: 50%;
+      height: 30px;
+      width: 30px;
+      content: "";
+      top: 0;
+    }
+  }
+  .mini-event {
+    border-bottom: 1px dashed fade(white, 10%);
+    padding-bottom: (10px * 0.5);
+    margin-bottom: 10px;
+    position: relative;
+
+    .data-name {
+      margin-bottom: 0px;
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border: none;
+    }
+
+    &:before,
+    &:after {
+      position: absolute;
+      display: block;
+      top: 0;
+    }
+
+    &:before {
+      left: (((120px * 0.6) + 50px + 7px + 30px + (4px * 2)) * 1.5) * -1;
+      color: fade(white, 40%);
+      content: attr(data-date);
+      text-align: right;
+      min-width: 120px;
+    }
+
+    &:after {
+      box-shadow: 0 0 0 4px fade(rgb(80, 138, 196), 100%);
+      left: (50px + 4px + (20px * 0.35)) * -1;
+      background: lighten(#ffffff, 5%);
+      border: 3px solid rgb(80, 138, 196);
+      border-radius: 50%;
+      height: 20px;
+      width: 20px;
+      content: "";
+      top: 0;
+    }
+    .data-name,
+    .data-description {
+      font-size: 0.9rem;
+    }
+  }
+}

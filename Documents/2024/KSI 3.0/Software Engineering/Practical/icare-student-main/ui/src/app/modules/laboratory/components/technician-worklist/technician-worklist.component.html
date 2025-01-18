@@ -1,0 +1,53 @@
+<div *ngIf="{labTests : labTests$ | async} as params">
+  <table class="table table-bordered table-striped">
+    <tr class="table-header">
+      <td>SN</td>
+      <td>MRNo.</td>
+      <td>Sample ID</td>
+      <td>Test order</td>
+      <td>Container</td>
+      <td>Label</td>
+      <td colspan="2">Actions</td>
+    </tr>
+    <ng-container
+    >
+      <tr *ngFor="let testOrder of params?.labTests; let i = index">
+        <td >
+          {{ i + 1 }}
+        </td>
+        <td>
+          {{ testOrder?.mrNo }}
+        </td>
+        <td>
+          {{ testOrder?.sampleId }} ({{ testOrder?.specimenSourceName }})
+        </td>
+        <td>
+          {{testOrder?.concept?.display}}
+        </td>
+        <td>
+          <mat-form-field class="w-80" *ngIf="testContainers && testOrder?.testAllocations?.length == 0">
+            <mat-label>Select</mat-label>
+            <mat-select required (selectionChange)="
+                                getContainerValue($event.value, testOrder)
+                              ">
+              <mat-option *ngFor="let option of testContainers" [value]="option.uuid">{{ option.display }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span *ngIf="testOrder?.testAllocations && testOrder?.testAllocations?.length > 0">
+            {{ testOrder?.testAllocations[0]?.container?.display }}
+          </span>
+        </td>
+        <td>
+          {{testOrder?.orderNumber}}
+        </td>
+        <td>
+          <button [disabled]="!containerToTestOrder || !containerToTestOrder[testOrder?.orderNumber] || testOrder?.testAllocations?.length > 0" color="primary" mat-stroked-button (click)="setContainer($event, testOrder)" class="mr-2">
+            Done
+          </button>
+        </td>
+        <!-- <td style="width: 100px; border-bottom: none !important"></td> -->
+      </tr>
+    </ng-container>
+  </table>
+</div>

@@ -1,0 +1,19 @@
+<div class="d-flex justify-content-between align-items-center">
+  <ng-container *ngIf="diagnosisForm && diagnosisForm?.formFields">
+    <div style="width: 90%">
+      <app-form
+        [fields]="diagnosisForm?.formFields"
+        [isFormHorizontal]="true"
+        (formUpdate)="onFormUpdate($event)"
+      >
+      </app-form>
+    </div>
+    <button
+      (click)="saveChanges($event)"
+      mat-stroked-button
+      style="height: 39px; margin-top: -20px"
+    >
+      Update
+    </button>
+  </ng-container>
+</div>

@@ -1,0 +1,19 @@
+<div class="summary-card w-100">
+  <mat-card
+    class="location-details-card"
+    (click)="routeToPatientsListByLocation($event, location)"
+  >
+    <mat-card-title
+      style="padding-bottom: 0px; margin-bottom: 1px; font-size: 15px"
+      >{{ roomNo }}
+    </mat-card-title>
+
+    <!-- <mat-card-subtitle class="ml-2">{{ doctorName }}</mat-card-subtitle> -->
+    <mat-card-content>
+      <p class="mt-2">
+        Active patient:
+        {{ totalActivePatients }}
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>

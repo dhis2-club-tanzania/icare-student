@@ -1,0 +1,395 @@
+<mat-card>
+  <!-- loading section -->
+  <!-- end of loading section -->
+  <div class="h4 p-2">Adding new user</div>
+  <hr />
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  <div class="table-responsive p-3" *ngIf="!loading">
+    <form [formGroup]="userForm" class="example-form">
+      <mat-form-field
+        appearance="fill"
+        autocomplete="off"
+        class="example-full-width"
+        MatFormFieldControl="username"
+      >
+        <mat-label> Username </mat-label>
+        <input
+          autocomplete="off"
+          matInput
+          placeholder="Username"
+          formControlName="username"
+          (keyup)="search($event)"
+          autocomplete="off"
+        />
+      </mat-form-field>
+      <span
+        *ngIf="searching && usernames > 0"
+        [matBadge]="usernames"
+        matBadgeOverlap="false"
+        class="ml-2"
+        >Matching usernames
+      </span>
+      <mat-progress-bar
+        mode="indeterminate"
+        class="ml-2 w-100 searchloader mt-0"
+        *ngIf="searching && usernames > 0"
+      >
+      </mat-progress-bar>
+
+      <ng-container *ngIf="!initialization && usernames === 0">
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width disabledForm"
+          MatFormFieldControl="fullName"
+        >
+          <mat-label> Full Name </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Full Name"
+            [value]="fullName"
+            class="disabledForm"
+            disabled
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="firstName"
+        >
+          <mat-label> First Name </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="First Name"
+            formControlName="firstName"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="middleName"
+        >
+          <mat-label> Middle Name </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Middle Name"
+            formControlName="middleName"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="surname"
+        >
+          <mat-label> Surname </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Surname"
+            formControlName="surname"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="gender"
+          (click)="onClickGender($event)"
+        >
+          <mat-label> Gender </mat-label>
+          <mat-select formControlName="gender">
+            <mat-option
+              *ngFor="let option of genderValues"
+              [value]="option.value"
+            >
+              {{ option.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field
+          class="example-full-width"
+          appearance="fill"
+          MatFormFieldControl="birthdate"
+          (click)="pickeror.open()"
+        >
+          <input
+            autocomplete="off"
+            matInput
+            [matDatepicker]="pickeror"
+            [max]="today"
+            placeholder="Date of Birth"
+            (click)="pickeror.open()"
+            [readonly]="true"
+            [value]="birthdate"
+            formControlName="birthdate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickeror"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickeror></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="addressDisplay"
+        >
+          <mat-label> Primary Address </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Address"
+            formControlName="addressDisplay"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="addressDisplay2"
+        >
+          <mat-label> Alternative Address </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Alternative Address"
+            formControlName="addressDisplay2"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="country"
+        >
+          <mat-label> Country </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Country"
+            formControlName="country"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="city"
+        >
+          <mat-label> Region/City </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Region/City"
+            formControlName="city"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="district"
+        >
+          <mat-label> District/Town </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="District/Town"
+            formControlName="district"
+          />
+        </mat-form-field>
+
+        <mat-form-field
+          appearance="fill"
+          autocomplete="off"
+          class="example-full-width"
+          MatFormFieldControl="postalCode"
+        >
+          <mat-label> Postal Code </mat-label>
+          <input
+            autocomplete="off"
+            matInput
+            placeholder="Postal Code"
+            formControlName="postalCode"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <div class="row">
+          <div class="col-4">
+            <mat-form-field class="w-50" appearance="fill" autocomplete="off">
+              <mat-label> Password </mat-label>
+              <input
+                autocomplete="off"
+                matInput
+                placeholder="Password"
+                [type]="hide ? 'password' : 'text'"
+                formControlName="password"
+                [errorStateMatcher]="passwordErrorMatcher"
+                required
+                autocomplete="off"
+                (focusout)="confirmStrongPassword($event)"
+              />
+              <!-- <mat-hint *ngIf="!passwordInput.value"
+                >Enter your password</mat-hint
+              > -->
+              <mat-icon matSuffix (click)="hide = !hide">{{
+                hide ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field
+              class="w-50 ml-2"
+              appearance="fill"
+              autocomplete="off"
+              *ngIf="hide"
+            >
+              <mat-label> Confirm Password </mat-label>
+              <input
+                autocomplete="off"
+                matInput
+                placeholder="Confirk Password"
+                [type]="hide ? 'password' : 'text'"
+                [errorStateMatcher]="confirmErrorMatcher"
+                formControlName="confirmpassword"
+                autocomplete="off"
+              />
+              <!-- <mat-hint *ngIf="!confirmpassword.value"
+                >Confirm Password</mat-hint
+              > -->
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="mt-2">
+          <mat-checkbox #checkbox (change)="providerAccount(checkbox.checked)"
+            >Create Provider Account</mat-checkbox
+          >
+        </div>
+        <ng-container *ngIf="shouldCreateProvider">
+          <mat-form-field
+            appearance="fill"
+            autocomplete="off"
+            class="example-full-width"
+            MatFormFieldControl="MCTNumber"
+          >
+            <mat-label> Provider's MCT Number </mat-label>
+            <input
+              matInput
+              placeholder="Provider's MCT Number"
+              formControlName="MCTNumber"
+              autocomplete="off"
+            />
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            autocomplete="off"
+            class="example-full-width"
+            MatFormFieldControl="phoneNumber"
+          >
+            <mat-label> Provider's Phone Number </mat-label>
+            <input
+              matInput
+              placeholder="Provider's Phone Number"
+              formControlName="phoneNumber"
+              autocomplete="off"
+            />
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            autocomplete="off"
+            class="example-full-width"
+            MatFormFieldControl="qualification"
+          >
+            <mat-label> Provider's Qualification </mat-label>
+            <input
+              matInput
+              placeholder="Provider's Qualification"
+              formControlName="qualification"
+              autocomplete="off"
+            />
+          </mat-form-field>
+        </ng-container>
+        <ng-container
+          *ngIf="laboratoryLocations$ | async as laboratoryLocations"
+        >
+          <h4 style="margin-top: 14px">Locations</h4>
+          <app-multiple-items-selection
+            *ngIf="laboratoryLocations"
+            [items]="laboratoryLocations"
+            [selectedItems]="selectedLocations"
+            (getSelectedItems)="onGetSelectedLocations($event)"
+          ></app-multiple-items-selection>
+          <mat-progress-bar
+            *ngIf="!laboratoryLocations"
+            mode="indeterminate"
+          ></mat-progress-bar>
+        </ng-container>
+
+        <ng-container *ngIf="roles$ | async as roles">
+          <h4 style="margin-top: 14px">Roles</h4>
+          <app-multiple-items-selection
+            *ngIf="roles"
+            [items]="roles"
+            [selectedItems]="selectedRoles"
+            (getSelectedItems)="onGetSelectedRoles($event)"
+          ></app-multiple-items-selection>
+          <mat-progress-bar
+            *ngIf="!roles"
+            mode="indeterminate"
+          ></mat-progress-bar>
+        </ng-container>
+      </ng-container>
+    </form>
+  </div>
+
+  <div class="w-100 d-flex justify-content-end mt-2">
+    <button
+      mat-flat-button
+      (click)="onClose($event)"
+      color="primary"
+      style="background-color: rgb(173, 172, 172)"
+    >
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      class="ml-2"
+      (click)="saveData($event)"
+      [disabled]="!userForm.valid || saving"
+    >
+      <ng-container *ngIf="saving">
+        <span class="ml-2">Saving</span>
+        <mat-icon [ngClass]="{ 'fa-spin': saving }">cached</mat-icon>
+      </ng-container>
+      <ng-container *ngIf="!saving">
+        <mat-icon [diameter]="20">save</mat-icon>
+        <span>Save</span>
+      </ng-container>
+    </button>
+  </div>
+</mat-card>

@@ -1,0 +1,35 @@
+<div
+  class="sample-registration-page"
+  *ngIf="{
+    provider: provider$ | async,
+    LISConfigurations: LISConfigurations$ | async,
+    labSections: labSections$ | async,
+    specimenSources: specimenSources$ | async
+  } as params"
+>
+  <div
+    *ngIf="
+      params?.provider &&
+      params?.LISConfigurations &&
+      params?.labSections &&
+      params?.specimenSources
+    "
+  >
+    <app-register-sample
+      [provider]="params?.provider"
+      [labSections]="params?.labSections"
+      [LISConfigurations]="params?.LISConfigurations"
+      [specimenSources]="params?.specimenSources"
+    ></app-register-sample>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="
+      !params?.provider ||
+      !params?.LISConfigurations ||
+      !params?.labSections ||
+      !params?.specimenSources
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

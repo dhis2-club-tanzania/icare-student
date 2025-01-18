@@ -1,0 +1,104 @@
+<ng-container>
+  <div
+    *ngIf="
+      parameterResultsDetails &&
+      parameterResultsDetails?.length > 0 &&
+      !resultGroup
+    "
+  >
+    <table class="table">
+      <tbody>
+        <tr>
+          <td
+            class="w-50"
+            *ngIf="!hideParameterLabel && whatToShow === 'parameter'"
+          >
+            <b>{{ parameter?.display ? parameter?.display : "-" }}</b>
+          </td>
+          <td class="w-50" *ngIf="whatToShow !== 'parameter'">
+            <ng-container *ngIf="parameterResultsDetails">
+              <table *ngFor="let resultAllocation of parameterResultsDetails">
+                <ng-container *ngIf="resultAllocation?.results?.length > 0">
+                  <ng-container
+                    *ngFor="let result of resultAllocation?.results"
+                  >
+                    <tr *ngIf="result?.toShow">
+                      <td>
+                        <b>
+                          {{
+                            result?.valueCoded?.display
+                              ? result?.valueCoded?.display
+                              : result?.value
+                              ? result?.value
+                              : result?.valueText
+                              ? result?.valueText
+                              : result?.valueNumeric
+                              ? result?.valueNumeric
+                              : "-"
+                          }}
+                        </b>
+                        <span
+                          class="ml-3 text-muted float-right"
+                          style="font-size: 0.7rem"
+                        >
+                          <em
+                            >(By
+                            {{
+                              result?.resultsFedBy
+                                ? result?.resultsFedBy?.name
+                                : "-"
+                            }}
+                            On {{ result?.dateCreated | date: "medium" }})</em
+                          >
+                        </span>
+                      </td>
+                      <!-- <td>
+                        {{
+                          resultAllocation?.authorized
+                            ? "Authorized"
+                            : "Un-Authorized"
+                        }}
+                        <span
+                          *ngIf="resultAllocation?.authorized"
+                          class="ml-3 text-muted float-right"
+                          style="font-size: 0.7rem"
+                        >
+                          <em>
+                            By {{ resultAllocation?.authorizedBy?.name }} On
+                            {{
+                              resultAllocation?.authorizedBy?.timestamp
+                                | date: "medium"
+                            }}</em
+                          >
+                        </span>
+                      </td> -->
+                    </tr>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="resultAllocation?.results?.length === 0">
+                  <tr>
+                    <td colspan="100%">
+                      <div class="alert alert-warning" role="alert">
+                        No results/Processing
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </table>
+            </ng-container>
+            <div
+              *ngIf="!parameterResultsDetails"
+              class="alert alert-warning"
+              role="alert"
+            >
+              No data/Processing
+            </div>
+            <span>
+              {{ units }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>

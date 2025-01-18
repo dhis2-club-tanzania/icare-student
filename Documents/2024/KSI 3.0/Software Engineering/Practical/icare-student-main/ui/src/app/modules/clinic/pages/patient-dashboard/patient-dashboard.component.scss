@@ -1,0 +1,24 @@
+.patient-dashboard-container {
+  position: relative;
+}
+
+.button-container {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 100;
+}
+
+::ng-deep .mat-tab-labels :last-child.mat-tab-label {
+  color: unset;
+  opacity: unset;
+}
+
+.obs-data-value {
+  font-weight: 600;
+}
+
+.range-label {
+  font-size: 0.6rem;
+}

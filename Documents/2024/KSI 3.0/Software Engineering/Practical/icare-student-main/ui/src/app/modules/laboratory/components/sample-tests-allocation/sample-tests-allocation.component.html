@@ -1,0 +1,60 @@
+<div *ngIf="samplesGroupedBymrNo$ | async">
+  <table class="table table-bordered table-striped">
+    <tr class="table-header">
+      <td>SN</td>
+      <td>MRNo.</td>
+      <td>Sample ID</td>
+      <td>Sample/Specimen type</td>
+      <td>Tests ordered</td>
+      <td>Accepted by</td>
+      <td colspan="2">Actions</td>
+    </tr>
+    <ng-container
+      *ngFor="
+        let sampleGroup of samplesGroupedBymrNo$ | async;
+        let count = index
+      "
+    >
+      <tr
+        [ngClas]="{
+          'active-form-area':
+            (currentSample$ | async) &&
+            sample.id == (currentSample$ | async)?.id
+        }"
+        *ngFor="let sample of sampleGroup?.samples; let i = index"
+      >
+        <td *ngIf="i == 0" [attr.rowspan]="sampleGroup.samples.length">
+          #{{ count + 1 }}
+        </td>
+        <td *ngIf="i == 0" [attr.rowspan]="sampleGroup.samples.length">
+          {{ sample.mrNo }}
+        </td>
+        <td>
+          {{ sample.id }}
+        </td>
+        <td>
+          {{ sample.specimenSourceName }}
+        </td>
+        <td>
+          <ul>
+            <li *ngFor="let testOrder of sample.orders">
+              {{ testOrder?.concept?.display }}
+            </li>
+          </ul>
+        </td>
+        <td>
+          {{ sample?.user?.name }}
+        </td>
+        <td>
+          <button
+            mat-stroked-button
+            class="mr-2 allocate-test-btn"
+            (click)="allocateTechnician($event, sample)"
+          >
+            Allocate
+          </button>
+        </td>
+      </tr>
+    </ng-container>
+  </table>
+</div>

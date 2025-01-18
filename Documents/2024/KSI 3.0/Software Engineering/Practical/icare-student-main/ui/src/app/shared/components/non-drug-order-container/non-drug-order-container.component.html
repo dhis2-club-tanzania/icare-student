@@ -1,0 +1,117 @@
+<div
+  *ngIf="{
+    drugsAssociatedWithSetMembersOfTheGenericDrug:
+      drugsAssociatedWithSetMembersOfTheGenericDrug$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.drugsAssociatedWithSetMembersOfTheGenericDrug"
+  ></mat-progress-bar>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving Non Drug...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div style="width: 100%; overflow: auto">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Non Drug</th>
+          <th>Quantity</th>
+          <th>Remarks</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngIf="
+            params?.drugsAssociatedWithSetMembersOfTheGenericDrug &&
+            params?.drugsAssociatedWithSetMembersOfTheGenericDrug?.length === 0
+          "
+        >
+          <tr>
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">
+                Non drug configurations are not complete, please contact IT for
+                assistance
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            params?.drugsAssociatedWithSetMembersOfTheGenericDrug &&
+            params?.drugsAssociatedWithSetMembersOfTheGenericDrug?.length > 0
+          "
+        >
+          <ng-container>
+            <ng-container
+              *ngFor="
+                let nonDrug of params?.drugsAssociatedWithSetMembersOfTheGenericDrug;
+                let count = index
+              "
+            >
+              <tr>
+                <td>
+                  {{ count + 1 }}
+                </td>
+                <td>
+                  {{ nonDrug?.display }}
+                </td>
+                <td>
+                  <app-non-drug-order-form
+                    [nonDrug]="nonDrug"
+                    (formData)="onGetFormData($event)"
+                  ></app-non-drug-order-form>
+                </td>
+                <td>
+                  <app-non-drug-order-form
+                    [forRemarks]="true"
+                    [nonDrug]="nonDrug"
+                    (formData)="onGetFormData($event)"
+                  ></app-non-drug-order-form>
+                </td>
+                <td>
+                  <button
+                    [disabled]="!isFormValid || !formData[nonDrug?.uuid]?.value"
+                    mat-flat-button
+                    color="primary"
+                    (click)="
+                      onAdd(
+                        $event,
+                        nonDrug,
+                        params?.drugsAssociatedWithSetMembersOfTheGenericDrug
+                      )
+                    "
+                  >
+                    Add
+                  </button>
+                </td>
+              </tr>
+
+              <ng-container
+                *ngIf="
+                  errorsData[nonDrug?.uuid] &&
+                  errorsData[nonDrug?.uuid]?.length > 0
+                "
+              >
+                <tr>
+                  <td colspan="100%">
+                    <app-shared-error
+                      [errors]="errorsData[nonDrug?.uuid]"
+                    ></app-shared-error>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

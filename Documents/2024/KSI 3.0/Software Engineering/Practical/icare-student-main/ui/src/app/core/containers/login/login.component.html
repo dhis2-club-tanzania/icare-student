@@ -1,0 +1,95 @@
+<div
+  class="login-container icare__bg-primary"
+  *ngIf="{
+    authenticationLoading: authenticationLoading$ | async,
+    parentLocation: parentLocation$ | async
+  } as params"
+>
+  <div class="login-content">
+    <div class="page-description">
+      <div class="h3 font-weight-bold">
+        <div *ngIf="params?.parentLocation?.name">
+          {{ params?.parentLocation?.name }}
+        </div>
+        <mat-progress-bar
+          *ngIf="!params?.parentLocation || !params?.parentLocation?.name"
+          mode="indeterminate"
+        ></mat-progress-bar>
+      </div>
+      <div class="logo">
+        <img height="100" src="{{ logo }}" alt="logo" />
+      </div>
+      <div class="h5 mt-3 font-weight-normal">
+        <div *ngIf="params?.parentLocation?.name">
+          {{ params?.parentLocation?.description }}
+        </div>
+        <!-- 
+        <mat-progress-bar
+          *ngIf="
+            !(parentLocation$ | async) ||
+            !(parentLocation$ | async)?.description
+          "
+          mode="indeterminate"
+        ></mat-progress-bar> -->
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Username</mat-label>
+          <input
+            id="username"
+            class="input-username"
+            matInput
+            placeholder="Enter username"
+            formControlName="username"
+            autocomplete="off"
+            required
+          />
+          <mat-error> Please provide a valid username </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Password</mat-label>
+          <input
+            id="password"
+            class="input-password"
+            matInput
+            placeholder="Enter password"
+            formControlName="password"
+            autocomplete="off"
+            required
+            [type]="hide ? 'password' : 'text'"
+          />
+          <mat-icon style="cursor: pointer" matSuffix (click)="hide = !hide"
+            >{{ hide ? "visibility_off" : "visibility" }}
+          </mat-icon>
+
+          <mat-error> Please provide a valid password </mat-error>
+        </mat-form-field>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <button
+            id="login-btn"
+            mat-flat-button
+            [disabled]="params.authenticationLoading"
+            data-test="icare-login-button"
+          >
+            <mat-spinner
+              color="primary"
+              *ngIf="params.authenticationLoading"
+              [diameter]="20"
+              style="display: inline-block !important; margin-right: 4px"
+            ></mat-spinner>
+            <span>Login</span>
+          </button>
+          <a class="cant-login-link" (click)="onOpenHelpModal()">
+            <small>Can't Login?</small>
+          </a>
+        </div>
+        <div class="authentication-error" *ngIf="loginErrorStatus$ | async">
+          Wrong username or password
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

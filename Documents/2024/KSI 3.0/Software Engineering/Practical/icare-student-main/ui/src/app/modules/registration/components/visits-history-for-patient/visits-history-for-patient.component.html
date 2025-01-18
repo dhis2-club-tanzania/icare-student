@@ -1,0 +1,10 @@
+<div *ngIf="{ patientVisits: patientVisits$ | async } as params">
+  <app-patient-visits-history
+    *ngIf="params?.patientVisits"
+    [patientVisits]="params?.patientVisits"
+  ></app-patient-visits-history>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.patientVisits"
+  ></mat-progress-bar>
+</div>

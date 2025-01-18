@@ -1,0 +1,66 @@
+<div
+  *ngIf="{
+    datesParameters: datesParameters$ | async,
+    visitReferences: visitReferences$ | async,
+    visitsLoadedState: visitsLoadedState$ | async,
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    sampleTypes: sampleTypes$ | async,
+    labSamplesDepartments: labSamplesDepartments$ | async,
+    labSamplesContainers: labSamplesContainers$ | async,
+    configs: configs$ | async,
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    LISConfigurations: LISConfigurations$ | async,
+    currentUser: currentUser$ | async,
+    privileges: privileges$ | async,
+    providerDetails: providerDetails$ | async
+  } as params"
+>
+  <div
+    style="margin-top: -20px"
+    *ngIf="
+      params?.datesParameters &&
+      params?.sampleTypesLoadedState &&
+      params?.labSamplesDepartments &&
+      params?.configs &&
+      params?.labSamplesContainers &&
+      params?.codedSampleRejectionReasons &&
+      params?.LISConfigurations &&
+      params?.labSamplesDepartments
+    "
+  >
+    <div class="mb-2" style="margin-top: -10px">
+      <app-shared-samples-summary-dashboard
+        [datesParams]="params?.datesParameters"
+        [dashboardSingleValueDataSetsReferenceKey]="
+          'iCare.laboratory.sampleStorage.dashboard.settings.samples.singleValue'
+        "
+      ></app-shared-samples-summary-dashboard>
+    </div>
+    <app-sample-storage-dashboard
+      [datesParameters]="params?.datesParameters"
+      [patients]="params?.visitReferences"
+      [labSamplesDepartments]="params?.labSamplesDepartments"
+      [sampleTypes]="params?.sampleTypes"
+      [labSamplesContainers]="params?.labSamplesContainers"
+      [configs]="params?.configs"
+      [LISConfigurations]="params?.LISConfigurations"
+      [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
+      [currentUser]="params?.currentUser"
+      [privileges]="params?.privileges"
+      [providerDetails]="params?.providerDetails"
+    ></app-sample-storage-dashboard>
+  </div>
+  <mat-progress-bar
+    *ngIf="
+      !params?.datesParameters ||
+      !params?.sampleTypesLoadedState ||
+      !params?.labSamplesDepartments ||
+      !params?.labSamplesDepartments ||
+      !params?.configs ||
+      !params?.labSamplesContainers ||
+      !params?.codedSampleRejectionReasons ||
+      !params?.LISConfigurations
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

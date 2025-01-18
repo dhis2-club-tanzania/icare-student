@@ -1,0 +1,73 @@
+<div
+  [ngClass]="drugsPrescribed.length > 0 ? 'current-prescriptions' : ''"
+  *ngIf="{ 
+    specificDrugConceptUuid: specificDrugConceptUuid$ | async,
+    prescriptionArrangementFields: prescriptionArrangementFields$ | async
+  } as params"
+>
+  <div *ngIf="errors.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <table class="table table-bordered table-striped">
+    <ng-container
+      *ngIf="drugsPrescribed.length > 0 && params?.specificDrugConceptUuid"
+    >
+      <thead>
+        <tr>
+          <th>S/N</th>
+          <th *ngIf="params?.prescriptionArrangementFields" colspan="2">Prescription</th>
+          <th *ngIf="!params?.prescriptionArrangementFields">Drug Name</th>
+          <th *ngIf="!params?.prescriptionArrangementFields">Description</th>
+          <th>Care setting</th>
+          <th>Date Ordered</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let drug of drugsPrescribed; let index = index">
+          <td>{{ index + 1 }}</td>
+          <ng-container *ngIf="params?.prescriptionArrangementFields">
+            <td colspan="2">
+              {{ drug.obs[params?.specificDrugConceptUuid] ? drug.obs[params?.specificDrugConceptUuid]?.comment : drug?.display }} - 
+            
+            <span>
+              {{ drug.obs[params?.prescriptionArrangementFields['1']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['1']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['1']?.uuid]?.value }}
+              ({{ drug.obs[params?.prescriptionArrangementFields['2']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['2']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['2']?.uuid]?.value }})
+              {{ drug.obs[params?.prescriptionArrangementFields['3']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['3']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['3']?.uuid]?.value }}
+              {{ drug.obs[params?.prescriptionArrangementFields['4']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['4']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['4']?.uuid]?.value }}
+              {{ drug.obs[params?.prescriptionArrangementFields['5']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['5']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['5']?.uuid]?.value }}
+              {{ drug.obs[params?.prescriptionArrangementFields['6']?.uuid]?.value?.display ? drug.obs[params?.prescriptionArrangementFields['6']?.uuid]?.value?.display : drug.obs[params?.prescriptionArrangementFields['6']?.uuid]?.value }}
+            </span>
+            </td>
+          </ng-container>
+          <ng-container *ngIf="!params?.prescriptionArrangementFields">
+            <td>
+              {{ drug.obs[params?.specificDrugConceptUuid] ? drug.obs[params?.specificDrugConceptUuid]?.comment : drug?.display }}
+            </td>
+            <td>
+                <span *ngFor="let instruction of drug?.formulatedDescription; let instructonIndex=index">
+                 {{ instructonIndex + 1 }}. {{ instruction?.concept?.display }} - {{ instruction?.value?.display ? instruction?.value?.display : instruction?.value }} <br>
+                </span>
+            </td>
+          </ng-container>
+          <td>{{ drug.careSetting.display }}</td>
+          <td>{{ drug.dateActivated | date: "short" }}</td>
+          <td *ngIf="fromClinic">
+            <button
+              (click)="stopDrugOrder($event, drug, drug.obs[params?.specificDrugConceptUuid]?.comment)"
+              class="btn btn-text btn-outline-danger pb-2"
+            >
+              <mat-icon class="icon">not_interested</mat-icon> Stop
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </ng-container>
+    <ng-container *ngIf="drugsPrescribed.length === 0">
+      <tbody>
+        <tr class="text-center p-3">
+          No Doctor's Prescriptions Yet
+        </tr>
+      </tbody>
+    </ng-container>
+  </table>
+</div>

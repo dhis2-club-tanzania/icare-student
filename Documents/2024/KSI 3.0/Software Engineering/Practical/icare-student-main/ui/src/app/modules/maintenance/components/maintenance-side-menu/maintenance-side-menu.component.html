@@ -1,0 +1,46 @@
+<div
+  *ngIf="{
+    currentMenuDepartments: currentMenuDepartments$ | async
+  } as params"
+>
+  <mat-nav-list *ngFor="let page of pages">
+    <mat-list-item
+      (click)="navigateToThis($event, page.id, null)"
+      [ngClass]="{
+        'selected-menu-item': currentMenu?.id === page?.id
+      }"
+    >
+      <span class="full-width" *ngIf="isExpanded || isShowing">{{
+        page.name
+      }}</span>
+      <!-- <mat-icon mat-list-icon>home</mat-icon> -->
+      <mat-icon
+        class="menu-button"
+        [ngClass]="{ rotated: page?.id === currentMenu?.id }"
+        *ngIf="page?.children?.length > 0"
+        >expand_more</mat-icon
+      >
+    </mat-list-item>
+    <div
+      class="submenu"
+      [ngClass]="{ expanded: page?.id === currentMenu?.id }"
+      *ngIf="
+        page?.id === currentMenu?.id &&
+        params?.currentMenuDepartments &&
+        currentMenu?.children?.length > 0
+      "
+    >
+      <a
+        mat-list-item
+        [ngClass]="{
+          'selected-department':
+            department?.uuid === currentMenuDepartment?.uuid
+        }"
+        (click)="navigateToThis($event, page?.id, department)"
+        *ngFor="let department of params?.currentMenuDepartments"
+      >
+        {{ department?.display }}
+      </a>
+    </div>
+  </mat-nav-list>
+</div>

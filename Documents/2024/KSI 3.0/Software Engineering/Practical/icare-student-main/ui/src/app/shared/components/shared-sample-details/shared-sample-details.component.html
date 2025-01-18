@@ -1,0 +1,125 @@
+<div
+  class="row"
+  *ngIf="{
+    obs: obs$ | async,
+    sampleConditions: sampleConditions$ | async,
+    sampleDetails: sampleDetails$ | async,
+    externalSystems: externalSystems$ | async
+  } as params"
+>
+  <ng-container *ngIf="!params?.sampleDetails">
+    <div
+      class="w-100"
+      style="display: flex; justify-content: center; align-items: center"
+    >
+      <mat-spinner color="primary"></mat-spinner>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="params?.sampleDetails">
+    <div [ngClass]="{ 'col-md-6': !hasResults, 'col-md-4': hasResults }">
+      <div class="d-flex">
+        <div class="w-50">
+          <p>FileNO: {{ params?.sampleDetails?.mrn }}</p>
+          <p>
+            Names:
+            {{ sample?.patient?.givenName + " " + sample?.patient?.familyName }}
+          </p>
+          <p>
+            <span> Gender:{{ sample?.patient?.gender }} </span>
+            <span class="ml-2">
+              Age: {{ sample?.patient?.age }}
+              <span class="text-muted">
+                ({{ sample?.patient?.dob | date }})
+              </span>
+            </span>
+          </p>
+          <p *ngIf="params.sampleConditions?.TRANSPORT_CONDITION">
+            <span
+              >Transport Condition:
+              {{ params.sampleConditions?.TRANSPORT_CONDITION }}</span
+            >
+          </p>
+          <p *ngIf="params.sampleConditions?.TRANSPORT_TEMPERATURE">
+            <span
+              >Transportation Temperature:
+              {{ params.sampleConditions?.TRANSPORT_TEMPERATURE }}</span
+            >
+          </p>
+        </div>
+        <div class="w-50">
+          <p *ngIf="params.obs">
+            <span
+              >Clinical Information / History: <br />
+              {{ params.obs?.latest?.value }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <div [ngClass]="{ 'col-md-6': !hasResults, 'col-md-4': hasResults }">
+      <!-- {{ sample?.specimen?.specimenName }} -->
+      <div class="h6">Test Orders Details</div>
+      <div class="order-table">
+        <table class="table mt-2">
+          <tbody>
+            <ng-container
+              *ngFor="
+                let order of params?.sampleDetails?.orders;
+                let count = index
+              "
+            >
+              <tr>
+                <td>
+                  {{ count + 1 }}
+                </td>
+                <td>
+                  {{ order?.order?.concept?.display }}
+                </td>
+                <!-- <td>
+                  {{ allocation?.concept?.display }}
+                </td> -->
+              </tr>
+              <!-- <tr
+                *ngFor="
+                  let allocation of order?.testAllocations;
+                  let countAllocation = index
+                "
+              >
+                <td
+                  *ngIf="countAllocation == 0"
+                  [attr.rowspan]="order?.testAllocations?.length"
+                >
+                  {{ count + 1 }}
+                </td>
+                <td
+                  *ngIf="countAllocation == 0"
+                  [attr.rowspan]="order?.testAllocations?.length"
+                >
+                  {{ order?.order?.concept?.display }}
+                </td>
+                <td>
+                  {{ allocation?.concept?.display }}
+                </td>
+                <td>
+                  <app-shared-parameter-results
+                    [order]="order"
+                    [hideParameterLabel]="true"
+                    [parameter]="allocation?.concept"
+                    [count]="0"
+                    [units]=""
+                  ></app-shared-parameter-results>
+                </td>
+              </tr> -->
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- <div
+    [ngClass]="{ 'col-md-4': hasResults }"
+    [ngStyle]="{ display: hasResults ? 'block' : 'none' }"
+  >
+    {{ params?.sampleDetails?.orders | json }}
+  </div> -->
+  </ng-container>
+</div>

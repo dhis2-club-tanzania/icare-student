@@ -1,0 +1,13 @@
+<div *ngIf="{ singleValue: singleValue$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.singleValue && params?.singleValue != 0"
+  ></mat-progress-bar>
+
+  <div class="indicator-header text-muted text-center">
+    {{ params?.singleValue?.name }}
+  </div>
+  <div class="indicator-count mt-1">
+    {{ params?.singleValue?.value }}
+  </div>
+</div>

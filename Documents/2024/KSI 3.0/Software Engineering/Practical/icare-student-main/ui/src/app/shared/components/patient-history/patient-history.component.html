@@ -1,0 +1,57 @@
+
+<div
+  class="history"
+  *ngIf="{
+    visits: visits$ | async,
+    customForms: customForms$ | async,
+    generalPrescriptionOrderType: generalPrescriptionOrderType$ | async,
+    prescriptionArrangementFields: prescriptionArrangementFields$ | async,
+    specificDrugConceptUuid: specificDrugConceptUuid$ | async,
+    allForms: allForms$ | async
+  } as params"
+>
+  <div *ngIf="!params?.visits?.length && loadingData">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  <div *ngIf="params?.visits?.length && !loadingData">
+    <mat-vertical-stepper [linear]="false" #stepper>
+      <mat-step *ngFor="let visit of params?.visits">
+        <ng-template matStepLabel>
+          <strong> {{ visit?.visit?.visitType?.display }} : </strong>
+          {{ visit?.visit?.startDatetime | date: "dd-MM-yyyy HH:mm:ss" }}
+          <span *ngIf="visit?.visit?.stopDatetime">
+            to {{ visit?.visit?.stopDatetime | date: "dd-MM-yyyy HH:mm:ss" }}
+          </span>
+          <span *ngIf="!visit?.visit?.stopDatetime">
+            <i>(On going visit)</i>
+          </span>
+        </ng-template>
+        <app-patient-history-data
+          [visit]="visit"
+          [forms]="params?.customForms"
+          [generalPrescriptionOrderType]="
+            params?.generalPrescriptionOrderType
+          "
+          [prescriptionArrangementFields]="
+            params?.prescriptionArrangementFields
+          "
+          [specificDrugConceptUuid]="params?.specificDrugConceptUuid"
+        ></app-patient-history-data>
+      </mat-step>
+    </mat-vertical-stepper>
+    <!-- <div class="history overflow-auto">
+        <ng-container *ngFor="let visit of params?.visits">
+          <app-patient-history-data 
+            
+            [visit]="visit" 
+            [forms]="params?.customForms" 
+            [generalPrescriptionOrderType]="params?.generalPrescriptionOrderType"
+            [prescriptionArrangementFields]="params?.prescriptionArrangementFields"
+            [specificDrugConceptUuid]="params?.specificDrugConceptUuid"
+            ></app-patient-history-data>
+        </ng-container>
+      </div> -->
+  </div>
+  <div *ngIf="!params?.visits?.length && !loadingData">
+    <h4 class="text-center"> {{ patient?.person ? 'No visit data found for ' + patient?.person?.display : 'No visit data found for this patient' }}</h4>
+  </div>

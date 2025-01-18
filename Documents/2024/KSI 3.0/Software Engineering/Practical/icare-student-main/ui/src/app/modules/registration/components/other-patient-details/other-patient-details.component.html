@@ -1,0 +1,39 @@
+<!-- {{ patientVisit$ | async | json }} -->
+<div *ngIf="{ patientVisit: patientVisit$ | async } as params">
+  <div>
+    <div class="row">
+      <div class="col-md-8 col-sm-12 col-sx-12">
+        <app-patient-visit-attributes-details
+          *ngIf="
+            params?.patientVisit &&
+            params?.patientVisit[0] &&
+            params?.patientVisit[0]?.visit
+          "
+          [attributes]="params?.patientVisit[0]?.visit?.attributesToDisplay"
+          [forRegistration]="true"
+        ></app-patient-visit-attributes-details>
+        <p *ngIf="ID && !params?.patientVisit?.length">
+          ID:
+          <b>
+            {{ ID }}
+          </b>
+        </p>
+        <p
+          class="text-center"
+          *ngIf="!params?.patientVisit || !params?.patientVisit?.length"
+        >
+          No previous visit history
+        </p>
+      </div>
+      <div class="col-md-4 col-sm-12 col-sx-12">
+        <app-patient-address
+          [personUuid]="patient?.person?.uuid"
+        ></app-patient-address>
+      </div>
+    </div>
+  </div>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.patientVisit"
+  ></mat-progress-bar>
+</div>

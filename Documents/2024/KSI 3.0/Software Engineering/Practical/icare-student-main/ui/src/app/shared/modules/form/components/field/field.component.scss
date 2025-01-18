@@ -1,0 +1,70 @@
+.field-btn {
+  width: 100% !important;
+}
+
+.for-checkbox-btns {
+  margin-bottom: 15px;
+}
+
+// .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+//   padding-bottom: 1em;
+//   background-color: #fff;
+// }
+
+// .mat-form-field-appearance-legacy .mat-form-field-underline {
+//   background-color: #fff;
+// }
+
+// textarea {
+//   margin-top: 6px;
+//   background-color: #fff;
+// }
+
+.mat-form-field-underline {
+  display: none !important;
+}
+
+::ng-deep .mat-option {
+  word-wrap: break-word !important;
+  white-space: pre-line !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  line-height: 30px !important;
+  padding: 0 16px !important;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  max-width: 100% !important;
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+  display: flex !important;
+  flex-direction: row !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+ng-deep .disabled-form-selection-option,
+.disabled-form-selection-option {
+  cursor: not-allowed !important;
+  color: red;
+  text-decoration: line-through !important;
+}
+
+.stock-out-item {
+  color: #dc3545 !important;
+}
+
+.in-stock-item {
+  color: #28a745 !important;
+}

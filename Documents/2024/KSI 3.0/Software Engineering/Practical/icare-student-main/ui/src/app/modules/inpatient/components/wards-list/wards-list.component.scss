@@ -1,0 +1,20 @@
+.bed {
+  border-radius: 5px;
+  min-height: 150px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.bed:hover {
+  box-shadow: 1px 0px 3px 0px rgba(0, 0, 0, 0.15);
+}
+
+.bed-name {
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.patient-details {
+  font-size: 0.6rem;
+  font-weight: 600;
+}

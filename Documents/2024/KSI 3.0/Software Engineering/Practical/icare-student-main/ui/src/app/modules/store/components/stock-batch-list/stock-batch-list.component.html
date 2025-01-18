@@ -1,0 +1,112 @@
+<mat-card
+  class="mat-elevation-z5 border"
+  *ngIf="{
+    userPrivileges: userPrivileges$ | async,
+    isCurrentLocationMainStore: isCurrentLocationMainStore$ | async
+  } as params"
+>
+  <div *ngIf="stock">
+    <div>
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center w-75" style="font-size: 1.2rem">
+          <button mat-icon-button (click)="onClose($event)">
+            <mat-icon>arrow_backward</mat-icon>
+          </button>
+          <span class="ml-2 span-fit"
+            ><b> {{ stock?.batches?.length }}</b> Batches of
+            <b>{{ stock?.name ? stock?.name : stock?.item?.display }}</b></span
+          >
+        </div>
+        <button
+          mat-flat-button
+          mat-button
+          color="primary"
+          [disabled]="
+            saving ||
+            !params?.isCurrentLocationMainStore ||
+            (params?.userPrivileges &&
+              !params?.userPrivileges['STORE_ADD_NEW_BATCH'])
+          "
+          (click)="onOpenBatchForm($event, 'ADD')"
+          [style.height]="'40px'"
+        >
+          <mat-spinner
+            color="primary"
+            *ngIf="saving"
+            [diameter]="20"
+            style="display: inline-block !important; margin-right: 4px"
+          ></mat-spinner>
+          Add Batch
+        </button>
+      </div>
+    </div>
+    <div class="batches-list-table">
+      <table class="table mt-2">
+        <tr>
+          <td>#</td>
+          <td>Batch No</td>
+          <td>Quantity</td>
+          <td>Buying Price</td>
+          <td>Expiry Date</td>
+          <td><span class="float-right">Actions</span></td>
+        </tr>
+        <tr *ngIf="stock?.batches?.length === 0">
+          <td colspan="5">
+            <div class="w-100 d-flex justify-content-center">No data</div>
+          </td>
+        </tr>
+        <tr *ngFor="let stockBatch of stock?.batches; let batchIndex = index">
+          <td>{{ batchIndex + 1 }}</td>
+          <td>
+            {{ stockBatch?.batchNo ? stockBatch?.batchNo : stockBatch?.batch }}
+          </td>
+          <td>{{ stockBatch?.quantity }}</td>
+          <td>-</td>
+          <td>
+            {{ stockBatch?.expiryDate | date }}
+            <span class="text-muted">({{ stockBatch?.remainingDays }})</span>
+          </td>
+          <td>
+            <div class="d-flex justify-content-end">
+              <button
+                [title]="
+                  stockBatch?.expiryDate < today
+                    ? 'The batch has expired'
+                    : 'Add stock on this batch'
+                "
+                [disabled]="
+                  stockBatch?.expiryDate < today ||
+                  !params?.userPrivileges['STORE_ADD_STOCK_ON_BATCH']
+                "
+                mat-flat-button
+                color="primary"
+                (click)="onOpenBatchForm($event, 'ADD', stockBatch)"
+              >
+                Add
+              </button>
+              <button
+                [disabled]="
+                  stockBatch?.quantity === 0 ||
+                  !params?.userPrivileges['STORE_DEDUCT_STOCK_FROM_BATCH']
+                "
+                [title]="
+                  stockBatch?.quantity === 0
+                    ? 'Stock not enough'
+                    : stockBatch?.expiryDate < today
+                    ? 'Expired'
+                    : 'Deduct stock'
+                "
+                mat-flat-button
+                class="ml-2"
+                color="warn"
+                (click)="onOpenBatchForm($event, 'DEDUCT', stockBatch)"
+              >
+                Deduct
+              </button>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</mat-card>

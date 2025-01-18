@@ -1,0 +1,9 @@
+.active-bed-order {
+  font-weight: 600;
+}
+
+::ng-deep .mat-button-disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+}

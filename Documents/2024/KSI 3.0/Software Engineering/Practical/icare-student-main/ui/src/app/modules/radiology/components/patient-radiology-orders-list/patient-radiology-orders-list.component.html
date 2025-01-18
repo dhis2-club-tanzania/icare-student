@@ -1,0 +1,101 @@
+<div class="w-100 mt-2">
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving data...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Order ID</th>
+          <th>Order</th>
+          <th>Orderer</th>
+          <th>Instructions</th>
+          <th>Upload</th>
+          <th>Remarks</th>
+          <td>Action</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let order of orders; let count = index"
+          [ngClass]="{
+            'attended-radiology-order':
+              obsKeyedByConcepts[order?.concept?.uuid]?.uri,
+            'no-mouse-event': !order?.paid
+          }"
+        >
+          <td>
+            {{ count + 1 }}
+          </td>
+          <td>
+            {{ order?.orderNumber }}
+          </td>
+          <td>
+            {{ order?.concept?.display }}
+          </td>
+          <td>
+            {{ order?.orderer?.display }}
+          </td>
+          <td>
+            {{ order?.instructions }}
+          </td>
+          <td>
+            <div>
+              <input
+                type="file"
+                style="border: none; background-color: transparent"
+                class="form-control"
+                name="file"
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.xls,.docx"
+                id="file-selector-{{ order?.concept?.uuid }}"
+                (change)="fileSelection($event, order)"
+              />
+            </div>
+
+            <div
+              *ngIf="obsKeyedByConcepts[order?.concept?.uuid]"
+              class="text-right"
+            >
+              <a
+                [href]="obsKeyedByConcepts[order?.concept?.uuid]?.uri"
+                target="_blank"
+                ><img
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABbklEQVRIibXUTygEUQDH8e/MDi1WbZQoHDZ/tkSxrfynxIE9yMUmJ83FwcEBZ1H+XBwUN26y5cBJ7YEtLtuWf4dVm9aiOMmBcpodB1H7b3bM7vyOM+/9Pu/15g2YHCH5gep1LOqfHvcJB7HY/4AJh6qnWq1rRXgKP6MoA8J+JJppnKinLC1Q34Yir9VgkQLqZIMj7wCA6mxHkVc1kZwAPUjOQAIiSqfJ7wwfcqYIvmhCZ152oBX9QHM37F5D/7hJQKML4gq09JkEPN6BzQ5vLyYBl2fw8Q6vDyYBRTawloBHhkKrCUCXB0J+iFzB7CbUOsE9BE0dIKR87X+R9C3DAiPTcHsOZZXgGgT3MHx9gijC3hIEDg0CpXbwzkNFNZRXwcUx7CxASw/0joFUAPc3Gadr3+TOUZBXoNgGy1MQDmZdT/JN1t7BzMbPgR5t6ypPF21gaw4sEgRPDJVnB0J+w8W/Mf1nl7oDlXWz0bzmG0ZVX0NFOd9TAAAAAElFTkSuQmCC"
+                />
+                Download
+              </a>
+            </div>
+          </td>
+          <td>
+            <!-- {{ obsKeyedByConcepts | json }} -->
+            <mat-form-field class="w-100">
+              <mat-label>Remarks</mat-label>
+              <textarea
+                matInput
+                [value]="obsKeyedByConcepts[order?.concept?.uuid]?.comment"
+                (keyup)="getRemarks($event, order)"
+              ></textarea>
+            </mat-form-field>
+          </td>
+          <td>
+            <div class="d-flex justify-content-between">
+              <button
+                [disabled]="!values[order?.uuid]"
+                mat-stroked-button
+                (click)="onSave($event, order)"
+              >
+                Save
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

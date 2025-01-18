@@ -1,0 +1,206 @@
+<div
+  *ngIf="{
+    labLocations: labLocations$ | async,
+    batchSampleCode: batchSampleCode$ | async
+  } as params"
+>
+  <mat-radio-group class="registration-category">
+    <mat-radio-button
+      (change)="getSelection($event)"
+      class="person-details-btn"
+      [value]="'new'"
+      [checked]="personDetailsCategory === 'new'"
+      color="primary"
+    >
+      New
+    </mat-radio-button>
+
+    <mat-radio-button
+      (change)="getSelection($event)"
+      class="person-details-btn ml-2"
+      [value]="'other'"
+      [checked]="personDetailsCategory === 'other'"
+      color="primary"
+    >
+      Other systems
+    </mat-radio-button>
+  </mat-radio-group>
+  <!-- <app-registered-patient-details
+    *ngIf="personDetailsCategory === 'existing'"
+    (personDetails)="onGetPersonDetails($event)"
+  ></app-registered-patient-details> -->
+  <app-clients-from-external-systems
+    *ngIf="personDetailsCategory === 'other'"
+    (selectedClientRequest)="getSelectedClientRequest($event)"
+  ></app-clients-from-external-systems>
+  <mat-progress-bar
+    *ngIf="!dynamicFields.length"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div *ngIf="dynamicFields.length">
+    <div class="row">
+      <div class="col-12">
+        <mat-accordion *ngIf="getBatch?.length && !gettingBatches">
+          <mat-expansion-panel
+            class="border mat-elevation-z0 mt-2"
+            [expanded]="true"
+          >
+            <mat-expansion-panel-header class="d-flex justify-content-between">
+              <mat-panel-title>
+                <span>Samples in {{ this.batch?.name }}</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-batch-samples-list></app-batch-samples-list>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+      <div class="col-11">
+        <table class="table table-responsive">
+          <tbody>
+            <tr>
+              <ng-container *ngFor="let dynamicField of dynamicFields">
+                <td>
+                  <div>
+                    <app-form
+                      *ngIf="!dynamicField?.allowCustomDateTime"
+                      [fields]="[dynamicField]"
+                      (formUpdate)="onFormUpdate($event)"
+                    >
+                    </app-form>
+                  </div>
+                  <div>
+                    <app-date-time-field
+                      *ngIf="dynamicField?.allowCustomDateTime"
+                      [dateTimeField]="dynamicField"
+                      (formUpdate)="onFormUpdate($event)"
+                    ></app-date-time-field>
+                  </div>
+                </td>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-1">
+        <button
+          mat-fab
+          color="primary"
+          (click)="onSave($event, params?.labLocations)"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12" *ngIf="savingDataResponse?.error">
+      <div *ngIf="savingDataResponse?.error?.error">
+        <div
+          class="alert alert-danger"
+          *ngFor="
+            let globalError of savingDataResponse?.error?.error?.globalErrors
+          "
+          role="alert"
+        >
+          {{ globalError?.message }}
+        </div>
+      </div>
+      <div *ngIf="savingDataResponse?.fieldErrors?.activeAttributes">
+        <div
+          class="alert alert-danger"
+          *ngFor="
+            let activeAttribute of savingDataResponse?.fieldErrors
+              ?.activeAttributes
+          "
+          role="alert"
+        >
+          {{ activeAttribute?.message }}
+        </div>
+      </div>
+    </div>
+    <div *ngIf="errorMessage" class="col-12 ml-2 mr-2">
+      <div class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <!-- <div class="col-12" *ngIf="savingData">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div> -->
+    <div class="loading-overlay" *ngIf="savingData">
+      <div class="text-center">
+        <div>Saving sample...</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-12 d-flex justify-content-end mt-2 mb-2">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="
+          errorMessage ||
+          !broughtOnTimeValid ||
+          !receivedOnTimeValid ||
+          !collectedOnTimeValid ||
+          !params?.labLocations.length
+        "
+        class="ml-2"
+        (click)="onSave($event, params?.labLocations)"
+      >
+        Save Samples
+      </button>
+    </div> -->
+  </div>
+
+  <div class="sample-list-table" *ngIf="getBatch">
+    <!-- <mat-paginator
+        [length]="30"
+        [pageSize]=""
+        [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100]"
+        (page)="onPageChange($event)"
+    >
+
+    </mat-paginator>  -->
+    <!-- <mat-progress-bar
+      *ngIf="!getBatch?.length && gettingBatches"
+      mode="indeterminate"
+    ></mat-progress-bar> -->
+    <!-- <mat-accordion *ngIf="getBatch?.length && !gettingBatches">
+      <mat-expansion-panel
+        class="border mat-elevation-z0 mt-2"
+        [expanded]="false"
+      >
+        <mat-expansion-panel-header class="d-flex justify-content-between">
+          <mat-panel-title>
+            <span>Samples in {{ this.batch?.name }}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <table class="table table-hovered w-100">
+          <thead>
+            <tr>
+              <th>Batch</th>
+              <th>Lab Number</th>
+              <th>Created by</th>
+              <th>Created on</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let batch of getBatch">
+              <tr *ngFor="let sample of batch?.samples">
+                <td>{{ sample?.batch?.display }}</td>
+                <td>{{ sample?.label }}</td>
+                <td>{{ sample?.creator?.display }}</td>
+                <td>{{ sample?.dateTimeCreated | date: "medium" }}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </mat-expansion-panel>
+    </mat-accordion> -->
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<div class="observations-chart-table-container">
+  <table class="table table-bordered table-striped w-100" *ngIf="selectedForm">
+    <thead>
+      <tr>
+        <th rowspan="2">Date</th>
+        <th
+          [attr.rowspan]="formField?.setMembers?.length == 0 ? 2 : 1"
+          [attr.colspan]="formField?.setMembers?.length"
+          [ngClass]="{ 'text-center': formField?.setMembers?.length > 0 }"
+          *ngFor="let formField of selectedForm?.formFields"
+        >
+          {{ formField?.name }}
+        </th>
+      </tr>
+      <tr>
+        <ng-container *ngFor="let formField of selectedForm?.formFields">
+          <ng-container *ngIf="formField?.setMembers?.length > 0">
+            <th *ngFor="let member of formField?.setMembers">
+              {{ member?.name }}
+            </th>
+          </ng-container>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let encounter of obsChartEncountersData">
+        <td>
+          {{ encounter?.encounterDatetime | date: "medium" }}
+        </td>
+        <td *ngFor="let fieldHoldingData of fieldsHoldingData">
+          <ng-container *ngIf="fieldHoldingData?.setMembers?.length > 0">
+            <ng-container *ngFor="let member of fieldHoldingData?.setMembers">
+              <span *ngIf="!(member.dataType === 'Boolean')">
+                {{
+                  encounter?.obsKeyedByConcept[fieldHoldingData?.concept?.uuid]
+                    ?.value?.display
+                    ? encounter?.obsKeyedByConcept[member?.uuid]?.value?.display
+                    : encounter?.obsKeyedByConcept[member?.uuid]?.value
+                    ? encounter?.obsKeyedByConcept[member?.uuid]?.value
+                    : "-"
+                }}
+              </span>
+              &nbsp;
+              <span *ngIf="member.dataType === 'Boolean'">
+                {{
+                  encounter?.obsKeyedByConcept[member?.uuid]?.value?.display
+                    ? " (Abnormal)"
+                    : ""
+                }}
+              </span>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="!fieldHoldingData?.setMembers?.length">
+            <span>
+              {{
+                encounter?.obsKeyedByConcept[fieldHoldingData?.concept?.uuid]
+                  ?.value?.display
+                  ? encounter?.obsKeyedByConcept[
+                      fieldHoldingData?.concept?.uuid
+                    ]?.value?.display
+                  : encounter?.obsKeyedByConcept[
+                      fieldHoldingData?.concept?.uuid
+                    ]?.value
+                  ? encounter?.obsKeyedByConcept[
+                      fieldHoldingData?.concept?.uuid
+                    ]?.value
+                  : "-"
+              }}
+            </span>
+          </ng-container>
+        </td>
+      </tr>
+      <tr *ngIf="!shouldNotEnterData">
+        <td></td>
+        <td class="field" *ngFor="let formField of fieldsHoldingData">
+          <app-form
+            *ngIf="
+              formField &&
+              formField?.formField &&
+              formField?.setMembers &&
+              formField?.setMembers?.length === 0
+            "
+            [fields]="[formField?.formField]"
+            [isFormHorizontal]="false"
+            [isReport]="false"
+            [fieldsData]=""
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+          <app-form
+            *ngIf="formField?.formFields && formField?.formFields?.length > 0"
+            [fields]="formField?.formFields"
+            [isFormHorizontal]="true"
+            [isReport]="false"
+            [fieldsData]=""
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+        </td>
+        <td class="text-center">
+          <button
+            [disabled]="!atLeastOneFormFieldHasBeenFilled"
+            mat-stroked-button
+            color="primary"
+            (click)="onSave($event)"
+          >
+            Save
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

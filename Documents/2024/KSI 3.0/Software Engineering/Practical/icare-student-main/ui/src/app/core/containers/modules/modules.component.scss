@@ -1,0 +1,28 @@
+@use '~@angular/material' as mat;
+@import "../../../../theme.scss";
+#icare-modules {
+  margin-top: 10px;
+  display: flex;
+  // justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.app-card {
+  width: 134px;
+  height: 120px;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  background-image: linear-gradient(
+    180deg,
+    mat.get-color-from-palette($primary) 0%,
+    rgba(42, 142, 209, 0.42) 100%
+  );
+
+  mat-icon {
+    font-size: 50px;
+    text-align: center !important;
+    height: 60px !important;
+    width: 60px !important;
+  }
+}

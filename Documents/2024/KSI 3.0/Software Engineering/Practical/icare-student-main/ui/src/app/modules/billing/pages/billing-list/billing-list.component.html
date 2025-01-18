@@ -1,0 +1,36 @@
+<div
+  *ngIf="{
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async
+  } as params"
+>
+  <div class="pt-4" *ngIf="!params?.settingCurrentLocationStatus">
+    <mat-toolbar>
+      <!-- <button mat-icon-button [routerLink]="''" matTooltip="Go to Home page">
+        <mat-icon>arrow_back</mat-icon>
+      </button> -->
+      <span class="ml-2">Billing</span>
+    </mat-toolbar>
+    <!-- patient list -->
+
+    <div class="ml-2 mr-2">
+      <app-patient-list
+        [itemsPerPage]="10"
+        [isTabularList]="true"
+        [filterCategory]="'billing'"
+        [orderBy]="'ENCOUNTER'"
+        [orderByDirection]="'ASC'"
+        (selectPatient)="onSelectPatient($event)"
+      ></app-patient-list>
+    </div>
+    <!-- <div class="mat-elevation-z1">
+      <app-table
+        [columns]="billingColumns"
+        [loading]="loadingVisits"
+        [loadingDataError]="loadingVisitsError"
+        [tableConfig]="tableConfig"
+        [data$]="visitsWithBiling$"
+        (selectRow)="onSelectVisit($event)"
+      ></app-table>
+    </div> -->
+  </div>
+</div>

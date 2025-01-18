@@ -1,0 +1,345 @@
+<div
+  *ngIf="{
+    samplesLoadedState: samplesLoadedState$ | async,
+    rejectedSamples: rejectedSamples$ | async,
+    labSamplesForTrackingDetails: labSamplesForTrackingDetails$ | async,
+    markingForReCollectState: markingForReCollectState$ | async,
+    samplesMarkedForReCollection: samplesMarkedForReCollection$ | async
+  } as params"
+>
+  <mat-card>
+    <div *ngIf="params?.samplesLoadedState">
+      <mat-tab-group (selectedTabChange)="onOpenNewTab($event)">
+        <mat-tab label="All Active Samples">
+          <div style="padding: 15px 2px">
+            <!-- <div class="legend" style="float: right">
+                        <span class="rejected"></span><span>Rejected</span>
+                      </div> -->
+            <div class="d-flex">
+              <mat-form-field class="w-50">
+                <mat-label>Search</mat-label>
+                <mat-icon matPrefix>search</mat-icon
+                ><input
+                  matInput
+                  (keyup)="onSearch($event)"
+                  [(ngModel)]="searchingText"
+                />
+              </mat-form-field>
+            </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr class="table-header">
+                  <th style="width: 4%">SN</th>
+                  <th style="width: 8%">Sample ID</th>
+                  <th style="width: 8%">Sample/Specimen</th>
+                  <th>Collected by</th>
+                  <th>Department</th>
+                  <th style="width: 10%">MRNo.</th>
+                  <th style="width: 20%">Patient</th>
+                  <th style="width: 10%">Priority</th>
+                  <th style="width: 20%">Tests status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngIf="
+                    params?.labSamplesForTrackingDetails &&
+                    params?.labSamplesForTrackingDetails?.length > 0
+                  "
+                >
+                  <ng-container
+                    *ngFor="
+                      let groupedSamples of params?.labSamplesForTrackingDetails;
+                      let count = index
+                    "
+                  >
+                    <tr
+                      *ngFor="
+                        let sample of groupedSamples?.samples;
+                        let i = index
+                      "
+                      [ngClass]="{ 'row-alternated': count % 2 !== 0 }"
+                    >
+                      <td>
+                        {{ count + 1 }}
+                      </td>
+
+                      <td>
+                        {{ sample?.sampleIdentifier }}
+                      </td>
+
+                      <td>
+                        {{ sample?.name }}
+                      </td>
+                      <td>
+                        {{ sample?.collectedBy?.name }}
+                      </td>
+                      <td>
+                        {{ sample?.orders[0]["departmentName"] }}
+                      </td>
+                      <td>{{ sample?.mrNo }}</td>
+                      <td>
+                        {{ sample?.patientNames }}
+                      </td>
+                      <td>
+                        <span
+                          *ngIf="sample.priorityHigh"
+                          style="color: #ff1414"
+                        >
+                          High
+                        </span>
+                        <span *ngIf="!sample.priorityHigh"> Normal </span>
+                      </td>
+                      <td>
+                        <span
+                          class="text-success"
+                          *ngIf="!sample.rejected && sample.accepted"
+                          >Accepted</span
+                        ><span class="text-danger" *ngIf="sample.rejected"
+                          >Rejected</span
+                        >
+                        <!-- <div
+                      *ngIf="
+                        sample?.acceptRejectProviders &&
+                        sample?.acceptRejectProviders?.length > 0
+                      "
+                    >
+                      by
+                      <ul>
+                        <li
+                          *ngFor="
+                            let provider of sample?.acceptRejectProviders
+                          "
+                        >
+                          {{ provider?.provider?.display }}
+                        </li>
+                      </ul>
+                    </div> -->
+                        <span
+                          class="text-warning"
+                          *ngIf="!sample['accepted'] && !sample['rejected']"
+                        >
+                          Waiting acceptance/rejection..
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          class="ml-2"
+                          [disabled]="sample.rejected || !sample?.accepted"
+                          mat-stroked-button
+                          (click)="setViewItems($event, sample)"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    params?.labSamplesForTrackingDetails &&
+                    params?.labSamplesForTrackingDetails?.length == 0
+                  "
+                >
+                  <tr>
+                    <td colspan="10" class="text-center text-danger">
+                      <p>No completed samples</p>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+        <mat-tab label="Rejected Samples">
+          <div style="padding: 15px 2px">
+            <!-- <div class="legend" style="float: right">
+                            <span class="rejected"></span><span>Rejected</span>
+                          </div> -->
+            <div class="d-flex">
+              <mat-form-field class="w-50">
+                <mat-label>Search</mat-label>
+                <mat-icon matPrefix>search</mat-icon
+                ><input
+                  matInput
+                  (keyup)="onSearch($event)"
+                  [(ngModel)]="searchingText"
+                />
+              </mat-form-field>
+            </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr class="table-header">
+                  <th>SN</th>
+                  <th>Sample ID</th>
+                  <th>Sample/Specimen</th>
+                  <th>Container</th>
+                  <th>Department</th>
+                  <th>MRNo.</th>
+                  <th>Patient</th>
+                  <th>Reason</th>
+                  <th>Rejected by</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngIf="params?.rejectedSamples?.length > 0">
+                  <ng-template
+                    ngFor
+                    let-count="index"
+                    let-sample
+                    [ngForOf]="params?.rejectedSamples"
+                  >
+                    <tr [ngClass]="{ 'row-alternated': count % 2 !== 0 }">
+                      <td>{{ count + 1 }}</td>
+                      <td>{{ sample?.sampleIdentifier }}</td>
+                      <td>{{ sample?.name }}</td>
+                      <td>
+                        <span *ngIf="sample?.containerDetails?.display">
+                          {{ sample?.containerDetails?.display }}
+                        </span>
+                        <span *ngIf="!sample?.containerDetails?.display">
+                          N/A
+                        </span>
+                      </td>
+                      <td>
+                        {{ sample?.orders[0]["departmentName"] }}
+                      </td>
+                      <td>
+                        {{ sample?.mrNo }}
+                      </td>
+                      <td>
+                        {{ sample?.patientNames }}
+                      </td>
+                      <td>
+                        <span *ngIf="sample?.rejectionReason">
+                          {{ sample?.rejectionReason }}
+                        </span>
+                        <span *ngIf="!sample?.rejectionReason"> None </span>
+                      </td>
+                      <td>
+                        {{ sample?.rejectedBy?.name }}
+                      </td>
+                      <td>
+                        <button
+                          mat-button
+                          (click)="onReCollect($event, sample)"
+                          title="Mark for Re-Collecting"
+                        >
+                          <mat-spinner
+                            color="primary"
+                            [diameter]="20"
+                            style="
+                              display: inline-block !important;
+                              margin-right: 4px;
+                            "
+                            *ngIf="params?.markingForReCollectState"
+                          >
+                          </mat-spinner>
+                          Recollect
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </ng-container>
+                <ng-container *ngIf="params?.rejectedSamples?.length == 0">
+                  <tr>
+                    <td colspan="10" class="text-center text-danger">
+                      No rejected sample
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Samples Marked For Re-Collection">
+          <div style="padding: 15px 2px">
+            <!-- <div class="legend" style="float: right">
+                            <span class="rejected"></span><span>Rejected</span>
+                          </div> -->
+            <div class="d-flex">
+              <mat-form-field class="w-50">
+                <mat-label>Search</mat-label>
+                <mat-icon matPrefix>search</mat-icon
+                ><input
+                  matInput
+                  (keyup)="onSearch($event)"
+                  [(ngModel)]="searchingText"
+                />
+              </mat-form-field>
+            </div>
+            <table class="table table-bordered">
+              <thead>
+                <tr class="table-header">
+                  <th>SN</th>
+                  <th>Sample ID</th>
+                  <th>Sample/Specimen</th>
+                  <th>Container</th>
+                  <th>Department</th>
+                  <th>MRNo.</th>
+                  <th>Patient</th>
+                  <th>Reason</th>
+                  <th>Rejected by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngIf="params?.samplesMarkedForReCollection?.length > 0"
+                >
+                  <ng-template
+                    ngFor
+                    let-count="index"
+                    let-sample
+                    [ngForOf]="params?.samplesMarkedForReCollection"
+                  >
+                    <tr [ngClass]="{ 'row-alternated': count % 2 !== 0 }">
+                      <td>{{ count + 1 }}</td>
+                      <td>{{ sample?.sampleIdentifier }}</td>
+                      <td>{{ sample?.name }}</td>
+                      <td>
+                        <span *ngIf="sample?.containerDetails?.display">
+                          {{ sample?.containerDetails?.display }}
+                        </span>
+                        <span *ngIf="!sample?.containerDetails?.display">
+                          N/A
+                        </span>
+                      </td>
+                      <td>{{ sample?.orders[0]["departmentName"] }}</td>
+                      <td>
+                        {{ sample?.mrNo }}
+                      </td>
+                      <td>
+                        {{ sample?.patientNames }}
+                      </td>
+                      <td>
+                        <span *ngIf="sample?.rejectionReason">
+                          {{ sample?.rejectionReason }}
+                        </span>
+                        <span> None </span>
+                      </td>
+                      <td>
+                        {{ sample?.rejectedBy?.name }}
+                      </td>
+                    </tr>
+                  </ng-template>
+                </ng-container>
+                <ng-container
+                  *ngIf="params?.samplesMarkedForReCollection?.length == 0"
+                >
+                  <tr>
+                    <td colspan="9" class="text-center text-danger">
+                      No sample marked for Re-Collection
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </mat-card>
+</div>

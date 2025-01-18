@@ -1,0 +1,43 @@
+<div class="container-fluid" *ngIf="{
+    unitsOfMeasurements: unitsOfMeasurements$ | async
+  } as params">
+  <div class="row mt-2" *ngIf="!stockInvoice && !loadingInvoice && !stockInvoiceItem">
+    <div class="col-12">
+      <h2 class="text-center">NEW RECEIVED STOCK INVOICE</h2>
+    </div>
+  </div>
+  <mat-progress-bar class="mt-2" mode="indeterminate" *ngIf="!stockInvoice && loadingInvoice"></mat-progress-bar>
+  <div class="row mt-2" *ngIf="stockInvoice && !loadingInvoice">
+    <div class="col-12">
+      <mat-accordion>
+        <mat-expansion-panel
+          class="border mat-elevation-z0"
+          [expanded]="false"
+        >
+          <mat-expansion-panel-header class="d-flex justify-content-between">
+            <mat-panel-title>
+              <span>Added Items</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="inv-items-table container-fluid">
+            <app-stock-invoice-items [stockInvoice]="stockInvoice" [updateStockInvoice]="updateStockInvoice"></app-stock-invoice-items>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+  <mat-progress-bar mode="indeterminate" *ngIf="!params?.unitsOfMeasurements?.length"></mat-progress-bar>
+  <div class="row mt-3" *ngIf="(params?.unitsOfMeasurements && suppliers && unitsOfMeasurementSettings) || (stockInvoiceItem && params?.unitsOfMeasurements)">
+    <app-stock-receiving-form-fields 
+      class="w-100"
+      [suppliers]="suppliers"
+      [unitsOfMeasurements]="params?.unitsOfMeasurements"
+      [unitsOfMeasurementSettings]="unitsOfMeasurementSettings"
+      [existingStockInvoice]="stockInvoice"
+      [stockInvoiceItem]="stockInvoiceItem"
+      [currentLocation]="currentLocation"
+      (loadInvoices)="loadInvoices($event)"
+      (closeDialog)="onCloseDialog()"
+    ></app-stock-receiving-form-fields>
+  </div>
+</div>

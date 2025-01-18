@@ -1,0 +1,17 @@
+<div *ngIf="{ testParameter: testParameter$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    color="primary"
+    *ngIf="!params?.testParameter"
+  ></mat-progress-bar>
+  <app-result-entry-form
+    *ngIf="params?.testParameter"
+    [parameter]="params?.testParameter"
+    [disabled]="disabled"
+    [isLIS]="isLIS"
+    [conceptNameType]="conceptNameType"
+    [latestResult]="latestResult"
+    [multipleResultsAttributeType]="multipleResultsAttributeType"
+    (formData)="onGetFormData($event, params?.testParameter)"
+  ></app-result-entry-form>
+</div>

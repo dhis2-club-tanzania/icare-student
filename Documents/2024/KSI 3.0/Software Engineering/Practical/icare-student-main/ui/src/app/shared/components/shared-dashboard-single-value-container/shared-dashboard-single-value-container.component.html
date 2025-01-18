@@ -1,0 +1,32 @@
+<div
+  *ngIf="{
+    singleValueSamplesDashboardItemsDataSetsReferences:
+      singleValueSamplesDashboardItemsDataSetsReferences$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.singleValueSamplesDashboardItemsDataSetsReferences"
+  >
+  </mat-progress-bar>
+  <div
+    class="row"
+    *ngIf="params?.singleValueSamplesDashboardItemsDataSetsReferences"
+  >
+    <div
+      class="col-lg-2 col-md-2 col-sx-12 col-sm-12"
+      *ngFor="
+        let dataSetConfigs of params?.singleValueSamplesDashboardItemsDataSetsReferences
+      "
+    >
+      <mat-card>
+        <div>
+          <app-shared-dashboard-single-value-item
+            [datesParams]="datesParams"
+            [dataSet]="dataSetConfigs"
+          ></app-shared-dashboard-single-value-item>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

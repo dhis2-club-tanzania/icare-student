@@ -1,0 +1,18 @@
+.other-order-details {
+  font-size: x-small !important;
+  background-color: #eee;
+  font-style: italic;
+}
+
+button,
+button:hover {
+  outline: none !important;
+}
+
+.delete-icon {
+  color: red;
+  margin: 0 0 0 2px;
+  position: relative;
+  top: 6px;
+  cursor: pointer;
+}

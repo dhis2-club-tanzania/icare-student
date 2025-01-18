@@ -1,0 +1,12 @@
+<div class="centered-container-patient-list">
+  <div class="w-100 text-center">
+    <div class="text-muted h6 mb-4">
+      Search for a patient in order to view the dashboard
+    </div>
+    <!-- patient list -->
+    <app-patient-list
+      [currentLocation]="(currentLocation$ | async)?.id"
+      (selectPatient)="onSelectPatient()"
+    ></app-patient-list>
+  </div>
+</div>

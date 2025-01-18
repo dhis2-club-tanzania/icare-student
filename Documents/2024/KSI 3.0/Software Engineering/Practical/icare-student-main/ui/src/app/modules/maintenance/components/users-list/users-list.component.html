@@ -1,0 +1,88 @@
+<div class="w-100 mat-elevation-z0" *ngIf="{ users: users$ | async } as params">
+  <mat-form-field
+    appearance="fill"
+    style="margin-bottom: 0px; margin-left: 1px"
+    class="w-100"
+  >
+    <mat-label>Search Users</mat-label>
+    <input
+      autocomplete="off"
+      matInput
+      placeholder="search"
+      type="search"
+      (keyup)="onSearchUsers($event)"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.users"
+  ></mat-progress-bar>
+
+  <div>
+    <table class="table" *ngIf="params?.users">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Names</th>
+          <th>Gender</th>
+          <th>Username</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of params?.users; let count = index">
+          <td>
+            {{ count + 1 + (page - 1) * pageCount }}
+          </td>
+          <td>
+            {{ user?.person?.display }}
+          </td>
+          <td>
+            {{ user?.person?.gender }}
+          </td>
+          <td>
+            {{ user?.username }}
+          </td>
+          <td>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button (click)="getRecord($event, user)" mat-menu-item>
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button
+                (click)="onCaptureSignature($event, currentUser, user)"
+                mat-menu-item
+              >
+                <mat-icon>
+                  <img src="assets/icons/signature_30.png" />
+                </mat-icon>
+                <span>Capture Signature</span>
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end mt-2">
+    <button
+      [disabled]="page == 1"
+      mat-stroked-button
+      (click)="getUsersData($event, 'prev')"
+    >
+      Prev
+    </button>
+    <button
+      [disabled]="params?.users && params?.users?.length < pageCount"
+      mat-stroked-button
+      class="ml-2"
+      (click)="getUsersData($event, 'next')"
+    >
+      Next
+    </button>
+  </div>
+</div>

@@ -1,0 +1,146 @@
+<div
+  style="z-index: 1000"
+  class="menu-container"
+  *ngIf="{
+    locationsForCurrentUser: locationsForCurrentUser$ | async,
+    lisConfigurations: lisConfigurations$ | async,
+    currentLocation: currentLocation$ | async,
+    userAssignedLocationsLoadedState: userAssignedLocationsLoadedState$ | async,
+    googleFormLink: googleFormLink$ | async
+  } as params"
+>
+  <div
+    class="
+      w-100
+      d-flex
+      justify-content-between
+      align-items-center
+      p-1
+      icare__bg-primary
+    "
+  >
+    <div>
+      <div class="d-flex align-items-center position-relative">
+        <a mat-button (click)="onRouteHome($event)" class="menu-link"></a>
+      </div>
+      <span class="example-spacer"></span>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button
+        mat-button
+        id="location-btn"
+        class="mr-2"
+        (click)="onOpenLocation($event)"
+      >
+        <mat-icon id="location-icon">location_on</mat-icon>
+        <span
+          id="location-name"
+          class="ml-1"
+          *ngIf="!(currentLocation$ | async)"
+        >
+          Select Location
+        </span>
+        <span
+          id="location-name"
+          class="ml-1"
+          *ngIf="currentLocation$ | async as currentLocation"
+        >
+          {{ currentLocation.name }}
+        </span>
+      </button>
+
+      <ng-container *ngIf="currentUser$ | async as currentUser">
+        <!-- {{ currentUser | json }} -->
+        <button
+          id="btn-account"
+          mat-icon-button
+          class="menu-link profile-btn mr-2"
+          aria-label="Profile icon"
+          [matMenuTriggerFor]="menu"
+        >
+          {{ currentUser?.person?.display | abbreviate }}
+        </button>
+        <mat-menu id="menu-account" #menu="matMenu">
+          <div class="text-muted text-center">
+            <div class="w-100 d-flex justify-content-center mb-2">
+              <div class="menu-profile-icon icare__bg-primary">
+                {{ currentUser?.person?.display | abbreviate }}
+              </div>
+            </div>
+            <small class="mt-1">{{ currentUser?.person?.display }}</small>
+          </div>
+          <button
+            class="mt-2 text-center"
+            id="btn-logout"
+            mat-menu-item
+            (click)="onChangePassword($event)"
+          >
+            Change Password
+          </button>
+          <button
+            class="mt-2 text-center"
+            id="btn-logout"
+            mat-menu-item
+            *ngIf="params?.googleFormLink"
+          >
+            <a
+              style="text-decoration: none"
+              [href]="params?.googleFormLink"
+              target="_blank"
+            >
+              Support
+            </a>
+          </button>
+          <button
+            class="mt-2 text-center"
+            id="btn-logout"
+            mat-menu-item
+            (click)="onLogOut()"
+          >
+            Logout
+          </button>
+          <button
+            *ngIf="params?.lisConfigurations?.isLIS"
+            class="mt-2 text-center"
+            mat-menu-item
+            (click)="onUpdateProfile()"
+          >
+            <mat-icon>person</mat-icon>
+            Update Profile
+          </button>
+        </mat-menu>
+      </ng-container>
+    </div>
+  </div>
+  <div class="w-100 module-selector-container">
+    <!-- {{ locationsForCurrentUser$ | async | json }} -->
+    <mat-progress-bar
+      *ngIf="
+        (!params?.locationsForCurrentUser &&
+          !params?.lisConfigurations?.isLIS) ||
+        !params?.lisConfigurations ||
+        (!params?.userAssignedLocationsLoadedState &&
+          !params?.lisConfigurations?.isLIS)
+      "
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <app-modules-selector
+      *ngIf="
+        params?.locationsForCurrentUser &&
+        params?.locationsForCurrentUser &&
+        params?.locationsForCurrentUser?.length > 0 &&
+        params?.lisConfigurations &&
+        params?.currentLocation &&
+        params?.userAssignedLocationsLoadedState
+      "
+      [locations]="params?.locationsForCurrentUser"
+      [currentLocation]="params?.currentLocation"
+      [lisConfigurations]="params?.lisConfigurations"
+    ></app-modules-selector>
+  </div>
+</div>
+<app-icare-support-google-form
+  (cancel)="onSupportClose($event)"
+  [isSupportOpened]="isSupportOpened"
+></app-icare-support-google-form>

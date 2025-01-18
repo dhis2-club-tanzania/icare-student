@@ -1,0 +1,86 @@
+<div *ngIf="locationsByTag$ | async as locations">
+  <mat-progress-bar
+    *ngIf="!locations"
+    mode="indeterminate"
+    class="mt-3 mb-3"
+  ></mat-progress-bar>
+  <div *ngIf="locations">
+    <table class="table table-striped" *ngIf="!errorMessage">
+      <thead>
+        <th>SN</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let location of locations; let count = index">
+          <td>
+            {{ count + 1 + (page - 1) * pageSize }}
+          </td>
+          <td>
+            {{ location?.display }}
+          </td>
+          <td>
+            {{ location?.description }}
+          </td>
+          <td>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onEdit($event, location)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item (click)="onRetire($event, location)">
+                <mat-icon>remove</mat-icon>
+                <span>Retire / Stop</span>
+              </button>
+              <button mat-menu-item (click)="onDelete($event, location?.uuid)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+      {{ errorMessage }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+        (click)="closeAlart($event)"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="d-flex justify-content-end" *ngIf="!errorMessage">
+      <button
+        class="add-button"
+        (click)="openModal($event, locationTag, locations[0]?.parentLocation)"
+      >
+        New
+      </button>
+    </div>
+    <div class="mt-2 d-flex justify-content-end" *ngIf="!errorMessage">
+      <button
+        [disabled]="page <= 1"
+        mat-stroked-button
+        (click)="getItems($event, 'prev')"
+      >
+        Prev
+      </button>
+      <button
+        [disabled]="locations.length < pageSize"
+        class="ml-2"
+        mat-stroked-button
+        (click)="getItems($event, 'next')"
+      >
+        Prev
+      </button>
+    </div>
+  </div>
+</div>

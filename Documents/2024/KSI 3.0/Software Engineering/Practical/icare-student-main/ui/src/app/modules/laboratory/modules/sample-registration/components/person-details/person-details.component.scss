@@ -1,0 +1,47 @@
+.show-more-toggle {
+  cursor: pointer;
+}
+
+::ng-deep .mat-form-field-flex {
+  border-radius: 4px 4px !important;
+  border: solid 1px rgba(0, 0, 0, 0.18);
+  padding: 0.5em 0.275em 0.275em 0.575em !important;
+  background-color: #fff;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mat-form-field-underline {
+  display: none !important;
+}
+
+.pinning-btn {
+  border-radius: 12px;
+  line-height: 20px;
+  border: solid 1px #eee;
+  min-width: 30px !important;
+  padding: 0 10px !important;
+}
+
+button,
+button:hover {
+  outline: none !important;
+}
+.colored-button {
+  border: solid 1px rgb(80, 138, 196);
+  background-color: rgb(80, 138, 196);
+  color: #fff;
+}
+
+.existing-table {
+  max-height: 200px !important;
+  overflow: auto;
+}
+
+.searched-person:hover {
+  cursor: pointer;
+}

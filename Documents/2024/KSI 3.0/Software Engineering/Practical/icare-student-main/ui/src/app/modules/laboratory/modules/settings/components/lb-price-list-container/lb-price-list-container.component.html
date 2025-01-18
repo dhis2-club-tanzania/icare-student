@@ -1,0 +1,11 @@
+<div *ngIf="{ paymentTypes: paymentTypes$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.paymentTypes"
+  ></mat-progress-bar>
+  <div *ngIf="params?.paymentTypes && params?.paymentTypes?.length > 0">
+    <app-shared-price-list
+      [paymentTypes]="params?.paymentTypes"
+    ></app-shared-price-list>
+  </div>
+</div>

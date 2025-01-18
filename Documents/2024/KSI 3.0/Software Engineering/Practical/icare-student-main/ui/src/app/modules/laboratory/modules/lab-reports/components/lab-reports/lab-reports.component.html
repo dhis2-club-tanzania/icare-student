@@ -1,0 +1,195 @@
+<div>
+  <div
+    class="row"
+    *ngIf="{
+      sampleTypes: sampleTypes$ | async,
+      labSamplesAndTestsContainers: labSamplesAndTestsContainers$ | async,
+      labSamplesDepartments: labSamplesDepartments$ | async,
+      codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+      providerDetails: providerDetails$ | async,
+      facilityDetails: facilityDetails$ | async
+    } as params"
+  >
+    <div class="col-12 mt-2">
+      <app-lab-reports-list
+        [reports]="reports"
+        (selectedReport)="onGetSelectedReport($event)"
+      ></app-lab-reports-list>
+    </div>
+    <div class="col-md-12 col-sx-12 col-sm-12 report" *ngIf="false">
+      <div class="w-100 d-flex justify-content-left no-print">
+        <div class="w-25">
+          <mat-form-field class="w-100">
+            <mat-label>Choose report</mat-label>
+            <mat-select
+              [(ngModel)]="currentReport"
+              (selectionChange)="onGetCurrentReport($event)"
+            >
+              <mat-option [value]="report" *ngFor="let report of reports">
+                {{ report?.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div
+          class="ml-2"
+          *ngIf="currentReport && currentReport?.useDefaultPeFilter"
+        >
+          <mat-button-toggle-group
+            name="fontStyle"
+            (change)="onSelectPeriod($event)"
+          >
+            <mat-button-toggle value="ToDay">Today</mat-button-toggle>
+
+            <mat-button-toggle value="ThisWeek">This Week</mat-button-toggle>
+            <!-- <mat-button-toggle value="LastSevenDays"
+            >Last 7 days</mat-button-toggle
+          > -->
+            <mat-button-toggle value="ThisMonth">This Month</mat-button-toggle>
+            <mat-button-toggle value="ThisYear">This year</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <div
+          class="w-25"
+          *ngIf="currentReport && currentReport?.useDefaultPeFilter"
+        >
+          <mat-form-field
+            appearance="fill"
+            class="ml-2 mt-1"
+            floatLabel="always"
+          >
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input
+                matStartDate
+                placeholder="Start date"
+                [(ngModel)]="startDate"
+                (dateInput)="dateRangeSelect()"
+              />
+              <input
+                matEndDate
+                placeholder="End date"
+                [(ngModel)]="endDate"
+                (dateInput)="dateRangeSelect()"
+              />
+            </mat-date-range-input>
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-100" *ngIf="errors.length > 0">
+        <app-shared-error [errors]="errors"></app-shared-error>
+      </div>
+      <div class="w-100 d-flex justify-content-end mt-1 mb-2">
+        <!-- <button
+          (click)="onDownloadCSV($event)"
+          mat-stroked-button
+          color="primary"
+        >
+          CSV
+        </button> -->
+        <button
+          (click)="
+            onDownloadXLS(
+              $event,
+              currentReport?.renderAs && currentReport?.renderAs === 'iframe'
+                ? 'iframe_id'
+                : 'report-to-download',
+              currentReport?.name,
+              currentReport?.renderAs
+            )
+          "
+          [disabled]="
+            (!selectionDates || !dateChanged) &&
+            currentReport?.useDefaultPeFilter
+          "
+          mat-flat-button
+          color="primary"
+        >
+          <mat-icon>
+            <img height="24px" src="assets/material/excel_white.png" />
+          </mat-icon>
+          Excel
+        </button>
+
+        <button
+          [disabled]="
+            (!selectionDates || !dateChanged) &&
+            currentReport?.useDefaultPeFilter
+          "
+          (click)="onPrint($event)"
+          class="ml-2"
+          mat-flat-button
+          color="primary"
+        >
+          <mat-icon>print</mat-icon>
+          Print
+        </button>
+      </div>
+      <mat-card class="border">
+        <div *ngIf="!currentReport?.hardCoded" id="report-to-download">
+          <div class="row">
+            <div class="col-2" style="display: inline-block; width: 16.67%">
+              <img [src]="params?.facilityDetails?.logo" height="90" />
+            </div>
+            <div class="col-8" style="display: inline-block; width: 66.67%">
+              <h4 style="text-align: center">
+                <b>
+                  {{ params?.facilityDetails?.display }}
+                  <br />
+                  <span>
+                    {{ params?.facilityDetails?.description }}<br />
+                  </span>
+                  <small>
+                    <span
+                      *ngIf="
+                        params?.facilityDetails &&
+                        params?.facilityDetails?.postalCode
+                      "
+                    >
+                      P.O BOX: {{ params?.facilityDetails?.postalCode }}
+                    </span></small
+                  ><br />
+                </b>
+              </h4>
+            </div>
+          </div>
+          <div
+            class="header text-center h3 p-3"
+            *ngIf="currentReport && currentReport?.category !== 'standard'"
+          >
+            {{ currentReport?.name }}
+          </div>
+          <div
+            *ngIf="
+              (currentReport?.useDefaultPeFilter &&
+                selectionDates &&
+                dateChanged) ||
+              !currentReport?.useDefaultPeFilter
+            "
+          >
+            <app-custom-reports
+              *ngIf="
+                currentReport &&
+                (!currentReport?.category ||
+                  currentReport?.category !== 'standard')
+              "
+              [report]="currentReport"
+              [selectionDates]="selectionDates"
+            ></app-custom-reports>
+            <ngx-standard-report
+              *ngIf="currentReport && currentReport?.category == 'standard'"
+              [parameters]="selectionDates"
+              [report]="currentReport"
+            ></ngx-standard-report>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

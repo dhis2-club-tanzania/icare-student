@@ -1,0 +1,39 @@
+<div
+  *ngIf="{
+    worksheets: worksheets$ | async,
+    dataSetReportUuidForAcceptedSamplesWithNoResults:
+      dataSetReportUuidForAcceptedSamplesWithNoResults$ | async,
+    worksheetDefinitionLabelFormatReference:
+      worksheetDefinitionLabelFormatReference$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      !params?.worksheets || !params?.worksheetDefinitionLabelFormatReference
+    "
+  ></mat-progress-bar>
+  <div
+    *ngIf="
+      params?.worksheets &&
+      errors?.length === 0 &&
+      params?.worksheetDefinitionLabelFormatReference &&
+      params?.worksheetDefinitionLabelFormatReference?.uuid
+    "
+  >
+    <app-worksheet-definition
+      [worksheets]="params?.worksheets"
+      [datesParameters]="datesParameters"
+      [dataSetReportUuidForAcceptedSamplesWithNoResults]="
+        params?.dataSetReportUuidForAcceptedSamplesWithNoResults
+      "
+      [worksheetDefinitionLabelFormatReferenceUuid]="
+        params?.worksheetDefinitionLabelFormatReference?.uuid
+      "
+    ></app-worksheet-definition>
+  </div>
+  <app-shared-error
+    *ngIf="errors && errors?.length > 0"
+    [errors]="errors"
+  ></app-shared-error>
+</div>

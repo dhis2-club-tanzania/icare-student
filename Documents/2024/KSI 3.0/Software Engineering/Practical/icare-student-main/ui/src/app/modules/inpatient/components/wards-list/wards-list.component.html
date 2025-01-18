@@ -1,0 +1,261 @@
+<div
+  *ngIf="{
+    admittedPatientsVisits: admittedPatientsVisits$ | async,
+    admissionVisitsAdded: admissionVisitsAdded$ | async
+  } as params"
+>
+  <div *ngIf="locationBedsDetails?.areChildLocationsBeds">
+    <div *ngFor="let childLocation of locationBedsDetails?.beds">
+      <div
+        class="bed mb-2"
+        [ngClass]="{
+          'bg-light': !params?.admittedPatientsVisits[childLocation?.uuid],
+          'bg-warning': params?.admittedPatientsVisits[childLocation?.uuid]
+        }"
+        (click)="
+          onGetStatus(
+            $event,
+            childLocation,
+            params?.admittedPatientsVisits[childLocation?.uuid],
+            bedOrdersWithBillStatus
+          )
+        "
+      >
+        <div class="d-flex justify-content-center m-2">
+          <img
+            height="60px"
+            src="data:image/png;base64,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"
+          />
+        </div>
+        <p class="d-flex justify-content-center bed-name">
+          {{ childLocation?.display }}
+        </p>
+        <div
+          class="w-100"
+          class="patient-details"
+          *ngIf="params?.admittedPatientsVisits[childLocation?.uuid]"
+        >
+          <p class="text-center">
+            {{
+              params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                ?.display
+            }}
+          </p>
+          <p class="text-center">
+            Age/Gender:
+            {{
+              params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                ?.person?.age
+            }}
+            years /
+            {{
+              params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                ?.person?.gender
+            }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <mat-accordion
+    *ngIf="
+      params?.admittedPatientsVisits &&
+      !locationBedsDetails?.areChildLocationsBeds
+    "
+  >
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="
+        let ward of locationBedsDetails?.childMembers;
+        let wardIndex = index
+      "
+      [expanded]="wardIndex === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-between">
+        <mat-panel-title>
+          <span>{{ ward?.display }}</span>
+          <span class="ml-4"></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <!-- {{ ward | json }} -->
+      <!-- <app-wards-list
+          [locationBedsDetails]="params?.bedsByLocationDetails"
+          [currentLocation]="currentLocation"
+          (bedStatus)="onGetBedStatus($event, params?.orderType)"
+        ></app-wards-list> -->
+
+      <div
+        class="row"
+        *ngIf="ward?.childMembers && ward?.childMembers.length > 0"
+      >
+        <div
+          [ngClass]="{
+            'col-lg-2 col-md-2 col-sm-3 col-sx-4': childLocation?.isBed,
+            'col-12': !childLocation?.isBed
+          }"
+          *ngFor="let childLocation of ward?.childMembers"
+        >
+          <div
+            *ngIf="childLocation && childLocation?.isBed"
+            class="bed mb-2"
+            [ngClass]="{
+              'bg-light': !params?.admittedPatientsVisits[childLocation?.uuid],
+              'bg-warning': params?.admittedPatientsVisits[childLocation?.uuid]
+            }"
+            (click)="
+              onGetStatus(
+                $event,
+                childLocation,
+                params?.admittedPatientsVisits[childLocation?.uuid],
+                bedOrdersWithBillStatus
+              )
+            "
+          >
+            <div class="d-flex justify-content-center m-2">
+              <img
+                height="60px"
+                src="data:image/png;base64,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"
+              />
+            </div>
+            <p class="d-flex justify-content-center bed-name">
+              {{ childLocation?.display }}
+            </p>
+            <div
+              class="w-100"
+              class="patient-details"
+              *ngIf="params?.admittedPatientsVisits[childLocation?.uuid]"
+            >
+              <p class="text-center">
+                {{
+                  params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                    ?.display
+                }}
+              </p>
+              <p class="text-center">
+                Age/Gender:
+                {{
+                  params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                    ?.person?.age
+                }}
+                years /
+                {{
+                  params?.admittedPatientsVisits[childLocation?.uuid]?.patient
+                    ?.person?.gender
+                }}
+              </p>
+            </div>
+          </div>
+          <div *ngIf="childLocation && !childLocation?.isBed">
+            <mat-accordion>
+              <mat-expansion-panel
+                class="border mat-elevation-z0 mt-2"
+                [expanded]="true"
+              >
+                <mat-expansion-panel-header
+                  class="d-flex justify-content-between"
+                >
+                  <mat-panel-title>
+                    <span>{{ childLocation?.display }}</span>
+                    <span class="ml-4"></span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div
+                  class="row"
+                  *ngIf="
+                    childLocation?.childMembers &&
+                    childLocation?.childMembers.length > 0
+                  "
+                >
+                  <div
+                    class="col-lg-2 col-md-2 col-sm-3 col-sx-4"
+                    *ngFor="let member of childLocation?.childMembers"
+                  >
+                    <div
+                      class="bed mb-2"
+                      [ngClass]="{
+                        'bg-light':
+                          !params?.admittedPatientsVisits[member?.uuid],
+                        'bg-warning':
+                          params?.admittedPatientsVisits[member?.uuid]
+                      }"
+                      (click)="
+                        onGetStatus(
+                          $event,
+                          member,
+                          params?.admittedPatientsVisits[member?.uuid],
+                          bedOrdersWithBillStatus
+                        )
+                      "
+                    >
+                      <div class="d-flex justify-content-center m-2">
+                        <img
+                          height="60px"
+                          src="data:image/png;base64,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"
+                        />
+                      </div>
+                      <p class="d-flex justify-content-center bed-name">
+                        {{ member?.display }}
+                        <!-- (<span>
+                          {{ member?.patientsPerBed }} </span
+                        >) -->
+                      </p>
+                      <div
+                        class="w-100"
+                        class="patient-details"
+                        *ngIf="params?.admittedPatientsVisits[member?.uuid]"
+                      >
+                        <p class="text-center">
+                          {{
+                            params?.admittedPatientsVisits[member?.uuid]
+                              ?.patient?.display
+                          }}
+                        </p>
+                        <p class="text-center">
+                          Age/Gender:
+                          {{
+                            params?.admittedPatientsVisits[member?.uuid]
+                              ?.patient?.person?.age
+                          }}
+                          years /
+                          {{
+                            params?.admittedPatientsVisits[member?.uuid]
+                              ?.patient?.person?.gender
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="row"
+                  *ngIf="
+                    childLocation?.childMembers &&
+                    childLocation?.childMembers.length === 0
+                  "
+                >
+                  <div class="col-12">
+                    <p class="text-center">No Beds</p>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </div>
+      </div>
+      <div
+        class="row"
+        *ngIf="ward?.childMembers && ward?.childMembers.length === 0"
+      >
+        <div class="col-12">
+          <p class="text-center">No Beds</p>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-progress-bar
+    *ngIf="!params?.admittedPatientsVisits"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

@@ -1,0 +1,109 @@
+<ng-container *ngIf="{ gepgConceptField: gepgConceptField$ | async } as params">
+  <div class="loading-overlay" *ngIf="savingPayment">
+    <div class="text-center">
+      <div>Saving payment details...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <mat-toolbar color="primary">
+    <span>Bill confirmation</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button mat-dialog-close matTooltip="close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <mat-dialog-content class="mat-typography">
+    <div class="alert alert-danger mb-3" *ngIf="savingPaymentError">
+      {{ savingPaymentError }}
+    </div>
+    <div class="p-3">
+      <div *ngIf="!generatingControlNumber || !controlNumber">
+        <p
+          *ngIf="data?.paymentType?.code === 'CASH'"
+          class="h6 font-weight-normal"
+        >
+          This is to confirm that you have received
+          <b>{{ data?.totalPayableBill | currency: "TZS":"":".0" }}</b>
+          from the client for items below;
+        </p>
+        <p *ngIf="data?.paymentType?.code === 'GePG'">
+          This is to confirm that client will be paying
+          <b>{{ data?.totalPayableBill }}</b> through GePG for items below
+        </p>
+        <table class="table">
+          <tr>
+            <th>#</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+          <tr *ngFor="let item of data?.billItems; let itemIndex = index">
+            <td>{{ itemIndex + 1 }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.payable | currency: "TZS":"":".0" }}</td>
+          </tr>
+        </table>
+      </div>
+  
+      <div *ngIf="!params?.gepgConceptField && controlNumber">
+        <div
+          class="d-flex justify-content-center align-items-center control-number-container"
+        >
+          <div class="text-center">
+            <div class="h3 mb-5">Bill Control number</div>
+            <div class="control-number">{{ controlNumber }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="controlNumber-field m-3" *ngIf="params?.gepgConceptField && data?.paymentType?.code === 'GePG'">
+      <app-concepts-form 
+      [conceptFields]="[params?.gepgConceptField]"
+      (formUpdate)="onFormUpdate($event)"
+      >
+      </app-concepts-form>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="m-0 p-3">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button
+      *ngIf="data?.paymentType?.code === 'CASH'"
+      data-test="confirm-cash-payment-button"
+      mat-flat-button
+      color="primary"
+      (click)="onConfirm($event)"
+      cdkFocusInitial
+    >
+      Confirm Payment
+    </button>
+    <button
+      *ngIf="!params?.gepgConceptField && data?.paymentType?.code === 'GePG' && !controlNumber"
+      data-test="generate-control-number-button"
+      [disabled]="generatingControlNumber"
+      mat-flat-button
+      color="primary"
+      (click)="onGenerateControlNumber($event)"
+      cdkFocusInitial
+    >
+      {{ generatingControlNumber ? "Generating..." : "Get Control number" }}
+    </button>
+    <button
+      *ngIf="params?.gepgConceptField && data?.paymentType?.code === 'GePG'"
+      data-test="generate-control-number-button"
+      [disabled]="!controlNumber"
+      class = "mr-4"
+      mat-flat-button
+      color="primary"
+      (click)="onGepgConfirmation($event)"
+      cdkFocusInitial
+    >
+      Confirm Payment
+    </button>
+    
+    <app-print-button *ngIf="!params?.gepgConceptField && data?.paymentType?.code === 'GePG' && controlNumber" [iconName]="'print'" [toolTipText]="'Click to print control number'" [showText]="'Print Control Number'"
+      [classesList]="['float-right', 'button', 'mr-5']"
+      [ElementToBePrinted]="{ControlNumber: controlNumber, CurrentPatient: data?.currentPatient, FacilityDetails: facilityDetailsJson}"
+      (print)="onPrint($event)"></app-print-button>
+  </mat-dialog-actions>
+</ng-container>

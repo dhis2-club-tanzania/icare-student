@@ -1,0 +1,24 @@
+<div class="">
+  <div class="mt-4">
+    <div class="border">
+      <mat-toolbar>
+        <button
+          mat-icon-button
+          (click)="onBack($event)"
+          matTooltip="Go to Home page"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="ml-2">Clients for E-claim</span>
+      </mat-toolbar>
+      <div>
+        <app-patient-list
+          [itemsPerPage]="10"
+          [isTabularList]="false"
+          [defaultFilter]="'Insurance'"
+          (selectPatient)="onSelectPatient($event)"
+        ></app-patient-list>
+      </div>
+    </div>
+  </div>
+</div>

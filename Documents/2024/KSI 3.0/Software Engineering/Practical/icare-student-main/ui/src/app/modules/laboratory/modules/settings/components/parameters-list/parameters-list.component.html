@@ -1,0 +1,90 @@
+<div *ngIf="{ parameters: parameters$ | async } as params">
+  <div>
+    <div class="d-flex justify-content-between w-100">
+      <mat-form-field class="w-100" apperance="fill" style="font-size: 0.9rem">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input
+          type="text"
+          placeholder="Search"
+          class="search-input"
+          matInput
+          autocomplete="off"
+          (keyup)="searchConcept($event)"
+        />
+      </mat-form-field>
+    </div>
+    <!-- {{ params?.parameters | json }} -->
+    <div style="max-height: 500px; overflow: auto">
+      <table *ngIf="params?.parameters" class="w-100 table-striped">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Parameter</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="params?.parameters?.length > 0">
+            <tr
+              [ngClass]="{
+                'selected-parameter': currentParameter?.uuid === parameter?.uuid
+              }"
+              *ngFor="let parameter of params?.parameters; let count = index"
+            >
+              <td>
+                {{ count + 1 + (page - 1) * pageSize }}
+              </td>
+              <td>
+                {{ parameter?.display }}
+              </td>
+              <td>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="onEdit($event, parameter)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="onDelete($event, parameter)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container *ngIf="params?.parameters?.length === 0">
+            <tr>
+              <td colspan="100%">
+                <div class="alert alert-warning" role="alert">No items</div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <div class="w-100 d-flex justify-content-end">
+      <button
+        [disabled]="page <= 1"
+        mat-button
+        (click)="getTestParameters($event, 'prev')"
+      >
+        Prev
+      </button>
+      <button
+        [disabled]="params?.parameters && params?.parameters?.length < pageSize"
+        mat-button
+        (click)="getTestParameters($event, 'next')"
+        class="ml-2"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+  <mat-progress-bar
+    *ngIf="!params?.parameters"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

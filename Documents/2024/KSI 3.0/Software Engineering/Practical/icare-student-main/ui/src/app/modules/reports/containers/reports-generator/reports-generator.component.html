@@ -1,0 +1,389 @@
+<div
+  style="padding: 5px"
+  *ngIf="{
+    dhisConfigs: reportConfigs$ | async,
+    countOfReportsSent: countOfReportsSent$ | async,
+    reportLoaded: reportLoaded$ | async
+  } as reportConfigs"
+>
+  <div class="row">
+    <div
+      class="side-menu-panel"
+      [ngStyle]="{ display: showFullReportRenderingArea ? 'none' : 'block' }"
+      [ngClass]="{
+        'col-lg-3 col-md-4 col-sm-12 col-sx-12': !showFullReportRenderingArea
+      }"
+    >
+      <mat-accordion class="p-0">
+        <mat-expansion-panel class="border" [expanded]="true">
+          <mat-expansion-panel-header class="border-bottom">
+            <mat-panel-title> Data </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="mt-2">
+            <div class="mt-2">
+              <mat-form-field appearance="fill" class="w-100">
+                <mat-label>Report Category</mat-label>
+                <mat-select>
+                  <mat-option
+                    *ngFor="let reportCategory of reportCategories"
+                    [value]="reportCategory?.id"
+                    (click)="setReportCategory(reportCategory?.id)"
+                  >
+                    {{ reportCategory?.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="w-100">
+                <mat-icon matPrefix>search</mat-icon>
+                <input
+                  type="text"
+                  matInput
+                  placeholder="Search item"
+                  [(ngModel)]="searchText"
+                />
+              </mat-form-field>
+
+              <mat-nav-list
+                class="mt-n2 report-item-list"
+                *ngIf="reports?.length > 0"
+              >
+                <mat-list-item
+                  *ngFor="
+                    let report of reportFromSelectedGroup
+                      | filterBy: searchText:'name'
+                  "
+                  class="report-item {{
+                    currentReport?.id === report.id ? 'current-item' : ''
+                  }}"
+                  (click)="onSelectReport($event, report, standardReports)"
+                >
+                  <a matLine>{{ report?.name }}</a>
+                </mat-list-item>
+              </mat-nav-list>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <ng-container
+          *ngIf="selectedReportParameters && !reportConfigs?.dhisConfigs"
+        >
+          <ng-container *ngIf="!useDefaultDatesParametersConfigs">
+            <mat-expansion-panel class="border mt-1">
+              <mat-expansion-panel-header>
+                <mat-panel-title> Period </mat-panel-title>
+              </mat-expansion-panel-header>
+              <app-parameter-field
+                [field]="selectedReportParameters[0]"
+                [type]="'custom'"
+                [parameter]="selectedReportParameters[0]"
+                (parameterUpdate)="onSetParameterValue($event, 'new')"
+              ></app-parameter-field>
+            </mat-expansion-panel>
+          </ng-container>
+          <ng-container *ngIf="useDefaultDatesParametersConfigs">
+            <mat-expansion-panel
+              *ngFor="let parameter of selectedReportParameters"
+              class="border mt-1"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ parameter?.name }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <app-parameter-field
+                [field]="parameter"
+                [type]="'default'"
+                [parameter]="parameter"
+                (parameterUpdate)="onSetParameterValue($event)"
+              ></app-parameter-field>
+            </mat-expansion-panel>
+          </ng-container>
+        </ng-container>
+        <mat-expansion-panel
+          class="border mt-1"
+          *ngIf="
+            reportsExtraParams && keyedReportsExtraParameters[currentReport?.id]
+          "
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title> Period * </mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-report-period-filter
+            [reportConfigs]="keyedReportsExtraParameters[currentReport?.id]"
+            (selectedPeriod)="onSelectPeriod($event)"
+          >
+          </app-report-period-filter>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <ng-container>
+      <div
+        [ngClass]="{
+          'col-lg-9 col-md-9 col-sm-12 col-sx-12': !showFullReportRenderingArea,
+          'col-md-12 col-sm-12 col-sx-12': showFullReportRenderingArea
+        }"
+        class="d-print-none"
+      >
+        <mat-card class="border">
+          <div class="d-flex justify-content-left align-items-center">
+            <button class="toggle-button" (click)="toggleReportArea($event)">
+              <img
+                height="25"
+                *ngIf="!showFullReportRenderingArea"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAABLUlEQVRoge3ZP0oDQRiG8R9K0C7BTlAPoilshBQeyMLWJp7HxhMkil7BwlowBmwsYrEJ0bDZzMJO4p/vgeneZd+H+QYGhiAIgt/E9pr+s4sePvCakD/AKZ6n3/wIOhhighccrsh3MZrmb/JWS6eDO0Wp2TqvyHcx/pJ9z10whTKJoWLMyliUmOAyf81q2ubjNFsP2FuSP8HbQr6fv2Y1ISEkmiMkhERzhISQaI6QEBLN0ca976XuFLfbMspusVf5a66mL10CnmxAYishM8neYk38mdGi/LA/qnfYr/PXTCNkhEx+QkbI5KeNgX8qcyxk1kPICJn8lD0rDNBaki+7NV/kr5lGmUyvIr8oM8pdsA4d8zEbq/f0dpu3Wn1aOMNRYn5fsXM72RoFQRBslE+x1kUp3dzk3QAAAABJRU5ErkJggg=="
+              />
+              <img
+                height="25"
+                *ngIf="showFullReportRenderingArea"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAAcklEQVRIie3WMQ6CUBAG4S/cQYL3v4mNCVJh4XGgwIrIC+SpifGfdorZbLFZwj9zwYD2oKumx4T7i0DJVXPC+Aw8cN7pEk888d+Jt5YDMuF2wIHm3dN8mvU6u50u0UQT/V6U5eJsvTclV83V9kNXciGAGVM9cX2eizuGAAAAAElFTkSuQmCC"
+              />
+            </button>
+            <button
+              [disabled]="
+                !currentReport || !currentReport?.name || !reportSelectionParams
+              "
+              class="ml-2"
+              mat-flat-button
+              color="primary"
+              (click)="
+                onRunReport(
+                  $event,
+                  reportConfigs?.dhisConfigs,
+                  period,
+                  reportConfigs?.dhisConfigs
+                )
+              "
+            >
+              Get Report
+            </button>
+
+            <span *ngIf="reportConfigs && reportConfigs?.dhisConfigs">
+              <!-- {{ reportConfigs?.countOfReportsSent | json }} -->
+              <button
+                class="ml-2 reports-sent-status-btn"
+                [disabled]="
+                  reportConfigs?.countOfReportsSent &&
+                  reportConfigs?.countOfReportsSent === 0
+                "
+                (click)="getDHIS2ReportsSent($event)"
+              >
+                Count of reports sent:
+                <span *ngIf="reportConfigs?.countOfReportsSent">
+                  {{ reportConfigs?.countOfReportsSent }}
+                </span>
+                <mat-progress-bar
+                  *ngIf="!reportConfigs?.countOfReportsSent"
+                  mode="indeterminate"
+                ></mat-progress-bar>
+              </button>
+              <button
+                class="ml-2"
+                [disabled]="
+                  !currentReport || !currentReport?.name || !showReportArea
+                "
+                mat-flat-button
+                color="primary"
+                *ngIf="reportConfigs?.dhisConfigs && currentReport"
+                [disabled]="!reportConfigs?.reportLoaded"
+                (click)="
+                  onSendToDHIS2(
+                    $event,
+                    reportConfigs?.dhisConfigs,
+                    currentReport
+                  )
+                "
+              >
+                Send to Dhis
+              </button>
+            </span>
+            <button
+              [disabled]="
+                !currentReport || !currentReport?.name || !showReportArea
+              "
+              class="ml-2"
+              mat-stroked-button
+              (click)="
+                exportData(
+                  $event,
+                  !currentReport?.standardReport
+                    ? 'report-to-download'
+                    : 'iframe_id',
+                  currentReport?.name,
+                  currentReport?.standardReport ? true : false
+                )
+              "
+            >
+              Download
+            </button>
+            <button
+              *ngIf="
+                currentReport &&
+                currentReport?.id === '88f3d96a-9e51-4562-938b-b0b000a48e34'
+              "
+              [disabled]="
+                !currentReport || !currentReport?.name || !showReportArea
+              "
+              mat-stroked-button
+              (click)="setQuickPivot($event)"
+              class="ml-2"
+              [ngClass]="{ 'selected-btn': isQuickPivotSet }"
+            >
+              Pivot
+            </button>
+          </div>
+          <div class="menu-and-report-sepatator w-100"></div>
+          <div class="w-100" id="report-to-download">
+            <div class="w-100 mt-3">
+              <div
+                class="
+                  w-100
+                  report-dimensions-summary
+                  h5
+                  font-weight-normal
+                  d-flex
+                  justify-content-left
+                "
+              >
+                <div class="w-100">
+                  {{
+                    currentReport && currentReport?.name
+                      ? currentReport?.name
+                      : "Please select report"
+                  }}
+                </div>
+                <div
+                  class="ml-3 d-flex justify-content-right"
+                  style="font-size: 1rem"
+                  *ngIf="
+                    currentReport &&
+                    currentReport?.parameters &&
+                    reportSelectionParams
+                  "
+                >
+                  <div
+                    class="ml-2"
+                    *ngFor="let parameter of currentReport?.parameters"
+                  >
+                    <div *ngIf="reportSelectionParams[parameter?.id]">
+                      <b class="text-muted">
+                        {{ sanitizeParameter(parameter?.name) }} </b
+                      >:
+                      <span
+                        style="font-size: smaller"
+                        *ngIf="parameter?.type === 'DATE'"
+                      >
+                        {{
+                          reportSelectionParams[parameter?.id]
+                            | formatIsoStrDateForDisplay
+                        }}
+                      </span>
+                      <span
+                        style="font-size: smaller"
+                        *ngIf="parameter?.type !== 'DATE'"
+                      >
+                        {{ reportSelectionParams[parameter?.id] }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="w-100 text-center"
+              style="font-size: 1rem"
+              *ngIf="!currentReport"
+            >
+              <img src="assets/images/report-table.png" height="200" />
+            </div>
+
+            <div class="mt-3" *ngIf="loadingReport">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+
+            <div class="mt-3 alert alert-danger" role="alert" *ngIf="hasError">
+              Something went wrong when loading report, try again with different
+              parameters
+            </div>
+
+            <div
+              class="mt-3"
+              *ngIf="
+                showReportArea &&
+                !loadingReport &&
+                !currentReport?.standardReport
+              "
+            >
+              <div *ngFor="let dataSet of reportData?.dataSets">
+                <div
+                  style="height: 70vh; overflow: auto"
+                  *ngIf="!isQuickPivotSet"
+                >
+                  <app-report-table
+                    [data]="dataSet"
+                    *ngIf="currentVisualization === 'TABLE' && !isQuickPivotSet"
+                  ></app-report-table>
+                </div>
+                <div *ngIf="isQuickPivotSet">
+                  <app-quick-pivot
+                    [dataToPivot]="reportData?.dataSets[0]?.rows"
+                  ></app-quick-pivot>
+                </div>
+              </div>
+              <app-chart *ngIf="currentVisualization === 'CHART'"></app-chart>
+            </div>
+            <div
+              class="mt-3"
+              *ngIf="
+                selectedReportParameters &&
+                currentReport?.standardReport &&
+                standardReportIsReady
+              "
+            >
+              <ngx-standard-report
+                [parameters]="reportSelectionParams"
+                [report]="currentReport?.standardReport?.value"
+              ></ngx-standard-report>
+            </div>
+            <div
+              class="mt-3"
+              *ngIf="period && reportConfigs?.dhisConfigs && showReportArea"
+            >
+              <app-report
+                [period]="period"
+                [reportConfigs]="reportConfigs?.dhisConfigs"
+              >
+              </app-report>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+      <!-- <div
+        class="col-md-9"
+        *ngIf="selectedReportGroup == 'MTUHA' && reportConfigs?.dhisConfigs"
+      >
+        <mat-card class="border">
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span>
+              <button
+                (click)="
+                  onSendToDHIS2($event, reportConfigs?.dhisConfigs, currentReport)
+                "
+                mat-flat-button
+                color="primary"
+                *ngIf=""
+              >
+                Send to DHIS2
+              </button>
+            </span>
+          </div>
+  
+          <div class="w-100 mt-2">
+            <br />
+          </div>
+        </mat-card>
+      </div> -->
+    </ng-container>
+  </div>
+</div>

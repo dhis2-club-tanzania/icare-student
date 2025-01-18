@@ -1,0 +1,74 @@
+<div class="w-100 d-flex justify-content-between">
+  <div class="custom-selection">
+    <div class="h6 text-left multiple-selection-header">Available</div>
+    <div class="d-flex justify-content-between w-100 ml-1 mr-1">
+      <mat-form-field class="w-100" style="font-size: 0.9rem">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input
+          type="text"
+          placeholder="Search"
+          matInput
+          autocomplete="off"
+          (keyup)="searchItem($event)"
+        />
+      </mat-form-field>
+    </div>
+    <div
+      class="concept-list w-100"
+      *ngIf="
+        items$ | async | filterItemsBySelections: currentSelectedItems as items
+      "
+    >
+      <ul
+        class="w-100 ul-listed-items"
+        *ngIf="items"
+        style="height: 270px; overflow: auto"
+      >
+        <li
+          (click)="getSelectedItem($event, item, items)"
+          *ngFor="let item of items"
+          class="item-in-list"
+        >
+          {{ item?.display }}
+        </li>
+      </ul>
+      <mat-progress-bar
+        class="w-100"
+        *ngIf="!items"
+        mode="indeterminate"
+      ></mat-progress-bar>
+
+      <div class="w-100 d-flex justify-content-end">
+        <button
+          [disabled]="page <= 1"
+          mat-button
+          (click)="getItems($event, 'prev', itemType)"
+        >
+          Prev
+        </button>
+        <button
+          [disabled]="items && items?.length < pageSize"
+          mat-button
+          (click)="getItems($event, 'next', itemType)"
+          class="ml-2"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+  <div style="width: 2%"></div>
+  <div class="custom-selection">
+    <div class="h6 text-left multiple-selection-header">Selected</div>
+    <ul class="concept-list ul-listed-items" *ngIf="items$ | async as items">
+      <li
+        class="item-in-list"
+        (click)="removeSelectedItem($event, item, items, itemType)"
+        *ngFor="let item of currentSelectedItems"
+      >
+        {{ item?.display }}
+      </li>
+    </ul>
+  </div>
+</div>

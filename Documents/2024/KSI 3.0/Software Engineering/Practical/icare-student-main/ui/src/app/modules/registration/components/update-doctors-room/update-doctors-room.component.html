@@ -1,0 +1,91 @@
+<div class="loading-overlay" *ngIf="updating">
+  <div class="text-center">
+    <div>Updating Patient Doctor's Room ...</div>
+    <div class="mt-3 d-flex justify-content-center w-100">
+      <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+    </div>
+  </div>
+</div>
+<div
+  class="update-doctors-room-container ml-2 mr-2"
+  *ngIf="{ currentPatientVisit: currentPatientVisit$ | async } as params"
+>
+  <!-- <div class="update-doctors-room-container ml-2 mr-2" *ngIf="currentVisit"> -->
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.currentPatientVisit"
+  ></mat-progress-bar>
+  <div *ngIf="params?.currentPatientVisit">
+    <!-- <h3>Update Patient Doctor's Room</h3> -->
+    <div *ngIf="updated" class="alert alert-success">
+      Consultation room updated succesfully
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      There was an problem updating the consultation, please retry
+    </div>
+
+    <h4>
+      From: <small> {{ params?.currentPatientVisit.location?.display }} </small>
+    </h4>
+    <div class="mt-2"></div>
+    <h4>
+      To :
+      <small *ngIf="!updated"> {{ currentRoom?.name || "" }}</small>
+    </h4>
+    <div
+      style="max-height: 200px; overflow: auto; padding: 6px 8px"
+      *ngIf="params?.currentPatientVisit"
+    >
+      <!-- <mat-form-field class="w-100">
+        <input
+          matInput
+          placeholder="Search Rooms"
+          (keyup)="searchRoom($event)"
+        />
+      </mat-form-field> -->
+
+      <app-locations-chips
+        [locations]="treatmentLocations"
+        [currentVisit]="params?.currentPatientVisit"
+        (emitLocationSelection)="emitLocationSelection($event)"
+      >
+      </app-locations-chips>
+
+      <!-- <mat-chip-list aria-label="Locations">
+        <mat-chip
+          *ngFor="let room of treatmentLocations | filterBy: searchTerm:'name'"
+          (click)="onSelectRoom($event, room)"
+          color="{{
+            room?.uuid === currentRoom?.uuid ||
+            room?.uuid === params?.currentPatientVisit?.location?.uuid
+              ? 'primary'
+              : ''
+          }}"
+          [selected]="
+            room?.uuid === currentRoom?.uuid ||
+            room?.uuid === params?.currentPatientVisit?.location?.uuid
+          "
+        >
+          {{ room.name }}
+        </mat-chip>
+      </mat-chip-list> -->
+    </div>
+    <div class="d-flex justify-content-end">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        class="ml-2"
+        [disabled]="!currentRoom"
+        mat-stroked-button
+        color="primary"
+        (click)="update($event, params?.currentPatientVisit)"
+        [disable]="
+          currentRoom?.name &&
+          currentRoom?.name == params?.currentPatientVisit.location?.display
+        "
+      >
+        Update
+      </button>
+    </div>
+  </div>
+</div>

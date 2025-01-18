@@ -1,0 +1,33 @@
+.example-full-width {
+  width: 100% !important;
+}
+
+.title {
+  color: #bfbfbf;
+}
+
+.active-btn {
+  background-image: linear-gradient(#2a8fd1, #b3b3b3);
+  color: #ffffff;
+}
+
+.patient-load-badge {
+  font-size: 12px;
+  margin-left: 7px;
+  background-color: #2a8fd1;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  margin-right: -5px;
+  color: #ffffff;
+  font-weight: normal;
+}
+
+.rooms-status-container {
+  padding: 15px;
+  border: solid 1px #eee;
+  margin: 15px 0 !important;
+  border-radius: 6px;
+}

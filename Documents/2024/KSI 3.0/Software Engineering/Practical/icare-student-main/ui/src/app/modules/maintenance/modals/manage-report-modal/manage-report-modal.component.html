@@ -1,0 +1,29 @@
+<ng-container>
+  <mat-toolbar color="primary">
+    {{ data ? data?.name : "Add new" }}</mat-toolbar
+  >
+  <div class="p-3">
+    <div>
+      <ngx-standard-report
+        [actionType]="'manage'"
+        [additionalKey]=""
+        [hideList]="true"
+        [reportToEdit]="
+          data?.standardDefinition ? data?.standardDefinition : data
+        "
+      ></ngx-standard-report>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+      <!-- <button
+        *ngIf="!data?.standardDefinition"
+        mat-flat-button
+        color="primary"
+        (click)="onClose($event)"
+        class="ml-2"
+      >
+        Save
+      </button> -->
+    </div>
+  </div>
+</ng-container>

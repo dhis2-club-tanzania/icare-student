@@ -1,0 +1,33 @@
+<div
+  *ngIf="{
+    configuredReports: configuredReports$ | async,
+    configs: configs$ | async
+  } as reportParams"
+>
+  <app-lab-reports
+    *ngIf="
+      reportParams?.configuredReports &&
+      reportParams?.configs &&
+      !reportParams?.configuredReports?.error
+    "
+    [configuredReports]="reportParams?.configuredReports"
+    [labConfigs]="reportParams?.configs"
+  ></app-lab-reports>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      !reportParams?.configuredReports ||
+      !reportParams?.configs ||
+      (reportParams?.configuredReports &&
+        reportParams?.configuredReports?.error)
+    "
+  ></mat-progress-bar>
+  <div
+    class="text-center"
+    *ngIf="
+      reportParams?.configuredReports && reportParams?.configuredReports?.error
+    "
+  >
+    {{ reportParams?.configuredReports?.error }}
+  </div>
+</div>

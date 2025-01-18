@@ -1,0 +1,10 @@
+<div
+  class="requisition-container"
+  *ngIf="{
+    currentStore: currentStore$ | async
+  } as params"
+>
+  <div *ngIf="params?.currentStore">
+    <app-issuing [currentLocation]="params?.currentStore"></app-issuing>
+  </div>
+</div>

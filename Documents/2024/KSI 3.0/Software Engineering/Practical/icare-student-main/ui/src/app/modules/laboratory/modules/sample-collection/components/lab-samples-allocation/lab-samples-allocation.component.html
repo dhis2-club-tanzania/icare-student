@@ -1,0 +1,49 @@
+<div class="laboratory-samples-allocation-container row"  *ngIf="{specimenSources: specimenSources$ | async, currentUser: currentUser$ | async} as sampleData">
+  <div class="col-md-12">
+    <h2 style="text-align: left">Tests allocation & Results</h2>
+  </div>
+  <div class="col-md-9">
+    <div>
+      <mat-card>
+        <mat-tab-group
+          [selectedIndex]="selectedTab.value"
+          (selectedIndexChange)="selectedTab.setValue($event)"
+        >
+          <mat-tab label="Tests allocation" (click)="changeTab(0)">
+            <div class="mat-tab-container" *ngIf="selectedTab.value == 0 && sampleData?.specimenSources">
+              <app-sample-tests-allocation></app-sample-tests-allocation>
+            </div>
+          </mat-tab>
+          <mat-tab
+            label="Technician worklist"
+            class="establish-technician-worklist"
+            (click)="changeTab(1)"
+          >
+            <div
+              class="mat-tab-container"
+              *ngIf="selectedTab.value == 1 && (testContainers$ | async)"
+            >
+              <!-- {{ testContainers$ | async | json }} -->
+              <app-technician-worklist
+                [testContainers]="testContainers$ | async"
+                [currentUser]="sampleData?.currentUser"
+              ></app-technician-worklist>
+            </div>
+          </mat-tab>
+          <mat-tab label="Results" (click)="changeTab(2)">
+            <div
+              class="mat-tab-container"
+              *ngIf="selectedTab.value == 2 && (samples$ | async)"
+            >
+              <app-lab-results 
+                [currentUser]="sampleData?.currentUser"></app-lab-results>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <app-lab-samples-statuses></app-lab-samples-statuses>
+  </div>
+</div>

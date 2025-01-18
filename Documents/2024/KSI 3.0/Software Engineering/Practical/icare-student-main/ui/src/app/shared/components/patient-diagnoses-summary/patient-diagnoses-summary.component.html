@@ -1,0 +1,177 @@
+<div
+  *ngIf="{
+    diagnoses: diagnoses$ | async,
+    loadingVisit: loadingVisit$ | async,
+    savingDiagnosisState: savingDiagnosisState$ | async
+  } as params"
+>
+  <div *ngIf="!forConsultation">
+    <div
+      class="text-left"
+      *ngIf="
+        (params?.diagnoses | filterDiagnoses: isConfirmedDiagnosis)?.length ===
+        0
+      "
+    >
+      No data
+    </div>
+    <mat-progress-bar
+      *ngIf="params?.loadingVisit"
+      mode="indeterminate"
+      ></mat-progress-bar>
+    <table
+      class="table"
+      *ngIf="
+        (params?.diagnoses | filterDiagnoses: isConfirmedDiagnosis)?.length > 0
+      "
+    >
+      <thead>
+        <tr>
+          <!-- <th style="width: 15px">SN</th> -->
+          <th colspan="2">Diagnosis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+        *ngFor="
+            let diagnosisInfo of params?.diagnoses
+              | filterDiagnoses: isConfirmedDiagnosis;
+            let count = index
+          ">
+          <tr
+            [ngClass]="{ 'text-danger': diagnosisInfo?.voided }"
+            *ngIf="!diagnosisInfo?.voided"
+          >
+            <!-- <td>
+              {{ count + 1 }}
+            </td> -->
+            <td colspan="2">
+              <span *ngIf="diagnosisInfo?.voided">
+                <s>
+                  {{
+                    diagnosisInfo?.diagnosis?.display
+                      ? diagnosisInfo?.diagnosis?.display
+                      : diagnosisInfo?.diagnosis?.coded?.display
+                  }}
+                </s>
+              </span>
+              <span *ngIf="!diagnosisInfo?.voided">
+                {{
+                  diagnosisInfo?.diagnosis?.display
+                    ? diagnosisInfo?.diagnosis?.display
+                    : diagnosisInfo?.diagnosis?.coded?.display
+                }}
+              </span>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="forConsultation">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <!-- <th style="width: 10px">SN</th> -->
+          <th style="width: 70%" colspan="2">Diagnosis</th>
+          <th>Rank</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngIf="
+            (params?.diagnoses | filterDiagnoses: isConfirmedDiagnosis)
+              ?.length > 0
+          "
+        >
+        <ng-container 
+        *ngFor="
+              let diagnosisInfo of params?.diagnoses
+                | filterDiagnoses: isConfirmedDiagnosis;
+              let count = index
+            ">
+            <tr
+              [ngClass]="{ 'text-danger': diagnosisInfo?.voided }"
+              *ngIf="!diagnosisInfo?.voided"
+            >
+              <!-- <td>
+                {{ count + 1 }}
+              </td> -->
+              <td colspan="2">
+                <span *ngIf="diagnosisInfo?.voided">
+                  <s>
+                    {{
+                      diagnosisInfo?.diagnosis?.display
+                        ? diagnosisInfo?.diagnosis?.display
+                        : diagnosisInfo?.diagnosis?.coded?.display
+                    }}
+                  </s>
+                </span>
+                <span *ngIf="!diagnosisInfo?.voided">
+                  {{
+                    diagnosisInfo?.diagnosis?.display
+                      ? diagnosisInfo?.diagnosis?.display
+                      : diagnosisInfo?.diagnosis?.coded?.display
+                  }}
+                </span>
+              </td>
+              <td>
+                {{ diagnosisInfo?.rank === 0 ? "Primary" : "Secondary" }}
+              </td>
+              <td>
+                <button
+                  *ngIf="!isInpatient"
+                  mat-icon-button
+                  [matMenuTriggerFor]="menu"
+                  aria-label="Options"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="onEdit($event, diagnosisInfo)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    [disabled]="diagnosisInfo?.voided"
+                    mat-menu-item
+                    (click)="onDelete($event, diagnosisInfo)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+        </ng-container>
+        </ng-container>
+        <ng-container *ngIf="!isInpatient">
+          <tr *ngIf="diagnosisField">
+            <td colspan="2">
+              <app-form
+                [fields]="[diagnosisField]"
+                [isFormHorizontal]="true"
+                (formUpdate)="onFormUpdate($event, 'diagnosis')"
+              >
+              </app-form>
+            </td>
+            <td>
+              <app-form
+                [fields]="[diagnosisRankField]"
+                [isFormHorizontal]="true"
+                (formUpdate)="onFormUpdate($event, 'rank')"
+              >
+              </app-form>
+            </td>
+            <td>
+              <button mat-stroked-button (click)="addDiagnosis($event)">
+                Add
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
