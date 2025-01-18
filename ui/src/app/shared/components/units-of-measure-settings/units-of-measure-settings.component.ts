@@ -115,5 +115,5 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
       }
        });
     }
-//end of fixed bug
+//end of fixed of solution
 }
