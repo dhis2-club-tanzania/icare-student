@@ -169,7 +169,7 @@ export class GeneralDispensingFormComponent implements OnInit {
       (formValues.getValues()?.drug?.value as any)?.display
     ) {
       this.selectedDrug = formValues.getValues()?.drug?.value;
-      console.log("Selected drug:", this.selectedDrug);
+      // console.log("Selected drug:", this.selectedDrug);
       // Check if drug name contains units
       const drugName = this.selectedDrug?.display || "";
       // console.log("Drug name:", drugName);
