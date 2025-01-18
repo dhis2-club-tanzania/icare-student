@@ -452,7 +452,7 @@ export class PriceListComponent implements OnInit, OnChanges {
 
   // END CODES FOR DOWNLOADING METHOD
 
-
+  
 
   // START CODES FOR UPLOADING METHOD 
 

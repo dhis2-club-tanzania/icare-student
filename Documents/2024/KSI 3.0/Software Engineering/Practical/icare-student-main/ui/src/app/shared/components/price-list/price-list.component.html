@@ -15,64 +15,63 @@
     priceListDepartments: priceListDepartments$ | async
   } as params"
 >
-  <div class="d-flex justify-content-between mb-2">
+  <div class="d-flex justify-content-between mb-2 align-items-center">
     <div class="h4 font-weight-normal">Price List</div>
-    <div>
-
-      
-     <button
-        mat-flat-button
-        color="primary"
-        style="height: 40px; margin-right: 10px;"
-        [disabled]="isDownloading"
-        (click)="downloadExcel()"
-      >
-        <mat-icon *ngIf="!isDownloading">download</mat-icon>
-        <mat-spinner
-          color="primary"
-          *ngIf="isDownloading"
-          [diameter]="20"
-          style="display: inline-block !important; margin-right: 4px"
-        ></mat-spinner>
-        <span>Download</span>
-      </button>
-      
-
-
+    <div class="d-flex align-items-center justify-content-lg-start" style="background-color: #2196F3; border-radius: 4px; padding: 5px; height: 40px; width: 21.05%;">
       <button
-        mat-stroked-button
-        color="primary"
-        (click)="fileInput.click()">
-        Choose File
-      </button>
+      mat-stroked-button
+      color="primary"
+      (click)="fileInput.click()"
+      style="margin-right: 10px; height: 25px; font-size: 0.75rem; padding: 0 10px; display: flex; align-items: center; background-color: white; border-radius: 4px;"
+      >
+      Choose File
       <input
-        type="file"
-        #fileInput
-        accept=".xlsx,.xls,.csv"
-        (change)="uploadExcel($event)"
-        style="display: none"
+      type="file"
+      #fileInput
+      accept=".xlsx,.xls,.csv"
+      (change)="uploadExcel($event)"
+      style="display: none"
       />
-      <span *ngIf="selectedFileName">{{ selectedFileName }}</span>
-
-
-
+      </button>
+      <span *ngIf="selectedFileName; else noFileChosen" style="color: white;">{{ selectedFileName }}</span>
+      <ng-template #noFileChosen><span style="color: white;">No file chosen</span></ng-template>
     </div>
-    <button
+    <div class="d-flex align-items-center">
+      <button
       mat-flat-button
       color="primary"
-      [disabled]="addingPricingItem"
-      style="height: 40px"
-      (click)="onCreate($event, params?.pricingItems)"
-    >
-      <mat-icon *ngIf="!addingPricingItem">add</mat-icon>
+      style="height: 40px; margin-right: 10px; display: flex; align-items: center; justify-content: center;"
+      [disabled]="isDownloading"
+      (click)="downloadExcel()"
+      >
+      <mat-icon *ngIf="!isDownloading" style="margin-right: 4px;">download</mat-icon>
       <mat-spinner
         color="primary"
-        *ngIf="addingPricingItem"
+        *ngIf="isDownloading"
         [diameter]="20"
         style="display: inline-block !important; margin-right: 4px"
       ></mat-spinner>
-      <span>Add Item</span>
-    </button>
+      <span>Download</span>
+      </button>
+    </div>
+        <div class="d-flex align-items-center">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="addingPricingItem"
+        style="height: 40px"
+        (click)="onCreate($event, params?.pricingItems)"
+      >
+        <mat-icon *ngIf="!addingPricingItem">add</mat-icon>
+        <mat-spinner
+          color="primary"
+          *ngIf="addingPricingItem"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        <span>Add Item</span>
+      </button>
+    </div>
   </div>
 
   <div
