@@ -1,0 +1,17 @@
+<div
+  *ngIf="{
+    location: currentLocation$ | async,
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="!params?.location || params?.settingCurrentLocationStatus"
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <!-- {{ params?.settingCurrentLocationStatus | json }} -->
+  <app-inpatient-home
+    *ngIf="params?.location && !params?.settingCurrentLocationStatus"
+    [location]="params?.location"
+  ></app-inpatient-home>
+</div>

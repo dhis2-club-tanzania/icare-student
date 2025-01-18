@@ -1,0 +1,15 @@
+<div
+  class="w-100"
+  *ngIf="{
+    encounterInformation: encounterInformation$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.encounterInformation"
+  ></mat-progress-bar>
+  <app-shared-lab-report-form-data-display
+    *ngIf="params?.encounterInformation"
+    [encounterInformation]="params?.encounterInformation"
+  ></app-shared-lab-report-form-data-display>
+</div>

@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-2">
+    <div *ngIf="departments$ | async as depts">
+      <app-test-selector
+        [labDepartments]="depts"
+        (onSetLabTest)="onSetLabTest($event)"
+        (resetConfigsSide) = "resetConfigsSide()"
+      ></app-test-selector>
+    </div>
+  </div>
+
+  <div class="col-10">
+    <div
+      class="w-100"
+      *ngIf="{
+        rangeConfigs: testRangeConfigs$ | async,
+        timeConfigs: testTimeConfigs$ | async,
+        test: test
+      } as params"
+    >
+      <div
+        class="w-100"
+        *ngIf="!params?.timeConfigs && !params?.rangeConfigs && params?.test"
+      >
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+
+      <h4>{{ test?.display }}</h4>
+
+      <div
+        *ngIf="params?.rangeConfigs && params?.test && params?.timeConfigs"
+      >
+        <!-- <div class="row">
+          <div class="col-4">
+            <app-test-time [test] = "test" [existingConfigs] = "params?.timeConfigs"></app-test-time>
+          </div>
+          <div class="col-4">
+            <app-test-male-range [test] = "test" [existingConfigs] = "params?.rangeConfigs"></app-test-male-range>
+          </div>
+          <div class="col-4">
+            <app-test-female-range [test] = "test" [existingConfigs] = "params?.rangeConfigs"></app-test-female-range>
+          </div>
+        </div> -->
+
+        <div class="row">
+          <div class="col-4">
+            <app-time-settings-list
+              [test]="test"
+              [existingConfigs]="params?.timeConfigs"
+            ></app-time-settings-list>
+          </div>
+          <div class="col-4">
+            <app-test-male-range-list
+              [test]="test"
+              [existingConfigs]="params?.rangeConfigs"
+            ></app-test-male-range-list>
+          </div>
+          <div class="col-4">
+            
+            <app-test-female-range-list
+              [test]="test"
+              [existingConfigs]="params?.rangeConfigs"
+            ></app-test-female-range-list>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

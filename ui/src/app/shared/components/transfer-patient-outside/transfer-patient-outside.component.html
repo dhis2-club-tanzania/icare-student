@@ -1,0 +1,119 @@
+<div
+  class="transfer-container"
+  *ngIf="{
+    formLoadingState: formLoadingState$ | async,
+    form: form$ | async,
+    locations: locations$ | async,
+    provider: provider$ | async,
+    visit: currentVisit$ | async,
+    transferLoadingState: transferLoadingState$ | async,
+    transferStatus: transferStatus$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="(formUuid && params?.formLoadingState) || !params?.locations"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div
+    *ngIf="((params?.form && formUuid) || !formUuid) && params?.locations"
+    style="padding: 0px"
+  >
+    <mat-toolbar color="primary"
+      >Transfer {{ patient?.display }} Outside (Out Referral)</mat-toolbar
+    >
+    <div
+      style="padding: 5px 20px; max-height: 550px; overflow: auto"
+      *ngIf="!params?.transferStatus"
+    >
+      <div>
+        <mat-form-field class="w-100">
+          <mat-label>Transfer to:</mat-label>
+          <mat-select [(ngModel)]="transferTo" required>
+            <mat-option
+              *ngFor="let option of params?.locations"
+              [value]="option"
+            >
+              {{ option?.display }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-md-8">
+          <h3 class="font-weight-bold">Diagnosis</h3>
+          <div class="w-100 mb-3 mt-1">
+            <app-patient-diagnoses-summary
+              [patientVisit]="visit"
+            ></app-patient-diagnoses-summary>
+          </div>
+          <h3 class="font-weight-bold">Medication</h3>
+          <div class="w-100 mb-3 mt-1">
+            <app-patient-medication-summary
+              [patientVisit]="visit"
+            ></app-patient-medication-summary>
+          </div>
+          <h3 class="font-weight-bold">Lab Results</h3>
+          <div class="w-100 mb-3 mt-1">
+            <app-patient-lab-results-summary
+              [labConceptsTree]="null"
+              [observations]="null"
+              [patientVisit]="visit"
+            ></app-patient-lab-results-summary>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <h3 class="font-weight-bold">Clinical Summary</h3>
+          <div class="w-100 mt-1">
+            <app-patient-clinical-notes-summary
+              [patientVisit]="visit"
+            ></app-patient-clinical-notes-summary>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="params?.form">
+        <app-capture-form-data
+          [form]="params?.form"
+          [observations]="[]"
+          [visit]="visit"
+          (formDataUpdate)="onFormUpdate($event)"
+        ></app-capture-form-data>
+      </div>
+    </div>
+
+    <div *ngIf="params?.transferStatus">
+      <h3 style="text-align: center" color="primary">Transferred!</h3>
+    </div>
+
+    <div
+      class="d-flex justify-content-end mb-2 p-2"
+      style="border-top: solid 1px #eee"
+    >
+      <button mat-stroked-button class="mr-2" (click)="onClose($event)">
+        Cancel
+      </button>
+      <button
+        color="primary"
+        class="mr-2"
+        mat-stroked-button
+        [disabled]="!transferTo || params?.transferStatus"
+        (click)="
+          onSaveForm(
+            $event,
+            params?.provider,
+            params?.visit,
+            obs,
+            params?.form?.encounterType
+          )
+        "
+      >
+        <mat-spinner
+          color="primary"
+          *ngIf="params?.transferLoadingState"
+          [diameter]="20"
+        ></mat-spinner>
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

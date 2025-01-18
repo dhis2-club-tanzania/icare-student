@@ -1,0 +1,60 @@
+<div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <td>Test</td>
+        <td>Sample</td>
+        <td>Result</td>
+        <td>
+          <span *ngIf="signOff == 1">First</span>
+          <span *ngIf="signOff == 2">Second</span> Sign off
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{ testOrder?.concept?.display }}
+        </td>
+        <td>
+          {{ testOrder?.sample?.id }}
+        </td>
+        <td>
+          <div
+            *ngFor="let concept of conceptsToCaptureData"
+            style="padding: 5px"
+            class="w-75"
+          >
+            <span style="width: 50%">{{ concept?.display }}:</span>
+            <span style="margin-left: 20px"
+              ><b>
+                {{ storedResults[concept?.uuid] }}
+              </b></span
+            >
+          </div>
+        </td>
+        <td>
+          <button
+            color="primary"
+            [disabled]="
+              (currentTestAllocation?.statuses?.length == 0 && signOff == 2) ||
+              (countOfConceptsWithResults >= conceptsToCaptureData?.length &&
+                signOff == 1)
+            "
+            mat-stroked-button
+            class="mr-2 approve-btn"
+            (click)="onApprove($event, testOrder)"
+          >
+            <mat-spinner
+              color="primary"
+              *ngIf="labResultsSavingApprovalState$ | async"
+              [diameter]="20"
+              style="display: inline-block !important; margin-right: 4px"
+            ></mat-spinner>
+            Approve
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

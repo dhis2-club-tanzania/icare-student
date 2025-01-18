@@ -1,0 +1,1404 @@
+{
+  "sessionId": "5802820FB536DC317A92FC0EEA743919",
+  "authenticated": true,
+  "user": {
+    "uuid": "84ee6acb-1e75-11eb-8bc7-0242c0a85003",
+    "display": "admin",
+    "username": "admin",
+    "systemId": "admin",
+    "userProperties": {
+      "loginAttempts": "0",
+      "locations": "['107351e4-4bef-452a-b633-0450a0fd432d','794322a3-396a-4180-947a-69a3cc820ed2','e0eb6390-e0b0-4d31-9184-f08ba20bee0c','e614a0e8-e43d-4307-8af3-ac77829ed281','e08a7f79-665a-4934-b98a-339f2a6ff3ee', '1f465776-4ce8-4a20-9142-cdd67b568fb7', '6351fcf4-e311-4a19-90f9-35667d99a8af', 'iCARE103-bill-41ab-8422-108a0c277d98', '62c57d25-8d39-41ab-8422-108a0c277d98', '64c57d25-8d39-41ab-8422-108a0c277d98', '59c57d25-8d39-41ab-8422-108a0c277d98', '60c57d25-8d39-41ab-8422-108a0c277d98', '61c57d25-8d39-41ab-8422-108a0c277d98', 'iCARE003-645f-451f-8efe-a0db56f09676', '7fdfa2cb-bc95-405a-88c6-32b7673c0453', '7f65d926-57d6-4402-ae10-a5b3bcbf7986', 'iCARE002-645f-451f-8efe-a0db56f09676', 'iCARE798-UDSM-ADMT-9beb-d30dcfc0c66e', 'iCARE102-665a-4934-b98a-339f2a6ff3ee', 'iCARE004-645f-451f-8efe-a0db56f09676', 'b1a8b05e-3542-4037-bbd3-998ee9c40574', '7fdfa2cb-bc95-405a-88c6-32b7673c0453']"
+    },
+    "person": { "uuid": "7713dc9b-1e75-11eb-8bc7-0242c0a85003" },
+    "privileges": [
+      {
+        "uuid": "7718eb25-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Relationship Types"
+      },
+      {
+        "uuid": "7718d779-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Concept Proposals"
+      },
+      {
+        "uuid": "d5a59a6c-87f7-4edf-a74a-5902adcce67f",
+        "name": "Discharge details"
+      },
+      {
+        "uuid": "7718de5c-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Forms"
+      },
+      {
+        "uuid": "7957a09d-aa56-41c4-902b-8049570cfa23",
+        "name": "Update HL7 Inbound Queue"
+      },
+      {
+        "uuid": "02203cdd-23a8-44ec-b36d-9937ce1fd146",
+        "name": "module:Inpatient"
+      },
+      {
+        "uuid": "ed0f6738-942d-4776-9c7b-9057b0285267",
+        "name": "Update Appointment Status"
+      },
+      {
+        "uuid": "f539411e-0221-4080-9a6e-ae052cee6ef5",
+        "name": "Manage Visit Types"
+      },
+      {
+        "uuid": "8dd86446-54d7-4dd9-b569-c2fe3fd5748e",
+        "name": "History and examination emd"
+      },
+      {
+        "uuid": "9244ab48-eb0c-4f4e-9e02-a7e6d66ea490",
+        "name": "Get Care Settings"
+      },
+      {
+        "uuid": "7718df27-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Modules"
+      },
+      {
+        "uuid": "7718e9f5-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Person Attribute Types"
+      },
+      {
+        "uuid": "a6d5fe45-6fbb-42ae-b8cc-17b1318389d4",
+        "name": "Labor partograph"
+      },
+      {
+        "uuid": "a849eed9-bfcc-48bd-abff-c1dc779fd90a",
+        "name": "Task: appointmentschedulingui.requestAppointments"
+      },
+      {
+        "uuid": "063375b2-9b74-4e38-9b27-854505a24226",
+        "name": "Add HL7 Source"
+      },
+      {
+        "uuid": "05fe6dc1-a867-4056-83ad-1444f483c3a3",
+        "name": "Manage Location Attribute Types"
+      },
+      {
+        "uuid": "0aaa2522-9027-425e-9acd-649f2d58612f",
+        "name": "Provider Management API - Read-only"
+      },
+      {
+        "uuid": "cb58a0c6-90da-46eb-98be-7f201ef9867d",
+        "name": "Get Order Sets"
+      },
+      {
+        "uuid": "170f323d-f51c-4dc4-a651-fc85b49b59d8",
+        "name": "Squeezing Appointments"
+      },
+      {
+        "uuid": "c38d6df8-ce37-4a8e-9c30-8c1f72d25507",
+        "name": "App: formentryapp.forms"
+      },
+      { "uuid": "7718dc98-1e75-11eb-8bc7-0242c0a85003", "name": "Form Entry" },
+      {
+        "uuid": "46b39b26-aea6-4473-be9a-f05f53ac9329",
+        "name": "Task: emr.patient.encounter.edit"
+      },
+      {
+        "uuid": "66243087-d3fd-49e3-b57c-898e4676eacb",
+        "name": "Get Conditions"
+      },
+      {
+        "uuid": "673293ac-699e-442b-9316-30970f31c5d6",
+        "name": "Provider Management Dashboard - View Patients"
+      },
+      {
+        "uuid": "3d07987d-1009-4de5-8dfd-36c47d57135f",
+        "name": "module:counselor"
+      },
+      {
+        "uuid": "7718ebe8-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Report Objects"
+      },
+      { "uuid": "7718e2be-1e75-11eb-8bc7-0242c0a85003", "name": "Upload XSN" },
+      {
+        "uuid": "3f3b756d-05a9-4d97-a24f-d3bdbc855e71",
+        "name": "Edit Diagnoses"
+      },
+      {
+        "uuid": "73964b4d-67ed-40df-ac50-e9eaecbbd424",
+        "name": "Exemption categories"
+      },
+      {
+        "uuid": "7718df89-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Person Attribute Types"
+      },
+      {
+        "uuid": "Capture vitals",
+        "name": "67a71486-1a54-468f-ac3e-7091a9a79584"
+      },
+      {
+        "uuid": "7718dd5d-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Concept Sources"
+      },
+      {
+        "uuid": "98b84b49-eef8-4d8a-bb23-1ad4024f7a09",
+        "name": "module:Laboratory"
+      },
+      {
+        "uuid": "b73f2f17-0351-4461-925e-82a7bd243180",
+        "name": "Assign System Developer Role"
+      },
+      {
+        "uuid": "86b9a0b6-9514-4420-9e9a-a1453a6ef1cc",
+        "name": "Task: appointmentschedulingui.overbookAppointments"
+      },
+      {
+        "uuid": "7718ea5a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Problems"
+      },
+      {
+        "uuid": "7718ddf8-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Field Types"
+      },
+      {
+        "uuid": "779894c2-8baa-44a2-9a0b-d1e525e4346b",
+        "name": "Edit Conditions"
+      },
+      { "uuid": "bb939a62-4e51-40a4-a75e-e1f36084a2da", "name": "Nurse" },
+      {
+        "uuid": "bc34943f-a955-4f23-af9b-e83a13ece9dc",
+        "name": "View Token Registrations"
+      },
+      {
+        "uuid": "7c0989c1-ba6e-4625-b013-3f76af99f4c2",
+        "name": "App: coreapps.patientDashboard"
+      },
+      { "uuid": "7718dc69-1e75-11eb-8bc7-0242c0a85003", "name": "Edit Users" },
+      {
+        "uuid": "7718e95a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Patient Programs"
+      },
+      {
+        "uuid": "7718e460-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Concept Datatypes"
+      },
+      {
+        "uuid": "7718e088-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Roles"
+      },
+      {
+        "uuid": "7718d6aa-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Report Objects"
+      },
+      {
+        "uuid": "e75127e3-5842-4568-8a6b-82090e1a5478",
+        "name": "App: registrationapp.registerPatient"
+      },
+      { "uuid": "7718e7ba-1e75-11eb-8bc7-0242c0a85003", "name": "View Orders" },
+      {
+        "uuid": "7718ea28-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Privileges"
+      },
+      {
+        "uuid": "aad60717-328f-4d0f-abe5-e68a9ebff76f",
+        "name": "App: appointmentschedulingui.appointmentTypes"
+      },
+      {
+        "uuid": "ab9e31ad-03dc-4765-9efc-59ad83f715eb",
+        "name": "Manage Reports"
+      },
+      {
+        "uuid": "74d47917-ede6-4c5d-abb6-8cfe718a57c5",
+        "name": "Add HL7 Inbound Queue"
+      },
+      {
+        "uuid": "7718d9e4-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Cohorts"
+      },
+      {
+        "uuid": "History and examination",
+        "name": "c393fd1d-3f10-11e4-adec-0800271c1b75"
+      },
+      {
+        "uuid": "0b29548d-e6bb-4040-9f8f-764aaf9727c9",
+        "name": "App: atlas.manage"
+      },
+      {
+        "uuid": "7718dc36-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit User Passwords"
+      },
+      { "uuid": "23251ebf-a82f-4f8b-9506-faee0b31770d", "name": "VCT/PITC" },
+      { "uuid": "7718e5f8-1e75-11eb-8bc7-0242c0a85003", "name": "View Forms" },
+      {
+        "uuid": "7718e42b-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Concept Classes"
+      },
+      {
+        "uuid": "87aaa93c-aac7-4e92-8560-1406cc39f0ae",
+        "name": "Share Metadata"
+      },
+      {
+        "uuid": "6bb7e63d-e644-4c9c-b787-b1dda09407d9",
+        "name": "Driving license examination"
+      },
+      {
+        "uuid": "9ca4bfa8-3eb2-4469-9b74-f563992af618",
+        "name": "Manage Search Index"
+      },
+      {
+        "uuid": "193c359f-9f36-4d85-8215-e01bc150c26e",
+        "name": "Add HL7 Inbound Archive"
+      },
+      { "uuid": "7718d63d-1e75-11eb-8bc7-0242c0a85003", "name": "Add People" },
+      {
+        "uuid": "0b9285a5-d291-43ea-a2aa-d69ff5e6426c",
+        "name": "Kinga Tiba baada ya madhara"
+      },
+      {
+        "uuid": "3d9253df-20fb-46d4-a313-175d36d131f4",
+        "name": "Task: appointmentschedulingui.bookAppointments"
+      },
+      { "uuid": "d4441d5e-1bbf-46c2-af35-f9cd8737e2e8", "name": "Surgeon" },
+      {
+        "uuid": "7718dec3-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Identifier Types"
+      },
+      {
+        "uuid": "28983648-2c81-438e-b171-c094226677a0",
+        "name": "View Provider Schedules"
+      },
+      {
+        "uuid": "6565b3d3-06ad-479d-be28-0f8df4f23926",
+        "name": "Matumizi ya Vitendanishi na Uhakiki Ubora wa upimaji VVU"
+      },
+      {
+        "uuid": "abdda1cd-f4be-4da9-b0d3-0dffeaea776f",
+        "name": "Get Concept Attribute Types"
+      },
+      {
+        "uuid": "7718dbd2-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Report Objects"
+      },
+      {
+        "uuid": "7718dadb-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Patient Identifiers"
+      },
+      {
+        "uuid": "674b5517-4bec-4ad2-aa79-c89310071879",
+        "name": "Manage Scheduled Report Tasks"
+      },
+      {
+        "uuid": "5fc7c2c5-6a7b-480f-ac8d-f6c3d03331ca",
+        "name": "Manage Order Sets"
+      },
+      {
+        "uuid": "aa08b52f-2a87-4337-a89c-261d8c9a1dec",
+        "name": "App: appointmentschedulingui.providerSchedules"
+      },
+      {
+        "uuid": "7718d746-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Cohorts"
+      },
+      { "uuid": "65d14b28-3989-11e6-899a-a4d646d86a8a", "name": "Add Visits" },
+      {
+        "uuid": "c368886b-3bbe-46ca-b56d-a04c141117f8",
+        "name": "Add HL7 Inbound Exception"
+      },
+      {
+        "uuid": "7718e215-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Patient Summary"
+      },
+      {
+        "uuid": "22f8f589-d30a-4342-9deb-5099644543ac",
+        "name": "Manage Concept Attribute Types"
+      },
+      {
+        "uuid": "ea508dd9-af1a-40a0-9fc3-f3dbf893a5ab",
+        "name": "Task: referenceapplication.vitals"
+      },
+      {
+        "uuid": "7718d8e7-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete People"
+      },
+      {
+        "uuid": "3ae179ab-f1b8-44d7-8219-e3b94d8e0025",
+        "name": "Manage Order Frequencies"
+      },
+      {
+        "uuid": "7718dfbf-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Privileges"
+      },
+      {
+        "uuid": "7718db3e-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Patients"
+      },
+      {
+        "uuid": "6c6a672c-042b-407b-bdf5-6038667e9e47",
+        "name": "Delete Conditions"
+      },
+      {
+        "uuid": "7718d7e9-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Observations"
+      },
+      {
+        "uuid": "4a8f7a33-bb28-449d-8b07-8512b907a5f6",
+        "name": "module:Radiology"
+      },
+      {
+        "uuid": "1c5c265a-a4b0-4480-a5d9-308703f6f836",
+        "name": "Upload Batch of Identifiers"
+      },
+      {
+        "uuid": "73d36615-9a4a-46a4-8134-2dca15acacc1",
+        "name": "Death registry"
+      },
+      { "uuid": "e151c1d0-8494-4633-ab86-bb94f1619f13", "name": "Edit Visits" },
+      {
+        "uuid": "0ec1f92c-895e-4c4f-ab37-0b656cbd1a0b",
+        "name": "Delete Visits"
+      },
+      {
+        "uuid": "7718dd2a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Concept Datatypes"
+      },
+      {
+        "uuid": "7718dcf8-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Concept Classes"
+      },
+      {
+        "uuid": "2b0eff7f-26c5-4580-9ca5-a9ba587a7ef2",
+        "name": "Upimaji na ushauri nasaha"
+      },
+      {
+        "uuid": "6d0cb3a0-0b4a-4682-a13f-545836c261c7",
+        "name": "App: coreapps.patientVisits"
+      },
+      {
+        "uuid": "ccbb7924-0d50-4e2e-94d7-0bedd1d9fedc",
+        "name": "Manage HL7 Messages"
+      },
+      {
+        "uuid": "7718e023-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Relationship Types"
+      },
+      {
+        "uuid": "afe848ee-35bc-4a93-97c6-e764931e44ba",
+        "name": "Occupational therapy"
+      },
+      {
+        "uuid": "b22aafc3-bea2-48fe-9d89-07bc43051990",
+        "name": "Manage Report Definitions"
+      },
+      {
+        "uuid": "8d8c6092-cbcc-4cb7-9250-fae61c8952d5",
+        "name": "Pre operative list"
+      },
+      {
+        "uuid": "0627442b-0e40-4f3d-97c0-36384c107525",
+        "name": "Add Allergies"
+      },
+      {
+        "uuid": "0ec4305a-3f5e-4b42-a22d-445fa90b2718",
+        "name": "Manage Metadata Mapping"
+      },
+      {
+        "uuid": "b6005f8d-19d4-4581-9c89-70da9c34ee66",
+        "name": "View FHIR Client"
+      },
+      {
+        "uuid": "7718e596-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Encounters"
+      },
+      {
+        "uuid": "07c94c10-5132-478f-8411-a7c97de89718",
+        "name": "Manage Encounter Roles"
+      },
+      {
+        "uuid": "7718eb9c-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Relationships"
+      },
+      {
+        "uuid": "394b33ce-08ad-4541-9fd0-7f91ca6a7864",
+        "name": "Manage Dimension Definitions"
+      },
+      {
+        "uuid": "cfc6bf1a-f07d-45dc-bf93-3a716e138bfe",
+        "name": "App: coreapps.configuremetadata"
+      },
+      {
+        "uuid": "7718d465-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Encounters"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a215",
+        "name": "Get Visit Types"
+      },
+      {
+        "uuid": "7718e24f-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Regimen Section"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a216",
+        "name": "Get HL7 Inbound Exception"
+      },
+      {
+        "uuid": "7718e5c7-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Field Types"
+      },
+      {
+        "uuid": "7718d3ff-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Concept Proposals"
+      },
+      {
+        "uuid": "4b8ec45f-4a60-4ddb-8332-9f6fc04a469a",
+        "name": "Manage Data Set Definitions"
+      },
+      {
+        "uuid": "History and examination emd",
+        "name": "6534f5a7-078d-4e5c-824f-db1c06f272dc"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a213",
+        "name": "Get Visit Attribute Types"
+      },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a214", "name": "Get Visits" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a211",
+        "name": "Get Providers"
+      },
+      {
+        "uuid": "7718e28b-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Purge Field Types"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a212",
+        "name": "Get Location Attribute Types"
+      },
+      {
+        "uuid": "ac6a6511-6528-437a-96f7-d774abc8517e",
+        "name": "Manage Address Templates"
+      },
+      {
+        "uuid": "c702a1e8-3c7d-4bc8-9348-c590f06577b8",
+        "name": "Manage Appointments Settings"
+      },
+      {
+        "uuid": "7718e751-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Observations"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a210",
+        "name": "Get Encounter Roles"
+      },
+      { "uuid": "d8ac053b-5cac-4dbb-9510-6631444dd3e6", "name": "Run Reports" },
+      {
+        "uuid": "7718ecc5-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Unpublished Forms"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a219",
+        "name": "Get HL7 Source"
+      },
+      {
+        "uuid": "ccf703c1-0bec-4de5-9595-3878c140f4e1",
+        "name": "Task: coreapps.mergeVisits"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a217",
+        "name": "Get HL7 Inbound Archive"
+      },
+      {
+        "uuid": "7718e68e-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Locations"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a218",
+        "name": "Get HL7 Inbound Queue"
+      },
+      {
+        "uuid": "c8c2733c-1259-4bc3-a752-5281d74a30e5",
+        "name": "Task: referenceapplication.simpleVisitNote"
+      },
+      {
+        "uuid": "659458a4-4207-442a-8eb8-3152aab4707a",
+        "name": "module:Dispensing"
+      },
+      {
+        "uuid": "7718d7b7-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Encounters"
+      },
+      {
+        "uuid": "c842ea69-5b8a-403c-9bf8-423575d5662a",
+        "name": "Manage Identifier Sources"
+      },
+      {
+        "uuid": "0591a225-3271-480e-a430-384b2e92a939",
+        "name": "Request Appointments"
+      },
+      {
+        "uuid": "7718e0ba-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Scheduler"
+      },
+      { "uuid": "7718daa9-1e75-11eb-8bc7-0242c0a85003", "name": "Edit Orders" },
+      {
+        "uuid": "b7c0627a-d9d4-488e-8bcf-2f7567aabf63",
+        "name": "Update HL7 Source"
+      },
+      {
+        "uuid": "23427819-a203-4f0f-8059-a6cd7602b4e5",
+        "name": "Task: appointmentschedulingui.viewConfidential"
+      },
+      {
+        "uuid": "3adcd30f-b28e-4b60-ae31-0e78db61a5a2",
+        "name": "Ophthalmology"
+      },
+      {
+        "uuid": "a893bace-2b03-4a44-8c05-0460f57b65ad",
+        "name": "Task: coreapps.createVisit"
+      },
+      {
+        "uuid": "3bfee15c-2dcc-4886-bcf7-d2b512ec91bd",
+        "name": "module:clinic"
+      },
+      {
+        "uuid": "9f48fb63-131d-426b-86f3-514c72d77ba3",
+        "name": "Update HL7 Inbound Archive"
+      },
+      {
+        "uuid": "e28d2585-b54d-40a8-a870-874f50c74307",
+        "name": "History and examination"
+      },
+      {
+        "uuid": "c7fc8cb9-df7d-40dc-934c-86c6a096670f",
+        "name": "Schedule Appointments"
+      },
+      {
+        "uuid": "7da21add-8ecc-4104-b46d-6ff89bc84075",
+        "name": "Get Order Frequencies"
+      },
+      {
+        "uuid": "3751f7c5-1222-4b6a-8bf6-4a88a4d2e050",
+        "name": "Remove Allergies"
+      },
+      {
+        "uuid": "7718da77-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Observations"
+      },
+      {
+        "uuid": "7718d880-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Patient Programs"
+      },
+      {
+        "uuid": "d96221a9-8f9b-4031-953d-e2a7573588b3",
+        "name": "App: appointmentschedulingui.viewAppointments"
+      },
+      {
+        "uuid": "28643393-8625-43c8-bedc-7d282f43742c",
+        "name": "Manage Appointment Types"
+      },
+      {
+        "uuid": "7718d91a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Relationships"
+      },
+      {
+        "uuid": "589ec4cb-5972-4659-9b32-81439ec08a35",
+        "name": "Health to education CTC client"
+      },
+      {
+        "uuid": "7718e81f-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Patient Identifiers"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a237",
+        "name": "Get Concept Datatypes"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a238",
+        "name": "Get Concept Classes"
+      },
+      { "uuid": "7718d70f-1e75-11eb-8bc7-0242c0a85003", "name": "Add Users" },
+      {
+        "uuid": "9e1917b4-96a8-403e-9c8d-13b9524ef6d5",
+        "name": "Manage Concept Stop Words"
+      },
+      {
+        "uuid": "7718e4fb-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Concepts"
+      },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a235", "name": "Get Roles" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a236",
+        "name": "Get Privileges"
+      },
+      {
+        "uuid": "d05dff37-f4f5-40be-9ec3-47c07a49b4b7",
+        "name": "module:diagnostic"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a233",
+        "name": "Get Order Types"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a234",
+        "name": "Get Field Types"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a231",
+        "name": "Get Concept Sources"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a232",
+        "name": "Get Relationship Types"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a239",
+        "name": "Get Identifier Types"
+      },
+      {
+        "uuid": "3087d966-57a3-4c5b-9b1d-d23ec29bd948",
+        "name": "Provider Management Dashboard - Edit Providers"
+      },
+      {
+        "uuid": "7718dff0-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Programs"
+      },
+      {
+        "uuid": "7718ec2b-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Reports"
+      },
+      {
+        "uuid": "7718e2ee-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Administration Functions"
+      },
+      {
+        "uuid": "f89bd698-8e39-49e6-83d7-dc91e38bdd9f",
+        "name": "Manage Concept Reference Terms"
+      },
+      {
+        "uuid": "7718d9b2-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Users"
+      },
+      {
+        "uuid": "7718d5f5-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Patients"
+      },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a240", "name": "Get Forms" },
+      {
+        "uuid": "7718d980-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Reports"
+      },
+      {
+        "uuid": "7718d94d-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Report Objects"
+      },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a241", "name": "Get Orders" },
+      {
+        "uuid": "22f9321e-7ac0-4ed0-8ff9-384331cbfdee",
+        "name": "Patient Dashboard - View Visits Section"
+      },
+      {
+        "uuid": "0de211a9-9f06-453f-93d2-3e61ebb7c775",
+        "name": "Provider Management - Admin"
+      },
+      {
+        "uuid": "7718e563-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Encounter Types"
+      },
+      {
+        "uuid": "47666bde-c5a9-4045-86b6-92ee4054559a",
+        "name": "Task: Modify Allergies"
+      },
+      {
+        "uuid": "8c2e4800-0198-4557-a7fc-44e41027ab82",
+        "name": "Manage Report Designs"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a226",
+        "name": "Get Global Properties"
+      },
+      {
+        "uuid": "54cb1455-d210-4153-9f73-5490a70eb582",
+        "name": "View Metadata Via Mapping"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a227",
+        "name": "Get Patient Programs"
+      },
+      { "uuid": "7718e9c3-1e75-11eb-8bc7-0242c0a85003", "name": "View People" },
+      { "uuid": "f14473ae-4c11-49fa-9eff-e7474d917b32", "name": "Edit Notes" },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a224", "name": "Get People" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a225",
+        "name": "Get Person Attribute Types"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a222",
+        "name": "Get Database Changes"
+      },
+      {
+        "uuid": "7718e19f-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Graphs Section"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a223",
+        "name": "Get Relationships"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a220",
+        "name": "Get Allergies"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a221",
+        "name": "Get Problems"
+      },
+      {
+        "uuid": "ab2017e3-58b6-476b-a7ae-e7a5feddc905",
+        "name": "Delete HL7 Inbound Queue"
+      },
+      {
+        "uuid": "a95250cb-74d6-48d5-9d04-d4cec662c9b1",
+        "name": "Manage Location Tags"
+      },
+      {
+        "uuid": "7ec0a250-3355-4f7d-9f6a-9729fc21a83c",
+        "name": "module:Maintenance"
+      },
+      {
+        "uuid": "7718ea9b-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Programs"
+      },
+      {
+        "uuid": "8e84c675-247b-44af-b741-c4a23cba7ccb",
+        "name": "module:Cashier"
+      },
+      { "uuid": "f11d6798-6e61-49de-8042-87a75aac113b", "name": "Manage OWA" },
+      {
+        "uuid": "c9fe3893-69d0-47f8-ac5e-9ac88e762117",
+        "name": "module:registration"
+      },
+      {
+        "uuid": "7718e1db-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Overview Section"
+      },
+      {
+        "uuid": "7718d8b3-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Patients"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a228",
+        "name": "Get Programs"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a229",
+        "name": "Get Concept Reference Terms"
+      },
+      {
+        "uuid": "7718e12c-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Encounters Section"
+      },
+      { "uuid": "7718ed0d-1e75-11eb-8bc7-0242c0a85003", "name": "View Users" },
+      {
+        "uuid": "296a965d-5907-4cf0-92d4-207935a1ada9",
+        "name": "Provider Management Dashboard - Edit Patients"
+      },
+      {
+        "uuid": "7718d676-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Relationships"
+      },
+      {
+        "uuid": "7718d552-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Patient Identifiers"
+      },
+      {
+        "uuid": "7718e056-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Relationships"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a230",
+        "name": "Get Concept Map Types"
+      },
+      {
+        "uuid": "7718e495-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Concept Proposals"
+      },
+      {
+        "uuid": "8fcb5716-4872-4012-bdce-d468726f0b10",
+        "name": "Manage Address Hierarchy"
+      },
+      {
+        "uuid": "7718e98f-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Patients"
+      },
+      {
+        "uuid": "2e2745cf-8bc3-48ba-8bb3-fb62d45610ff",
+        "name": "HIV status of family/household members"
+      },
+      {
+        "uuid": "7718dd91-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Concepts"
+      },
+      {
+        "uuid": "7718de8e-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Global Properties"
+      },
+      {
+        "uuid": "7718e6c0-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Navigation Menu"
+      },
+      {
+        "uuid": "c6a51d12-3db8-465f-b1d6-fb1382ed9839",
+        "name": "Manage Token Registrations"
+      },
+      {
+        "uuid": "47876d8d-6860-4a3d-9259-b9c63a513c33",
+        "name": "Manage RESTWS"
+      },
+      {
+        "uuid": "7718e164-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Forms Section"
+      },
+      {
+        "uuid": "ff32d0c6-6319-451e-901e-6e59e68d7a04",
+        "name": "Manage Atlas Data"
+      },
+      {
+        "uuid": "d2fff872-3723-4a1b-8c24-021b75a1e4e1",
+        "name": "Manage Indicator Definitions"
+      },
+      {
+        "uuid": "505f7def-e7a8-4240-a156-4d21f2996e6c",
+        "name": "module:Therapy Clinic"
+      },
+      {
+        "uuid": "cb10a31c-b6fd-42a6-9ac8-1e279fa65c0c",
+        "name": "Patient Overview - View Patient Flags"
+      },
+      {
+        "uuid": "7718dba2-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Relationships"
+      },
+      {
+        "uuid": "7718e4c9-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Concept Sources"
+      },
+      { "uuid": "182a8ecb-a6e7-431e-b7e3-8b66d22ba929", "name": "Get Notes" },
+      {
+        "uuid": "f271f1b3-37a5-4ca3-a324-3524ae75cb02",
+        "name": "Update HL7 Inbound Exception"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a262",
+        "name": "Patient Overview - View Relationships"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a263",
+        "name": "Patient Overview - View Programs"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a260",
+        "name": "Patient Overview - View Problem List"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a261",
+        "name": "Patient Overview - View Allergies"
+      },
+      { "uuid": "7695fc2c-ac28-4d6c-8e9f-5440e226e47b", "name": "View RESTWS" },
+      {
+        "uuid": "b4c96670-fc58-45ae-88ea-8e526637ef5b",
+        "name": "Task: referenceapplication.simpleTransfer"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a248",
+        "name": "Get Encounters"
+      },
+      { "uuid": "d05118c6-2490-4d78-a41a-390e3596a249", "name": "Get Users" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a246",
+        "name": "Get Locations"
+      },
+      {
+        "uuid": "7718da45-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Encounters"
+      },
+      {
+        "uuid": "329e765a-e238-4bf2-95ea-f29ed8794bf4",
+        "name": "Post operative list"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a247",
+        "name": "Get Encounter Types"
+      },
+      { "uuid": "638fbe1d-0bbd-435a-8587-d24ad6bfde86", "name": "Follow up" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a244",
+        "name": "Get Patients"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a245",
+        "name": "Get Observations"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a242",
+        "name": "Get Patient Cohorts"
+      },
+      {
+        "uuid": "a85c274d-3aa9-4071-b7ac-6f75b7833bf4",
+        "name": "Procedure orders"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a243",
+        "name": "Get Patient Identifiers"
+      },
+      {
+        "uuid": "8fbcde66-ae55-4b65-983d-24bb47845258",
+        "name": "Task: referenceapplication.simpleAdmission"
+      },
+      {
+        "uuid": "790f2ee2-01a2-4c81-94fc-e02ada11c298",
+        "name": "Delete Diagnoses"
+      },
+      {
+        "uuid": "94517eb0-8d4b-4931-80fd-d6483fcceecb",
+        "name": "Task: coreapps.endVisit"
+      },
+      {
+        "uuid": "ae35879e-e95e-49f3-ad78-8e148d1764f7",
+        "name": "View Calculations"
+      },
+      {
+        "uuid": "1c2ac3c2-271b-4e61-976b-f19c70b87344",
+        "name": "RCH TB screening"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a251",
+        "name": "Get Concepts"
+      },
+      {
+        "uuid": "e48504cb-076c-4d0e-936b-be321840f8d0",
+        "name": "module:Reports"
+      },
+      { "uuid": "7718db70-1e75-11eb-8bc7-0242c0a85003", "name": "Edit People" },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a250",
+        "name": "Get Concept Proposals"
+      },
+      {
+        "uuid": "89bd92f8-9484-4a8a-b828-68e23ce9faaa",
+        "name": "module:Vertical Programs"
+      },
+      {
+        "uuid": "7718e325-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Allergies"
+      },
+      {
+        "uuid": "4d015850-5ab0-4fea-9568-9c2fe8ea2608",
+        "name": "Diagnosis of TB in children and adult"
+      },
+      {
+        "uuid": "e97df5ca-400e-4d71-829f-37729c13f0e7",
+        "name": "Manage Providers"
+      },
+      {
+        "uuid": "20403586-2085-4490-890d-b457e4fcb700",
+        "name": "Delete HL7 Inbound Exception"
+      },
+      {
+        "uuid": "3b517d3f-c6f3-45d9-b8b0-854133bf2b2a",
+        "name": "Delete Notes"
+      },
+      {
+        "uuid": "ae661591-280b-40a3-9791-cf52cd28a793",
+        "name": "Physiotherapy assessment"
+      },
+      {
+        "uuid": "4a2a18f8-b8dd-454b-b1d1-20f418c46b47",
+        "name": "Generate Batch of Identifiers"
+      },
+      {
+        "uuid": "617ea797-ea5b-49f9-bc78-78f131ead29a",
+        "name": "Manage Provider Schedules"
+      },
+      {
+        "uuid": "fc3cfac6-ed65-4890-bbcc-086e54802d78",
+        "name": "module:Social Welfare"
+      },
+      {
+        "uuid": "7718e52d-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Data Entry Statistics"
+      },
+      {
+        "uuid": "7718e788-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Order Types"
+      },
+      {
+        "uuid": "7718d84c-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Patient Identifiers"
+      },
+      {
+        "uuid": "7718dcc7-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Alerts"
+      },
+      {
+        "uuid": "9e1aa6d7-b57d-4cec-9977-03b4a4f60b26",
+        "name": "Task: referenceapplication.simpleDischarge"
+      },
+      {
+        "uuid": "c297d67f-cfa2-466e-bb15-79a0924c9cce",
+        "name": "module:Theatre"
+      },
+      {
+        "uuid": "cee7e6c9-8317-46f5-80c5-a195df9882f4",
+        "name": "Manage Visit Attribute Types"
+      },
+      {
+        "uuid": "c17a9d84-c716-4d1a-8b89-53ac3c97940f",
+        "name": "Provider Management Dashboard - View Historical"
+      },
+      {
+        "uuid": "eeb33e62-baab-4fdf-88ef-a7ad8d5de363",
+        "name": "App: referenceapplication.vitals"
+      },
+      {
+        "uuid": "7718dc04-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Reports"
+      },
+      {
+        "uuid": "4ee494f0-9887-4e20-b09f-65800bf1f81b",
+        "name": "Manage Concept Name tags"
+      },
+      {
+        "uuid": "ff41368e-a7f5-4449-b866-bb4eab3311be",
+        "name": "Edit Problems"
+      },
+      {
+        "uuid": "e457486d-b0a5-42fe-aeae-9ae092d7cca7",
+        "name": "Edit Allergies"
+      },
+      {
+        "uuid": "348a3334-abf0-49e2-8655-33ebd29539c2",
+        "name": "Haemodialysis"
+      },
+      {
+        "uuid": "d05118c6-2490-4d78-a41a-390e3596a264",
+        "name": "Patient Overview - View Patient Actions"
+      },
+      {
+        "uuid": "7718d4ba-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Observations"
+      },
+      { "uuid": "2e3fd3c2-7cf4-4403-9d68-319eb771d32c", "name": "module:VTC" },
+      {
+        "uuid": "0a6c10e5-5e72-474c-ab14-ae9ffa8e907a",
+        "name": "module:Store"
+      },
+      {
+        "uuid": "a553ff78-c586-4cfd-bdd7-ed716146b0e4",
+        "name": "App: appointmentschedulingui.home"
+      },
+      {
+        "uuid": "b0ce6180-254a-406a-bbd6-553183ffe39f",
+        "name": "App: coreapps.findPatient"
+      },
+      {
+        "uuid": "7718e0eb-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Patient Dashboard - View Demographics Section"
+      },
+      { "uuid": "194f674d-dc6a-480e-87f5-1e2889a5113d", "name": "Prosthesis" },
+      {
+        "uuid": "5c8d5d42-ee20-474d-8192-8465c0f0c743",
+        "name": "Manage Cohort Definitions"
+      },
+      {
+        "uuid": "7718e65d-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Identifier Types"
+      },
+      {
+        "uuid": "7718d5a7-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Add Patient Programs"
+      },
+      {
+        "uuid": "e1bd70dc-f647-4b29-938b-75d4fb7cb528",
+        "name": "Task: emr.patient.encounter.delete"
+      },
+      {
+        "uuid": "3acc83ea-0cb4-43d4-9f61-332373afee03",
+        "name": "Provider Management Dashboard - View Providers"
+      },
+      {
+        "uuid": "1c21cdbc-2bb5-4452-8a4a-f329307dd93f",
+        "name": "View Appointments"
+      },
+      {
+        "uuid": "cd7935ee-4e28-4d6d-92c6-f13616bec593",
+        "name": "Get Diagnoses"
+      },
+      {
+        "uuid": "59d7cfb0-4650-4817-a151-f91751594386",
+        "name": "Circumcision"
+      },
+      {
+        "uuid": "498e9f85-f4d7-4a98-80af-633d23e039b6",
+        "name": "Configure Visits"
+      },
+      {
+        "uuid": "84ff8aee-54dc-45d9-adad-0c5e46069b6f",
+        "name": "App: coreapps.systemAdministration"
+      },
+      {
+        "uuid": "3ff5d39d-ac53-4ab6-bcda-a550ddb35340",
+        "name": "Remove Problems"
+      },
+      {
+        "uuid": "e84e466e-cfb3-4d49-a57a-0f9172ad1503",
+        "name": "View Appointments Blocks"
+      },
+      {
+        "uuid": "e0872dfc-24b5-4b3c-bfe6-78343dc29ac1",
+        "name": "Manage Concept Map Types"
+      },
+      {
+        "uuid": "7718def6-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Locations"
+      },
+      {
+        "uuid": "027b27f7-01d2-4635-972a-f745d6c9ffed",
+        "name": "Pediatric assessment"
+      },
+      {
+        "uuid": "d0957625-b747-4902-958c-92ada3d57616",
+        "name": "Manage Auto Generation Options"
+      },
+      {
+        "uuid": "9b126675-e4f7-4540-bb87-fb80b6a2a291",
+        "name": "Manage Implementation Id"
+      },
+      {
+        "uuid": "66e72faf-8e22-4990-8c83-1f89eab3db82",
+        "name": "Eye examination"
+      },
+      { "uuid": "7718ec73-1e75-11eb-8bc7-0242c0a85003", "name": "View Roles" },
+      {
+        "uuid": "81b5d5c9-2e2a-4981-b702-9acc4d311249",
+        "name": "Provider Management API"
+      },
+      { "uuid": "7718d507-1e75-11eb-8bc7-0242c0a85003", "name": "Add Orders" },
+      {
+        "uuid": "7718db0c-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Patient Programs"
+      },
+      { "uuid": "7718d6de-1e75-11eb-8bc7-0242c0a85003", "name": "Add Reports" },
+      {
+        "uuid": "28f0fcba-d059-4acd-a13d-42e8abf284cc",
+        "name": "View Appointment Types"
+      },
+      {
+        "uuid": "e140bccf-4ff1-439e-9857-520a302f86f7",
+        "name": "module:nursing"
+      },
+      {
+        "uuid": "6e8d607e-4fd1-4922-afb5-a1ab22df38d8",
+        "name": "Social worker/counselor"
+      },
+      {
+        "uuid": "709f7192-cbf7-462c-a01c-eaa867bbf944",
+        "name": "View Appointments Statistics"
+      },
+      {
+        "uuid": "7718da14-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Edit Concept Proposals"
+      },
+      {
+        "uuid": "f9a1949f-d5f0-44eb-89db-82d15b617f97",
+        "name": "Post operative order"
+      },
+      {
+        "uuid": "900ef603-8340-431a-a531-fac612c2abe1",
+        "name": "Task: coreapps.createRetrospectiveVisit"
+      },
+      {
+        "uuid": "81e95bce-3f10-11e4-adec-0800271c1b75",
+        "name": "Radiology orders"
+      },
+      {
+        "uuid": "7718e62a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Global Properties"
+      },
+      {
+        "uuid": "7718d81a-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Delete Orders"
+      },
+      {
+        "uuid": "e2af4693-4db1-4677-8b7c-9d2cb6a1fa7c",
+        "name": "Add Problems"
+      },
+      {
+        "uuid": "7718df58-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Order Types"
+      },
+      {
+        "uuid": "a17175dc-eed6-4dbe-9bdc-c96137eb0019",
+        "name": "View Patient Appointment History"
+      },
+      {
+        "uuid": "7718e7eb-1e75-11eb-8bc7-0242c0a85003",
+        "name": "View Patient Cohorts"
+      },
+      {
+        "uuid": "7718ddc5-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage Encounter Types"
+      },
+      {
+        "uuid": "974d6a9a-7a9e-4ec1-a9bc-310bee031dd2",
+        "name": "App: referenceapplication.legacyAdmin"
+      },
+      {
+        "uuid": "7718de28-1e75-11eb-8bc7-0242c0a85003",
+        "name": "Manage FormEntry XSN"
+      },
+      { "uuid": "7718d149-1e75-11eb-8bc7-0242c0a85003", "name": "Add Cohorts" },
+      {
+        "uuid": "b7db0382-9026-4809-b4b1-2b2ecc14b1f7",
+        "name": "Physical disfunction assessment"
+      },
+      {
+        "uuid": "ba3bb5d0-678b-4f3a-96d6-0bb7216cdb3e",
+        "name": "App: coreapps.activeVisits"
+      },
+      {
+        "uuid": "5e3cb831-ceda-4292-9798-b92d158ef8c1",
+        "name": "Delete HL7 Inbound Archive"
+      }
+    ],
+    "roles": [
+      {
+        "uuid": "7ebbfbc0-83c1-4677-be47-4a081de98468",
+        "name": "Application: Configures Metadata"
+      },
+      {
+        "uuid": "8d94f852-c2cc-11de-8d13-0010c6dffd0f",
+        "name": "System Developer"
+      },
+      {
+        "uuid": "52d1f60e-de9b-4415-8666-d67ac37aad37",
+        "name": "Social Welfare"
+      },
+      {
+        "uuid": "122259ed-1d3b-496e-b2af-20ab134aa7b3",
+        "name": "Application: Records Allergies"
+      },
+      { "uuid": "734503c9-c508-4273-a83e-eba46d64a5fa", "name": "Inpatient" },
+      {
+        "uuid": "f7d13237-6045-4ccc-bca1-64cb69675502",
+        "name": "Application: Requests Appointments"
+      },
+      {
+        "uuid": "0dca51b9-8c8f-40e7-b584-a5f9781f53f7",
+        "name": "Application: Edits Existing Encounters"
+      },
+      {
+        "uuid": "f6bb72ce-857a-4ec0-a10d-8e5e16914209",
+        "name": "Application: Manages Atlas"
+      },
+      {
+        "uuid": "7f8d78e8-afb3-4d54-8350-b9e154f5d162",
+        "name": "Application: Uses Patient Summary"
+      },
+      {
+        "uuid": "4daec6f0-b5f5-4652-b03c-d756cebe8da0",
+        "name": "Application: Enters ADT Events"
+      },
+      { "uuid": "7a7914ab-8fe5-4f0f-ba2b-ff3f9259461a", "name": "Theatre" },
+      {
+        "uuid": "70847fd7-8b0d-4fbe-a661-fe8347400566",
+        "name": "Organizational: Registration Clerk"
+      },
+      {
+        "uuid": "5204f0f5-6c68-4467-afac-891215e7fb62",
+        "name": "Application: Uses Capture Vitals App"
+      },
+      {
+        "uuid": "2ef1932e-1c49-485a-8464-b7c81de116b2",
+        "name": "Application: Schedules Appointments"
+      },
+      { "uuid": "921b3043-744f-4c08-bf79-9645e7e02d3f", "name": "CTC" },
+      { "uuid": "a3ddbfb9-5c4e-4c81-b9fa-b9e686852a0e", "name": "Doctor" },
+      {
+        "uuid": "18f167c1-a65c-4159-8aa7-2d5c7f231c15",
+        "name": "Application: Writes Clinical Notes"
+      },
+      { "uuid": "1ed334b5-313f-4497-bb0e-6804787a1792", "name": "Maintenance" },
+      {
+        "uuid": "f895fb6c-e8b5-4eaa-95d1-4f11fd11cced",
+        "name": "Organizational: Doctor"
+      },
+      {
+        "uuid": "8cad06d4-11a0-4b99-b181-314b5f5faf24",
+        "name": "Organizational: Nurse"
+      },
+      {
+        "uuid": "f7fd42ef-880e-40c5-972d-e4ae7c990de2",
+        "name": "Authenticated"
+      },
+      {
+        "uuid": "f089471c-e00b-468e-96e8-46aea1b339af",
+        "name": "Privilege Level: High"
+      },
+      {
+        "uuid": "ab2160f6-0941-430c-9752-6714353fbd3c",
+        "name": "Privilege Level: Full"
+      },
+      {
+        "uuid": "bd573814-6ee6-4bd1-99d7-ee5f48cb08d4",
+        "name": "Organizational: System Administrator"
+      },
+      {
+        "uuid": "4b56964f-3955-4a7a-82c9-9c863e3013a9",
+        "name": "Application: Schedules And Overbooks Appointments"
+      },
+      {
+        "uuid": "739013b5-4745-44df-a976-43014a39fbf2",
+        "name": "Application: Sees Appointment Schedule"
+      },
+      { "uuid": "8d1e0146-c0c0-4779-816f-f34eb3a78fbf", "name": "Store" },
+      {
+        "uuid": "ec121781-0bd2-4966-8608-3d66ca625a10",
+        "name": "View reports"
+      },
+      {
+        "uuid": "08351506-63ba-4c0d-b410-964ee43b5657",
+        "name": "Application: Configures Forms"
+      },
+      {
+        "uuid": "fcb8e39c-213c-4ebb-a2bd-a0f6c0e37d4e",
+        "name": "Application: Has Super User Privileges"
+      },
+      {
+        "uuid": "37ef5366-9a5f-4ffa-a15f-0e8fe4e04135",
+        "name": "Application: Configures Appointment Scheduling"
+      },
+      {
+        "uuid": "5ff8bee6-c72f-410d-8043-4f058ed92a84",
+        "name": "Organizational: Hospital Administrator"
+      },
+      { "uuid": "3cacb83e-c298-402f-afbf-9eb86457dc3c", "name": "Counsellor" },
+      {
+        "uuid": "718e47a3-49d5-4417-b98b-7b89a3b2e360",
+        "name": "Application: Registers Patients"
+      },
+      { "uuid": "32ff2fd7-ed3f-426f-9e28-557027f1cfe7", "name": "Pharmacist" },
+      { "uuid": "8d94f280-c2cc-11de-8d13-0010c6dffd0f", "name": "Provider" },
+      {
+        "uuid": "66b214ce-ee04-4c57-8304-fa7dfd3bf1bc",
+        "name": "Application: Administers System"
+      },
+      {
+        "uuid": "e42c06a7-1241-4eb5-8724-a4a59bf33099",
+        "name": "Application: Enters Vitals"
+      },
+      { "uuid": "862827ae-21c4-40c9-9a9f-33eee46e5152", "name": "RCH" },
+      {
+        "uuid": "3eec8722-22da-4916-ae78-b1be207d5d2b",
+        "name": "Application: Manages Provider Schedules"
+      },
+      { "uuid": "fdde7ee1-b71f-4b93-b9e8-007362b9e3a1", "name": "Registra" },
+      { "uuid": "f20f5f42-20ee-459c-8c49-6793f474f530", "name": "Nurse" }
+    ]
+  },
+  "locale": "en_GB",
+  "allowedLocales": ["en", "en_GB", "es", "fr", "it", "pt"],
+  "sessionLocation": null
+}

@@ -1,0 +1,46 @@
+<div *ngIf="(!fileData || !fileData?.name) && !obsData">
+  <input
+    type="file"
+    style="border: none; background-color: transparent; float: left; width: 60%"
+    class="form-control"
+    name="file"
+    accept=".pdf,.png,.jpg,.jpeg,.doc,.xls,.xlsx,.docx"
+    id="file-selector"
+    (change)="fileSelection($event)"
+  />
+</div>
+<div *ngIf="fileData && fileData?.name">
+  <b>{{ fileData?.name }}</b>
+</div>
+<div *ngIf="obsData">
+  <a href="../../../document_images/{{ obsData }}" target="_blank"
+    ><img
+      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABbklEQVRIibXUTygEUQDH8e/MDi1WbZQoHDZ/tkSxrfynxIE9yMUmJ83FwcEBZ1H+XBwUN26y5cBJ7YEtLtuWf4dVm9aiOMmBcpodB1H7b3bM7vyOM+/9Pu/15g2YHCH5gep1LOqfHvcJB7HY/4AJh6qnWq1rRXgKP6MoA8J+JJppnKinLC1Q34Yir9VgkQLqZIMj7wCA6mxHkVc1kZwAPUjOQAIiSqfJ7wwfcqYIvmhCZ152oBX9QHM37F5D/7hJQKML4gq09JkEPN6BzQ5vLyYBl2fw8Q6vDyYBRTawloBHhkKrCUCXB0J+iFzB7CbUOsE9BE0dIKR87X+R9C3DAiPTcHsOZZXgGgT3MHx9gijC3hIEDg0CpXbwzkNFNZRXwcUx7CxASw/0joFUAPc3Gadr3+TOUZBXoNgGy1MQDmZdT/JN1t7BzMbPgR5t6ypPF21gaw4sEgRPDJVnB0J+w8W/Mf1nl7oDlXWz0bzmG0ZVX0NFOd9TAAAAAElFTkSuQmCC"
+    />
+  </a>
+  <button
+    style="border: none; background-color: transparent; margin-left: 5px"
+    (click)="onDeleteAttachment($event, deleteIsSet)"
+  >
+    X
+  </button>
+  <button
+    class="confirm-delete-btn mr-2"
+    mat-stroked-button
+    *ngIf="deleteIsSet"
+    [disabled]="deleting"
+    (click)="onDeleteAttachment($event, deleteIsSet)"
+  >
+    Confirm
+  </button>
+  <button
+    class="cancel-delete-btn mr-2"
+    mat-stroked-button
+    *ngIf="deleteIsSet"
+    [disabled]="deleting"
+    (click)="onCancel($event)"
+  >
+    Cancel
+  </button>
+  <span *ngIf="deleteIsSet && deleting">Removing attachment.........</span>
+</div>

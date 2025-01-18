@@ -1,0 +1,294 @@
+{
+  "uuid": "f560f250-0134-4129-bb3e-39e17461b4f5",
+  "dataSets": [
+    {
+      "uuid": "4a130c28-3c7e-4648-9586-55c797ca5352",
+      "metadata": {
+        "columns": [
+          {
+            "datatype": "java.lang.Object",
+            "name": "Maelezo",
+            "label": "Maelezo"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "DXConcept",
+            "label": "DXConcept"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "ME_Umri_Chini_Ya_Mwezi_1",
+            "label": "ME_Umri_Chini_Ya_Mwezi_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "KE_Umri_Chini_Ya_Mwezi_1",
+            "label": "KE_Umri_Chini_Ya_Mwezi_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Ya_Chini_Ya_Mwezi_1",
+            "label": "Jumla_Ya_Chini_Ya_Mwezi_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1",
+            "label": "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1",
+            "label": "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1",
+            "label": "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5",
+            "label": "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5",
+            "label": "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5",
+            "label": "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60",
+            "label": "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60",
+            "label": "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60",
+            "label": "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "ME_Umri_Miaka_Juu_Ya_60",
+            "label": "ME_Umri_Miaka_Juu_Ya_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "KE_Umri_Miaka_Juu_Ya_60",
+            "label": "KE_Umri_Miaka_Juu_Ya_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Umri_Miaka_Juu_Ya_60",
+            "label": "Jumla_Umri_Miaka_Juu_Ya_60"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Male_Jumla_Kuu",
+            "label": "Male_Jumla_Kuu"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Female_Jumla_Kuu",
+            "label": "Female_Jumla_Kuu"
+          },
+          {
+            "datatype": "java.lang.Object",
+            "name": "Jumla_Kuu",
+            "label": "Jumla_Kuu"
+          }
+        ]
+      },
+      "rows": [
+        {
+          "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "KE_Umri_Chini_Ya_Mwezi_1": "0",
+          "Jumla_Kuu": "0",
+          "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Jumla_Umri_Miaka_Juu_Ya_60": "0",
+          "Jumla_Ya_Chini_Ya_Mwezi_1": "0",
+          "DXConcept": "DXConcept1",
+          "ME_Umri_Miaka_Juu_Ya_60": "0",
+          "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "0",
+          "KE_Umri_Miaka_Juu_Ya_60": "0",
+          "Female_Jumla_Kuu": "0",
+          "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "0",
+          "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Maelezo": "Wagonjwa waliohudhuria\r\nkwa mara ya kwanza\r\nmwaka huo(*), kituo\r\nchochote nchini",
+          "ME_Umri_Chini_Ya_Mwezi_1": "5",
+          "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "0",
+          "Male_Jumla_Kuu": "0"
+        },
+        {
+          "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "KE_Umri_Chini_Ya_Mwezi_1": "0",
+          "Jumla_Kuu": "1",
+          "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Jumla_Umri_Miaka_Juu_Ya_60": "0",
+          "Jumla_Ya_Chini_Ya_Mwezi_1": "0",
+          "DXConcept": "DXConcept2",
+          "ME_Umri_Miaka_Juu_Ya_60": "0",
+          "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "1",
+          "KE_Umri_Miaka_Juu_Ya_60": "0",
+          "Female_Jumla_Kuu": "0",
+          "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "0",
+          "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "0",
+          "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Maelezo": "Mahudhurio ya Marudio",
+          "ME_Umri_Chini_Ya_Mwezi_1": "0",
+          "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "0",
+          "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "1",
+          "Male_Jumla_Kuu": "1"
+        },
+        {
+          "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "KE_Umri_Chini_Ya_Mwezi_1": "",
+          "Jumla_Kuu": "1",
+          "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Jumla_Umri_Miaka_Juu_Ya_60": "",
+          "Jumla_Ya_Chini_Ya_Mwezi_1": "",
+          "DXConcept": "",
+          "ME_Umri_Miaka_Juu_Ya_60": "",
+          "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "KE_Umri_Miaka_Juu_Ya_60": "",
+          "Female_Jumla_Kuu": "",
+          "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Maelezo": "Jumla Kuu OPD Mahudhurio",
+          "ME_Umri_Chini_Ya_Mwezi_1": "",
+          "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "Male_Jumla_Kuu": ""
+        },
+        {
+          "Jumla_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "KE_Umri_Chini_Ya_Mwezi_1": "",
+          "Jumla_Kuu": "",
+          "ME_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "ME_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Jumla_Umri_Miaka_Juu_Ya_60": "",
+          "Jumla_Ya_Chini_Ya_Mwezi_1": "",
+          "DXConcept": "",
+          "ME_Umri_Miaka_Juu_Ya_60": "",
+          "ME_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "KE_Umri_Miaka_Juu_Ya_60": "",
+          "Female_Jumla_Kuu": "",
+          "KE_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "KE_Umri_Mwezi_1_Hadi_Chini_Ya_Mwaka_1": "",
+          "KE_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Maelezo": "OPD Diagnoses",
+          "ME_Umri_Chini_Ya_Mwezi_1": "",
+          "Jumla_Ya_Umri_Mwaka_1_Hadi_Chini_Ya_Miaka_5": "",
+          "Jumla_Ya_Umri_Miaka_5_Hadi_Chini_Ya_Miaka_60": "",
+          "Male_Jumla_Kuu": ""
+        }
+      ],
+      "definition": {
+        "class": "org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition",
+        "uuid": "4a130c28-3c7e-4648-9586-55c797ca5352",
+        "name": "OPD",
+        "description": "OPD HMIS",
+        "parameters": [
+          {
+            "name": "startDate",
+            "label": "Start Date",
+            "type": "java.util.Date"
+          },
+          {
+            "name": "endDate",
+            "label": "endDate",
+            "type": "java.util.Date"
+          }
+        ],
+        "links": [
+          {
+            "rel": "self",
+            "uri": "http://icare:8080/openmrs/ws/reporting/v1/reportingrest/dataSetDefinition/4a130c28-3c7e-4648-9586-55c797ca5352"
+          },
+          {
+            "rel": "full",
+            "uri": "http://icare:8080/openmrs/ws/reporting/v1/reportingrest/dataSetDefinition/4a130c28-3c7e-4648-9586-55c797ca5352?v=full"
+          }
+        ],
+        "resourceVersion": "1.8"
+      },
+      "links": [
+        {
+          "rel": "self",
+          "uri": "http://icare:8080/openmrs/ws/rest/v1/reportingrest/dataSet/4a130c28-3c7e-4648-9586-55c797ca5352"
+        }
+      ],
+      "resourceVersion": "1.8"
+    }
+  ],
+  "context": {
+    "evaluationId": 49,
+    "evaluationDate": "2020-11-07T12:19:20.833+0000",
+    "evaluationLevel": 1,
+    "limit": null,
+    "baseCohort": null,
+    "contextValues": {
+      "start_of_today": "2020-11-07T00:00:00.000+0000",
+      "end_of_last_month": "2020-10-31T23:59:59.999+0000",
+      "now": "2020-11-07T12:19:20.833+0000",
+      "start_of_last_month": "2020-10-01T00:00:00.000+0000",
+      "generationDate": "2020-11-07T12:19:20.834+0000",
+      "end_of_today": "2020-11-07T23:59:59.999+0000",
+      "generatedBy": "iCare Superuser"
+    },
+    "parameterValues": {
+      "endDate": "2020-12-12T00:00:00.000+0000",
+      "startDate": "2020-01-01T00:00:00.000+0000"
+    }
+  },
+  "definition": {
+    "class": "org.openmrs.module.reporting.report.definition.ReportDefinition",
+    "uuid": "f560f250-0134-4129-bb3e-39e17461b4f5",
+    "name": "Custom OPD Report",
+    "description": "Custom OPD Report",
+    "parameters": [
+      {
+        "name": "startDate",
+        "label": "Start Date",
+        "type": "java.util.Date"
+      },
+      {
+        "name": "endDate",
+        "label": "End Date",
+        "type": "java.util.Date"
+      }
+    ],
+    "links": [
+      {
+        "rel": "self",
+        "uri": "http://icare:8080/openmrs/ws/reporting/v1/reportingrest/reportDefinition/f560f250-0134-4129-bb3e-39e17461b4f5"
+      },
+      {
+        "rel": "full",
+        "uri": "http://icare:8080/openmrs/ws/reporting/v1/reportingrest/reportDefinition/f560f250-0134-4129-bb3e-39e17461b4f5?v=full"
+      }
+    ],
+    "resourceVersion": "1.8"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "uri": "http://icare:8080/openmrs/ws/rest/v1/reportingrest/reportdata/f560f250-0134-4129-bb3e-39e17461b4f5"
+    }
+  ],
+  "resourceVersion": "1.8"
+}

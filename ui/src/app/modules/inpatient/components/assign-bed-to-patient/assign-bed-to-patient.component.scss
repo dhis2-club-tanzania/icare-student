@@ -1,0 +1,32 @@
+.beds-list-container {
+  padding: 15px;
+  z-index: 5;
+}
+
+.beds-list {
+  height: 450px;
+  overflow: auto;
+}
+
+.close-dialog-btn {
+  float: right;
+}
+
+.confirming-dialog {
+  position: absolute;
+  height: 100px;
+  top: 30%;
+  z-index: 10;
+  margin: 0 30%;
+  width: 20%;
+  background: #fff;
+}
+
+.save-data-btn {
+  background-color: #669999;
+  color: #fff;
+}
+
+.assign-bed-to-patient-container {
+  padding: 10px 15px 2px 15px;
+}

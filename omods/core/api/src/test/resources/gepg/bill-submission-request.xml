@@ -1,0 +1,44 @@
+<gepgBillSubReq>
+    <BillHdr>
+        <SpCode>SP023</SpCode>
+        <RtrRespFlg>true</RtrRespFlg>
+    </BillHdr>
+    <BillTrxInf>
+        <BillId>7885</BillId>
+        <SubSpCode>2001</SubSpCode>
+        <SpSysId>tjv47</SpSysId>
+        <BillAmt>7885</BillAmt>
+        <MiscAmt>0</MiscAmt>
+        <BillExprDt>2017-05-30T10:00:01</BillExprDt>
+        <PyrId>Palapala</PyrId>
+        <PyrName>Charles Palapala</PyrName>
+        <BillDesc>Bill Number 7885</BillDesc>
+        <BillGenDt>2017-02-22T10:00:10</BillGenDt>
+        <BillGenBy>100</BillGenBy>
+        <BillApprBy>Hashim</BillApprBy>
+        <PyrCellNum>0699210053</PyrCellNum>
+        <PyrEmail>charlestp@yahoo.com</PyrEmail>
+        <Ccy>TZS</Ccy>
+        <BillEqvAmt>7885</BillEqvAmt>
+        <RemFlag>true</RemFlag>
+        <BillPayOpt>1</BillPayOpt>
+        <BillItems>
+            <BillItem>
+                <BillItemRef>788578851</BillItemRef>
+                <UseItemRefOnPay>N</UseItemRefOnPay>
+                <BillItemAmt>7885</BillItemAmt>
+                <BillItemEqvAmt>7885</BillItemEqvAmt>
+                <BillItemMiscAmt>0</BillItemMiscAmt>
+                <GfsCode>140206</GfsCode>
+            </BillItem>
+            <BillItem>
+                <BillItemRef>788578852</BillItemRef>
+                <UseItemRefOnPay>N</UseItemRefOnPay>
+                <BillItemAmt>7885</BillItemAmt>
+                <BillItemEqvAmt>7885</BillItemEqvAmt>
+                <BillItemMiscAmt>0</BillItemMiscAmt>
+                <GfsCode>140206</GfsCode>
+            </BillItem>
+        </BillItems>
+    </BillTrxInf>
+</gepgBillSubReq>

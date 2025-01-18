@@ -1,0 +1,185 @@
+<button
+  mat-icon-button
+  color="primary"
+  matTooltip="Enable editing"
+  *ngIf="existingMaleRangeConfigs?.length > 0"
+  (click)="enableEditing()"
+>
+  <mat-icon>mode_edit</mat-icon>
+</button>
+<!-- <button mat-icon-button color="primary" matTooltip="Void configurations">
+  <mat-icon>delete</mat-icon>
+</button> -->
+
+<mat-progress-bar mode="indeterminate" *ngIf="savingConfigs"></mat-progress-bar>
+
+<!-- {{ existingMaleRangeConfigs | json}} -->
+
+<div
+  class="w-100"
+  *ngIf="existingMaleRangeConfigs && existingMaleRangeConfigs?.length > 0"
+>
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Absolute High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['absoluteHigh']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Critical High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['criticalHigh']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Normal High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['normalHigh']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Absolute Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['absoluteLow']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Critical Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['normalLow']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Critical Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="existingMaleRangeConfigs[0]['criticalLow']"
+      [disabled]="existingConfigsDisabledEditing"
+    />
+  </mat-form-field>
+
+  <div>
+    <button
+      mat-raised-button
+      (click)="updateConfigurations()"
+      [disabled]="existingConfigsDisabledEditing"
+    >
+      UPDATE
+    </button>
+  </div>
+</div>
+
+<div
+  class="w-100"
+  *ngIf="!existingMaleRangeConfigs || existingMaleRangeConfigs?.length == 0"
+>
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Absolute High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['absoluteHigh']"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Critical High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['criticalHigh']"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Normal High</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['normalHigh']"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Absolute Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['absoluteLow']"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Critical Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['criticalLow']"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Normal Low</mat-label>
+    <input
+      type="number"
+      matInput
+      placeholder="0.00"
+      ngDefaultControl
+      [(ngModel)]="configsJson['normalLow']"
+    />
+  </mat-form-field>
+
+  <div>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!canSave()"
+      (click)="saveConfigurations()"
+    >
+      SAVE
+    </button>
+  </div>
+</div>

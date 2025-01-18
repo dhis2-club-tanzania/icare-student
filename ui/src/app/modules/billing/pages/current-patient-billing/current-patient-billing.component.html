@@ -1,0 +1,337 @@
+<ng-container *ngIf="{
+    currentPatient: currentPatient$ | async,
+    logo: facilityLogo$ | async,
+    facilityDetails: facilityDetails$ | async,
+    currentLocation: currentLocation$ | async,
+    provider: provider$ | async,
+    currentUser: currentUser$ | async,
+    exemptionEncounterType: exemptionEncounterType$ | async,
+    exemptionOrderType: exemptionOrderType$ | async,
+    exemptionConcept: exemptionConcept$ | async
+  } as params">
+  <mat-progress-bar mode="indeterminate" *ngIf="loading || !params?.currentPatient"></mat-progress-bar>
+
+  <!-- Alerts -->
+  <div *ngIf="errors.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+  <!-- End Alerts -->
+
+  <div *ngIf="patientBillingDetails$ | async as patientBillingDetails" class="">
+    <ng-container>
+      <div class="row mt-3">
+        <div class="col-md-12 col-sm-12" *ngIf="params?.currentPatient">
+          <app-new-patient-profile [currentPatient]="params?.currentPatient"></app-new-patient-profile>
+        </div>
+        <div class="col-md-12 col-sm-12 back-to-client-list">
+          <button class="float-left" mat-stroked-button [routerLink]="'/billing'" matTooltip="Go to Home page">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Client List
+          </button>
+        </div>
+        <div class="col-md-12 col-sm-12" *ngIf="params?.currentPatient">
+          <div class="border">
+            <mat-tab-group>
+              <!-- Pending payments -->
+
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span [matBadge]="patientBillingDetails.bills?.length" matBadgePosition="after"
+                    matBadgeOverlap="false"
+                    [matBadgeHidden]="patientBillingDetails.bills?.length === 0">Quotations</span>
+                </ng-template>
+
+                <div *ngIf="patientBillingDetails?.bills?.length == 0" class="py-4"
+                  style="text-align: center; height: 20vh">
+                  No pending bills
+                </div>
+                <div>
+                  <app-quotations *ngIf="
+                      patientBillingDetails.bills.length > 0 &&
+                      params?.currentPatient &&
+                      params?.logo &&
+                      params?.facilityDetails
+                    " [patientBillingDetails]="patientBillingDetails" [bills]="patientBillingDetails?.bills"
+                    [exemptionOrderType]="params?.exemptionOrderType" [currentPatient]="params?.currentPatient"
+                    [facilityDetails]="params?.facilityDetails" [logo]="params?.logo"
+                    (confirmPayment)="onConfirmBillPayment($event)" (billPaymentSuccess)="onPaymentSuccess()"
+                    (checkOpenExemptionRequest)="
+                      onCheckOpenExemptionRequest($event)
+                    " id="quotation"></app-quotations>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <!-- Make ElementToBePrinted as an object -->
+                    <div *ngIf="
+                        patientBillingDetails?.payments.length > 0 &&
+                        patientBillingDetails.bills.length > 0
+                      ">
+                      <div class="border-top pt-2">
+                        <app-print-button [iconName]="'print'" [toolTipText]="
+                            'Click to print invoice and receipt in one document'
+                          " [showText]="'Print All'" [ElementToBePrinted]="{
+                            Payments: patientBillingDetails?.payments,
+                            Bill: patientBillingDetails.bills,
+                            CurrentPatient: params?.currentPatient,
+                            FacilityDetails: params?.facilityDetails,
+                            Logo: params?.logo
+                          }" [classesList]="['float-right', 'button']" (print)="onPrint($event)"></app-print-button>
+                      </div>
+                    </div>
+                    <div *ngIf="patientBillingDetails.bills.length > 1">
+                      <app-print-button [iconName]="'print'" [toolTipText]="'Click to print all invoices'"
+                        [showText]="'Print All Invoices'" [classesList]="['float-right', 'button', 'mr-5']"
+                        [ElementToBePrinted]="{
+                          Bill: patientBillingDetails.bills,
+                          CurrentPatient: params?.currentPatient,
+                          FacilityDetails: params?.facilityDetails,
+                          Logo: params?.logo
+                        }" [currentPatient]="params?.currentPatient" [facilityDetails]="params?.facilityDetails"
+                        [logo]="params?.logo" (print)="onPrint($event)"></app-print-button>
+                    </div>
+                    <div *ngIf="patientBillingDetails.bills.length > 0">
+                      <button class="float-left" mat-stroked-button [ngClass]="
+                          params?.exemptionEncounterType === 'none' ||
+                          params?.exemptionOrderType === 'none' ||
+                          params?.exemptionConcept === 'none' ||
+                          hasOpenExemptionRequest
+                            ? 'button-faint'
+                            : 'button'
+                        " matTooltip="Send patient to administration for exemption" (click)="
+                          requestExemption(patientBillingDetails, params)
+                        ">
+                        Request Exemption
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </mat-tab>
+              <!-- Payments Requests) -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span class="mr-2" [matBadge]="patientBillingDetails.pendingPayments?.length" matBadgePosition="after"
+                    matBadgeOverlap="false" [matBadgeHidden]="patientBillingDetails.pendingPayments?.length === 0">
+                    Payments Requests
+                  </span>
+                </ng-template>
+              
+                <div class="py-4" style="text-align: center">
+                  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" multiTemplateDataRows>
+              
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="position">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> # </th>
+                      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+                    </ng-container>
+              
+                    <!-- Created Column -->
+                    <ng-container matColumnDef="createdAt">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Created At </th>
+                      <td mat-cell *matCellDef="let element"> {{element.createdAt}} </td>
+                    </ng-container>
+              
+                    <!-- Received By Column -->
+                    <ng-container matColumnDef="receivedBy">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Received By </th>
+                      <td mat-cell *matCellDef="let element"> {{element.receivedBy}} </td>
+                    </ng-container>
+              
+                    <!-- Creator Column -->
+                    <ng-container matColumnDef="creator">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Creator </th>
+                      <td mat-cell *matCellDef="let element"> {{element.creator}} </td>
+                    </ng-container>
+              
+                    <!-- Payment Type Column -->
+                    <ng-container matColumnDef="paymentType">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Payment Type </th>
+                      <td mat-cell *matCellDef="let element"> {{element.paymentType}} </td>
+                    </ng-container>
+              
+                    <!-- Reference Number Column -->
+                    <ng-container matColumnDef="referenceNumber">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Control Number </th>
+                      <td mat-cell *matCellDef="let element"> {{element.referenceNumber}} </td>
+                    </ng-container>
+              
+                    <!-- Status Column -->
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> Status </th>
+                      <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+                    </ng-container>
+              
+                    <!-- Print Column (No Title) -->
+                    <ng-container matColumnDef="print">
+                      <th mat-header-cell *matHeaderCellDef [style.background-color]="color"> </th>
+                      <td mat-cell *matCellDef="let element">
+                        <button mat-icon-button *ngIf="element.referenceNumber" (click)="printElement(element)">
+                          <mat-icon>print</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+              
+                    <!-- Expanded Content for Gepg Details -->
+                    <ng-container matColumnDef="expandedDetail">
+                      <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+                        <div class="example-element-detail"
+                          [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Receipt Number</th>
+                                <th>Control Number</th>
+                                <th>Bill Amount</th>
+                                <th>Paid Amount</th>
+                                <th>Payment Date</th>
+                                <th>Payer Number</th>
+                                <th>Payer Name</th>
+                                <th>PSP Name</th>
+                                <th>A/C Number</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{ element.receiptNumber }}</td>
+                                <td>{{ element.referenceNumber }}</td>
+                                <td>{{ element.billAmount | currency: 'TZS' }}</td>
+                                <td>{{ element.paidAmount | currency: 'TZS' }}</td>
+                                <td>{{ element.gepgpaymentDate }}</td>
+                                <td>{{ element.payerNumber }}</td>
+                                <td>{{ element.payerName }}</td>
+                                <td>{{ element.pspName }}</td>
+                                <td>{{ element.accountNumber }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </ng-container>
+              
+                    <!-- Header and data rows -->
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    
+                    <!-- Row Data -->
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                        [ngClass]="{
+                          'pale-green': row.referenceNumber && (row.status === 'PAID' || !row.status),
+                          'white-background': !row.referenceNumber || row.status !== 'PAID'
+                        }"
+                        (click)="onRowClick(row)" class="example-element-row"
+                        [class.example-expanded-row]="expandedElement === row">
+                    </tr>
+                    
+                    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+              
+                  </table>
+                </div>
+              </mat-tab>
+              
+              <!-- Loans / Debts -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span [matBadge]="discountItemsCount" matBadgePosition="after" matBadgeOverlap="false"
+                    [matBadgeHidden]="discountItemsCount === 0">Loans / Debts
+                  </span>
+                </ng-template>
+
+                <div *ngIf="discountItemsCount === 0" class="py-4" style="text-align: center">
+                  No Items in debt
+                </div>
+                <div>
+                  <app-discounts *ngIf="
+                      discountItemsCount > 0 &&
+                      params?.currentPatient &&
+                      params?.logo &&
+                      params?.facilityDetails
+                    " [discountItems]="discountItems" [discountItemsCount]="discountItemsCount"
+                    [currentPatient]="params?.currentPatient" [facilityDetails]="params?.facilityDetails"
+                    [isBillCleared]="isBillCleared" [logo]="params?.logo" [bill]="bill"
+                    [bills]="patientBillingDetails?.bills" (confirmPayment)="onConfirmBillPayment(event)"
+                    (billPaymentSuccess)="onPaymentSuccess()" id="exemptions">
+                  </app-discounts>
+                </div>
+              </mat-tab>
+
+              <!-- Pending Payments (Covered by Insurance) -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span class="mr-2" [matBadge]="patientBillingDetails.pendingPayments?.length" matBadgePosition="after"
+                    matBadgeOverlap="false" [matBadgeHidden]="
+                      patientBillingDetails.pendingPayments?.length === 0
+                    ">Pending Payments (Covered by Insurance)
+                  </span>
+                </ng-template>
+
+                <div *ngIf="patientBillingDetails?.pendingPayments?.length == 0" class="py-4"
+                  style="text-align: center">
+                  No pending payments
+                </div>
+                <div>
+                  <app-quotations [bills]="patientBillingDetails?.pendingPayments" [disableControls]="true"
+                    (confirmPayment)="onConfirmBillPayment($event)">
+                  </app-quotations>
+                </div>
+              </mat-tab>
+
+              <!-- Payments made -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span [matBadge]="patientBillingDetails.paymentItemCount" matBadgePosition="after"
+                    matBadgeOverlap="false" [matBadgeHidden]="
+                      patientBillingDetails.payments?.length === 0
+                    ">Payments
+                  </span>
+                </ng-template>
+
+                <div *ngIf="patientBillingDetails?.payments?.length == 0" class="py-4" style="text-align: center">
+                  No completed payments
+                </div>
+                <div>
+                  <app-payments *ngIf="
+                      patientBillingDetails?.payments.length > 0 &&
+                      params?.currentPatient !== undefined &&
+                      params?.logo &&
+                      params?.facilityDetails
+                    " [payments]="patientBillingDetails?.payments" [currentPatient]="params?.currentPatient"
+                    [facilityDetails]="params?.facilityDetails" [logo]="params?.logo" id="payments"></app-payments>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <!-- Make ElementToBePrinted as an object -->
+                    <div *ngIf="
+                        patientBillingDetails?.payments.length > 0 &&
+                        patientBillingDetails.bills.length > 0
+                      ">
+                      <app-print-button [iconName]="'print'" [toolTipText]="
+                          'Click to print bills and receipt in one document'
+                        " [showText]="'Print All'" [ElementToBePrinted]="{
+                          Payments: patientBillingDetails.currentPayments,
+                          Bill: patientBillingDetails.bills,
+                          CurrentPatient: params?.currentPatient,
+                          FacilityDetails: params?.facilityDetails,
+                          Logo: params?.logo
+                        }" [classesList]="['float-right', 'button']" (print)="onPrint($event)"></app-print-button>
+                    </div>
+
+                    <div *ngIf="patientBillingDetails?.payments.length > 0">
+                      <app-print-button [iconName]="'print'" [toolTipText]="'Click to print receipt'"
+                        [showText]="'Print Receipt'" [ElementToBePrinted]="{
+                          Payments: patientBillingDetails.currentPayments,
+                          CurrentPatient: params?.currentPatient,
+                          FacilityDetails: params?.facilityDetails,
+                          Logo: params?.logo
+                        }" [classesList]="['float-right', 'button', 'mr-5']"
+                        (print)="onPrint($event)"></app-print-button>
+                    </div>
+                  </div>
+                </div>
+              </mat-tab>
+
+            </mat-tab-group>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>

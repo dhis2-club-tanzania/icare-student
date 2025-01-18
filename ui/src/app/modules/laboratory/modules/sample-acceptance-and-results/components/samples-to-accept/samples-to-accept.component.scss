@@ -1,0 +1,64 @@
+.legend .rejected {
+  font-size: 10px;
+  background-color: #dd4b39 !important;
+}
+
+.legend span {
+  float: left;
+}
+
+.rejected {
+  //   border-top-left-radius: 2px;
+  //   border-top-right-radius: 0;
+  //   border-bottom-right-radius: 0;
+  //   border-bottom-left-radius: 2px;
+  display: block;
+  height: 15px;
+  width: 15px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 15px;
+  margin-left: 10px;
+  margin-right: 4px;
+}
+
+.rejected-sample {
+  color: #dd4b39 !important;
+}
+
+.approved-text {
+  color: #117b11;
+  font-weight: 600;
+}
+
+.clinical-history-summary a {
+  color: #669999 !important;
+  cursor: pointer;
+}
+
+.clinical-history-summary span {
+  font-weight: 600;
+}
+
+.clinical-notes-btn {
+  padding: 6px 0px;
+}
+
+.clinical-history-summary div {
+  padding: 15px;
+}
+
+.row-alternated {
+  background-color: #f2f2f2;
+}
+
+.reject-button {
+  color: #fff;
+  background-color: #db5454;
+  border: solid 1px #db5454;
+}
+
+.accept-button {
+  background-color: #2a8fd1 !important;
+  color: #fff !important;
+}

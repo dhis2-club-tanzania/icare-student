@@ -1,0 +1,104 @@
+<div
+  class="row w-100 mx-0 mt-2"
+  *ngIf="{
+    savingObservations: savingObservations$ | async,
+    ordersUpdates: ordersUpdates$ | async
+  } as params"
+>
+  <div
+    class="w-100 d-flex justify-content-start"
+    *ngIf="shouldUseOwnFormSelection"
+  >
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>{{
+        currentCustomFormName ? currentCustomFormName : "Select forms"
+      }}</mat-label>
+      <mat-select [(value)]="currentCustomFormName">
+        <mat-option
+          *ngFor="let clinicalForm of forms | searchItem: searchingText"
+          (click)="onSetClinicalForm($event, clinicalForm)"
+        >
+          {{ clinicalForm?.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-sm mt-1 current-clinical-form">
+    <div class="h5 mb-3">{{ currentCustomForm?.name }}</div>
+    <mat-progress-bar
+      *ngIf="params?.savingObservations"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <app-capture-form-data
+      *ngIf="
+        currentCustomForm &&
+        ((dependedFormHasData &&
+          clinicConfigurations?.forms[currentCustomForm?.uuid].dependsOn
+            ?.length > 0) ||
+          !clinicConfigurations?.forms ||
+          !clinicConfigurations?.forms[currentCustomForm?.uuid] ||
+          !clinicConfigurations?.forms[currentCustomForm?.uuid]?.dependsOn ||
+          clinicConfigurations?.forms[currentCustomForm?.uuid]?.dependsOn
+            ?.length == 0)
+      "
+      [observations]="useFilledObsData ? clinicalObservations : null"
+      [form]="currentCustomForm"
+      [visit]="visit"
+      [patient]="patient"
+      (formDataUpdate)="onFormUpdate($event)"
+    ></app-capture-form-data>
+    <div
+      class="alert alert-warning"
+      role="alert"
+      *ngIf="!dependedFormHasData && showMessage"
+    >
+      Forms
+      <span
+        *ngFor="
+          let form of clinicConfigurations?.forms[currentCustomForm?.uuid]
+            .dependsOn
+        "
+      >
+        <b>
+          {{ form?.name }}
+        </b>
+      </span>
+      should be filled first.
+      <!-- <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+        (click)="onCloseMessage($event)"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button> -->
+    </div>
+
+    <!-- buttons -->
+    <div class="d-flex justify-content-end">
+      <button
+        [disabled]="!atLeastOneFieldHasData"
+        mat-stroked-button
+        (click)="onClear($event, currentCustomForm)"
+      >
+        Clear
+      </button>
+      <button
+        mat-flat-button
+        (click)="onConfirm($event, visit)"
+        color="primary"
+        [disabled]="params?.savingObservations || !atLeastOneFieldHasData"
+        class="ml-2"
+      >
+        <mat-spinner
+          color="primary"
+          *ngIf="params?.savingObservations"
+          [diameter]="20"
+          style="display: inline-block !important; margin-right: 4px"
+        ></mat-spinner>
+        {{ params?.savingObservations ? "Saving ..." : "Save" }}
+      </button>
+    </div>
+  </div>
+</div>

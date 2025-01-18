@@ -1,0 +1,23 @@
+<div class="w-100" style="overflow: auto">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th
+          [attr.colspan]="rowOneItem?.colspan"
+          class="text-center"
+          *ngFor="let rowOneItem of formulatedHeaders?.rowOneItems"
+        >
+          {{ rowOneItem?.name }}
+        </th>
+      </tr>
+      <tr>
+        <th *ngFor="let header of formulatedHeaders?.rowTwoItems">
+          {{ header?.exportKey }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <td *ngFor="let header of formulatedHeaders?.rowTwoItems"></td>
+    </tbody>
+  </table>
+</div>

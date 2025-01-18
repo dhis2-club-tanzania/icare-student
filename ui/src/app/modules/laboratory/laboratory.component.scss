@@ -1,0 +1,99 @@
+.laboratory-home-content {
+  border-radius: 5px;
+}
+
+.laboratory-header {
+  display: block;
+  //justify-content: space-between;
+  //align-items: center;
+  left: 0;
+  right: 0;
+  // position: fixed;
+  z-index: 200;
+  background-color: #fff;
+  padding: 10px 5px;
+}
+
+.laboratory-home-container {
+  padding: 0 10px;
+}
+
+.laboratory-home-container a {
+  text-decoration: none;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
+::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-mdc-standard-chip {
+  width: 95% !important;
+  height: auto !important;
+  margin: 1px 4px !important;
+  padding: 10px !important;
+  background-color: rgba(238, 238, 238, 0.218);
+}
+
+.mdc-evolution-chip-set .mdc-evolution-chip {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+// ::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-standard-chip:hover {
+//   border-radius: 0 16px 16px 0 !important;
+// }
+
+::ng-deep .mat-mdc-standard-chip {
+  border-radius: 0 !important;
+}
+
+.laboratory-header .mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) {
+  background-color: inherit !important;
+  border-bottom: solid 1px #fafafa;
+}
+
+.active-route {
+  background-color: #2a8fd1 !important; // TODO use variable
+  color: #fff !important;
+  border-radius: 0 !important;
+}
+
+.laboratory-header .mdc-evolution-chip--selected,
+.laboratory-header .mat-mdc-chip-selected {
+  background-color: #2a8fd1 !important; // TODO use variable
+  color: #fff !important;
+  border-radius: 0 !important;
+}
+.laboratory-header .mat-chip-option.mat-mdc-chip-selected {
+  background-color: #2a8fd1 !important; /* Or any color you prefer */
+  color: #fff; /* Adjust text color if needed */
+}
+
+::ng-deep .mat-expansion-panel {
+  border-radius: 0 !important;
+}
+
+::ng-deep .mat-expansion-panel-header.mat-expanded {
+  height: 48px;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0 !important;
+}
+
+.lis-menu .mat-expansion-panel-spacing {
+  margin: 0 !important;
+}
+
+.lis-menu .mat-expansion-panel-header {
+  padding: 24px 24px !important;
+  border-bottom: solid 1px #eee;
+}
+
+.lis-menu ul {
+  list-style-type: none;
+  margin-left: -24px;
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 1px 0px rgba(0, 0, 0, 0.12);
+}
+
+.lis-menu-items li {
+  padding: 12px 4px;
+}

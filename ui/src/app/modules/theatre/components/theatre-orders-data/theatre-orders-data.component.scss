@@ -1,0 +1,27 @@
+.theatre-container {
+  margin-top: 80px;
+}
+
+.theatre-sidebar-container {
+  position: fixed;
+  // height: 100vh;
+  width: 250px;
+  left: 10px;
+  border-radius: 5px;
+  padding-bottom: 10px;
+}
+
+.theatre-home-content {
+  // margin-right: 15px;
+  margin-left: 260px;
+  padding: 15px 30px;
+  border-radius: 5px;
+}
+
+.button-container {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 100;
+}

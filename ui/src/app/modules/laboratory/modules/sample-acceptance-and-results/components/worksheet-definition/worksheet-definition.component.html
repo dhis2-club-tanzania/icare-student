@@ -1,0 +1,343 @@
+<div
+  class="row"
+  *ngIf="{
+    worksheetDefinitions: worksheetDefinitions$ | async,
+    testControls: testControls$ | async
+  } as params"
+>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving data</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9" style="z-index: 102">
+    <div class="row">
+      <div class="col-md-10">
+        <app-form
+          [fields]="[worksheetSelectionField]"
+          (formUpdate)="onGetSelectedWorksheet($event)"
+        >
+        </app-form>
+      </div>
+      <div class="col-md-2">
+        <div class="d-flex justify-content-end">
+          <button
+            [disabled]="!currentWorksheetDefinition"
+            mat-flat-button
+            color="primary"
+            (click)="onAddNewFields($event, currentWorksheetDefinition)"
+          >
+            Additional Fields
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-100" *ngIf="currentWorksheetDefinition">
+      <div class="w-100 d-flex">
+        <div class="w-50 d-flex justify-content-left">
+          <button
+            [disabled]="true"
+            mat-stroked-button
+            (click)="printPDF($event)"
+          >
+            <mat-icon>print</mat-icon>
+            Print
+          </button>
+          <button
+            class="ml-2"
+            mat-stroked-button
+            [disabled]="!isComplete"
+            (click)="downloadToExcel($event, 'wsdefntable', 'Worksheet_')"
+          >
+            <mat-icon>excel</mat-icon>
+            Excel
+          </button>
+        </div>
+        <div class="w-50 d-flex justify-content-end" *ngIf="isComplete">
+          <button mat-icon-button (click)="changeLabelCount($event, 'prev')">
+            <mat-icon>arrow_backward</mat-icon>
+          </button>
+          <button
+            (click)="changeLabelCount($event, 'next')"
+            mat-icon-button
+            class="ml-2"
+          >
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="message" class="alert alert-warning" role="alert">
+        {{ message }}
+        <button
+          type="button"
+          class="close"
+          (click)="onCloseMessage($event)"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="w-100 mt-2" style="max-height: 700px; overflow: auto">
+        <!-- {{ selectedRowsColumns | json }} -->
+        <table
+          class="table table-bordered"
+          id="wsdefntable"
+          #wsdefntable
+          *ngIf="isWorksheetRenderingReady"
+        >
+          <tbody>
+            <tr
+              *ngFor="
+                let row of currentWorksheetDefinition?.worksheet?.rows;
+                let rowCount = index
+              "
+            >
+              <ng-container
+                *ngFor="
+                  let column of currentWorksheetDefinition?.worksheet?.columns;
+                  let columnCount = index
+                "
+              >
+                <td
+                  [ngStyle]="{
+                    width:
+                      100 /
+                        currentWorksheetDefinition?.worksheet?.columns?.length +
+                      '%'
+                  }"
+                  style="border: solid 1px"
+                >
+                  <section class="example-section" *ngIf="!isComplete">
+                    <mat-radio-group>
+                      <mat-radio-button
+                        color="primary"
+                        (change)="
+                          toggleControl($event, row + '-' + column + '-control')
+                        "
+                        [checked]="
+                          selectedRowsColumns &&
+                          selectedRowsColumns[row + '-' + column + '-control']
+                        "
+                        [value]="row + '-' + column + '-control'"
+                      >
+                        CTRL
+                      </mat-radio-button>
+                      <mat-radio-button
+                        (change)="
+                          toggleControl($event, row + '-' + column + '-sample')
+                        "
+                        [checked]="
+                          selectedRowsColumns &&
+                          selectedRowsColumns[row + '-' + column + '-sample']
+                        "
+                        class="ml-2"
+                        color="primary"
+                        [value]="row + '-' + column + '-sample'"
+                      >
+                        S
+                      </mat-radio-button>
+                    </mat-radio-group>
+                  </section>
+                  {{
+                    (selectedRowsColumns[row + "-" + column + "-control"]?.value
+                      ? selectedRowsColumns[row + "-" + column + "-control"]
+                          ?.value?.code
+                      : selectedRowsColumns[row + "-" + column + "-sample"]
+                          ?.value
+                      ? selectedRowsColumns[row + "-" + column + "-sample"]
+                          ?.value?.label
+                      : ""
+                    ) | formatLabelCharCountDisplay: currentLabelCharCount
+                  }}
+                  <div
+                    *ngIf="
+                      selectedRowsColumns[row + '-' + column + '-control'] &&
+                      !isComplete
+                    "
+                  >
+                    <app-test-control-selection-form
+                      *ngIf="params?.testControls"
+                      [id]="row + '-' + column + '-control'"
+                      [testControls]="params?.testControls"
+                      [testOrder]="
+                        currentWorksheetDefinition?.worksheet?.testOrder
+                      "
+                      (selectedControl)="
+                        getSelectedTestControl(
+                          $event,
+                          row + '-' + column + '-control'
+                        )
+                      "
+                    ></app-test-control-selection-form>
+                  </div>
+                </td>
+                <ng-container
+                  *ngIf="
+                    currentWorksheetDefinition?.worksheetSamples &&
+                    currentWorksheetDefinition?.worksheetSamples?.length > 0 &&
+                    row &&
+                    column &&
+                    (
+                      currentWorksheetDefinition?.worksheetSamples
+                      | getAssociatedFields: row:column
+                    )?.length > 0
+                  "
+                >
+                  <td
+                    *ngFor="
+                      let testAllocationAssociatedField of currentWorksheetDefinition?.worksheetSamples
+                        | getAssociatedFields: row:column
+                    "
+                    style="border: solid 1px"
+                  >
+                    {{
+                      testAllocationAssociatedField?.associatedField?.display
+                    }}
+                  </td>
+                </ng-container>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        <button
+          *ngIf="!isComplete"
+          mat-flat-button
+          color="primary"
+          (click)="onPopulateSamples($event, selectedRowsColumns)"
+        >
+          Populate</button
+        ><button
+          *ngIf="isComplete"
+          mat-flat-button
+          color="primary"
+          (click)="onUnPopulateSamples($event)"
+        >
+          Un-populate
+        </button>
+      </div>
+
+      <div class="w-100 mt-2" *ngIf="currentWorksheet">
+        <app-form
+          [fields]="worksheetDefinitionFields"
+          [isFormHorizontal]="true"
+          (formUpdate)="onGetFormData($event)"
+        ></app-form>
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        <button
+          class="ml-2"
+          [disabled]="!isComplete || !isFormValid"
+          mat-flat-button
+          color="primary"
+          (click)="onSave($event)"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3" style="z-index: 100">
+    <div class="h6">Available defined Worksheets</div>
+    <hr />
+    <mat-form-field class="w-100">
+      <mat-label>Search</mat-label>
+      <mat-icon matPrefix>search</mat-icon
+      ><input
+        type="text"
+        placeholder="Search"
+        matInput
+        (keyup)="getWSDefns($event)"
+        [(ngModel)]="searchingText"
+      />
+    </mat-form-field>
+    <section>
+      <mat-checkbox
+        color="primary"
+        (change)="setExpirationDate($event)"
+        [checked]="expirationDateChecked"
+        >Include Expiration Date filter</mat-checkbox
+      >
+    </section>
+    <table class="table mt-2">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Code</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngIf="
+            params?.worksheetDefinitions &&
+            params?.worksheetDefinitions?.length > 0
+          "
+        >
+          <ng-container
+            *ngFor="
+              let worksheetDefinition of params?.worksheetDefinitions;
+              let count = index
+            "
+          >
+            <tr>
+              <td>
+                {{ count + 1 }}
+              </td>
+              <td>
+                {{ worksheetDefinition?.code }}
+              </td>
+              <td>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="menu"
+                  aria-label=""
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button
+                    (click)="
+                      setCurrentWorksheetDefn($event, worksheetDefinition)
+                    "
+                    mat-menu-item
+                  >
+                    <mat-icon>remove_red_eye</mat-icon>
+                    <span>View details</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            params?.worksheetDefinitions &&
+            params?.worksheetDefinitions?.length === 0
+          "
+        >
+          <tr>
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">
+                No Worksheet definition available
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="!params?.worksheetDefinitions">
+          <tr>
+            <td colspan="100%">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

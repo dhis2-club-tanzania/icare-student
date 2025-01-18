@@ -1,0 +1,30 @@
+<div class="rejection-reason">
+  <div>
+    <p>Are you sure to reject this sample? Provide reason</p>
+    <div class="rejection-reason-area">
+      <mat-form-field
+        [style.fontSize]="'15px'"
+        class="w-90 sample-rejection-reason-area"
+      >
+        <mat-label>Reason for rejection</mat-label>
+        <textarea
+          [(ngModel)]="reason"
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="1"
+          cdkAutosizeMaxRows="2"
+        ></textarea>
+      </mat-form-field>
+
+      <button
+        [disabled]="reason == '' || reason?.length < 4"
+        mat-stroked-button
+        (click)="saveReason($event)"
+        class="mr-2 save-rejection-btn"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

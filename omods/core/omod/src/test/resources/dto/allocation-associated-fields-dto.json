@@ -1,0 +1,18 @@
+[{
+  "testAllocation": {
+    "uuid": "111xxx60-7777-11e3-1111-0sndiu87hsju"
+  },
+  "associatedField": {
+    "uuid": "iCARE110-TEST-OSDH-9beb-d30dcfc0c636"
+  }
+},
+  {
+    "testAllocation": {
+      "uuid": "111xxx60-7777-11e3-1111-0sndiu87hsju"
+    },
+    "associatedField": {
+      "uuid": "iCARE110-TEST-OSDH-9beb-d30dcfc0c636"
+    }
+
+}
+]

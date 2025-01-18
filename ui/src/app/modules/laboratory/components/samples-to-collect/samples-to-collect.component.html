@@ -1,0 +1,194 @@
+<div
+  *ngIf="{
+    samplesToCollect: samplesToCollect$ | async,
+    loadingState: labSamplesLoadingState$ | async,
+    patientHasPendingBills: patientHasPendingBills$ | async,
+    updateLabOrderResponse: updateLabOrderResponse$ | async
+  } as params"
+>
+  <div class="samples-to-collect">
+    <div class="d-flex justify-content-between"></div>
+    <table class="table table-bordered table-stripped">
+      <thead>
+        <tr class="text-center">
+          <th rowspan="2">#</th>
+          <th rowspan="2">Department</th>
+          <th rowspan="2">Sample / Specimen source</th>
+          <th colspan="6">Tests ordered</th>
+          <th rowspan="2">Admitted?</th>
+          <th rowspan="2">Sample ID</th>
+          <th rowspan="2">Action</th>
+        </tr>
+        <tr class="text-center">
+          <th>Test</th>
+          <th>ID</th>
+          <th>Orderer</th>
+          <th>Order Date & Time</th>
+          <th>Source</th>
+          <th>Paid?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngFor="
+            let specimenSourceWithOrders of params?.samplesToCollect;
+            let count = index
+          "
+        >
+          <tr
+            *ngFor="
+              let order of specimenSourceWithOrders?.orders;
+              let ordersCount = index
+            "
+          >
+            <td
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              {{ count + 1 }}
+            </td>
+            <td
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              {{ specimenSourceWithOrders.departmentName }}
+            </td>
+            <td
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              {{ specimenSourceWithOrders.specimenSourceName }}
+            </td>
+            <td
+              [ngClass]="{
+                'text-danger':
+                  !order?.paid && !order?.isAdmitted && !order?.isEnsured
+              }"
+            >
+              {{ order?.display }}
+            </td>
+            <td
+              [ngClass]="{
+                'text-danger':
+                  !order?.paid && !order?.isAdmitted && !order?.isEnsured
+              }"
+            >
+              {{ order?.orderNumber }}
+            </td>
+            <td>
+              {{ order?.orderer?.name }}
+            </td>
+            <td>
+              {{ order?.orderDate }}
+              {{ order?.orderTime }}
+            </td>
+            <td>
+              {{
+                order?.location?.isBed
+                  ? order?.location?.parentLocation?.display +
+                    "/" +
+                    order?.location?.name
+                  : order?.location?.name
+              }}
+            </td>
+            <td>
+              {{
+                order?.isAdmitted
+                  ? "Admitted"
+                  : order?.isEmergency
+                  ? "Emergency"
+                  : order?.isEnsured
+                  ? "Insured"
+                  : order?.paid
+                  ? "Yes"
+                  : "No"
+              }}
+            </td>
+            <td
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              {{ specimenSourceWithOrders?.isAdmitted ? "Yes" : "No" }}
+            </td>
+            <td
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              <mat-form-field class="w-100">
+                <input
+                  type="text"
+                  [id]="specimenSourceWithOrders?.specimenSourceUuid + count"
+                  (change)="
+                    getSampleIdentifier(specimenSourceWithOrders, $event)
+                  "
+                  matInput
+                  placeholder="Sample identifier"
+                />
+              </mat-form-field>
+              <!-- <button
+                (click)="
+                  generateSampleId($event, specimenSourceWithOrders, count)
+                "
+                style="float: right"
+                mat-stroked-button
+                [disabled]="
+                  !specimenSourceWithOrders?.atLeastOnePaid &&
+                  !specimenSourceWithOrders?.isAdmitted
+                "
+                class="mr-2 generate-sample-id-btn"
+              >
+                Generate ID
+              </button> -->
+            </td>
+            <td
+              class="text-center"
+              *ngIf="ordersCount === 0"
+              [attr.rowspan]="specimenSourceWithOrders?.orders?.length"
+            >
+              <button
+                [disabled]="
+                  !specimenSourceWithOrders?.atLeastOnePaid &&
+                  !specimenSourceWithOrders?.isAdmitted &&
+                  !specimenSourceWithOrders?.isEmergency &&
+                  !specimenSourceWithOrders?.isEnsured
+                "
+                (click)="
+                  generateSampleId(
+                    $event,
+                    specimenSourceWithOrders,
+                    count,
+                    patient
+                  )
+                "
+                mat-stroked-button
+                class="mr-2 mt-2 text-white colored-button"
+              >
+                Collect
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!params?.samplesToCollect || params?.loadingState">
+            <td colspan="8">
+              <div>
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              </div>
+            </td>
+          </tr>
+          <tr
+            *ngIf="
+              params?.samplesToCollect &&
+              (params?.samplesToCollect).length == 0 &&
+              !params?.loadingState
+            "
+          >
+            <td colspan="9">
+              <p class="missing-test-alert" class="text-center">
+                No tests ordered
+              </p>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

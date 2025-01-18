@@ -1,0 +1,37 @@
+<mat-toolbar color="primary">
+  <span>Visit status</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-dialog-content class="mat-typography">
+  <div
+    *ngIf="{
+      loadingVisit: loadingVisit$ | async,
+      visitLoadedState: visitLoadedState$ | async
+    } as params"
+  >
+    <p
+      style="padding: 15px 5px 0 15px"
+      *ngIf="params?.loadingVisit || !params?.visitLoadedState"
+      class="text-success"
+    >
+      Saving ...
+    </p>
+    <p
+      *ngIf="params?.visitLoadedState"
+      style="padding: 15px 5px 0 15px"
+      class="text-success"
+    >
+      Successful saved client visit data
+    </p>
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="params?.loadingVisit"
+    ></mat-progress-bar>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="d-flex justify-content-end">
+  <button mat-stroked-button (click)="onClose($event)">Close</button>
+</mat-dialog-actions>

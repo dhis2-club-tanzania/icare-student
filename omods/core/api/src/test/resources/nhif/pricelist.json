@@ -1,0 +1,133 @@
+{
+  "FacilityCode": "01099",
+  "PricePackage": [
+    {
+      "ItemCode": "10099",
+      "PriceCode": "102-1001",
+      "ItemName": "Registration Fee",
+      "PackageID": 102,
+      "SchemeID": 1001,
+      "UnitPrice": 5000.00,
+      "IsRestricted": false
+    },
+    {
+      "ItemCode": "10099",
+      "PriceCode": "201-1002",
+      "ItemName": "Registration Fee",
+      "PackageID": 201,
+      "SchemeID": 1002,
+      "UnitPrice": 5000.00,
+      "IsRestricted": false
+    },{
+      "ItemCode": "10001",
+      "PriceCode": "102-10001",
+      "ItemName": "General Practitioner Consultation",
+      "PackageID": 102,
+      "SchemeID": 1001,
+      "UnitPrice": 10000.00,
+      "IsRestricted": false
+    },
+    {
+      "ItemCode": "10001",
+      "PriceCode": "201-10001",
+      "ItemName": "General Practitioner Consultation",
+      "PackageID": 201,
+      "SchemeID": 1002,
+      "UnitPrice": 25000.00,
+      "IsRestricted": false
+    },
+    {
+      "ItemCode": "10002",
+      "PriceCode": "201-10002",
+      "ItemTypeID": 1,
+      "ItemName": "Specialist Consultation",
+      "PackageID": 201,
+      "SchemeID": 1002,
+      "UnitPrice": 30000.00,
+      "IsRestricted": false
+    },
+    {
+      "ItemCode": "10003",
+      "PriceCode": "201-10003",
+      "ItemTypeID": 1,
+      "ItemName": "Super Specialist Consultation",
+      "PackageID": 201,
+      "SchemeID": 1003,
+      "UnitPrice": 30000.00,
+      "IsRestricted": true
+    },
+    {
+      "ItemCode": "10004",
+      "PriceCode": "201-10004",
+      "ItemTypeID": 1,
+      "ItemName": "Assistant Medical Officer Consultation",
+      "PackageID": 201,
+      "SchemeID": 1004,
+      "UnitPrice": 20000.00,
+      "IsRestricted": false
+    },
+    {
+      "ItemCode": "11001",
+      "PriceCode": "301-11001",
+      "LevelPriceCode": "301-11001-99",
+      "OldItemCode": null,
+      "ItemTypeID": 3,
+      "ItemName": "Lignocaine",
+      "Strength": "20gm",
+      "Dosage": "Tube",
+      "PackageID": 301,
+      "SchemeID": 3001,
+      "FacilityLevelCode": "99",
+      "UnitPrice": 9700.00,
+      "MaximumQuantity": -1,
+      "AvailableInLevels": null,
+      "PractitionerQualifications": null,
+      "IsActive": true
+    },
+    {
+      "ItemCode": "11001",
+      "PriceCode": "103-11001",
+      "LevelPriceCode": "103-11001-99",
+      "OldItemCode": null,
+      "ItemTypeID": 3,
+      "ItemName": "Lignocaine",
+      "Strength": "20gm",
+      "Dosage": "Tube",
+      "PackageID": 103,
+      "SchemeID": 1001,
+      "FacilityLevelCode": "99",
+      "UnitPrice": 9700.00,
+      "IsRestricted": false,
+      "MaximumQuantity": -1,
+      "AvailableInLevels": null,
+      "PractitionerQualifications": null,
+      "IsActive": true
+    },
+    {
+      "ItemCode": "11001",
+      "PriceCode": "202-11001",
+      "LevelPriceCode": "202-11001-99",
+      "OldItemCode": null,
+      "ItemTypeID": 3,
+      "ItemName": "Lignocaine",
+      "Strength": "20gm",
+      "Dosage": "Tube",
+      "PackageID": 202,
+      "SchemeID": 2001,
+      "FacilityLevelCode": "99",
+      "UnitPrice": 9700.00,
+      "IsRestricted": false,
+      "MaximumQuantity": -1,
+      "AvailableInLevels": null,
+      "PractitionerQualifications": null,
+      "IsActive": true
+    }
+  ],
+  "ExcludedServices": [
+    {
+      "ItemCode": "10004",
+      "SchemeID": 1004,
+      "ExcludedForProducts": "NH001,NH002"
+    }
+  ]
+}

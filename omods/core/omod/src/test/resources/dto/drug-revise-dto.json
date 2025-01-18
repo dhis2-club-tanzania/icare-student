@@ -1,0 +1,23 @@
+{
+  "encounter": "ae3e2c71-705c-4875-98c2-bc7cdb616793",
+  "orderType": "131168f4-15f5-102d-96e4-000c29c2a5d7",
+  "concept": "71617AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "drug": "f7ae08fe-885f-456e-b838-cf282f037401",
+  "action": "REVISE",
+  "urgency": "ROUTINE",
+  "type": "drugorder",
+  "duration": null,
+  "durationUnits": null,
+  "orderer": "f9badd80-ab76-11e2-9e96-0800200c9a66",
+  "patient": "7ab4a89e-5e9f-44e0-b9ce-4e35c23e24d9",
+  "dose": 100,
+  "instructions": "Instructions for testing",
+  "doseUnits": "162382AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "route": "160240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "frequency": "162247OFAAAAAAAAAAAAAAA",
+  "quantity": 100,
+  "careSetting": "OUTPATIENT",
+  "quantityUnits": "162382AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "numRefills": 2,
+  "previousOrder": "badad37b-e49d-4cbf-8675-ae4fd677c969"
+}

@@ -1,0 +1,129 @@
+<div
+  style="padding: 0 10px"
+  *ngIf="{
+    response: response$ | async,
+    currentPatient: currentPatient$ | async,
+    patientVisit: patientVisit$ | async,
+    currentLocation: currentLocation$ | async,
+    currentVisitLoadedState: currentVisitLoadedState$ | async,
+    currentVisitLoadingState: currentVisitLoadingState$ | async,
+    generalMetadataConfigurations: generalMetadataConfigurations$ | async,
+    genericPrescriptionOrderType: genericPrescriptionOrderType$ | async,
+    genericPrescriptionEncounterType: genericPrescriptionEncounterType$ | async,
+    useGenericPrescription: useGenericPrescription$ | async,
+    provider: provider$ | async
+  } as params"
+>
+  <button mat-button color="light" (click)="onBack($event)">
+    <mat-icon class="mr-2">arrow_back</mat-icon>
+    <mat-label>Back To list</mat-label>
+  </button>
+
+  <mat-progress-bar
+    class="mt-4"
+    *ngIf="
+      loading || !params?.currentPatient || params?.currentVisitLoadingState
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div class="row mt-2">
+    <div class="col-12">
+      <app-new-patient-profile
+        *ngIf="params?.currentPatient && params?.currentVisitLoadedState"
+        [currentPatient]="params?.currentPatient"
+      ></app-new-patient-profile>
+    </div>
+    <div *ngIf="errors">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
+
+    <div
+      class="col-12"
+      *ngIf="
+        params?.generalMetadataConfigurations &&
+        params?.generalMetadataConfigurations !== ''
+      "
+    >
+      <p
+        class="text-left text-danger"
+        *ngIf="params?.response && params?.response?.message"
+      >
+        {{ params?.response?.message }}
+      </p>
+      <div
+        class="border"
+        *ngIf="
+          params?.useGenericPrescription === 'true' && params?.patientVisit
+        "
+      >
+        <app-patient-generic-drug-order-list
+          [visit]="params?.patientVisit"
+          [loading]="loading"
+          [loadingError]="loadingError"
+          [actionOptions]="dispensingActionOptions"
+          [currentLocation]="params.currentLocation"
+          [currentPatient]="params?.currentPatient"
+          [genericPrescriptionOrderType]="params?.genericPrescriptionOrderType"
+          [genericPrescriptionEncounterType]="
+            params?.genericPrescriptionEncounterType
+          "
+          [useGenericPrescription]="
+            params?.useGenericPrescription === 'true' ? true : false
+          "
+          [generalMetadataConfigurations]="
+            params?.generalMetadataConfigurations
+          "
+          (orderSelectAction)="
+            onSelectAction($event, params?.patientVisit, params.currentLocation)
+          "
+          (loadPatientVisit)="getPatientVisit()"
+        ></app-patient-generic-drug-order-list>
+      </div>
+
+      <div
+        class="border w-100"
+        *ngIf="
+          params?.useGenericPrescription === 'true' &&
+          params?.currentVisitLoadedState &&
+          params?.provider &&
+          !params?.patientVisit?.isEnsured
+        "
+      >
+        <app-drugs-list-to-send-for-billing
+          *ngIf="params?.patientVisit"
+          [visit]="params?.patientVisit"
+          [loading]="loading"
+          [loadingError]="loadingError"
+          [provider]="params?.provider"
+          [currentLocation]="params.currentLocation"
+          [currentPatient]="params?.currentPatient"
+          [generalMetadataConfigurations]="
+            params?.generalMetadataConfigurations
+          "
+          (reload)="shouldReloadDrugListForDispensing($event)"
+        ></app-drugs-list-to-send-for-billing>
+      </div>
+
+      <div
+        class="border"
+        *ngIf="params?.currentVisitLoadedState && readyToShow"
+      >
+        <app-patient-drug-order-list
+          *ngIf="params?.patientVisit"
+          [visit]="params?.patientVisit"
+          [loading]="loading"
+          [loadingError]="loadingError"
+          [actionOptions]="dispensingActionOptions"
+          [currentLocation]="params.currentLocation"
+          [currentPatient]="params?.currentPatient"
+          [generalMetadataConfigurations]="
+            params?.generalMetadataConfigurations
+          "
+          (orderSelectAction)="
+            onSelectAction($event, params?.patientVisit, params.currentLocation)
+          "
+        ></app-patient-drug-order-list>
+      </div>
+    </div>
+  </div>
+</div>

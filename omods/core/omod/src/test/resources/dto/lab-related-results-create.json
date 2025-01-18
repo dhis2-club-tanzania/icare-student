@@ -1,0 +1,29 @@
+[
+  {
+    "valueText": "5.88",
+    "concept": {
+      "uuid": "111111xx-0000-477a-8u8u-acc38ebc6252"
+    },
+    "testAllocation": {
+      "uuid": "111xxx60-7777-11e3-1111-0sndiu87hsju"
+    },
+    "instrument": {
+      "code": "COBAS"
+    },
+    "status": {
+      "category": "Testing-category",
+      "status": "Testing",
+      "remarks": "Testing remarks"
+    },
+    "resultGroup": {
+      "uuid": "222yyy70-7777-11e3-1221-0sndiu87hsj3"
+    },
+
+    "associatedFieldResult": {
+      "value" : "abc",
+      "associatedField": {
+        "uuid": "iCARE110-TEST-OSDH-9beb-d30dcfc0c636"
+      }
+    }
+  }
+]

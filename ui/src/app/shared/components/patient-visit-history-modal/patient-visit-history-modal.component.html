@@ -1,0 +1,51 @@
+<mat-toolbar color="primary">
+  <span>Patient History</span>
+  <span class="toolbar-spacer"></span>
+  <span class="float-right"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-dialog-content
+  class="mat-typography"
+  *ngIf="{
+    forms: forms$ | async,
+    patientVisits: patientVisits$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="!params?.patientVisits || !params?.forms"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div
+    *ngIf="
+      params?.patientVisits &&
+      params?.patientVisits?.length > 0 &&
+      params?.forms
+    "
+  >
+    <app-patient-visits-history
+      [patientVisits]="params?.patientVisits"
+      [shouldShowPatientClinicalSummary]="true"
+      [shouldShowVitalsOnly]="shouldShowVitalsOnly"
+      [forms]="params?.forms"
+    ></app-patient-visits-history>
+  </div>
+
+  <!-- <div *ngIf="
+        params?.patientVisits &&
+        params?.patientVisits?.length > 0 &&
+        params?.forms&&location
+      ">
+    <app-patient-vitals-summary></app-patient-vitals-summary>
+  </div> -->
+
+  <div
+    class="alert alert-warning"
+    role="alert"
+    *ngIf="params?.patientVisits && params?.patientVisits?.length === 0"
+  >
+    There is no history for this patient, this is the first visit
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,18 @@
+.page-description {
+  text-align: center;
+  padding: 10px;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
+mat-card {
+  max-width: 400px;
+  margin: 2em auto;
+  text-align: center;
+}
+mat-form-field {
+  display: block;
+}
+
+.authentication-progress {
+  margin-top: 15px;
+}

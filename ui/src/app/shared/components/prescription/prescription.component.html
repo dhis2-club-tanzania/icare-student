@@ -1,0 +1,37 @@
+<div
+  class="row mt-2"
+  *ngIf="{
+    currentLocation: currentLocation$ | async,
+    patientVisit: patientVisit$ | async,
+    patientVisitLoadedState: patientVisitLoadedState$ | async
+  } as params"
+>
+  <div class="col-12">
+    <mat-progress-bar
+      *ngIf="
+        !params?.patientVisit ||
+        !params?.currentLocation ||
+        !params?.patientVisitLoadedState
+      "
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <div
+      class="border"
+      *ngIf="
+        params?.patientVisit &&
+        params?.currentLocation &&
+        params?.patientVisitLoadedState
+      "
+    >
+      <app-patient-drug-order-list
+        [visit]="params?.patientVisit"
+        [encounterUuid]="consultationEncounterUuid$ | async"
+        [loading]="loading"
+        [loadingError]="loadingError"
+        [currentLocation]="params.currentLocation"
+        [canAddPrescription]="true"
+        (orderSelectAction)="onOrderSelection($event)"
+      ></app-patient-drug-order-list>
+    </div>
+  </div>
+</div>

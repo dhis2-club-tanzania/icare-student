@@ -1,0 +1,34 @@
+<div
+  style="padding: 0 4px"
+  *ngIf="{
+    formPrivilegesConfigsLoadingState:
+      formPrivilegesConfigsLoadingState$ | async,
+    privilegesConfigs: privilegesConfigs$ | async,
+    currentUser: currentUser$ | async,
+    userPrivileges: userPrivileges$ | async,
+    userPrivilegesSet: userPrivilegesSet$ | async
+  } as params"
+>
+  <app-shared-patient-consultation
+    *ngIf="
+      params?.currentUser &&
+      params?.privilegesConfigs &&
+      params?.userPrivileges &&
+      params?.userPrivilegesSet
+    "
+    [formPrivilegesConfigs]="params?.privilegesConfigs"
+    [currentUser]="params?.currentUser"
+    [patientIdentifier]="patientIdentifier"
+    [userPrivileges]="params?.userPrivileges"
+  ></app-shared-patient-consultation>
+
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="
+      params?.formPrivilegesConfigsLoadingState ||
+      !params?.currentUser ||
+      !params?.userPrivileges ||
+      !params?.userPrivilegesSet
+    "
+  ></mat-progress-bar>
+</div>

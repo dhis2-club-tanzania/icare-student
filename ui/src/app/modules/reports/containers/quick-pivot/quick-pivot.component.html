@@ -1,0 +1,20 @@
+<div class="pivot-table-container">
+  <div class="d-flex justify-content-left mb-3">
+    <button mat-stroked-button (click)="changeLayout($event)">Layout</button>
+  </div>
+  <div class="w-100" style="overflow: auto">
+    <table class="table table-bordered" *ngIf="readyToRenderData">
+      <tbody>
+        <tr *ngFor="let tableRow of pivotedData.data.table">
+          <td *ngFor="let value of tableRow?.value">
+            {{ value }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!readyToRenderData"
+  ></mat-progress-bar>
+</div>

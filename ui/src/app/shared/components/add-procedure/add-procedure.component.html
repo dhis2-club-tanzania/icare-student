@@ -1,0 +1,13 @@
+<div *ngIf="{ proceduresDetails: proceduresDetails$ | async } as params">
+  <app-add-procedure-form
+    *ngIf="params?.proceduresDetails"
+    [proceduresDetails]="params?.proceduresDetails"
+    (isFormValid)="onGetFormValidity($event)"
+    (procedures)="onGetDefinedProcedures($event)"
+  ></app-add-procedure-form>
+
+  <mat-progress-bar
+    *ngIf="!params?.proceduresDetails"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

@@ -1,0 +1,50 @@
+.not-billed {
+  color: #f39c12;
+}
+.not-paid {
+  color: #dd4b39;
+}
+
+.legend .no-billing {
+  font-size: 10px;
+  background-color: #f39c12 !important;
+}
+
+.legend .no-paid {
+  font-size: 10px;
+  background-color: #dd4b39 !important;
+}
+
+.legend span {
+  float: left;
+}
+
+.no-billing,
+.no-paid {
+  //   border-top-left-radius: 2px;
+  //   border-top-right-radius: 0;
+  //   border-bottom-right-radius: 0;
+  //   border-bottom-left-radius: 2px;
+  display: block;
+  height: 15px;
+  width: 15px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 15px;
+  margin-left: 10px;
+  margin-right: 4px;
+}
+
+.collect-btn {
+  background-color: #669999 !important;
+  float: right;
+  color: #fff !important;
+}
+
+.end-btn {
+  float: right;
+}
+
+.row-alternated {
+  background-color: #f2f2f2;
+}

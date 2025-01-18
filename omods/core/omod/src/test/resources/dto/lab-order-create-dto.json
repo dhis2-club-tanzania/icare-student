@@ -1,0 +1,10 @@
+{
+  "concept": "e721ec30-5344-11e8-9c7c-40b6etw3cfee",
+  "orderType": "2msir5eb-5345-11e8-9922-40b034c3cfee",
+  "action": "NEW",
+  "patient": "1f6959e5-d15a-4025-bb48-340ee9e2c58d",
+  "careSetting": "OUTPATIENT",
+  "orderer": "449390a0-d338-4ff2-9b3f-61dc1617c2fe",
+  "urgency": "ROUTINE",
+  "type": "testorder"
+}

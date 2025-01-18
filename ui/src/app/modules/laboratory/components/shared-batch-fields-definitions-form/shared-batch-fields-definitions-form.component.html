@@ -1,0 +1,180 @@
+<ng-container *ngIf="{ forms: forms$ | async } as params">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.forms || (params?.forms && params?.forms?.length === 0)"
+  ></mat-progress-bar>
+  <!-- {{ params?.forms | json }} -->
+  <div class="row" *ngIf="params?.forms && params?.forms?.length > 0">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-sx-12">
+      <!-- {{ keyedSelectedFields | json }} -->
+      <mat-tab-group [animationDuration]="'1300ms'">
+        <mat-tab label="Fixed fields">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <ng-container *ngFor="let form of params?.forms">
+                <div class="h6 text-muted">
+                  {{ form?.display }}
+                </div>
+                <app-shared-render-batch-defn-fields
+                  [forms]="[form]"
+                  [existingBatchFieldsInformations]="
+                    existingBatchFieldsInformations?.fixedFields || []
+                  "
+                  [selectedFields]="
+                    keyedSelectedFields['fixed' + '-' + form?.uuid] || []
+                  "
+                  [fieldsToFilter1]="
+                    keyedSelectedFields['static' + '-' + form?.uuid]
+                  "
+                  [fieldsToFilter2]="
+                    keyedSelectedFields['dynamic' + '-' + form?.uuid]
+                  "
+                  (selectedBatchFields)="
+                    onGetSelectedBatchFields($event, form, 'fixed')
+                  "
+                  (fields)="onGetAllFields($event)"
+                ></app-shared-render-batch-defn-fields>
+
+                <app-form
+                  *ngIf="
+                    keyedSelectedFields['fixed' + '-' + form?.uuid] &&
+                    keyedSelectedFields['fixed' + '-' + form?.uuid]?.length > 0
+                  "
+                  [isFormHorizontal]="true"
+                  [fields]="keyedSelectedFields['fixed' + '-' + form?.uuid]"
+                  (formUpdate)="
+                    onFormUpdate($event, 'fixed' + '-' + form?.uuid)
+                  "
+                ></app-form>
+              </ng-container>
+              <div class="h6 text-muted">Test orders</div>
+              <app-shared-batch-testorders-selection
+                *ngIf="
+                  showTestOrderSelection &&
+                  !keyedSelectedFields['static-testorder'] &&
+                  !keyedSelectedFields['dyanmic-testorder']
+                "
+                [testOrderParentConceptUuid]="
+                  formData[specimenTypeConceptUuid]?.value
+                "
+                [selectedOrders]="selectedTestOrdersValues"
+                (selectedItems)="onGetSelectedOrders($event, 'fixed')"
+              ></app-shared-batch-testorders-selection>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Static fields">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <ng-container *ngFor="let form of params?.forms">
+                <div class="h6 text-muted">
+                  {{ form?.display }}
+                </div>
+                <app-shared-render-batch-defn-fields
+                  [forms]="[form]"
+                  [existingBatchFieldsInformations]="
+                    existingBatchFieldsInformations?.staticFields || []
+                  "
+                  [selectedFields]="
+                    keyedSelectedFields['static' + '-' + form?.uuid] || []
+                  "
+                  [fieldsToFilter1]="
+                    keyedSelectedFields['fixed' + '-' + form?.uuid]
+                  "
+                  [fieldsToFilter2]="
+                    keyedSelectedFields['dynamic' + '-' + form?.uuid]
+                  "
+                  (selectedBatchFields)="
+                    onGetSelectedBatchFields($event, form, 'static')
+                  "
+                  (fields)="onGetAllFields($event)"
+                ></app-shared-render-batch-defn-fields>
+
+                <app-form
+                  *ngIf="
+                    keyedSelectedFields['static' + '-' + form?.uuid] &&
+                    keyedSelectedFields['static' + '-' + form?.uuid]?.length > 0
+                  "
+                  [isFormHorizontal]="true"
+                  [fields]="keyedSelectedFields['static' + '-' + form?.uuid]"
+                  (formUpdate)="
+                    onFormUpdate($event, 'static' + '-' + form?.uuid)
+                  "
+                ></app-form>
+              </ng-container>
+              <div class="h6 text-muted">Test orders</div>
+              <app-shared-batch-testorders-selection
+                *ngIf="
+                  showTestOrderSelection &&
+                  !keyedSelectedFields['fixed-testorder'] &&
+                  !keyedSelectedFields['dyanmic-testorder']
+                "
+                [testOrderParentConceptUuid]="
+                  formData[specimenTypeConceptUuid]?.value
+                "
+                [selectedOrders]="selectedTestOrdersValues"
+                (selectedItems)="onGetSelectedOrders($event, 'static')"
+              ></app-shared-batch-testorders-selection>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Dynamic fields">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <ng-container *ngFor="let form of params?.forms">
+                <div class="h6 text-muted">
+                  {{ form?.display }}
+                </div>
+                <app-shared-render-batch-defn-fields
+                  [forms]="[form]"
+                  [existingBatchFieldsInformations]="
+                    existingBatchFieldsInformations?.dynamicFields || []
+                  "
+                  [selectedFields]="
+                    keyedSelectedFields['dynamic' + '-' + form?.uuid] || []
+                  "
+                  [fieldsToFilter1]="
+                    keyedSelectedFields['fixed' + '-' + form?.uuid]
+                  "
+                  [fieldsToFilter2]="
+                    keyedSelectedFields['static' + '-' + form?.uuid]
+                  "
+                  (selectedBatchFields)="
+                    onGetSelectedBatchFields($event, form, 'dynamic')
+                  "
+                  (fields)="onGetAllFields($event)"
+                ></app-shared-render-batch-defn-fields>
+
+                <app-form
+                  *ngIf="
+                    keyedSelectedFields['dynamic' + '-' + form?.uuid] &&
+                    keyedSelectedFields['dynamic' + '-' + form?.uuid]?.length >
+                      0
+                  "
+                  [isFormHorizontal]="true"
+                  [fields]="keyedSelectedFields['dynamic' + '-' + form?.uuid]"
+                  (formUpdate)="
+                    onFormUpdate($event, 'dynamic' + '-' + form?.uuid)
+                  "
+                ></app-form>
+              </ng-container>
+              <div class="h6 text-muted">Test orders</div>
+              <app-shared-batch-testorders-selection
+                *ngIf="
+                  showTestOrderSelection &&
+                  !keyedSelectedFields['fixed-testorder'] &&
+                  !keyedSelectedFields['static-testorder']
+                "
+                [testOrderParentConceptUuid]="
+                  formData[specimenTypeConceptUuid]?.value
+                "
+                [selectedOrders]="selectedTestOrdersValues"
+                (selectedItems)="onGetSelectedOrders($event, 'dynamic')"
+              ></app-shared-batch-testorders-selection>
+            </div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</ng-container>

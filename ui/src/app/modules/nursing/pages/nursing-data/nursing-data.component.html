@@ -1,0 +1,249 @@
+<div
+  *ngIf="{
+    patient: patient$ | async,
+    location: currentLocation$ | async,
+    visit: visit$ | async,
+    provider: provider$ | async,
+    orderTypes: orderTypes$ | async,
+    observations: observations$ | async,
+    savingObservations: savingObservations$ | async,
+    forms: forms$ | async,
+    activeVisitDeathStatus: activeVisitDeathStatus$ | async,
+    doesPatientHasPendingPaymentForTheCurrentVisitType:
+      doesPatientHasPendingPaymentForTheCurrentVisitType$ | async,
+    billLoadingState: billLoadingState$ | async,
+    currentBills: currentBills$ | async,
+    conceptsWithDepartmentsDetails: conceptsWithDepartmentsDetails$ | async
+  } as params"
+>
+  <app-new-patient-profile
+    *ngIf="params?.patient"
+    [currentPatient]="params?.patient"
+  ></app-new-patient-profile>
+  {{ params?.savingObservations }}
+  <div>
+    <div class="loading-overlay" *ngIf="params?.savingObservations">
+      <div class="text-center">
+        <div>Saving ....</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-sm-12 col-sx-12 back-to-client-list">
+        <button
+          class="float-left"
+          mat-stroked-button
+          (click)="clearBills($event)"
+          [routerLink]="'/nursing'"
+          matTooltip="Back to List"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          Back to Client List
+        </button>
+      </div>
+      <div class="col-md-8 col-sm-12 col-sx-12">
+        <div class="d-flex justify-content-end mt-2 mb-2 mr-2">
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="
+              viewPatientHistory($event, params?.patient?.patient?.uuid, params)
+            "
+          >
+            Vital history
+          </button>
+          <button
+            *ngIf="
+              userPrivileges['NURSING_VIEW_ADMISSION_BUTTON'] &&
+              params?.provider &&
+              params?.location &&
+              params?.visit &&
+              params?.patient &&
+              params?.forms &&
+              !params?.billLoadingState
+            "
+            class="float-right ml-2"
+            [disabled]="
+              params?.doesPatientHasPendingPaymentForTheCurrentVisitType ||
+              params?.visit?.isAdmitted
+            "
+            color="primary"
+            mat-stroked-button
+            (click)="
+              admitPatient($event, params?.patient, params?.visit, false)
+            "
+          >
+            Admit
+          </button>
+
+          <!-- TODO! ADD TRANFER TO OBSERVATION FUNCTIONALITY -->
+          <button
+            class="float-right ml-2"
+            [disabled]="
+              (params?.doesPatientHasPendingPaymentForTheCurrentVisitType &&
+                (!params?.visit?.isEnsured || !params?.visit.isEmergency)) ||
+              params?.visit?.isAdmitted
+            "
+            color="primary"
+            mat-stroked-button
+            (click)="admitPatient($event, params?.patient, params?.visit, true)"
+            *ngIf="
+              userPrivileges['NURSING_VIEW_SEND_TO_OBSERVATION_BUTTON'] &&
+              params?.provider &&
+              params?.location &&
+              params?.visit &&
+              params?.patient &&
+              params?.forms &&
+              !params?.billLoadingState
+            "
+          >
+            Send to Observation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <mat-progress-bar
+      *ngIf="
+        (!params?.provider ||
+          !params?.location ||
+          !params?.visit ||
+          !params?.patient ||
+          !params?.forms ||
+          (params?.forms && params?.forms?.length == 0)) &&
+        applicableForms?.length > 0
+      "
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <div
+      *ngIf="
+        (params?.visit &&
+          !params?.doesPatientHasPendingPaymentForTheCurrentVisitType &&
+          !params?.billLoadingState) ||
+        params?.activeVisitDeathStatus
+      "
+    >
+      <mat-tab-group
+        (selectedTabChange)="changeTab(selectedTab.value)"
+        [selectedIndex]="selectedTab.value"
+        (selectedIndexChange)="selectedTab.setValue($event)"
+      >
+        <mat-tab
+          *ngIf="!params?.location?.minorProcedureLocation"
+          label="Forms"
+        >
+          <div *ngIf="applicableForms?.length === 0" class="w-100">
+            <p class="text-center text-warning p-4">
+              You do not have acces to any forms
+            </p>
+          </div>
+          <mat-progress-bar
+            *ngIf="
+              !params?.provider ||
+              !params?.location ||
+              !params?.visit ||
+              !params?.patient ||
+              !params?.forms
+            "
+            mode="indeterminate"
+          ></mat-progress-bar>
+          <!-- {{ params?.forms | json }} -->
+          <div
+            class="p-2"
+            *ngIf="
+              params?.provider &&
+              params?.location &&
+              params?.visit &&
+              params?.patient &&
+              params?.forms &&
+              params?.forms?.length > 0 &&
+              selectedTab.value === 0
+            "
+          >
+            <app-capture-data
+              [patient]="params?.patient"
+              [location]="params?.location"
+              [visit]="params?.visit"
+              [provider]="params?.provider"
+              [forms]="params?.forms"
+              [observations]="params?.observations"
+              [useSideBar]="true"
+              [saveAndExitPath]="saveAndExitPath"
+              [savingObservations]="params?.savingObservations"
+              (exitAfterSave)="onExitAfterSave($event)"
+              (saveObservations)="onSaveObservations($event, params?.patient)"
+            ></app-capture-data>
+          </div>
+        </mat-tab>
+        <mat-tab
+          *ngIf="params?.location?.minorProcedureLocation"
+          label="Procedures"
+        >
+          <mat-progress-bar
+            *ngIf="
+              !params?.provider ||
+              !params?.location ||
+              !params?.visit ||
+              !params?.currentBills
+            "
+            mode="indeterminate"
+          >
+          </mat-progress-bar>
+          <div
+            class="p-2"
+            *ngIf="
+              params?.visit && selectedTab.value === 0 && params?.currentBills
+            "
+          >
+            <app-attend-ordered-items
+              [orderedItems]="params?.visit?.procedureOrders"
+              [currentBills]="params?.currentBills"
+              [orderTypeName]="'Procedure'"
+              [patient]="params?.patient"
+              [visit]="params?.visit"
+              [orderTypes]="params?.orderTypes"
+              [provider]="params?.provider"
+              [encounters]="params?.visit.encounters"
+              [conceptsWithDepartmentsDetails]="
+                params?.conceptsWithDepartmentsDetails
+              "
+              [nursingConfigurations]="nursingConfigurations"
+            ></app-attend-ordered-items>
+          </div>
+        </mat-tab>
+        <mat-tab
+          *ngIf="params?.location?.minorProcedureLocation"
+          label="Previous Procedures"
+        >
+          <mat-progress-bar
+            *ngIf="!params?.patient"
+            mode="indeterminate"
+          ></mat-progress-bar>
+          <div class="p-2" *ngIf="selectedTab.value === 1 && params?.patient">
+            <app-nursing-procedures-history
+              [patientUuid]="params?.patient?.patient.uuid"
+            >
+            </app-nursing-procedures-history>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <div
+      class="p-4"
+      *ngIf="
+        params?.provider &&
+        params?.location &&
+        params?.visit &&
+        params?.patient &&
+        params?.forms &&
+        params?.doesPatientHasPendingPaymentForTheCurrentVisitType &&
+        !params?.billLoadingState
+      "
+    >
+      <p class="text-center text-danger">NOT PAID for Consultation</p>
+    </div>
+  </div>
+</div>

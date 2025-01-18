@@ -1,0 +1,46 @@
+<div>
+  <mat-toolbar color="primary">{{ data ? 'update' : 'Add' }} Re-Order Level</mat-toolbar>
+  <div class="p-3">
+    <div class="loading-overlay" *ngIf="savingData">
+      <div class="text-center">
+        <div>Saving details...</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p *ngIf="data"> Selected Item: <i class="text-small">{{data?.reOrderLevel?.item?.display}}</i></p>
+      <app-form
+        *ngIf="formFields && formFields?.length > 0"
+        [fields]="formFields"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form>
+    </div>
+    <p class="text-center" *ngIf="shouldConfirm">
+      Please confirm adding the Legder ( {{ formData?.name?.value }})
+    </p>
+    <div class="d-flex justify-content-end">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+      <button
+        *ngIf="!shouldConfirm"
+        [disabled]="!isFormValid && !data"
+        mat-flat-button
+        (click)="onSave($event)"
+        class="ml-2"
+        color="primary"
+      >
+        Save
+      </button>
+      <button
+        *ngIf="shouldConfirm"
+        mat-flat-button
+        (click)="onSave($event, true)"
+        class="ml-2"
+        color="primary"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

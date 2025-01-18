@@ -1,0 +1,25 @@
+<div class="p-3" *ngIf="{ mappingSource: mappingSource$ | async } as params">
+  <mat-tab-group>
+    <mat-tab label="Drugs">
+      <ng-template matTabContent>
+        <app-drugs-list></app-drugs-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Generic Drugs">
+      <ng-template matTabContent>
+        <app-generic-drugs-list></app-generic-drugs-list>
+      </ng-template> </mat-tab
+    ><mat-tab label="Units of measure">
+      <ng-template matTabContent>
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.mappingSource"
+        ></mat-progress-bar>
+        <app-units-of-measure-settings
+          *ngIf="params?.mappingSource"
+          [mappingSource]="params?.mappingSource"
+        ></app-units-of-measure-settings>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

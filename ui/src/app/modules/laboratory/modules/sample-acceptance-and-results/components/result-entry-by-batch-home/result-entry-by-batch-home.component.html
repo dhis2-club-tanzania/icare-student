@@ -1,0 +1,81 @@
+<div
+  class="w-100 mt-3"
+  *ngIf="{
+    worksheetDefinitions: worksheetDefinitions$ | async,
+    multipleResultsAttributeType: multipleResultsAttributeType$ | async,
+    batchsets: batchsets$ | async,
+    batches: batches$ | async
+  } as params"
+>
+
+  <mat-progress-bar mode="indeterminate"
+    *ngIf="filteringBatches || !(params?.batchsets && params?.batches) || loadingBatchSamples">
+  </mat-progress-bar>
+  <div class="row" *ngIf="params?.batchsets && params?.batches">
+    <div class="d-flex">
+      <div class="w-50">
+        <app-form 
+          [fields]="[batchsetsField]"
+          (formUpdate)="onFormUpdate($event, 'batchset')"
+          >
+        </app-form>
+      </div>
+      <div class="w-50" *ngIf="!filteringBatches">
+        <app-form 
+          [fields]="[batchesField]"
+          (formUpdate)="onFormUpdate($event, 'batch')"
+          >
+        </app-form>
+      </div>
+      <div class="w-50" *ngIf="!loadingBatchSamples">
+        <app-form 
+          [fields]="[batchSampleseField]"
+          (formUpdate)="onFormUpdate($event, 'batchsample')"
+          >
+        </app-form>
+      </div>
+    </div>
+  </div>
+  <div class="mt-3 mb-3" *ngIf="!loadingBatchSamples && samples?.length && params?.batchsets && params?.batches">
+    <mat-radio-group class="mb-4 mt-3">
+      <mat-radio-button [checked]="sampleDisplay === 'Normal'" [value]="'Normal'" color="primary"
+        (change)="byWorksheetChoice($event)">
+        Normal
+      </mat-radio-button>
+      <mat-radio-button [checked]="sampleDisplay === 'Worksheet'" color="primary" class="ml-3" [value]="'Worksheet'"
+        (change)="byWorksheetChoice($event)">
+        By Worksheet
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <ng-container *ngIf="sampleDisplay === 'Worksheet'">
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="
+        !params?.worksheetDefinitions || !params?.multipleResultsAttributeType
+      "
+    ></mat-progress-bar>
+    <app-result-entry-by-worksheet
+      *ngIf="params?.worksheetDefinitions && params?.multipleResultsAttributeType"
+      [worksheetDefinitions]="worksheetDefinitions"
+      [isLIS]="isLIS"
+      [viewType]="viewType"
+      [conceptNameType]="conceptNameType"
+      [multipleResultsAttributeType]="params?.multipleResultsAttributeType"
+    ></app-result-entry-by-worksheet>
+  </ng-container>
+
+  <!-- For samples without worksheet -->
+  <div *ngIf="!loadingBatchSamples && sampleDisplay === 'Normal'">
+    <app-result-entry-by-worksheet
+      *ngIf="samples?.length"
+      [isLIS]="isLIS"
+      [samples]="samples"
+      [forSamples]="sampleDisplay === 'Normal'"
+      [viewType]="viewType"
+      [conceptNameType]="conceptNameType"
+      [multipleResultsAttributeType]="params?.multipleResultsAttributeType"
+    ></app-result-entry-by-worksheet>    
+  </div>
+</div>

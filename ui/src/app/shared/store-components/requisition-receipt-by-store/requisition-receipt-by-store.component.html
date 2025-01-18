@@ -1,0 +1,55 @@
+<ng-container *ngIf="requisitionObjectkeys.length > 0">
+  <mat-accordion>
+    <mat-expansion-panel
+      class="border mat-elevation-z0 mt-2"
+      *ngFor="let key of requisitionObjectkeys; let keyIndex = index"
+      [expanded]="keyIndex === 0"
+    >
+      <mat-expansion-panel-header class="d-flex justify-content-end">
+        <mat-panel-title>
+          <div class="w-75">
+            <span> <strong>
+              Received From: {{ key?.targetStore }}
+            </strong></span>
+          </div>
+          <div class="w-25">
+            <span>Requesting Date: {{ key?.date }}</span>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="items-table">
+        <div style="overflow: auto">
+          <table class="table">
+            <tr>
+              <td>#</td>
+              <td>Item</td>
+              <td>Quantity Requested</td>
+              <td>Quantity Received</td>
+              <td>Received Date</td>
+              <td>Received From</td>
+            </tr>
+
+            <tr
+              *ngIf="requisitionByStoreAndDate.length === 0"
+            >
+              <td colspan="6">
+                <div class="w-100 d-flex justify-content-center">No data</div>
+              </td>
+            </tr>
+
+            <tr
+              *ngFor="let request of requisitionByStoreAndDate[key?.searchKey]; let requestIndex = index"
+            >
+              <td>{{ requestIndex + 1 }}</td>
+              <td>{{ request?.name }}</td>
+              <td>{{ request?.quantityRequested }}</td>
+              <td>{{ request?.quantityIssued || "-" }}</td>
+              <td>{{ request?.created?.substring(0, 10) }}</td>
+              <td>{{ request?.targetStore?.name }}</td>
+            </tr>
+          </table>
+      </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

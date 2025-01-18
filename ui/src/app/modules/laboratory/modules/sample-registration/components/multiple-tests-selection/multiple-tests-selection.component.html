@@ -1,0 +1,55 @@
+<div *ngIf="{ conceptsList: conceptsList$ | async } as params">
+  <!-- <app-form
+    [fields]="[testsFormField]"
+    (formUpdate)="onFormUpdate($event)"
+  ></app-form> -->
+
+  <div class="tests-control">
+    <mat-radio-group class="test-selection-category">
+      <mat-radio-button
+        [title]="
+          !setMembersFromSpecimen
+            ? 'Specimen not selected'
+            : 'Click to get test orders under selected specimen'
+        "
+        (change)="getSelection($event)"
+        class="test-selection-category-btn"
+        [disabled]="!setMembersFromSpecimen"
+        [value]="'by-specimen'"
+        [checked]="testSelectionCategory === 'by-specimen'"
+        color="primary"
+      >
+        By selected Specimen
+      </mat-radio-button>
+      <mat-radio-button
+        (change)="getSelection($event)"
+        class="test-selection-category-btn ml-2"
+        [value]="'All'"
+        [checked]="testSelectionCategory === 'All'"
+        color="primary"
+      >
+        All
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- <app-multiple-concepts-selection
+    *ngIf="params?.conceptsList"
+    [concepts]="params?.conceptsList"
+    [selectedSetMembersItems]="selectedSetMembersItems"
+    (selectedSetMembers)="onGetSelectedMembers($event)"
+  ></app-multiple-concepts-selection> -->
+  <app-multiple-items-selection
+    *ngIf="testSelectionCategory"
+    [items]="testSelectionCategory === 'All' ? [] : setMembersFromSpecimen"
+    [itemType]="'concept'"
+    [standardSearchTerm]="'TEST_ORDERS'"
+    [selectedItems]="selectedSetMembersItems"
+    (getSelectedItems)="onGetSelectedMembers($event)"
+  ></app-multiple-items-selection>
+
+  <mat-progress-bar
+    *ngIf="!params?.conceptsList"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

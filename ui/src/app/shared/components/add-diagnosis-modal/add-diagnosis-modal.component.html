@@ -1,0 +1,29 @@
+<mat-toolbar color="primary">
+  <span>Add diagnosis</span>
+  <span class="toolbar-spacer"></span>
+  <span class="float-right"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-dialog-content class="mat-typography">
+  <div>
+    <!-- {{ diagnosisForm | json }} -->
+    <app-form
+      [fields]="diagnosisForm.formFields"
+      [isFormHorizontal]="true"
+      (formUpdate)="onFormUpdate($event)"
+    >
+    </app-form>
+    <div class="d-flex justify-content-end">
+      <button
+        [disabled]="!isFormValid"
+        mat-flat-button
+        (click)="addDiagnis($event, currentDiagnosisUuid, diagnosesData)"
+        color="primary"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>

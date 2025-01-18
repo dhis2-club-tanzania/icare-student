@@ -1,0 +1,57 @@
+<div
+  class="report-sent-history-container"
+  *ngIf="{ reportsLogsHistory: reportsLogsHistory$ | async } as params"
+>
+  <div class="h4">
+    {{ params?.reportsLogsHistory[0]?.report_name }}
+  </div>
+  <!-- <hr style="margin: 4px" /> -->
+  <div class="history-content">
+    <table class="table">
+      <thead class="text-center">
+        <tr>
+          <th rowspan="2" style="width: 20px">SN</th>
+          <th rowspan="2">Report</th>
+          <th rowspan="2">Report period</th>
+          <th rowspan="2">Count of data synched</th>
+          <th colspan="3">Data details</th>
+          <th rowspan="2">Last updated At</th>
+          <th rowspan="2">Last updated By</th>
+          <th rowspan="2">Completion Date</th>
+        </tr>
+        <tr>
+          <th style="width: 50px">Imported</th>
+          <th style="width: 50px">Updated</th>
+          <th style="width: 50px">Ignored</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="
+            let reportHostory of params?.reportsLogsHistory;
+            let count = index
+          "
+        >
+          <td>
+            {{ count + 1 }}
+          </td>
+          <td>
+            {{ reportHostory?.report_name }}
+          </td>
+          <td>
+            {{ reportHostory?.periodName }}
+          </td>
+          <td>
+            {{ reportHostory?.payload?.dataValues?.length }}
+          </td>
+          <td>{{ reportHostory?.response_dhis?.importCount?.imported }}</td>
+          <td>{{ reportHostory?.response_dhis?.importCount?.updated }}</td>
+          <td>{{ reportHostory?.response_dhis?.importCount?.ignored }}</td>
+          <td>{{ reportHostory?.timestamp | date }}</td>
+          <td>{{ reportHostory?.user?.display }}</td>
+          <td>{{ reportHostory?.payload?.completeDate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

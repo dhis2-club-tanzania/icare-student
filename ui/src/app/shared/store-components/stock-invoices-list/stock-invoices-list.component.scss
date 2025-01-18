@@ -1,0 +1,53 @@
+.inv-items-table {
+    max-height: 30vh !important;
+    overflow-y: auto;
+}
+
+.anchor-button:hover {
+    cursor: pointer;
+    color:rgb(37, 84, 170)
+}
+
+.float-right {
+    float: right;
+}
+
+// .total-amount {
+//     font-weight: bold;           
+//     font-size: 1.2em;             
+//     color: black;               
+//     text-align: right;            
+//     padding: 10px;                
+//     margin-top: 20px;             
+//     margin-bottom: 10px;           
+//     background-color: white;     
+//     border: 1px solid #d0e1d4;     
+//     border-radius: 5px;            
+//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+//     font-family: 'Arial', sans-serif;
+//   }
+
+  .total-amount {
+    font-weight: bold;           
+    font-size: 1.2em;             
+    color: black;               
+    // text-align: right;            
+    // padding: 10px;                
+    // margin-top: 20px;             
+    // margin-bottom: 10px;           
+    // background-color: white;     
+    // border: 1px solid #d0e1d4;     
+    // border-radius: 5px;            
+    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    // font-family: 'Arial', sans-serif;
+    // transition: all 0.3s ease; 
+  }
+  
+//   .total-amount:hover {
+//     background-color: #f1f1f1; /* Light grey background on hover */
+//     border: 1px solid #a0b3a0; /* Darker border color on hover */
+//     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Deeper shadow effect on hover */
+//     cursor: pointer; /* Change cursor to indicate clickable element */
+//   }
+  
+  

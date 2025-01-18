@@ -1,0 +1,100 @@
+<div>
+  <mat-toolbar class="modal-header">Test orders status</mat-toolbar>
+  <div style="padding: 15px 3%" *ngIf="testOrders$ | async as testOrders">
+    <div style="padding: 10px">
+      Patient: {{ params?.testOrders[0]?.patient_names }} | Gender:
+      <b>{{ params?.testOrders[0]?.patient?.gender }}</b> | Age:
+      <b>{{ params?.testOrders[0]?.patient?.age }}</b>
+    </div>
+    <!-- {{ testOrders | json }} -->
+    <div style="height: 210px; overflow: auto">
+      <table class="table table-bordered">
+        <thead class="table-header">
+          <tr>
+            <th style="width: 15%">Test</th>
+            <th>Container</th>
+            <th>Ordered by</th>
+            <th>Results</th>
+            <th>Test status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of testOrders">
+            <td>
+              {{ item?.concept?.display }}
+            </td>
+            <td>
+              {{ item?.containerDetails?.display }}
+            </td>
+            <td>
+              {{ item?.orderer?.name }}
+            </td>
+            <td>
+              <div *ngIf="item?.allocations[0]?.results?.length > 0">
+                <b>{{ item?.allocations[0]?.results[0]?.value }}</b>
+              </div>
+              <div *ngIf="item?.allocations[0]?.remarks" class="text-primary">
+                <!-- <span> - {{ item?.remarks }} </span> -->
+              </div>
+              <span
+                *ngIf="item?.allocations[0]?.results?.length == 0"
+                class="text-warning"
+              >
+                No results
+              </span>
+              <span *ngIf="item?.allocations[0]?.results?.length > 0">
+                <!-- Feed, by -->
+              </span>
+            </td>
+            <td>
+              <div class="w-100" style="float: left; text-align: left">
+                <span
+                  class="text-warning"
+                  *ngIf="item?.allocations[0]?.results?.length == 0"
+                >
+                  Processing results...
+                </span>
+
+                <span
+                  class="text-warning"
+                  *ngIf="
+                    item?.allocations[0]?.results?.length > 0 &&
+                    !item?.allocations[0]?.firstSignOff
+                  "
+                >
+                  <!-- Results feed, by -->
+                  <!-- <ul>
+                    <li *ngFor="let provider of item?.resultsProviders">
+                      <em>{{ provider?.provider?.display }}</em>
+                    </li>
+                  </ul> -->
+                  waiting for first sign off ...
+                </span>
+
+                <span
+                  class="text-warning"
+                  *ngIf="
+                    item?.allocations[0]?.results?.length > 0 &&
+                    !item?.allocations[0]?.secondSignOff
+                  "
+                >
+                  Waiting for second sign off ...
+                </span>
+                <span
+                  class="text-success"
+                  *ngIf="item?.allocations[0]?.fullCompleted"
+                >
+                  Completed
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button mat-stroked-button (click)="onClose($event)" style="float: right">
+      Done
+    </button>
+  </div>
+</div>

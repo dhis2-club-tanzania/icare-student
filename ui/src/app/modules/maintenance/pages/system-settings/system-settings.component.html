@@ -1,0 +1,9 @@
+<div *ngIf="systemSettingsGroups$ | async as systemSettingsGroups">
+  <mat-tab-group>
+    <mat-tab [label]="group?.name" *ngFor="let group of systemSettingsGroups">
+      <ng-template matTabContent>
+        <app-system-settings-list [key]="group?.id"></app-system-settings-list>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

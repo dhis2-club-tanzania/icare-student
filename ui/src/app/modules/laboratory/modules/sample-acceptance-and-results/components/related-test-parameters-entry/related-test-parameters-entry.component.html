@@ -1,0 +1,288 @@
+<div class="w-100 p-2">
+  <!-- {{ finalResultsForParentTestParameter | json }} -->
+  <table>
+    <tbody *ngIf="allocationsWithoutRelationShip?.length > 0">
+      <tr>
+        <td>
+          <div
+            class="row"
+            *ngIf="
+              (
+                allocationsWithoutRelationShip
+                | identifyParametersWithoutHeaders
+              )?.length > 0
+            "
+          >
+            <div
+              class="col-12"
+              *ngIf="
+                (
+                  allocationsWithoutRelationShip
+                  | identifyParametersWithoutHeaders
+                )?.length > 15
+              "
+            >
+              <mat-form-field
+                class="w-50 search-input"
+                style="font-size: 0.9rem"
+              >
+                <mat-label>Search</mat-label>
+                <mat-icon matPrefix>search</mat-icon
+                ><input
+                  type="text"
+                  placeholder="Search"
+                  matInput
+                  autocomplete="off"
+                  [(ngModel)]="searchingText"
+                />
+              </mat-form-field>
+            </div>
+            <div
+              class="col-12"
+              *ngFor="
+                let allocation of allocationsWithoutRelationShip
+                  | identifyParametersWithoutHeaders
+                  | filterAllocationsByName: searchingText
+              "
+            >
+              <app-test-parameter-entry
+                [parameterUuid]="allocation?.parameter?.uuid"
+                [allocation]="allocation"
+                [isLIS]="isLIS"
+                [relatedResult]="null"
+                [disabled]="disabled"
+                [finalResult]="allocation?.finalResult"
+                [conceptNameType]="conceptNameType"
+                (data)="getFedResult($event, null, allocation)"
+              ></app-test-parameter-entry>
+            </div>
+          </div>
+
+          <div
+            class="row"
+            *ngIf="
+              (allocationsWithoutRelationShip | groupParametersByHeaders)
+                ?.length > 0
+            "
+          >
+            <div
+              class="col-12 mt-3"
+              *ngFor="
+                let header of allocationsWithoutRelationShip
+                  | groupParametersByHeaders
+              "
+            >
+              <div>
+                <div class="h6">
+                  {{ header?.display }}
+                </div>
+                <div class="w-100 mt-1">
+                  <div class="row" *ngIf="header?.allocations?.length > 15">
+                    <div class="col-12">
+                      <mat-form-field
+                        class="w-50 search-input"
+                        style="font-size: 0.9rem"
+                      >
+                        <mat-label>Search</mat-label>
+                        <mat-icon matPrefix>search</mat-icon
+                        ><input
+                          type="text"
+                          placeholder="Search"
+                          matInput
+                          autocomplete="off"
+                          [(ngModel)]="searchingText"
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <ng-container
+                      *ngFor="
+                        let allocation of header?.allocations
+                          | filterAllocationsByName: searchingText
+                      "
+                    >
+                      <div
+                        *ngIf="
+                          order?.concept?.uuid !== allocation?.parameter?.uuid
+                        "
+                        class="col-2"
+                      >
+                        <app-test-parameter-entry
+                          [parameterUuid]="allocation?.parameter?.uuid"
+                          [allocation]="allocation"
+                          [isLIS]="isLIS"
+                          [relatedResult]="null"
+                          [disabled]="disabled"
+                          [finalResult]="allocation?.finalResult"
+                          [conceptNameType]="conceptNameType"
+                          (data)="getFedResult($event, null, allocation)"
+                        ></app-test-parameter-entry>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+
+    <tbody
+      class="table"
+      *ngIf="
+        finalResultsForParentTestParameter &&
+        finalResultsForParentTestParameter?.length > 0
+      "
+    >
+      <tr>
+        <td>
+          <div
+            class="w-100"
+            *ngIf="
+              (parametersWithDefinedRelationship | groupParametersByHeaders)
+                ?.length > 0
+            "
+          >
+            <div
+              class="w-100"
+              *ngFor="
+                let header of parametersWithDefinedRelationship
+                  | groupParametersByHeaders
+              "
+            >
+              <div class="h6">
+                {{ header?.display }}
+              </div>
+
+              <div class="row pl-4">
+                <div
+                  class="col-{{
+                    12 / finalResultsForParentTestParameter.length
+                  }}"
+                  *ngFor="let result of finalResultsForParentTestParameter"
+                >
+                  <div class="w-100 mb-2">
+                    {{ result?.valueCoded?.display }}
+                  </div>
+                  <div class="w-100" *ngIf="header?.allocations?.length > 15">
+                    <mat-form-field
+                      class="w-50 search-input"
+                      style="font-size: 0.9rem"
+                    >
+                      <mat-label>Search</mat-label>
+                      <mat-icon matPrefix>search</mat-icon
+                      ><input
+                        type="text"
+                        placeholder="Search"
+                        matInput
+                        autocomplete="off"
+                        [(ngModel)]="searchingText"
+                      />
+                    </mat-form-field>
+                  </div>
+                  <div class="w-100">
+                    <div
+                      *ngFor="
+                        let allocation of header?.allocations
+                          | filterAllocationsByName: searchingText
+                      "
+                    >
+                      <app-test-parameter-entry
+                        [parameterUuid]="allocation?.parameter?.uuid"
+                        [allocation]="allocation"
+                        [isLIS]="isLIS"
+                        [relatedResult]="result"
+                        [disabled]="disabled"
+                        [finalResult]="allocation?.finalResult"
+                        [conceptNameType]="conceptNameType"
+                        (data)="getFedResult($event, result, allocation)"
+                      ></app-test-parameter-entry>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="w-100"
+            *ngIf="
+              (
+                parametersWithDefinedRelationship
+                | identifyParametersWithoutHeaders
+              )?.length > 0
+            "
+          >
+            <div class="row pl-4">
+              <div
+                class="col-{{ 12 / finalResultsForParentTestParameter.length }}"
+                *ngFor="let result of finalResultsForParentTestParameter"
+              >
+                <div class="w-100 mb-2">
+                  {{ result?.valueCoded?.display }}
+                </div>
+                <div class="w-100">
+                  <div
+                    class="w-100"
+                    *ngIf="
+                      (
+                        parametersWithDefinedRelationship
+                        | identifyParametersWithoutHeaders
+                      )?.length > 15
+                    "
+                  >
+                    <mat-form-field
+                      class="w-50 search-input"
+                      style="font-size: 0.9rem"
+                    >
+                      <mat-label>Search</mat-label>
+                      <mat-icon matPrefix>search</mat-icon
+                      ><input
+                        type="text"
+                        placeholder="Search"
+                        matInput
+                        autocomplete="off"
+                        [(ngModel)]="searchingText"
+                      />
+                    </mat-form-field>
+                  </div>
+                  <div
+                    *ngFor="
+                      let allocation of parametersWithDefinedRelationship
+                        | identifyParametersWithoutHeaders
+                        | filterAllocationsByName: searchingText
+                    "
+                  >
+                    <app-test-parameter-entry
+                      [parameterUuid]="allocation?.parameter?.uuid"
+                      [allocation]="allocation"
+                      [isLIS]="isLIS"
+                      [relatedResult]="result"
+                      [disabled]="disabled"
+                      [finalResult]="allocation?.finalResult"
+                      [conceptNameType]="conceptNameType"
+                      (data)="getFedResult($event, result, allocation)"
+                    ></app-test-parameter-entry>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div
+    class="alert alert-warning"
+    role="alert"
+    *ngIf="
+      !finalResultsForParentTestParameter ||
+      (finalResultsForParentTestParameter &&
+        finalResultsForParentTestParameter?.length == 0)
+    "
+  >
+    No results fed on related result parameter
+  </div>
+</div>

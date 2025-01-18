@@ -1,0 +1,66 @@
+<div class="w-100 pe-filter p-1" [ngStyle]="{ height: maxHeight + 'px' }">
+  <div class="w-100 d-flex justify-content-between">
+    <div class="w-50">
+      <!-- <app-form
+        [fields]="[periodTypesFormField]"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form> -->
+    </div>
+    <div class="w-50 d-flex justify-content-end">
+      <button mat-stroked-button (click)="setYearlyPeriod($event, 'prev')">
+        Prev
+      </button>
+      <button
+        mat-stroked-button
+        [disabled]="currentYearlyPe >= currentYear"
+        (click)="setYearlyPeriod($event, 'next')"
+        class="ml-2"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+  <div class="w-100 d-flex justify-content-between mt-2" *ngIf="periodsList">
+    <div
+      class="w-50 list"
+      [ngStyle]="{
+        height: maxHeight - topHeaderHeight + 'px',
+        overflow: 'auto'
+      }"
+    >
+      <table class="w-100">
+        <tr class="items-list-header">
+          <td>Available</td>
+        </tr>
+      </table>
+      <lib-period-items-list
+        [periodsList]="periodsList"
+        (selectedPeriod)="onGetSelectedPeriods($event)"
+      ></lib-period-items-list>
+    </div>
+    <div
+      class="w-50 list-selected"
+      [ngStyle]="{
+        height: maxHeight - topHeaderHeight + 'px',
+        overflow: 'auto'
+      }"
+    >
+      <table class="w-100">
+        <tr class="items-list-header">
+          <td>Selected</td>
+        </tr>
+      </table>
+      <table>
+        <tr
+          class="item"
+          (click)="unSelectItem($event, selectedPe)"
+          *ngFor="let selectedPe of selectedPeriods"
+        >
+          {{
+            selectedPe?.name
+          }}
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

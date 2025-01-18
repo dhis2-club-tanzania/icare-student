@@ -1,0 +1,91 @@
+<ng-container>
+  <div
+    *ngIf="
+      parameterResultsDetails &&
+      parameterResultsDetails?.length > 0 &&
+      !resultGroup
+    "
+  >
+    <!-- <table class="table">
+      <tbody> -->
+    <div class="row">
+      <div class="col-6">
+        <b>{{ parameter?.display ? parameter?.display : "-" }}</b>
+      </div>
+      <div class="col-3">
+        <ng-container *ngIf="parameterResultsDetails">
+          <table *ngFor="let resultAllocation of [parameterResultsDetails[0]]">
+            <ng-container *ngIf="resultAllocation?.results?.length > 0">
+              <ng-container *ngFor="let result of resultAllocation?.results">
+                <tr *ngIf="result?.toShow">
+                  <td>
+                    <b>
+                      {{
+                        result?.valueCoded?.display
+                          ? result?.valueCoded?.display
+                          : result?.value
+                          ? result?.value
+                          : result?.valueText
+                          ? result?.valueText
+                          : result?.valueNumeric
+                          ? result?.valueNumeric
+                          : "-"
+                      }}
+                    </b>
+                    <span
+                      class="ml-2 text-danger"
+                      *ngIf="
+                        result?.valueNumeric &&
+                        result?.valueNumeric < parameter?.lowNormal
+                      "
+                    >
+                      <mat-icon style="font-size: 8px">arrow_downward</mat-icon>
+                    </span>
+                    <span
+                      class="ml-2 text-danger"
+                      *ngIf="
+                        result?.valueNumeric &&
+                        result?.valueNumeric > parameter?.hiNormal
+                      "
+                    >
+                      <mat-icon style="font-size: 8px">arrow_upward</mat-icon>
+                    </span>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngIf="resultAllocation?.results?.length === 0">
+              <tr>
+                <td colspan="100%">
+                  <div class="alert alert-warning" role="alert">
+                    No results/Processing
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </table>
+        </ng-container>
+        <div
+          *ngIf="!parameterResultsDetails"
+          class="alert alert-warning"
+          role="alert"
+        >
+          No data/Processing
+        </div>
+      </div>
+      <div class="col-1">
+        <span *ngIf="parameter?.units">
+          {{ parameter?.units }}
+        </span>
+      </div>
+      <div class="col-1">
+        {{ parameter?.lowNormal }}
+      </div>
+      <div class="col-1">
+        {{ parameter?.hiNormal }}
+      </div>
+    </div>
+    <!-- </tbody>
+    </table> -->
+  </div>
+</ng-container>

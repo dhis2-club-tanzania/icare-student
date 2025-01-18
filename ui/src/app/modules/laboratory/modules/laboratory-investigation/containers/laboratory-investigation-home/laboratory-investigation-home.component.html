@@ -1,0 +1,20 @@
+<div
+  *ngIf="{
+    loadingVisit: loadingVisit$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="params?.loadingVisit"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div class="centered-container-patient-list">
+    <div style="margin-top: 15px">
+      <!-- <div class="text-muted h6 mb-4 text-center">Search for a patient</div> -->
+      <app-patient-list
+        [itemsPerPage]="10"
+        [isTabularList]="true"
+        (selectPatient)="onSelectPatient($event)"
+      ></app-patient-list>
+    </div>
+  </div>
+</div>

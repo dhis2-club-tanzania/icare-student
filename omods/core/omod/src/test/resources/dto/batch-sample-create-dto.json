@@ -1,0 +1,14 @@
+[
+  {
+    "code": "BATCH/SAMPLE/01",
+    "batch": {
+       "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c635"
+    }
+  },
+  {
+    "code": "BATCH-SAMPLE-02",
+    "batch": {
+      "uuid": "iCARE890-TEST-MOTR-9beb-d30dcfc0c635"
+    }
+  }
+]

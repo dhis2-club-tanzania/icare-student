@@ -1,0 +1,24 @@
+.store-active {
+  background-color: #e6e6e6;
+}
+.table-fit {
+  overflow-x: hidden;
+  width: 100%;
+  table-layout: fixed;
+}
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.selectedStock {
+  background-color: #f7f7f9;
+}
+
+.overflowing-stock-list {
+  position: fixed;
+  align-items: end;
+  display: flex;
+  right: 0px;
+  margin-top: auto;
+  margin-bottom: auto;
+}

@@ -1,0 +1,33 @@
+<div class="w-100" *ngIf="{ reports: reports$ | async } as params">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>Name</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let report of params?.reports; let count = index">
+        <td>
+          {{ count + 1 }}
+        </td>
+        <td>
+          {{ report?.value?.name }}
+        </td>
+        <td>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button (click)="onEdit(report)" mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+          </mat-menu>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- {{ params?.reports | json }} -->
+</div>

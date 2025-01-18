@@ -1,0 +1,47 @@
+<div>
+  <mat-accordion>
+    <mat-expansion-panel class="mb-2" [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Samples status summary
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <table class="table">
+        <tr>
+          <td>Sample status</td>
+          <td>Number</td>
+        </tr>
+        <tr>
+          <td><span class="text-success">Collected</span></td>
+          <td>
+            <span class="text-success">{{
+              (collectedSamples$ | async)?.length
+            }}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span class="text-success" style="font-weight: 600">Accepted</span>
+          </td>
+          <td>
+            <span
+              class="text-success"
+              color="primary"
+              style="font-weight: 600"
+              >{{ (acceptedSamples$ | async)?.length }}</span
+            >
+          </td>
+        </tr>
+        <tr>
+          <td><span class="text-danger">Rejected</span></td>
+          <td>
+            <span class="text-danger">{{
+              (rejectedSamples$ | async)?.length
+            }}</span>
+          </td>
+        </tr>
+      </table>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

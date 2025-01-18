@@ -1,0 +1,182 @@
+<div
+  class="row"
+  *ngIf="{
+    selectedTestMethodDetails: selectedTestMethodDetails$ | async,
+    conceptSources: conceptSources$ | async,
+    relatedMetadataAttributeUuid: relatedMetadataAttributeUuid$ | async
+  } as params"
+>
+  <div
+    class="col-sx-12 col-sm-12"
+    [ngClass]="{
+      'col-lg-8 col-md-8': showList,
+      'col-lg-12 col-md-12': !showList
+    }"
+    style="border-right: solid 1px #eee"
+  >
+    <div class="row">
+      <div class="col-8">
+        <div class="h5">New {{ itemTypeName }}</div>
+      </div>
+      <div class="col-4 d-flex justify-content-end">
+        <button
+          [title]="showList ? 'Hide list' : 'Show list'"
+          (click)="toggleItemsList($event)"
+          mat-icon-button
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+    </div>
+    <hr />
+    <div class="loading-overlay" *ngIf="saving">
+      <div class="text-center">
+        <div>Saving data</div>
+        <div class="mt-3 d-flex justify-content-center w-100">
+          <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <div *ngIf="searchTermForTestMethod">
+          <app-shared-error
+            *ngIf="errors && errors?.length > 0"
+            [errors]="errors"
+          ></app-shared-error>
+          <div
+            *ngIf="
+              params?.relatedMetadataAttributeUuid &&
+              params?.relatedMetadataAttributeUuid === 'none'
+            "
+            class="alert alert-warning"
+            role="alert"
+          >
+            Seems reference to related metadata is not well set. Please contact
+            IT to check
+            <em>icare.laboratory.concept.relatedMetadata.attributeUuid</em>
+            setting
+          </div>
+          <app-form
+            [fields]="[testMethodField]"
+            (formUpdate)="onFormUpdateTestMethod($event)"
+          ></app-form>
+        </div>
+
+        <mat-progress-bar
+          *ngIf="
+            searchTermForTestMethod &&
+            testMethodSelected &&
+            !params?.selectedTestMethodDetails
+          "
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <div class="w-100">
+          <app-form
+            [fields]="basicConceptFields"
+            (formUpdate)="onFormUpdate($event)"
+          ></app-form>
+        </div>
+        <div *ngIf="isSet">
+          <div class="h5">
+            {{ setMembersHeaderName }}
+          </div>
+          <app-concept-set-members
+            *ngIf="
+              setMembersReadySet &&
+              ((testMethodUuid && params?.selectedTestMethodDetails) ||
+                !testMethodUuid)
+            "
+            [setMembersSearchTerm]="setMembersSearchTerm"
+            [selectedSetMembersItems]="selectedSetMembers"
+            [standardSearchTerm]="standardSearchTerm"
+            [testMethodUuid]="testMethodUuid"
+            [setMembersListFromTestMethod]="
+              params?.selectedTestMethodDetails?.setMembers
+            "
+            [searchTermOfConceptSetToExcludeFromTestOrders]="
+              searchTermOfConceptSetToExcludeFromTestOrders
+            "
+            (selectedSetMembers)="onGetSelectedSetMembers($event)"
+          ></app-concept-set-members>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+        <fieldset>
+          <legend>{{ itemTypeName }} Codes</legend>
+          <div *ngIf="params?.conceptSources && readyToCollectCodes">
+            <app-codes-selection
+              [conceptSources]="params?.conceptSources"
+              [selectedCodes]="selectedCodingItems"
+              [mappings]="mappings"
+              (selectedCodesItems)="onGetSelectedCodes($event)"
+            ></app-codes-selection>
+          </div>
+
+          <mat-progress-bar
+            *ngIf="!params?.conceptSources"
+            mode="indeterminate"
+          ></mat-progress-bar>
+        </fieldset>
+        <fieldset *ngIf="standardSearchTerm === 'TEST_ORDERS'">
+          <legend>Interpretations</legend>
+          <div>
+            <app-test-interpretations
+              *ngIf="interpretationsReady"
+              [descriptions]="conceptBeingEdited?.descriptions"
+              (definedInterpretations)="onGetInterpretations($event)"
+            ></app-test-interpretations>
+          </div>
+
+          <mat-progress-bar
+            *ngIf="!params?.conceptSources"
+            mode="indeterminate"
+          ></mat-progress-bar>
+        </fieldset>
+      </div>
+    </div>
+    <div class="w-100" *ngIf="savingMessage">
+      <div class="alert alert-{{ alertType }}" role="alert">
+        {{ savingMessage }}
+      </div>
+    </div>
+    <div class="w-100 d-flex justify-content-end mt-2">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        class="ml-2"
+        mat-stroked-button
+        [disabled]="
+          (!isFormValid && !searchTermForTestMethod) ||
+          (!isFormValid &&
+            searchTermForTestMethod &&
+            selectedSetMembers?.length === 0) ||
+          (searchTermForTestMethod &&
+            params?.relatedMetadataAttributeUuid &&
+            params?.relatedMetadataAttributeUuid === 'none')
+        "
+        (click)="
+          onSave(
+            $event,
+            params?.selectedTestMethodDetails,
+            params?.relatedMetadataAttributeUuid
+          )
+        "
+        color="primary"
+      >
+        {{ !conceptUuid ? "Save" : "Update" }}
+      </button>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-4 col-sx-12 col-sm-12" *ngIf="showList">
+    <div class="h5" *ngIf="itemTypeName">{{ itemTypeName }}s</div>
+    <app-standard-concepts-list
+      *ngIf="!saving"
+      [standardSearchTerm]="standardSearchTerm"
+      [selectedConceptUuid]="conceptUuid"
+      [conceptClass]="conceptClass"
+      (conceptToEdit)="
+        onConceptEdit($event, params?.relatedMetadataAttributeUuid)
+      "
+    ></app-standard-concepts-list>
+  </div>
+</div>

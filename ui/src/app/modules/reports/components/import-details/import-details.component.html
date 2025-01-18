@@ -1,0 +1,11 @@
+<div class="import-detail-container">
+  <div class="h4 text-left">Data Synchronisation Details</div>
+  <hr style="margin: 5px !important" />
+  <h3>Conflicts</h3>
+  <div class="p-1 text-danger" *ngFor="let conflict of response?.conflicts">
+    {{ conflict?.value }}
+    <span class="text-muted" style="font-size: 0.8rem">
+      (Reference: {{ conflict?.object }})
+    </span>
+  </div>
+</div>

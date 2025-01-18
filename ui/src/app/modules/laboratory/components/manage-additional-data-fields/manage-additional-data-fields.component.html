@@ -1,0 +1,54 @@
+<div *ngIf="{ additionalFields: additionalFields$ | async } as params">
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving details...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <app-form
+        [fields]="additionalFieldFormFields"
+        (formUpdate)="onGetFormData($event)"
+      ></app-form>
+      <div class="d-flex justify-content-end">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="!isFormValid"
+          (click)="onSave($event)"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="w-100" style="max-height: 250px; overflow: auto">
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="!params?.additionalFields"
+        ></mat-progress-bar>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let field of params?.additionalFields">
+              <td>
+                {{ field?.name }}
+              </td>
+              <td>
+                {{ field?.description }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+{
+  "visit": {
+    "uuid": "vuuid"
+  },
+  "label": "sample X",
+  "concept": {
+    "uuid": "uuid"
+  },
+  "sampleOrders": [],
+  "sampleStatuses": [{
+    "userId": "",
+    "status": "",
+    "remarks": "",
+    "changedAt": ""
+  }]
+}

@@ -1,0 +1,50 @@
+<div>
+  <div class="diagnosis-forms">
+    <div *ngIf="!(diagnoses$ | async)">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    <ng-container *ngIf="diagnosisForm && (diagnoses$ | async)">
+      <div class="selected-diagnoses">
+        <ng-container *ngFor="let diagnosis of diagnoses$ | async">
+          <app-active-diagnoses
+          [diagnosis]="diagnosis"
+          [patient]="patient"
+          [diagnosisFormDetails]="diagnosisFormDetails"
+        ></app-active-diagnoses>
+        </ng-container>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <!-- field groups -->
+        <ng-container *ngIf="diagnosisForm.formFields">
+          <div style="width: 90%">
+            <app-form
+              [fields]="diagnosisForm.formFields"
+              [isFormHorizontal]="true"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </div>
+          <button
+            (click)="addDiagnis($event)"
+            [disabled]="!isFormValid"
+            mat-stroked-button
+            style="height: 39px; margin-top: -20px"
+          >
+          {{savingDiagnosisState$ | async}}
+            Save
+          </button>
+        </ng-container>
+        <!-- end of field groups -->
+
+        <!-- standalone field -->
+        <ng-container *ngIf="diagnosisForm.formField">
+          <app-form
+            [fields]="[diagnosisForm.formField]"
+            [isFormHorizontal]="true"
+          ></app-form>
+        </ng-container>
+        <!-- end of standalone field -->
+      </div>
+    </ng-container>
+  </div>
+</div>

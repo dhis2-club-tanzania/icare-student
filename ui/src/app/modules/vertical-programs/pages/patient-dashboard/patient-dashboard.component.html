@@ -1,0 +1,160 @@
+<div
+  *ngIf="{
+    currentUser: currentUser$ | async,
+    patientEnrollmentDetails: patientEnrollmentDetails$ | async,
+    patient: patient$ | async,
+    currentLocation: currentLocation$ | async,
+    locationFormsAttributeTypeUuid: locationFormsAttributeTypeUuid$ | async,
+    provider: provider$ | async
+  } as params"
+>
+  <div class="w-100">
+    <div class="patient-profile-sticky">
+      <app-new-patient-profile
+        *ngIf="params?.patient"
+        [currentPatient]="params?.patient"
+      ></app-new-patient-profile>
+    </div>
+    <div
+      class="mt-5 d-flex justify-content-center w-100"
+      *ngIf="
+        !params?.currentUser ||
+        !params?.patientEnrollmentDetails ||
+        !params?.patient ||
+        !params?.currentLocation ||
+        !params?.locationFormsAttributeTypeUuid ||
+        !params?.provider
+      "
+    >
+      <mat-spinner color="primary" diameter="80" strokeWidth="4"></mat-spinner>
+    </div>
+    <div
+      class="row mt-2 patient-other-details-padding"
+      *ngIf="
+        params?.currentLocation &&
+        params?.patientEnrollmentDetails &&
+        params?.patient &&
+        params?.currentUser &&
+        errors?.length === 0 &&
+        params?.locationFormsAttributeTypeUuid &&
+        params?.provider
+      "
+    >
+      <div class="col-12">
+        <button
+          class="float-left ml-2"
+          mat-stroked-button
+          (click)="onBackToList($event, '/vertical_programs/patient-list')"
+          matTooltip="Back to List"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          Back to Client List
+        </button>
+        <button
+          class="float-right ml-2"
+          mat-icon-button
+          (click)="onToggleGeneralClinicForms($event)"
+        >
+          <mat-icon *ngIf="hideGeneralClinicalFormsBar"
+            >keyboard_arrow_left</mat-icon
+          >
+          <mat-icon *ngIf="!hideGeneralClinicalFormsBar"
+            >keyboard_arrow_right</mat-icon
+          >
+        </button>
+      </div>
+      <div
+        [ngClass]="{
+          'col-md-12': hideGeneralClinicalFormsBar,
+          'col-md-8': !hideGeneralClinicalFormsBar
+        }"
+        class="col-sm-12 col-sx-12"
+      >
+        <mat-tab-group>
+          <mat-tab
+            *ngFor="
+              let workflow of params?.patientEnrollmentDetails?.program
+                ?.allWorkflows
+            "
+            label="{{ workflow?.concept?.display }}"
+          >
+            <ng-template matTabContent>
+              <div class="p-3">
+                <div
+                  class="row"
+                  *ngIf="workflow?.states && workflow?.states?.length > 0"
+                >
+                  <div class="col-md-3 col-sm-12 col-sx-12">
+                    <ul class="states-list">
+                      <li
+                        class="state-item"
+                        [ngClass]="{
+                          'selected-item':
+                            state?.uuid ===
+                            (selectedState
+                              ? selectedState
+                              : workflow?.states[0]
+                            )?.uuid
+                        }"
+                        *ngFor="let state of workflow?.states"
+                        (click)="onSelectState($event, state)"
+                      >
+                        {{ state?.concept?.display }}
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-9 col-sm-12 col-sx-12">
+                    <div class="h5">
+                      {{
+                        (selectedState ? selectedState : workflow?.states[0])
+                          ?.concept?.display
+                      }}
+                    </div>
+                    <app-workflow-state
+                      *ngIf="renderWorkflowState"
+                      [workflowState]="
+                        selectedState ? selectedState : workflow?.states[0]
+                      "
+                      [patientEnrollmentDetails]="
+                        params?.patientEnrollmentDetails
+                      "
+                      [currentLocation]="params?.currentLocation"
+                      [currentUser]="params?.currentUser"
+                      [patient]="params?.patient"
+                      [provider]="params?.provider"
+                    ></app-workflow-state>
+                  </div>
+                </div>
+                <div
+                  class="alert alert-warning"
+                  role="alert"
+                  *ngIf="workflow?.states && workflow?.states?.length === 0"
+                >
+                  There is no any state/stage set up for this program
+                </div>
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <div
+        class="col-md-4 col-sm-12 col-sx-12 right-side-panel"
+        *ngIf="!hideGeneralClinicalFormsBar"
+      >
+        <app-general-client-program-forms
+          [patientEnrollmentDetails]="params?.patientEnrollmentDetails"
+          [currentLocation]="params?.currentLocation"
+          [currentUser]="params?.currentUser"
+          [patient]="params?.patient"
+          [provider]="params?.provider"
+          [locationFormsAttributeTypeUuid]="
+            params?.locationFormsAttributeTypeUuid
+          "
+        ></app-general-client-program-forms>
+      </div>
+    </div>
+    <div class="w-100" *ngIf="errors && errors?.length > 0">
+      <app-shared-error [errors]="errors"></app-shared-error>
+    </div>
+  </div>
+</div>

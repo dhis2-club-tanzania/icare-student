@@ -1,0 +1,162 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<dataset>
+
+    <drug drug_id="1" concept_id="10" combination="1"  creator="1" date_created="2023-10-21" retired="0" uuid="3afcf118-931c-46f7-8ff6-7b876f0d4202"/>
+    <drug drug_id="2" concept_id="12" combination="2"  creator="1" date_created="2023-10-21" retired="0" uuid="05ac820a-d297-44e3-be6e-698531d9dd3f"/>
+    <drug drug_id="3" concept_id="14" combination="3"  creator="1" date_created="2023-10-21" retired="0" uuid="7g2323fa-0fa0-461f-9b59-6765997d849e"/>
+
+    <!-- User-Persons -->
+    <person person_id="500" gender="M" birthdate="1984-05-26" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-08-22 13:56:44" voided="false" uuid="660484f6-0d02-4e2a-8e0e-fd2f71906f81" deathdate_estimated="0" />
+    <person person_id="600" gender="F" birthdate="1993-12-21" birthdate_estimated="0" dead="0" creator="1"
+            date_created="2016-12-28 11:54:56" voided="false" uuid="ae50cf5e-02bf-4380-9b64-f06b2f944457" deathdate_estimated="0" />
+
+    <!-- User-Person Names -->
+    <person_name person_name_id="500" preferred="1" person_id="500" given_name="Owais" family_name="Hussain"
+                 creator="1" date_created="2016-08-22 13:56:44" voided="false" uuid="b210a5bd-9ab1-4b57-8a89-c0bf2580a68d" />
+    <person_name person_name_id="600" preferred="1" person_id="600" given_name="Tahira" family_name="Niazi" creator="1"
+                 date_created="2016-12-28 11:54:56" voided="false" uuid="ee11bea3-3aad-4266-a5d7-bc6f3a6aaee5" />
+
+    <!-- Users -->
+    <users user_id="300" system_id="300-3" username=""
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-08-22 13:56:44" changed_by="1" date_changed="2017-02-02 11:21:25"
+           person_id="500" retired="false" uuid="36b071d8-d5ea-4703-8e56-5b066420b569" />
+    <users user_id="400" system_id="400-3" username=""
+           password=""
+           salt=""
+           secret_question="" creator="1" date_created="2016-12-28 11:54:56" changed_by="1" date_changed="2018-02-22 11:27:15"
+           person_id="600" retired="false" uuid="e4ef4d4d-5cf2-47ff-af6b-bb9abdabdd60" />
+
+    <!-- Providers -->
+    <provider provider_id="300" person_id="500" identifier="OWAIS" creator="1" date_created="2016-08-24 15:36:09"
+              changed_by="1" date_changed="2017-02-07 16:19:01" retired="false" uuid="1a61a0b5-d271-4b00-a803-5cef8b06ba8f" />
+    <provider provider_id="400" person_id="600" identifier="TAHIRA" creator="1" date_created="2017-02-27 12:47:30"
+              changed_by="1" date_changed="2017-02-27 12:49:13" retired="false" uuid="449390a0-d338-4ff2-9b3f-61dc1617c2fe" />
+
+    <!-- store locations  - -->
+
+    <location location_id="200" name="store A" creator="1" date_created="2017-02-27 12:47:30" retired="false" uuid="44939999-d333-fff2-9bff-61d11117c22e" />
+
+    <location location_id="201" name="store B" creator="1" date_created="2017-02-27 12:47:30" retired="false" uuid="44938888-e444-ggg3-8aee-61d22227c22e" />
+
+    <concept_class concept_class_id="1" name="Test" description="class for testing" creator="1" date_created="2017-02-27 12:47:30" uuid="8d4907b2-c2cc-11de-8d13-0010c6dffd0f" />
+
+    <!-- item concepts -->
+    <concept concept_id="1000" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="344ab1zz-x011-487z-868y-acc38ebc6252" />
+
+    <concept_name concept_name_id="900" concept_id="1000" name="syringe" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8x8ab323-5ab0-11e8-b607-880027ie4210" />
+
+    <concept concept_id="1100" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="444xb1yz-1011-487z-868y-acc38ebc6252" />
+
+    <concept_name concept_name_id="1000" concept_id="1100" name="bandage" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8xxab323-5ab0-11e8-b607-880027ie4411" />
+
+    <concept concept_id="1110" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="444xb1yz-1011-487z-868y-acc38ebc6232" />
+
+    <concept_name concept_name_id="1100" concept_id="1110" name="spirit" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="8xxab323-5ab0-11e8-b607-880027ie4415" />
+
+    <concept concept_id="1010" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="909xb1yz-1011-487z-868y-acc38ebc6252" />
+
+    <concept_name concept_name_id="1010" concept_id="1010" name="CASH" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="UUUab323-5ab0-11e8-b607-880027ie4415" />
+
+
+    <concept concept_id="1011" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="111xb1yz-1011-487z-868y-acc38ebc6252" />
+
+    <concept_name concept_name_id="1011" concept_id="1011" name="PAYMENT" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="111ab323-5ab0-11e8-b607-880027ie4415" />
+
+
+    <concept concept_id="1012" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
+             date_created="2017-02-14 15:51:57.0" version="" uuid="122xb1yz-1011-487z-868y-acc38ebc6252" />
+
+    <concept_name concept_name_id="1012" concept_id="1012" name="PAYMENT" locale="en_GB" creator="1"
+                  date_created="2014-01-12 00:00:00.0" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false"
+                  uuid="122ab323-5ab0-11e8-b607-880027ie4415" />
+
+    <!-- items -->
+    <item item_id="123" drug_id="1" uuid="8o00d43570-8y37-11f3-1234-08002007777" concept_id="1100" date_created="2020-12-27 00:00:00" voided="false" creator="1" stockable="true"/>
+
+    <!-- item with null stock -->
+    <item item_id="124" drug_id="2" uuid="8777d43571-yy77-11ff-2244-08002007777" concept_id="1000" date_created="2020-12-27 00:00:00" voided="false" creator="1" stockable="true"/>
+
+    <!-- item with no stock -->
+    <item item_id="125" drug_id="3" uuid="8777d43571-yy77-11ff-2244-08002007677" concept_id="1000" date_created="2020-12-27 00:00:00" voided="false" creator="1" stockable="true"/>
+
+    <!-- item with zero stock -->
+    <item item_id="127" uuid="8777d43571-yy77-11ff-2244-08002007647" concept_id="1110" date_created="2020-12-27 00:00:00" voided="false" creator="1" stockable="true"/>
+
+    <!-- Non stockable item -->
+    <item item_id="126" uuid="8777d43571-yy77-11ff-2244-08002007788" concept_id="1000" date_created="2020-12-27 00:00:00" voided="false" creator="1" stockable="false"/>
+
+    <!-- Ledger Type -->
+    <st_ledger_type ledger_type_id="321" uuid="8800zx3570-8z37-11ff-2234-01102007887" operation="+" name="stock in" date_created="2020-12-27 00:00:00" voided="false" creator="1"/>
+
+    <st_stock stock_id="10" item_id="123" batch="batch-xyz" expiry_date="2040-12-08 00:00:00" location_id="200" quantity="100"/>
+
+    <st_stock stock_id="11" item_id="123" batch="batch-xyz1" expiry_date="2023-04-30 00:00:00" location_id="200" quantity="100"/>
+
+    <st_stock stock_id="12" item_id="124" batch="batch-xyz3" expiry_date="2020-12-30 00:00:00" location_id="200" quantity="100"/>
+
+    <st_stock stock_id="13" item_id="123" batch="batch-xyz4" expiry_date="2040-11-30 00:00:00" location_id="200" quantity="10"/>
+
+    <st_stock stock_id="15" item_id="123" batch="batch-xyz6" expiry_date="2022-11-30 00:00:00" location_id="200" quantity="11"/>
+
+    <st_stock stock_id="16" item_id="127" batch="batch-xyz7" expiry_date="2022-11-30 00:00:00" location_id="200" quantity="0"/>
+
+    <st_stock stock_id="17" item_id="127" batch="batch-xyz7" expiry_date="2022-11-30 00:00:00" location_id="201" quantity="0"/>
+
+    <st_reorder_level location_id="200" item_id="123" quantity="219" creator="1" voided="0" uuid="8800zx3570-8z37-11ff-2234-01102007896" date_created="2023-01-25 00:00:00"/>
+
+
+    <!-- Supplier  -->
+    <st_supplier supplier_id="1" name="MSD" description="MSD description" creator="1" voided="0" uuid="8800zx3570-8z37-11ff-2234-01102007810" date_created="2023-01-25 00:00:00" location_id="200"/>
+
+    <!-- Stock Invoice -->
+    <st_stock_invoice stock_invoice_id="1" invoice_number="inv-101" supplier_id="1"  receiving_date="2023-01-25 00:00:00" creator="1" date_created="2023-01-25 00:00:00" voided="0" uuid="8800zx3570-8z37-11ff-2234-01102007811" />
+
+    <!-- Stock Invoice status   -->
+    <st_stock_invoice_status stock_invoice_status_id="1" stock_invoice_id="1" status="DRAFT" remarks="This is a first drafted record" creator="1" voided="0" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007809" />
+
+    <st_stock_invoice_status stock_invoice_status_id="2" stock_invoice_id="1" status="RECEIVED" remarks="This is a first received record" creator="1" voided="0" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007801" />
+
+    <!-- Stock Invoice Item  -->
+    <st_stock_invoice_item stock_invoice_item_id="1" stock_invoice_id="1" location_id="200" item_id="123" uuid="8800zx3570-8z37-11ff-2234-01102007812" batch_no="batch-001" order_quantity="10" batch_quantity="10" expiry_date="2026-01-25 00:00:00" uom="1000" unit_price="100.00" amount="10000.00" date_created="2023-01-25 00:00:00" voided="0" creator="1" />
+
+    <st_requisition requisition_id="1" code="RQ123" requesting_location_id="200" requested_location_id="201" creator="1" voided="0" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007813" />
+
+    <st_requisition requisition_id="2" code="RQ124" requesting_location_id="200" requested_location_id="201" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007810" />
+
+    <st_requisition requisition_id="3" code="RQ125" requesting_location_id="200" requested_location_id="201" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007820" />
+
+    <st_requisition_item requisition_id="1" item_id="124" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007815" />
+
+    <st_requisition_item requisition_id="2" item_id="123" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007813" />
+
+    <st_requisition_item requisition_id="3" item_id="123" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8100zx3570-8z37-11ff-2234-01102007813" />
+
+    <st_requisition_item_status requisition_item_status_id ="1" requisition_id="1" item_id="124" status="DRAFT" remarks="DRAFT" creator="1" voided="0" date_created="2023-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007817" />
+
+    <st_requisition_status requisition_status_id="1" remarks="ACCEPTED STOCK" status="4" creator="1" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007825" voided="0" requisition_id="1"/>
+
+    <st_requisition_status requisition_status_id="2" remarks="PENDING STOCK" status="5" creator="1" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007855" voided="0" requisition_id="2"/>
+
+    <st_requisition_status requisition_status_id="3" remarks="PENDING STOCK" status="5" creator="1" date_created="2022-11-30 00:00:00" uuid="8800zx3570-8z37-11ff-2234-01102007815" voided="0" requisition_id="3"/>
+
+    <bl_item_price payment_scheme_id="1011" payment_type_id="1012" item_id="123" price="2000" payable="0" payable_payment_mode_id="1010" />
+
+</dataset>

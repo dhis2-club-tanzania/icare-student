@@ -1,0 +1,35 @@
+<div class="no-print dont-print">
+  <div
+    class="w-100 menu-items-container"
+    *ngIf="!lisConfigurations?.isLIS && !lisConfigurations?.isPharmacy"
+  >
+    <div class="menu-items">
+      <div
+        class="menu-item"
+        [ngClass]="{ 'selected-module': currentModule?.id === module?.id }"
+        (click)="onSelectModuleLocation($event, module)"
+        *ngFor="let module of modulesReferences"
+      >
+        <div>
+          <img src="{{ module?.app?.image }}" style="height: 20px" />
+          <p class="mt-2 menu-label">{{ module?.app?.name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <mat-chip-listbox
+      class="sub-menu-items mat-elevation-z1"
+      *ngIf="!lisConfigurations?.isLIS && !lisConfigurations?.isPharmacy"
+    >
+      <mat-chip-option
+        (click)="onSetLocation($event, userLocation)"
+        *ngFor="let userLocation of userLocationsForTheCurrentModule"
+        color="primary"
+        [selected]="currentLocation?.uuid == userLocation?.id"
+        >{{ userLocation?.name }}</mat-chip-option
+      >
+    </mat-chip-listbox>
+    <!-- <mat-icon style="right: 0%">expand_more</mat-icon> -->
+  </div>
+</div>

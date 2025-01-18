@@ -1,0 +1,115 @@
+<mat-expansion-panel class="border-top mat-elevation-z0 custom-expansion-panel" *ngIf="discountItemsCount > 0"
+    [expanded]="true">
+    <mat-expansion-panel-header class="d-flex justify-content-between">
+        <mat-panel-title class="d-flex justify-content-between">
+            <div>
+                <span>Total Amount:
+                    {{ totalPaymentAmount | currency: "TZS":"":".0" }}</span>
+            </div>
+            <span *ngIf="totalPayableBill">Payable Amount: {{ totalPayableBill | currency: "TZS":"":".0" }}</span>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <table class="w-100" mat-table [dataSource]="dataSource" matSort>
+        <ng-container *ngFor="let column of columns" [matColumnDef]="column?.id">
+            <th mat-header-cell *matHeaderCellDef [attr.width]="column.width">
+                {{ column?.label }}
+            </th>
+            <td mat-cell *matCellDef="let row; let i = index">
+                {{
+                column.isIndexColumn
+                ? i + 1
+                : column.isCurrency
+                ? (row[column.id] | currency: "TZS":"":".0")
+                : row[column.id]
+                }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <div class="table__action-options" *ngIf="!disableControls">
+                    <mat-checkbox color="primary" (change)="onToggleAll($event)"
+                        [checked]="selection.hasValue() && isAllSelected"
+                        [indeterminate]="selection.hasValue() && !isAllSelected">
+                    </mat-checkbox>
+                </div>
+            </th>
+            <td mat-cell *matCellDef="let row">
+                <div class="table__action-options" *ngIf="!disableControls">
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="onToggleOne(row)"
+                        [checked]="selection.isSelected(row)"></mat-checkbox>
+                </div>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table__row"></tr>
+    </table>
+
+    <div class="row mt-5" *ngIf="totalPayableBill as payableAmount">
+        <div class="col-sm-8">
+            <div class="card p-3">
+                <div class="h6 font-weight-normal">AMOUNT IN WORDS</div>
+                <p class="text-capitalize text-muted">
+                    {{ payableAmount | numberToWords }} shillings
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-4 d-flex justify-content-end">
+            <table class="table table-borderless table-sm">
+
+                <tr>
+                    <td><span class="h5 font-weight-normal float-right">TOTAL</span></td>
+                    <td>
+                        <span class="h5 font-weight-normal float-right">{{
+                            totalPayableBill | currency: "TZS":"":".0"
+                            }}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="canConfirmBill">
+        <div class="col-sm-12">
+            <div>
+                <p>Payment method</p>
+                <mat-radio-group [(ngModel)]="selectedPaymentType">
+                    <mat-radio-button class="mr-3" color="primary" *ngFor="let paymentType of paymentTypes"
+                        [value]="paymentType">{{
+                        paymentType.display }}</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="mt-4" *ngIf="selectedPaymentType?.code === 'CASH'">
+                <button mat-flat-button color="primary" class="mr-2 mb-1" (click)="onConfirmPayment($event)">
+                    Confirm Payment
+                </button>
+                <!-- <button
+          mat-stroked-button
+          [disabled]="!canConfirmBill"
+          (click)="onGetInvoice($event)"
+          class="mb-1"
+        >
+          <span>Get Invoice</span>
+        </button> -->
+            </div>
+            <div class="mt-4" *ngIf="selectedPaymentType?.code === 'GePG'">
+                <button
+                mat-flat-button
+                color="primary"
+                class="mr-2 mb-1"
+                (click)="getControlNumber($event)"
+                >
+                Get Control Number
+                </button>
+                <!-- <button
+                mat-stroked-button
+                [disabled]="!canConfirmBill"
+                (click)="onGetInvoice($event)"
+                class="mb-1"
+                >
+                <span>Get Invoice</span>
+                </button> -->
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>

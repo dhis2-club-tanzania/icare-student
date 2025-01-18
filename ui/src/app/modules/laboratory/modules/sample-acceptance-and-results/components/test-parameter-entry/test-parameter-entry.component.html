@@ -1,0 +1,35 @@
+<div
+  *ngIf="{
+    testParameter: testParameter$ | async,
+    multipleResultsAttributeType: multipleResultsAttributeType$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    color="primary"
+    *ngIf="!params?.testParameter || !params?.multipleResultsAttributeType"
+  ></mat-progress-bar>
+  <app-shared-error
+    *ngIf="errors?.length > 0"
+    [errors]="errors"
+  ></app-shared-error>
+  <app-result-entry-form
+    *ngIf="
+      params?.multipleResultsAttributeType &&
+      params?.testParameter &&
+      errors?.length === 0
+    "
+    [parameter]="params?.testParameter"
+    [calculatedValueExpressionAttributeType]="
+      calculatedValueExpressionAttributeType
+    "
+    [allocation]="allocation"
+    (attributes)="onGetAttributes($event)"
+    [disabled]="disabled"
+    [isLIS]="isLIS"
+    [conceptNameType]="conceptNameType"
+    [latestResult]="latestResult"
+    [multipleResultsAttributeType]="params?.multipleResultsAttributeType"
+    (formData)="onGetFormData($event, params?.testParameter)"
+  ></app-result-entry-form>
+</div>

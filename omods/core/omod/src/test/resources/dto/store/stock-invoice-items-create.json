@@ -1,0 +1,21 @@
+{
+  "stockInvoiceUuid": "8800zx3570-8z37-11ff-2234-01102007811",
+  "stockInvoiceItems": [
+    {
+      "unitPrice": 10.0,
+      "expiryDate": "2025-01-08T00:00:00.000Z",
+      "batchNo": "batch-1",
+      "amount": 20.0,
+      "item": {
+        "display": "Registration Fee",
+        "uuid": "8o00d43570-8y37-11f3-1234-08002007777"
+      },
+      "uom": {
+        "display": "Injected conjunctiva",
+        "uuid": "344ab1zz-x011-487z-868y-acc38ebc6252"
+      },
+      "batchQuantity": 10,
+      "orderQuantity": 10
+    }
+  ]
+}

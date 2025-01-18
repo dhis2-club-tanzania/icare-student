@@ -1,0 +1,95 @@
+<div
+  *ngIf="{
+    cabinets: cabinets$ | async,
+    loadingVisit: loadingVisit$ | async,
+    locationsIds: locationsIds$ | async,
+    currentLocation: currentLocation$ | async,
+    deathRegistryEncounterTypeUuid: deathRegistryEncounterTypeUuid$ | async,
+    orderType: orderType$ | async
+  } as params"
+>
+  <!-- <mat-progress-bar
+    *ngIf="params?.loadingVisit || params?.deathRegistryEncounterTypeUuid"
+    mode="indeterminate"
+  ></mat-progress-bar> -->
+
+  <div>
+    <mat-tab-group mat-align-tabs="start" dynamicHeight="true">
+      <mat-tab label="Patients">
+        <ng-template matTabContent>
+          <div
+            class="mt-5 d-flex justify-content-center w-100"
+            *ngIf="
+              params?.loadingVisit || !params?.deathRegistryEncounterTypeUuid
+            "
+          >
+            <mat-spinner
+              color="primary"
+              diameter="80"
+              strokeWidth="4"
+            ></mat-spinner>
+          </div>
+          <div
+            class="centered-container-patient-list"
+            *ngIf="params?.cabinets && params?.deathRegistryEncounterTypeUuid"
+          >
+            <div
+              class="w-100 text-centered"
+              *ngIf="!errors || errors?.length == 0"
+            >
+              <app-patient-list
+                [encounterType]="params?.deathRegistryEncounterTypeUuid"
+                (selectPatient)="onSelectPatient($event)"
+                [shouldShowParentLocation]="true"
+                [isTabularList]="true"
+                [includeDeadPatients]="true"
+              ></app-patient-list>
+              <app-shared-error
+                *ngIf="errors && errors?.length > 0"
+                [errors]="errors"
+              ></app-shared-error>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Cabinets">
+        <ng-template matTabContent>
+          <div
+            class="mt-5 d-flex justify-content-center w-100"
+            *ngIf="
+              params?.loadingVisit || !params?.deathRegistryEncounterTypeUuid
+            "
+          >
+            <mat-spinner
+              color="primary"
+              diameter="80"
+              strokeWidth="4"
+            ></mat-spinner>
+          </div>
+          <div
+            class="p-3"
+            *ngIf="
+              params?.cabinets &&
+              params?.deathRegistryEncounterTypeUuid &&
+              params?.orderType
+            "
+          >
+            <ng-container *ngIf="!errors || errors?.length == 0">
+              <app-cabinets-list
+                [cabinets]="params?.cabinets"
+                [encounterType]="params?.deathRegistryEncounterTypeUuid"
+                [currentLocation]="currentLocation"
+                (cabinetStatus)="onGetCabinetStatus($event, params?.orderType)"
+              ></app-cabinets-list>
+            </ng-container>
+
+            <app-shared-error
+              *ngIf="errors && errors?.length > 0"
+              [errors]="errors"
+            ></app-shared-error>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

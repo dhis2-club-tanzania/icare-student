@@ -1,0 +1,67 @@
+<div *ngIf="forms?.length > 0">
+  <div class="capture-data-container">
+    <div class="row">
+      <div
+        class="{{ useSideBar ? 'col-md-2' : '' }}"
+        [ngStyle]="{ display: !useSideBar ? 'none' : 'block' }"
+      >
+        <mat-nav-list>
+          <mat-list-item
+            *ngFor="let customForm of forms"
+            (click)="onSetForm($event, customForm)"
+            class="{{
+              currentCustomForm?.id === customForm?.id ? 'active-form' : ''
+            }}"
+            [color]="currentCustomForm?.id === customForm?.id ? 'primary' : ''"
+          >
+            <a matLine>{{ customForm?.name }}</a>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+      <div class="{{ useSideBar ? 'col-md-10' : 'col-md-12' }}">
+        <div *ngIf="forms && forms?.length > 0" class="form-area">
+          <div class="h5 mb-3">{{ currentCustomForm?.name }}</div>
+          <app-capture-form-data
+            *ngIf="currentCustomForm"
+            [form]="currentCustomForm"
+            [visit]="visit"
+            [observations]="observations"
+            (formDataUpdate)="onFormUpdate($event)"
+          ></app-capture-form-data>
+          <div class="d-flex justify-content-end">
+            <button
+              class="mr-2"
+              (click)="onClear($event, currentCustomForm)"
+              mat-stroked-button
+            >
+              Clear
+            </button>
+            <button
+              [disabled]="!isFormValid"
+              mat-flat-button
+              color="primary"
+              (click)="onSave($event)"
+            >
+              Save
+            </button>
+            <button
+              *ngIf="saveAndExitPath"
+              [disabled]="!isFormValid"
+              mat-flat-button
+              class="ml-2"
+              color="primary"
+              (click)="onSave($event, true)"
+            >
+              Save and go back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="w-100" *ngIf="forms?.length === 0">
+  <p class="text-center text-warning p-4">
+    No forms, contact IT to get form access
+  </p>
+</div>

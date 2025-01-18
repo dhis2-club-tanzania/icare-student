@@ -1,0 +1,38 @@
+<div
+  *ngIf="{
+    drugOrderFormsMetadata: drugOrderFormsMetadata$ | async,
+    provider: provider$ | async,
+    dispensingLocations: dispensingLocations$ | async,
+    drugs: drugsToBeDispensed
+  } as params"
+>
+  <div *ngIf="errors?.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+
+  <div *ngIf="!params?.drugOrderFormsMetadata || !params?.provider">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  <app-drug-order-form
+    *ngIf="params?.drugOrderFormsMetadata && params?.provider"
+    [provider]="params?.provider"
+    [drugOrderFormsMetadata]="params?.drugOrderFormsMetadata"
+    [patient]="patient"
+    [fromDispensing]="fromDispensing"
+    [isFromDoctor]="isFromDoctor"
+    [drugs]="params?.drugs"
+    (shouldFeedQuantity)="onCheckIfShouldFeedQuantity($event)"
+    [dispensingLocations]="params?.dispensingLocations"
+    [doctorPrescriptionDetails]="drugOrder"
+    (drugQuantity)="onChangeDrugQuantity($event)"
+    (drugOrdered)="onOrderingDrug($event)"
+    (cancelForm)="onCancel()"
+    (formUpdate)="onFormUpdate($event)"
+    (enterKeyPressedFields)="onGetEnterKeyResponsedFields($event)"
+  >
+  </app-drug-order-form>
+
+  <div *ngIf="loadingMetadataError" class="text-center text-danger">
+    {{ loadingMetadataError }}
+  </div>
+</div>

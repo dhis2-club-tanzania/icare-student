@@ -1,0 +1,28 @@
+<div class="exemption-container">
+  <div *ngIf="criteriaResults$ | async as criteria">
+    <div class="text-center text-muted" *ngIf="bills?.length === 0">
+      No items
+    </div>
+    <mat-accordion>
+      <mat-expansion-panel
+        class="border mat-elevation-z0 mt-2"
+        *ngFor="let bill of bills; let billIndex = index"
+        [expanded]="billIndex === 0"
+      >
+        <mat-expansion-panel-header class="d-flex justify-content-between">
+          <mat-panel-title>
+            <span>Payable: {{ bill?.payable }}</span>
+            <!-- <span class="ml-4">Discount {{ bill?.discount }}</span> -->
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <app-exemption-item
+          [bill]="bill"
+          [criteria]="criteria?.results[0]"
+          (confirmExemption)="onConfirmExemption($event)"
+        >
+        </app-exemption-item>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

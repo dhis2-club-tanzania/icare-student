@@ -1,0 +1,77 @@
+<form [formGroup]="form" class="row p-1">
+  <ng-container *ngFor="let field of fields">
+    <div
+      *ngIf="field"
+      class="{{
+        isFormHorizontal
+          ? colClass
+            ? colClass
+            : field?.type == 'number'
+            ? 'col-md-2 col-sx-6 col-sm-6'
+            : 'col-md-4 col-sx-12 col-sm-12'
+          : 'col-12'
+      }} {{ field?.hidden ? 'hidden-field' : '' }}"
+    >
+      <div class="row">
+        <div
+          class="{{
+            field?.type !== 'number' ||
+            (!field.min && !field?.max && !field?.units)
+              ? 'col-12'
+              : 'col-12'
+          }}"
+        >
+          <app-field
+            [field]="field"
+            [form]="form"
+            [value]="values && values[field?.key] ? values[field?.key] : null"
+            [isReport]="isReport"
+            [fieldClass]="fieldClass"
+            [isCheckBoxButton]="shouldRenderAsCheckBoxesButton"
+            [shouldDisable]="shouldDisable"
+            (fieldUpdate)="onFieldUpdate($event)"
+            (enterKeyPressedFields)="onGetFieldsResponsedToEnterKey($event)"
+            (fileFieldUpdate)="onFileFieldUpdate($event)"
+          ></app-field>
+          <p
+            class="field-descriptions"
+            *ngIf="
+              field?.type === 'number' &&
+              (field.min || field.max || field?.units)
+            "
+          >
+            <ng-container>
+              <span *ngIf="field?.max">
+                ({{ field?.min || 0 }}-{{ field?.max }})
+              </span>
+              <span *ngIf="field?.units">
+                {{ field?.units }}
+              </span>
+              <span
+                class="text-warning text-left for-warning"
+                *ngIf="
+                  values &&
+                  ((values[field?.key] &&
+                    field?.min &&
+                    values[field?.key] < field?.min) ||
+                    (values[field?.key] &&
+                      field?.max &&
+                      values[field?.key] > field?.max))
+                "
+              >
+                Abnormal
+              </span>
+            </ng-container>
+          </p>
+          <p
+            class="text-danger"
+            style="font-size: 0.7rem; margin-top: -10px; text-align: left"
+            *ngIf="validationIssues[field?.key]?.message"
+          >
+            {{ validationIssues[field?.key]?.message }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</form>

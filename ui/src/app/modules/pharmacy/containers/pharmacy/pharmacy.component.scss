@@ -1,0 +1,52 @@
+.pharmacy-container {
+  padding: 0 10px;
+}
+
+.pharmacy-header {
+  display: flex;
+  // justify-content: space-between;
+  // align-items: center;
+  left: 0;
+  right: 0;
+  // position: fixed;
+  z-index: 200;
+  background-color: #fff;
+  padding: 10px 5px;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
+// ::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-mdc-standard-chip {
+//   width: 95% !important;
+//   height: auto !important;
+//   margin: 1px 4px !important;
+//   padding: 10px !important;
+//   background-color: rgba(238, 238, 238, 0.218);
+// }
+
+// ::ng-deep .full-width-chip .mat-chip-list-wrapper .mat-standard-chip:hover {
+//   border-radius: 0 16px 16px 0 !important;
+// }
+
+::ng-deep .mat-mdc-standard-chip .for-lis-chip:hover {
+  border-radius: 0 !important;
+}
+
+::ng-deep .mat-mdc-standard-chip {
+  border-radius: 0 !important;
+}
+
+::ng-deep .mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled) {
+  background-color: inherit !important;
+  border-bottom: solid 1px #fafafa;
+}
+
+.active-route {
+  background-color: #2a8fd1 !important; // TODO use variable
+  color: #fff !important;
+  border-radius: 0 !important;
+}
+
+::ng-deep .mdc-evolution-chip-set__chips {
+  display: block !important;
+  flex-flow: wrap;
+}

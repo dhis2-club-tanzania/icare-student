@@ -1,0 +1,271 @@
+<div
+  class="table-responsive"
+  *ngIf="{
+    patientDrugOrdersStatuses: patientDrugOrdersStatuses$ | async,
+    activeVisit: activeVisit$ | async
+  } as params"
+>
+  <!-- TODO: Review the table for data display -->
+  <div *ngIf="(params?.patientDrugOrdersStatuses && visit) || !visit">
+    <p
+      class="ml-2 text-left text-danger"
+      *ngIf="
+        params?.patientDrugOrdersStatuses &&
+        params?.patientDrugOrdersStatuses['error']
+      "
+    >
+      {{ params?.patientDrugOrdersStatuses["error"]["error"]["message"] }}
+    </p>
+    <div class="row" *ngIf="useNormalTable && drugOrders?.length">
+      <div class="col-12">
+        <button
+          class="mr-4 float-right"
+          mat-flat-button
+          color="primary"
+          (click)="onPrintPrescriptions($event, drugOrders)"
+          cdkFocusInitial
+        >
+          <mat-icon>print</mat-icon>
+          Print Verified Prescriptions
+        </button>
+      </div>
+    </div>
+    <div class="p-2">
+      <table class="table" *ngIf="useNormalTable && drugOrders?.length">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Drug</th>
+            <th>Instructions</th>
+            <th>Prescribed By</th>
+            <th>Date & Time</th>
+            <th>Quanity</th>
+            <th>Payment status</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let drugOrder of drugOrders; let count = index">
+            <tr
+              [ngClass]="{
+                dispensed:
+                  params?.patientDrugOrdersStatuses &&
+                  params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                  params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                    'status'
+                  ] === 'DISPENSED',
+                paid: drugOrder?.paid || params?.activeVisit?.isEnsured
+              }"
+            >
+              <td>{{ count + 1 }}</td>
+              <td>
+                {{ drugOrder?.drug?.display }}
+              </td>
+              <td>
+                {{ drugOrder?.instructions }}
+              </td>
+              <td>{{ drugOrder?.orderer?.display }}</td>
+              <td>{{ drugOrder?.dateActivated | date: "medium" }}</td>
+              <td>{{ drugOrder?.quantity }}</td>
+              <td>
+                {{
+                  drugOrder?.paid || params?.activeVisit?.isEnsured
+                    ? "PAID"
+                    : "NOT PAID/COVERED"
+                }}
+              </td>
+              <td>
+                <button
+                  [disabled]="
+                    (params?.patientDrugOrdersStatuses &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                        'status'
+                      ] === 'DISPENSED') ||
+                    (!drugOrder?.paid && !params?.activeVisit?.isEnsured)
+                  "
+                  mat-flat-button
+                  color="primary"
+                  class="mt-1 mb-1 mr-1"
+                  (click)="
+                    onSelectAction(
+                      $event,
+                      { actionCode: 'DISPENSE_PRESCRIPTION' },
+                      drugOrder
+                    )
+                  "
+                >
+                  {{
+                    params?.patientDrugOrdersStatuses &&
+                    params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                    params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                      "status"
+                    ] === "DISPENSED"
+                      ? "Dispensed"
+                      : "Dispense"
+                  }}
+                </button>
+              </td>
+              <td>
+                <button
+                  (click)="
+                    onOpenMessageConstruction(
+                      $event,
+                      drugOrder,
+                      currentPatient,
+                      generalMetadataConfigurations
+                    )
+                  "
+                  [disabled]="
+                    (params?.patientDrugOrdersStatuses &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid] &&
+                      params?.patientDrugOrdersStatuses[drugOrder?.uuid][
+                        'status'
+                      ] !== 'DISPENSED') ||
+                    (!drugOrder?.paid && !params?.activeVisit?.isEnsured)
+                  "
+                  mat-stroked-button
+                >
+                  SMS
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <table
+      *ngIf="useNormalTable && !drugOrders?.length"
+      class="table table-striped"
+    >
+      <tbody>
+        <tr>
+          <td>No dispensions found</td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+      *ngIf="!useNormalTable"
+      class="w-100"
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+    >
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column?.id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ column?.label }}
+        </th>
+
+        <td mat-cell *matCellDef="let row; let i = index">
+          <ng-container *ngIf="!column.isActionColumn">
+            {{ column.id === "index" ? i + 1 : row[column?.id] }}
+          </ng-container>
+
+          <div
+            *ngIf="column.isActionColumn && actionOptions.length > 0"
+            class="table__action-options"
+          >
+            <ng-container
+              *ngFor="
+                let actionOption of actionOptions
+                  | hideActionOption: row.actionOptionsToHide
+              "
+            >
+              <button
+                [disabled]="
+                  params?.patientDrugOrdersStatuses &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid] &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid][
+                    'status'
+                  ] === 'DISPENSED'
+                "
+                mat-button
+                [color]="actionOption?.buttonStyle?.color"
+                *ngIf="actionOption?.buttonStyle?.isDefault"
+                class="mt-1 mb-1 mr-1"
+                (click)="onSelectAction($event, actionOption, row)"
+              >
+                {{ actionOption.name }}
+              </button>
+              <button
+                [disabled]="
+                  params?.patientDrugOrdersStatuses &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid] &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid][
+                    'status'
+                  ] === 'DISPENSED'
+                "
+                mat-stroked-button
+                [color]="actionOption?.buttonStyle?.color"
+                *ngIf="actionOption?.buttonStyle?.isOutlined"
+                class="mt-1 mb-1 mr-1"
+                (click)="onSelectAction($event, actionOption, row)"
+              >
+                {{ actionOption.name }}
+              </button>
+              <button
+                [disabled]="
+                  params?.patientDrugOrdersStatuses &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid] &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid][
+                    'status'
+                  ] === 'DISPENSED'
+                "
+                mat-flat-button
+                [color]="actionOption?.buttonStyle?.color"
+                *ngIf="actionOption?.buttonStyle?.isFlat"
+                class="mt-1 mb-1 mr-1"
+                (click)="onSelectAction($event, actionOption, row)"
+              >
+                {{
+                  params?.patientDrugOrdersStatuses &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid] &&
+                  params?.patientDrugOrdersStatuses[row?.drugOrder?.uuid][
+                    "status"
+                  ] === "DISPENSED"
+                    ? "Dispensed"
+                    : actionOption.name
+                }}
+              </button>
+            </ng-container>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        (click)="onSelectRow($event, row)"
+        class="table__row"
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+      ></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <ng-container *ngIf="!loading">
+        <tr class="mat-row" *matNoDataRow>
+          <td
+            class="mat-cell text-center text-muted"
+            [attr.colspan]="displayedColumns?.length"
+          >
+            {{ tableConfig?.noDataLabel }}
+          </td>
+        </tr>
+      </ng-container>
+
+      <!-- Table loading error -->
+      <tr>
+        <td
+          class="mat-cell text-center text-danger"
+          [attr.colspan]="displayedColumns?.length"
+        >
+          {{ loadingDataError }}
+        </td>
+      </tr>
+    </table>
+
+    <!-- Loading table -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <mat-paginator [pageSizeOptions]="[25, 50, 100]"></mat-paginator>
+  </div>
+</div>

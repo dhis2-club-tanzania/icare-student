@@ -1,0 +1,225 @@
+<div *ngIf="{ observations: observations$ | async } as params">
+  <ng-container *ngIf="isGenericForm || isLIS">
+    <!-- {{ form?.groupedFields | json }} -->
+    <ng-container *ngIf="!isGenericForm">
+      <ng-container *ngFor="let fields of form?.groupedFields">
+        <app-form
+          *ngIf="!fields[0]?.setMembers"
+          [fields]="fields"
+          [isFormHorizontal]="true"
+          [isReport]="isReport"
+          [formId]="form?.uuid"
+          [ngClass]="isLIS ? 'col-md-2' : null"
+          [fieldsData]="observations"
+          [formValidationRules]="formValidationRules"
+          (formUpdate)="onFormUpdate($event)"
+        ></app-form>
+        <ng-container *ngIf="fields[0]?.setMembers?.length > 0">
+          <ng-container *ngFor="let formField of fields">
+            <!-- {{ formField | json }} -->
+            <fieldset
+              style="padding: 8px !important"
+              *ngIf="
+                !formField?.formField &&
+                formField?.setMembers &&
+                formField?.setMembers?.length > 0 &&
+                params?.observations
+              "
+            >
+              <legend (click)="onToggleLegend($event, formField?.name)">
+                {{ formField?.name }}
+                <i
+                  style="font-size: 1.5rem"
+                  *ngIf="legendControl[formField?.name]"
+                  class="fa fa-angle-down"
+                  title="Open form"
+                  aria-hidden="true"
+                ></i>
+                <i
+                  style="font-size: 1.5rem"
+                  *ngIf="!legendControl[formField?.name]"
+                  class="fa fa-angle-up"
+                  title="Close form"
+                  aria-hidden="true"
+                ></i>
+              </legend>
+              <div [ngClass]="{ 'd-none': legendControl[formField?.name] }">
+                <div>
+                  <app-form
+                    [fields]="formField?.formFields"
+                    [isFormHorizontal]="true"
+                    [isReport]="isReport"
+                    [colClass]="isLIS ? 'col-2' : null"
+                    [formId]="form?.uuid"
+                    [formValidationRules]="formValidationRules"
+                    [fieldsData]="observations"
+                    (formUpdate)="onFormUpdate($event)"
+                  >
+                  </app-form>
+                </div>
+              </div>
+            </fieldset>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="isGenericForm">
+      <app-form
+        [fields]="genericFormFields"
+        [isFormHorizontal]="true"
+        [isReport]="isReport"
+        [formId]="form?.uuid"
+        [formValidationRules]="formValidationRules"
+        (formUpdate)="onFormUpdate($event)"
+      ></app-form>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="!isLIS && !isGenericForm">
+    <div *ngFor="let formField of form?.formFields">
+      <div
+        *ngIf="
+          formField &&
+          formField?.formField &&
+          formField?.setMembers &&
+          formField?.setMembers?.length === 0 &&
+          params?.observations
+        "
+      >
+        <app-form
+          [fields]="[formField?.formField]"
+          [isFormHorizontal]="false"
+          [isReport]="isReport"
+          [formId]="form?.uuid"
+          [fieldsData]="observations"
+          (formUpdate)="onFormUpdate($event)"
+        >
+        </app-form>
+      </div>
+
+      <fieldset
+        *ngIf="
+          !formField?.formField &&
+          formField?.setMembers &&
+          formField?.setMembers?.length > 0 &&
+          params?.observations
+        "
+      >
+        <legend (click)="onToggleLegend($event, formField?.name)">
+          {{ formField?.name }}
+          <i
+            style="font-size: 1.5rem"
+            *ngIf="legendControl[formField?.name]"
+            class="fa fa-angle-down"
+            title="Open form"
+            aria-hidden="true"
+          ></i>
+          <i
+            style="font-size: 1.5rem"
+            *ngIf="!legendControl[formField?.name]"
+            class="fa fa-angle-up"
+            title="Close form"
+            aria-hidden="true"
+          ></i>
+        </legend>
+
+        <div
+          *ngFor="let member of formField?.setMembers"
+          [ngClass]="{ 'd-none': legendControl[formField?.name] }"
+        >
+          <div *ngIf="member?.formFields && member?.setMembers?.length == 0">
+            <app-form
+              [fields]="member?.formFields"
+              [isFormHorizontal]="true"
+              [isReport]="isReport"
+              [formId]="form?.uuid"
+              [fieldsData]="observations"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </div>
+          <div
+            *ngIf="
+              !member?.formFields &&
+              !member?.formField &&
+              member?.setMembers?.length == 0 &&
+              member?.options?.length > 0
+            "
+          >
+            <app-form
+              [fields]="[member]"
+              [isFormHorizontal]="true"
+              [isReport]="isReport"
+              [formId]="form?.uuid"
+              [fieldsData]="observations"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </div>
+          <div
+            *ngIf="
+              !member?.formFields &&
+              member?.formField &&
+              member?.setMembers?.length == 0
+            "
+          >
+            <app-form
+              [fields]="[member?.formField]"
+              [dataType]="member?.dataType"
+              [isFormHorizontal]="false"
+              [isReport]="isReport"
+              [formId]="form?.uuid"
+              [fieldsData]="observations"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+          </div>
+          <div
+            *ngIf="
+              !member?.formField &&
+              member?.setMembers &&
+              member?.setMembers?.length > 0
+            "
+          >
+            <fieldset
+              *ngIf="member?.setMembers && member?.setMembers?.length > 0"
+            >
+              <legend (click)="onToggleLegend($event, member?.name)">
+                {{ member?.name }}
+                <i
+                  style="font-size: 1.5rem"
+                  *ngIf="legendControl[member?.name]"
+                  class="fa fa-angle-down"
+                  title="Open form"
+                  aria-hidden="true"
+                ></i>
+                <i
+                  style="font-size: 1.5rem"
+                  *ngIf="!legendControl[member?.name]"
+                  class="fa fa-angle-up"
+                  title="Close form"
+                  aria-hidden="true"
+                ></i>
+              </legend>
+              <div
+                [ngClass]="{ 'd-none': legendControl[member?.name] }"
+                class="form-under-field-set"
+                *ngFor="let subMember of member?.setMembers"
+              >
+                <app-form
+                  *ngIf="subMember?.formField && !subMember?.formFields"
+                  [fields]="[subMember?.formField]"
+                  [isFormHorizontal]="true"
+                  [isReport]="isReport"
+                  [formId]="form?.uuid"
+                  [fieldsData]="observations"
+                  (formUpdate)="onFormUpdate($event)"
+                >
+                </app-form>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </ng-container>
+</div>

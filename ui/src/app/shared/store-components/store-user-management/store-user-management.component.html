@@ -1,0 +1,50 @@
+<div
+  class="users-profiles-and-access-control"
+  *ngIf="{ currentUser: currentUser$ | async } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.currentUser"
+  ></mat-progress-bar>
+  <ng-container *ngIf="params?.currentUser">
+    <mat-tab-group (selectedTabChange)="onTabChanged($event)">
+      <mat-tab label="Users">
+        <ng-template matTabContent>
+          <div
+            class="p-3"
+            *ngIf="
+              params?.currentUser?.userPrivileges['ALL'] ||
+              params?.currentUser?.userPrivileges['MAINTENANCE_USER_MANAGEMENT']
+            "
+          >
+            <app-store-user-management-dashboard
+              [currentUser]="params?.currentUser"
+            ></app-store-user-management-dashboard>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="User Privileges & Profiles">
+        <ng-template matTabContent>
+          <div class="p-3">
+            <div
+              class="privileges-and-roles-management-container"
+              *ngIf="
+                params?.currentUser?.userPrivileges['ALL'] ||
+                params?.currentUser?.userPrivileges[
+                  'MAINTENANCE_USER_ROLES_MANAGEMENT'
+                ] ||
+                params?.currentUser?.userPrivileges[
+                  'MAINTENANCE_USER_PRIVILEGE_MANAGEMENT'
+                ]
+              "
+            >
+              <app-shared-privileges-and-roles-management
+                [currentUser]="params?.currentUser"
+              ></app-shared-privileges-and-roles-management>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+</div>

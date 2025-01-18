@@ -1,0 +1,57 @@
+<div
+  class="p-3"
+  *ngIf="{
+    registrationMRNSourceReference: registrationMRNSourceReference$ | async,
+    registrationFormConfigs: registrationFormConfigs$ | async,
+    occupationConceptUuid: occupationConceptUuid$ | async,
+    additionalClientInformationConceptUuid:
+      additionalClientInformationConceptUuid$ | async,
+    relationShipTypesConceptUuid: relationShipTypesConceptUuid$ | async,
+    genderOptionsConceptUuid: genderOptionsConceptUuid$ | async,
+    residenceDetailsLocationUuid: residenceDetailsLocationUuid$ | async
+  } as params"
+>
+  <app-registration-add
+    *ngIf="
+      params?.registrationMRNSourceReference &&
+      params?.registrationFormConfigs &&
+      params?.occupationConceptUuid &&
+      params?.additionalClientInformationConceptUuid &&
+      params?.relationShipTypesConceptUuid &&
+      params?.genderOptionsConceptUuid &&
+      params?.residenceDetailsLocationUuid
+    "
+    [registrationMRNSourceReference]="params?.registrationMRNSourceReference"
+    [registrationFormConfigs]="params?.registrationFormConfigs"
+    [occupationConceptUuid]="params?.occupationConceptUuid"
+    [additionalClientInformationConceptUuid]="
+      params?.additionalClientInformationConceptUuid
+    "
+    [relationShipTypesConceptUuid]="params?.relationShipTypesConceptUuid"
+    [genderOptionsConceptUuid]="params?.genderOptionsConceptUuid"
+    [residenceDetailsLocationUuid]="params?.residenceDetailsLocationUuid"
+  ></app-registration-add>
+
+  <div
+    class="alert alert-danger mt-2 ml-2 mr-2"
+    *ngIf="
+      params?.registrationMRNSourceReference &&
+      params?.registrationMRNSourceReference == 'none'
+    "
+    role="alert"
+  >
+    Ensure source reference for generating MRN is configured. Contact IT
+  </div>
+
+  <mat-progress-bar
+    *ngIf="
+      !params?.registrationMRNSourceReference ||
+      !params?.registrationFormConfigs ||
+      !params?.occupationConceptUuid ||
+      !params?.additionalClientInformationConceptUuid ||
+      !params?.relationShipTypesConceptUuid ||
+      !params?.genderOptionsConceptUuid
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

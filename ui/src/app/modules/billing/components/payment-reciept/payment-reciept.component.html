@@ -1,0 +1,98 @@
+<div style="width: 100%">
+  <mat-toolbar color="primary">Bill Payment Receipt</mat-toolbar>
+  <div class="p-3">
+    <div id="dialog-bill-receipt">
+      <!-- <div
+        style="text-align: center; margin-left: 0px !important"
+        *ngIf="facilityLogoBase64"
+      >
+        <img src="{{ facilityLogoBase64 }}" width="60" />
+      </div> -->
+      <table
+        class="table table-bordered"
+        style="
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        "
+      >
+        <!-- 
+          
+          table styles
+           style="
+          margin-left: 0px !important;
+          width: 100% !important;
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial,
+            sans-serif !important;
+        "
+          
+          <tr>
+          <td colspan="3" style="text-align: center">
+            <h3>{{ facilityDetailsJson?.name }}</h3>
+            <h5>{{ facilityDetailsJson?.address }}</h5>
+            <h5>{{ facilityDetailsJson?.phone }}</h5>
+          </td>
+        </tr>
+        <tr style="text-align: left; font-size: 0.7em">
+          <td>Patient</td>
+          <td colspan="2" style="color: black">
+            <b>{{ data?.currentPatient?.name }}</b>
+          </td>
+        </tr>
+        <tr style="text-align: left; font-size: 0.7em">
+          <td>MRN</td>
+          <td colspan="2" style="color: black">
+            <b>
+              {{
+                data?.currentPatient?.MRN ||
+                  data?.currentPatient?.patient?.identifiers[0]?.identifier
+              }}
+            </b>
+          </td>
+        </tr> -->
+
+        <tr style="font-size: 1em">
+          <!-- <td>#</td> -->
+          <td colspan="2"><b>Item(s)</b></td>
+          <!-- <td>discount</td> -->
+          <td><b>Amount</b></td>
+        </tr>
+        <tr
+          *ngFor="let item of data?.billItems; let itemIndex = index"
+          style="font-size: 0.7em"
+        >
+          <!-- <td>{{ itemIndex + 1 }}</td> -->
+          <td colspan="2">{{ item?.name }}</td>
+          <!-- <td>{{ item?.billItem?.discount }}</td> -->
+          <td>{{ item?.payable }}</td>
+        </tr>
+        <tr style="background-color: transparent; color: black">
+          <td colspan="2"><b>Total Amount</b></td>
+          <td>
+            <b> {{ totalBill }} </b>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: right">
+      <button
+        class="mr-2"
+        mat-stroked-button
+        [routerLink]="'/billing'"
+        (click)="onCancel($event)"
+      >
+        Cancel
+      </button>
+
+      <app-print-button
+        [routerLink]="'/billing'"
+        [toolTipText]="'Click to print receipt'"
+        [iconName]="'print'"
+        [showText]="'Print Receipt'"
+        [classesList]="['ml-4', 'bg-success', 'text-white', 'mr-4']"
+        (print)="onPrint($event)"
+      >
+      </app-print-button>
+    </div>
+  </div>
+</div>

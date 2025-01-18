@@ -1,0 +1,131 @@
+<div class="loading-overlay" *ngIf="updatingUser">
+  <div class="text-center">
+    <div>Saving details...</div>
+    <div class="mt-3 d-flex justify-content-center w-100">
+      <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+    </div>
+  </div>
+</div>
+<mat-toolbar color="primary">
+  <span>Capture signature</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div
+  class="signature-container w-100 p-2"
+  *ngIf="{
+    providerDetails: providerDetails$ | async,
+    providerAttributes: providerAttributes$ | async
+  } as params"
+>
+  <canvas
+    #sigPad
+    width="{{
+      params?.providerDetails &&
+      params?.providerDetails?.uuid &&
+      !params?.providerDetails?.signature
+        ? '500'
+        : '0'
+    }}"
+    height="{{
+      params?.providerDetails &&
+      params?.providerDetails?.uuid &&
+      !params?.providerDetails?.signature
+        ? '130'
+        : '0'
+    }}"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+  ></canvas>
+  <img
+    *ngIf="params?.providerDetails && params?.providerDetails?.signature"
+    height="130"
+    [src]="params?.providerDetails?.signature"
+  />
+
+  <div
+    class="alert alert-danger"
+    role="alert"
+    *ngIf="params?.providerDetails && !params?.providerDetails?.uuid"
+  >
+    This user is not a provider!
+  </div>
+
+  <mat-accordion
+    *ngIf="params?.providerDetails && !params?.providerDetails?.uuid"
+  >
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title> Provider details form </mat-panel-title>
+        <mat-panel-description>
+          <!-- This is a summary of the content -->
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-provider-attributes-form
+        *ngIf="params?.providerAttributes"
+        [providerAttributes]="params?.providerAttributes"
+        (formFieldValues)="onGetAttributesFormValues($event)"
+        (isFormValid)="onGetFormValidity($event)"
+      ></app-provider-attributes-form>
+      <mat-progress-bar
+        *ngIf="!params?.providerAttributes"
+        mode="indeterminate"
+      ></mat-progress-bar>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-progress-bar
+    *ngIf="!params?.providerDetails"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div
+    class="w-100 d-flex justify-content-end mb-2"
+    *ngIf="params?.providerDetails"
+  >
+    <button
+      mat-stroked-button
+      [disabled]="
+        (params?.providerDetails &&
+          !params?.providerDetails?.signature &&
+          !signatureImg) ||
+        !params?.providerDetails
+      "
+      style="bottom: 0; z-index: 1401"
+      class="mr-2 action-btns"
+      color="primary"
+      (click)="clearPad($event)"
+    >
+      Clear
+    </button>
+    <button
+      mat-stroked-button
+      style="bottom: 0; z-index: 1401"
+      *ngIf="!alreadySigned"
+      [disabled]="
+        !params?.providerDetails ||
+        (params?.providerDetails &&
+          !params?.providerDetails?.signature &&
+          !signatureImg &&
+          !isProviderAttributeFormValid) ||
+        (params?.providerDetails &&
+          !params?.providerDetails?.uuid &&
+          !isProviderAttributeFormValid)
+      "
+      class="action-btns"
+      color="primary"
+      (click)="
+        onSave(
+          $event,
+          params?.providerDetails,
+          providerFormValues,
+          !(params?.providerDetails && !params?.providerDetails?.uuid)
+        )
+      "
+    >
+      Save
+    </button>
+  </div>
+</div>

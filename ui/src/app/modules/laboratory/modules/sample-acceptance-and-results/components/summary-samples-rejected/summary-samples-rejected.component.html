@@ -1,0 +1,9 @@
+
+<p *ngIf="{samplesLoaded: samplesLoaded$ | async ,samplesLoading: samplesLoading$ | async,samplesRejected: samplesRejected$ | async} as state">
+    
+    <mat-progress-bar mode="indeterminate" *ngIf="!state?.samplesLoaded && state?.samplesLoading"></mat-progress-bar>
+    
+    <span *ngIf="state?.samplesLoaded && !state?.samplesLoading">{{state?.samplesRejected?.length}}</span>
+    <!--{{state?.samplesCollected?.length}}{{state.samplesLoading}}-->
+
+</p>

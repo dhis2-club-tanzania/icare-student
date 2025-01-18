@@ -1,0 +1,131 @@
+<div
+  *ngIf="{
+    patient: patient$ | async,
+    provider: provider$ | async,
+    orderType: orderType$ | async,
+    loading: loadingDrugOrders$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="params.loading"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <table *ngIf="!params.loading" class="table border-bottom table-bordered">
+    <tr class="bg-light">
+      <td>#</td>
+      <td>Item</td>
+      <td>Ordered by</td>
+      <ng-container *ngIf="!expandedRow">
+        <td>Quantity</td>
+        <td>Price</td>
+        <td>Status</td>
+      </ng-container>
+      <td><span class="float-right">Actions</span></td>
+      <td
+        rowspan="3"
+        width="50%"
+        *ngIf="expandedRow > 0"
+        class="mat-elevation-z1"
+      >
+        <div>
+          <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between"></div>
+          </div>
+          <div *ngIf="quantityFormField" class="drug-forms">
+            <div>
+              <app-drug-order
+                [drugOrder]="currentSetDrug"
+                [patient]="patient$ | async"
+                [provider]="provider$ | async"
+                [orderType]="orderType$ | async"
+                [fromDispensing]="true"
+                [showAddButton]="false"
+                (drugQuantity)="onChangeDrugQuantity($event)"
+                (drugOrdered)="onOrderingDrug($event)"
+                (cancelForm)="onCloseForm()"
+              ></app-drug-order>
+            </div>
+          </div>
+
+          <div *ngIf="!quantityFormField || !drugsField">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <ng-template
+      ngFor
+      let-count="index"
+      let-drug
+      [ngForOf]="drugOrders$ | async"
+    >
+      <tr
+        *ngIf="(drugOrders$ | async) && (drugOrders$ | async)?.length > 0"
+        class="{{ expandedRow === count + 1 ? 'prescription-active' : '' }}"
+      >
+        <td>{{ count + 1 }}</td>
+        <td>{{ drug.display }}</td>
+        <td>{{ drug.orderer?.display }}</td>
+        <ng-container *ngIf="!expandedRow">
+          <td>{{ drug.quantity }}</td>
+          <td>{{ drug.amount }}</td>
+          <td>
+            <span class="text-success" *ngIf="drug.paymentStatus === 'PAID'"
+              >PAID</span
+            >
+            <span class="text-danger" *ngIf="drug.paymentStatus === 'NOT_PAID'"
+              >NOT PAID</span
+            >
+
+            <span
+              class="text-warning"
+              *ngIf="drug.paymentStatus === 'NOT_CALCULATED'"
+              >QUANTITY NOT SET</span
+            >
+          </td>
+        </ng-container>
+        <td>
+          <div class="d-flex justify-content-end">
+            <button
+              id="btn-drug-order-{{ count + 1 }}"
+              *ngIf="drug.paymentStatus !== 'PAID'"
+              mat-stroked-button
+              (click)="onUpdatePrescription($event, drug, params)"
+            >
+              Edit
+            </button>
+            <button
+              mat-flat-button
+              class="ml-2"
+              color="primary"
+              [disabled]="
+                drug.paymentStatus === 'NOT_PAID' ||
+                drug.paymentStatus === 'NOT_CALCULATED' ||
+                drug.loading
+              "
+              (click)="onDispense($event, drug)"
+            >
+              <mat-spinner
+                color="primary"
+                *ngIf="drug.loading"
+                [diameter]="20"
+                style="display: inline-block !important; margin-right: 4px"
+              ></mat-spinner>
+              Dispense
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <tr *ngIf="totalDrugOrderAmount$ | async as totalDrugOrderAmount">
+      <td colspan="5"></td>
+      <td>
+        <b class="float-right">Total Price</b>
+      </td>
+      <td>
+        <b class="float-right">{{ totalDrugOrderAmount }}</b>
+      </td>
+    </tr>
+  </table>
+</div>

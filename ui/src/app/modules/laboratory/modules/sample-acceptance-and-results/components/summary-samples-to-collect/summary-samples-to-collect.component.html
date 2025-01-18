@@ -1,0 +1,18 @@
+<p
+  *ngIf="{
+    samplesLoaded: samplesLoaded$ | async,
+    samplesLoading: samplesLoading$ | async,
+    allLabSamples: allLabSamples$ | async
+  } as state"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!state?.samplesLoaded && state?.samplesLoading"
+  ></mat-progress-bar>
+
+  <span *ngIf="state?.samplesLoaded && !state?.samplesLoading"
+    >{{ (samplesCollected$ | async).length }} out of
+    {{ state?.allLabSamples?.length }}</span
+  >
+  <!--{{state?.samplesCollected?.length}}{{state.samplesLoading}}-->
+</p>

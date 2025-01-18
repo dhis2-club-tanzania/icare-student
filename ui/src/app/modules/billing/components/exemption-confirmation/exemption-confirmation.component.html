@@ -1,0 +1,24 @@
+<div
+  id="dialog-exemption-confirmation"
+  style="width: 100%"
+  class="dialog-bill-confirmation"
+>
+  <mat-toolbar color="primary">{{data?.modelTitle}}</mat-toolbar>
+  <div class="p-3">
+    <p>{{ data?.modelMessage }} </p>
+    <p>Are you sure?</p>
+    <div style="text-align: right">
+      <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+      <button
+        id="btn-exemption-confirmed"
+        class="ml-4"
+        color="primary"
+        mat-flat-button
+        color="primary"
+        (click)="onConfirm($event)"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

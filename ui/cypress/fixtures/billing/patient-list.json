@@ -1,0 +1,395 @@
+{
+    "results": [
+      {
+        "uuid": "9f813770-1ff8-4b42-8740-e35eacfc132f",
+        "visitType": {
+          "uuid": "2mnxl2eb-5345-11e8-5555-40b034c3cfee",
+          "display": "OPD",
+          "name": "OPD",
+          "description": "OPD Services Visit Type",
+          "retired": false,
+          "links": [
+            {
+              "rel": "self",
+              "uri": "http://icare:8080/openmrs/ws/rest/v1/visittype/2mnxl2eb-5345-11e8-5555-40b034c3cfee"
+            },
+            {
+              "rel": "full",
+              "uri": "http://icare:8080/openmrs/ws/rest/v1/visittype/2mnxl2eb-5345-11e8-5555-40b034c3cfee?v=full"
+            }
+          ],
+          "resourceVersion": "1.9"
+        },
+        "startDatetime": "2021-07-15T10:23:46.000+0000",
+        "stopDatetime": null,
+        "encounters": [
+          {
+            "orders": [
+              {
+                "uuid": "91490f91-0758-4acc-9121-1dc1092d45a4",
+                "orderNumber": "ORD-335",
+                "accessionNumber": null,
+                "patient": {
+                  "uuid": "367dd40a-417c-4517-aab0-cccfd8c8d81b",
+                  "display": "111023-1/1617036199173 - Cash User",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/patient/367dd40a-417c-4517-aab0-cccfd8c8d81b"
+                    }
+                  ]
+                },
+                "concept": {
+                  "uuid": "00000005IIIIIIIIIIIIIIIIIIIIIIIIIIII",
+                  "display": "General OPD",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/concept/00000005IIIIIIIIIIIIIIIIIIIIIIIIIIII"
+                    }
+                  ]
+                },
+                "action": "NEW",
+                "careSetting": {
+                  "uuid": "6f0c9a92-6f24-11e3-af88-005056821db0",
+                  "display": "Outpatient",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/caresetting/6f0c9a92-6f24-11e3-af88-005056821db0"
+                    }
+                  ]
+                },
+                "previousOrder": null,
+                "dateActivated": "2021-07-15T10:23:46.000+0000",
+                "scheduledDate": null,
+                "dateStopped": null,
+                "autoExpireDate": null,
+                "encounter": {
+                  "uuid": "ad366b2a-d3da-4dd3-8921-aad3e59d6d86",
+                  "display": "Registration 15/07/2021",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/encounter/ad366b2a-d3da-4dd3-8921-aad3e59d6d86"
+                    }
+                  ]
+                },
+                "orderer": {
+                  "uuid": "f9badd80-ab76-11e2-9e96-0800200c9a66",
+                  "display": "UNKNOWN - iCare Superuser",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/provider/f9badd80-ab76-11e2-9e96-0800200c9a66"
+                    }
+                  ]
+                },
+                "orderReason": null,
+                "orderReasonNonCoded": null,
+                "orderType": {
+                  "uuid": "BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE",
+                  "display": "Billing",
+                  "name": "Billing",
+                  "javaClassName": "org.openmrs.Order",
+                  "retired": false,
+                  "description": null,
+                  "conceptClasses": [],
+                  "parent": null,
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/ordertype/BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE"
+                    },
+                    {
+                      "rel": "full",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/ordertype/BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE?v=full"
+                    }
+                  ],
+                  "resourceVersion": "1.10"
+                },
+                "urgency": "ROUTINE",
+                "instructions": null,
+                "commentToFulfiller": null,
+                "display": "General OPD",
+                "links": [
+                  {
+                    "rel": "self",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/order/91490f91-0758-4acc-9121-1dc1092d45a4"
+                  },
+                  {
+                    "rel": "full",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/order/91490f91-0758-4acc-9121-1dc1092d45a4?v=full"
+                  }
+                ],
+                "type": "order",
+                "resourceVersion": "1.10"
+              },
+              {
+                "uuid": "72d49072-6a61-4f3c-b025-0d42227d7fac",
+                "orderNumber": "ORD-334",
+                "accessionNumber": null,
+                "patient": {
+                  "uuid": "367dd40a-417c-4517-aab0-cccfd8c8d81b",
+                  "display": "111023-1/1617036199173 - Cash User",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/patient/367dd40a-417c-4517-aab0-cccfd8c8d81b"
+                    }
+                  ]
+                },
+                "concept": {
+                  "uuid": "REG00000IIIIIIIIIIIIIIIIIIIIIIIIIIII",
+                  "display": "Registration Fee",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/concept/REG00000IIIIIIIIIIIIIIIIIIIIIIIIIIII"
+                    }
+                  ]
+                },
+                "action": "NEW",
+                "careSetting": {
+                  "uuid": "6f0c9a92-6f24-11e3-af88-005056821db0",
+                  "display": "Outpatient",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/caresetting/6f0c9a92-6f24-11e3-af88-005056821db0"
+                    }
+                  ]
+                },
+                "previousOrder": null,
+                "dateActivated": "2021-07-15T10:23:46.000+0000",
+                "scheduledDate": null,
+                "dateStopped": null,
+                "autoExpireDate": null,
+                "encounter": {
+                  "uuid": "ad366b2a-d3da-4dd3-8921-aad3e59d6d86",
+                  "display": "Registration 15/07/2021",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/encounter/ad366b2a-d3da-4dd3-8921-aad3e59d6d86"
+                    }
+                  ]
+                },
+                "orderer": {
+                  "uuid": "f9badd80-ab76-11e2-9e96-0800200c9a66",
+                  "display": "UNKNOWN - iCare Superuser",
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/provider/f9badd80-ab76-11e2-9e96-0800200c9a66"
+                    }
+                  ]
+                },
+                "orderReason": null,
+                "orderReasonNonCoded": null,
+                "orderType": {
+                  "uuid": "BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE",
+                  "display": "Billing",
+                  "name": "Billing",
+                  "javaClassName": "org.openmrs.Order",
+                  "retired": false,
+                  "description": null,
+                  "conceptClasses": [],
+                  "parent": null,
+                  "links": [
+                    {
+                      "rel": "self",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/ordertype/BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE"
+                    },
+                    {
+                      "rel": "full",
+                      "uri": "http://icare:8080/openmrs/ws/rest/v1/ordertype/BIL00000IIIIIIIIIIIIIIIIIIIIIIIOTYPE?v=full"
+                    }
+                  ],
+                  "resourceVersion": "1.10"
+                },
+                "urgency": "ROUTINE",
+                "instructions": null,
+                "commentToFulfiller": null,
+                "display": "Registration Fee",
+                "links": [
+                  {
+                    "rel": "self",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/order/72d49072-6a61-4f3c-b025-0d42227d7fac"
+                  },
+                  {
+                    "rel": "full",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/order/72d49072-6a61-4f3c-b025-0d42227d7fac?v=full"
+                  }
+                ],
+                "type": "order",
+                "resourceVersion": "1.10"
+              }
+            ]
+          }
+        ],
+        "attributes": [
+          {
+            "uuid": "8dbc9f39-1361-4123-bc17-ec67841f480a",
+            "display": "PaymentCategory: 00000100IIIIIIIIIIIIIIIIIIIIIIIIIIII"
+          },
+          {
+            "uuid": "d2227e54-f52e-4238-845c-9be4fdbc0c44",
+            "display": "PaymentScheme: 00000102IIIIIIIIIIIIIIIIIIIIIIIIIIII"
+          },
+          {
+            "uuid": "caa04e29-8a84-4283-8c6b-d5de74baf58e",
+            "display": "EmergencyVisit: false"
+          },
+          {
+            "uuid": "8aea4500-0096-4c08-94d7-8fd893b50d53",
+            "display": "Service: 00000005IIIIIIIIIIIIIIIIIIIIIIIIIIII"
+          }
+        ],
+        "location": {
+          "uuid": "e08a7f79-665a-4934-b98a-339f2a6ff3ee",
+          "display": "Clinical doctor",
+          "tags": [
+            {
+              "uuid": "iCARE100-UDSM-451f-8efe-a0db56f09676",
+              "display": "Treatment Room",
+              "name": "Treatment Room",
+              "description": "For treatments rooms",
+              "retired": false,
+              "links": [
+                {
+                  "rel": "self",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/locationtag/iCARE100-UDSM-451f-8efe-a0db56f09676"
+                },
+                {
+                  "rel": "full",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/locationtag/iCARE100-UDSM-451f-8efe-a0db56f09676?v=full"
+                }
+              ],
+              "resourceVersion": "1.8"
+            },
+            {
+              "uuid": "b8bbf83e-645f-451f-8efe-a0db56f09676",
+              "display": "Login Location",
+              "name": "Login Location",
+              "description": "When a user logs in and chooses a session location, they may only choose one with this tag",
+              "retired": false,
+              "links": [
+                {
+                  "rel": "self",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/locationtag/b8bbf83e-645f-451f-8efe-a0db56f09676"
+                },
+                {
+                  "rel": "full",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/locationtag/b8bbf83e-645f-451f-8efe-a0db56f09676?v=full"
+                }
+              ],
+              "resourceVersion": "1.8"
+            }
+          ]
+        },
+        "patient": {
+          "uuid": "367dd40a-417c-4517-aab0-cccfd8c8d81b",
+          "display": "111023-1/1617036199173 - Cash User",
+          "identifiers": [
+            {
+              "display": "MRN = 111023-1/1617036199173",
+              "uuid": "98d0de9a-9ea7-482d-99ec-7de219d3bd25",
+              "identifier": "111023-1/1617036199173",
+              "identifierType": {
+                "uuid": "26742868-a38c-4e6a-ac1d-ae283c414c2e",
+                "display": "MRN",
+                "links": [
+                  {
+                    "rel": "self",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/patientidentifiertype/26742868-a38c-4e6a-ac1d-ae283c414c2e"
+                  }
+                ]
+              },
+              "location": {
+                "uuid": "6351fcf4-e311-4a19-90f9-35667d99a8af",
+                "display": "Registration Desk",
+                "links": [
+                  {
+                    "rel": "self",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/location/6351fcf4-e311-4a19-90f9-35667d99a8af"
+                  }
+                ]
+              },
+              "preferred": true,
+              "voided": false,
+              "links": [
+                {
+                  "rel": "self",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/patient/367dd40a-417c-4517-aab0-cccfd8c8d81b/identifier/98d0de9a-9ea7-482d-99ec-7de219d3bd25"
+                },
+                {
+                  "rel": "full",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/patient/367dd40a-417c-4517-aab0-cccfd8c8d81b/identifier/98d0de9a-9ea7-482d-99ec-7de219d3bd25?v=full"
+                }
+              ],
+              "resourceVersion": "1.8"
+            }
+          ],
+          "person": {
+            "uuid": "367dd40a-417c-4517-aab0-cccfd8c8d81b",
+            "display": "Cash User",
+            "gender": "M",
+            "age": 0,
+            "birthdate": "2021-03-09T00:00:00.000+0000",
+            "birthdateEstimated": false,
+            "dead": false,
+            "deathDate": null,
+            "causeOfDeath": null,
+            "preferredName": {
+              "uuid": "331aff23-a39f-4353-ba8b-c2fc2c82cffe",
+              "display": "Cash User",
+              "links": [
+                {
+                  "rel": "self",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/person/367dd40a-417c-4517-aab0-cccfd8c8d81b/name/331aff23-a39f-4353-ba8b-c2fc2c82cffe"
+                }
+              ]
+            },
+            "preferredAddress": {
+              "uuid": "cf9d1d17-1ae5-4c92-97cd-39a4f11e135d",
+              "display": "Council",
+              "links": [
+                {
+                  "rel": "self",
+                  "uri": "http://icare:8080/openmrs/ws/rest/v1/person/367dd40a-417c-4517-aab0-cccfd8c8d81b/address/cf9d1d17-1ae5-4c92-97cd-39a4f11e135d"
+                }
+              ]
+            },
+            "attributes": [
+              {
+                "uuid": "6c069234-f3af-47f8-9909-55d723109ac2",
+                "display": "phone = 0643823412",
+                "links": [
+                  {
+                    "rel": "self",
+                    "uri": "http://icare:8080/openmrs/ws/rest/v1/person/367dd40a-417c-4517-aab0-cccfd8c8d81b/attribute/6c069234-f3af-47f8-9909-55d723109ac2"
+                  }
+                ]
+              }
+            ],
+            "voided": false,
+            "birthtime": null,
+            "deathdateEstimated": false,
+            "links": [
+              {
+                "rel": "self",
+                "uri": "http://icare:8080/openmrs/ws/rest/v1/person/367dd40a-417c-4517-aab0-cccfd8c8d81b"
+              },
+              {
+                "rel": "full",
+                "uri": "http://icare:8080/openmrs/ws/rest/v1/person/367dd40a-417c-4517-aab0-cccfd8c8d81b?v=full"
+              }
+            ],
+            "resourceVersion": "1.11"
+          },
+          "voided": false
+        }
+      }
+    ]
+  }

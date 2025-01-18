@@ -1,0 +1,179 @@
+<div
+  *ngIf="{
+    settingCurrentLocationStatus: settingCurrentLocationStatus$ | async,
+    consultationEncounterType: consultationEncounterType$ | async,
+    consultationOrderType: consultationOrderType$ | async,
+    radiologyOrderType: radiologyOrderType$ | async,
+    drugOrderType: drugOrderType$ | async,
+    labTestOrderType: labTestOrderType$ | async,
+    showAllPatientsTab: showAllPatientsTab$ | async,
+    userPrivileges: userPrivileges$ | async
+  } as params"
+>
+  <div class="outerwrapper">
+    <mat-toolbar>
+      <button
+        mat-icon-button
+        (click)="onBack($event)"
+        matTooltip="Go to Home page"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="ml-2">Patients</span>
+    </mat-toolbar>
+    <div *ngIf="!params?.settingCurrentLocationStatus">
+      <div class="w-100 text-center">
+        <!-- <div class="text-muted h6 mb-4">Search for a patient</div> -->
+        <!-- patient list -->
+        <mat-tab-group
+          (selectedTabChange)="changeTab(selectedTab.value)"
+          [selectedIndex]="selectedTab.value"
+          (selectedIndexChange)="selectedTab.setValue($event)"
+        >
+          <!-- <mat-tab label="All Active Patients">
+            <div class="p-2" *ngIf="selectedTab.value === 0">
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="25"
+                [currentLocation]="(currentLocation$ | async)?.id"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </div>
+          </mat-tab> -->
+          <mat-tab label="Awaiting Consultation">
+            <!-- <div class="p-2" *ngIf="selectedTab.value === 0"> -->
+            <ng-template matTabContent>
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderByDirection]="'DESC'"
+                [currentLocation]="(currentLocation$ | async)?.id"
+                [orderType]="params?.consultationOrderType"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+            <!-- </div> -->
+          </mat-tab>
+          <mat-tab label="Attended">
+            <!-- <div class="p-2" *ngIf="selectedTab.value === 1"> -->
+            <ng-template matTabContent>
+              <app-patient-list
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [currentLocation]="(currentLocation$ | async)?.id"
+                [orderType]="params?.consultationOrderType"
+                [orderStatus]="'RECEIVED'"
+                [currentLocation]="(currentLocation$ | async)?.id"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+            <!-- </div> -->
+          </mat-tab>
+  
+          <!-- <mat-tab label="Patient With Lab Orders Not Received at LAB">
+            <div class="p-2" *ngIf="selectedTab.value === 3">
+              <app-patient-list
+                [currentLocation]="(currentLocation$ | async)?.id"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderType]="'52a447d3-a64a-11e3-9aeb-50e549534c5e'"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </div>
+          </mat-tab> -->
+          <mat-tab label="With Laboratory Tests">
+            <!-- <div class="p-2" *ngIf="selectedTab.value === 2"> -->
+  
+            <ng-template matTabContent>
+              <app-patient-list
+                [currentLocation]="(currentLocation$ | async)?.id"
+                [shouldShowParentLocation]="true"
+                [orderType]="params?.labTestOrderType"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+            <!-- </div> -->
+          </mat-tab>
+          <mat-tab label="With Radiology Orders">
+            <!-- <div class="p-2" *ngIf="selectedTab.value === 2"> -->
+  
+            <ng-template matTabContent>
+              <app-patient-list
+                [shouldShowParentLocation]="true"
+                [orderType]="params?.radiologyOrderType"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+            <!-- </div> -->
+          </mat-tab>
+          <mat-tab label="With Medications">
+            <!-- <div class="p-2" *ngIf="selectedTab.value === 2"> -->
+  
+            <ng-template matTabContent>
+              <app-patient-list
+                [shouldShowParentLocation]="true"
+                [orderType]="params?.drugOrderType"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+            <!-- </div> -->
+          </mat-tab>
+  
+          <mat-tab label="Admitted Patients">
+            <ng-template matTabContent>
+              <app-patient-list
+                [shouldShowParentLocation]="true"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [isDischarge]="false"
+                [encounterType]="'e22e39fd-7db2-45e7-80f1-60fa0d5a4378'"
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+          </mat-tab>
+          
+          <mat-tab
+            label="All Patients"
+            *ngIf="
+              params?.showAllPatientsTab?.value === 'true' &&
+              (params?.userPrivileges['CLINIC_VIEW_ALL_CLIENTS'] ||
+                params?.userPrivileges['ALL'])
+            "
+          >
+            <ng-template matTabContent>
+              <app-patient-list
+                [shouldShowParentLocation]="true"
+                [doNotUseLocation]="true"
+                [isTabularList]="true"
+                [itemsPerPage]="10"
+                [orderByDirection]="'DESC'"
+                [orderType]=""
+                (selectPatient)="onSelectPatient($event)"
+              ></app-patient-list>
+            </ng-template>
+          </mat-tab>
+          <mat-tab
+            label="Every Patients History"
+            *ngIf="
+              params?.userPrivileges[
+                'CLINIC_VIEW_PATIENT_HISTORY_WITHOUT_ACTIVE_VISIT'
+              ] || params?.userPrivileges['ALL']
+            "
+          >
+            <ng-template matTabContent>
+              <app-patient-search
+                (selectPatient)="onOpenHistory($event)"
+              ></app-patient-search>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</div>

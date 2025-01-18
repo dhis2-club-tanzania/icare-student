@@ -1,0 +1,65 @@
+<div
+  class="patient-home-container"
+  *ngIf="{
+    currentPatient: patient$ | async,
+    loadingVisit: loadingVisit$ | async,
+    currentLocation: currentLocation$ | async,
+    vitalSignObservations: vitalSignObservations$ | async,
+    provider: provider$ | async,
+    activeVisit: activeVisit$ | async,
+    bedsByLocationDetails: bedsUnderCurrentWard$ | async,
+    patientBillingDetails: patientBillingDetails$ | async,
+    formPrivilegesConfigs: formPrivilegesConfigs$ | async,
+    userPrivileges: userPrivileges$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <div>
+    <mat-progress-bar
+      *ngIf="params?.loadingVisit || !params?.patientBillingDetails"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <div
+      class="admission-container"
+      *ngIf="
+        params?.currentPatient &&
+        !params?.loadingVisit &&
+        params?.patientBillingDetails
+      "
+    >
+      <!-- <div class="patient-profile-sticky">
+        <app-new-patient-profile
+          *ngIf="params?.currentPatient"
+          [currentPatient]="params?.currentPatient"
+        ></app-new-patient-profile>
+      </div> -->
+
+      <div class="w-100">
+        <app-inpatient
+          *ngIf="
+            !params?.loadingVisit &&
+            params?.currentLocation &&
+            params?.bedsByLocationDetails
+          "
+          [activeVisit]="params?.activeVisit"
+          [patientBillingDetails]="params?.patientBillingDetails"
+          [bedsByLocationDetails]="params?.bedsByLocationDetails"
+          [currentPatient]="params?.currentPatient"
+          [provider]="params?.provider"
+          [currentUser]="params?.currentUser"
+          [userPrivileges]="params?.userPrivileges"
+        ></app-inpatient>
+
+        <mat-progress-bar
+          *ngIf="
+            params?.loadingVisit ||
+            !params?.currentLocation ||
+            !params?.bedsByLocationDetails ||
+            !params?.patientBillingDetails
+          "
+          mode="indeterminate"
+        ></mat-progress-bar>
+      </div>
+    </div>
+  </div>
+</div>

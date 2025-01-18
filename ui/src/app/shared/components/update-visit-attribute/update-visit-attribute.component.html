@@ -1,0 +1,59 @@
+<div class="loading-overlay" *ngIf="updatingAttribute">
+  <div class="text-center">
+    <div>Updating visit ...</div>
+    <div class="mt-3 d-flex justify-content-center w-100">
+      <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="{
+    activeVisit: activeVisit$ | async,
+    authNoAttribute: authNoAttribute$ | async
+  } as params"
+  class="p-2"
+>
+  <div *ngIf="params?.authNoAttribute && params?.activeVisit">
+    <div
+      class="mb-2 mt-2"
+      *ngIf="
+        params?.authNoAttribute?.visitAttributeDetails?.value ===
+        'NOT_AUTHORIZED'
+      "
+    >
+      <mat-form-field class="w-100" appearance="fill" floatLabel="always">
+        <mat-label>Authorization Reference</mat-label>
+        <input
+          matInput
+          placeholder="Authorization Reference"
+          [(ngModel)]="authorization"
+        />
+      </mat-form-field>
+      <div class="d-flex justify-content-end">
+        <button
+          [disabled]="updatingAttribute"
+          mat-stroked-button
+          (click)="
+            saveAttribute(
+              $event,
+              params?.authNoAttribute?.visitAttributeDetails,
+              params?.activeVisit
+            )
+          "
+        >
+          Save
+        </button>
+      </div>
+    </div>
+    <div
+      *ngIf="
+        params?.authNoAttribute?.visitAttributeDetails?.value !==
+        'NOT_AUTHORIZED'
+      "
+    >
+      NO need to update -
+      {{ params?.authNoAttribute?.visitAttributeDetails?.value }}
+    </div>
+  </div>
+</div>

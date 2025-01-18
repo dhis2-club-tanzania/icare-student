@@ -1,0 +1,44 @@
+<div *ngIf="{ auditLogs: auditLogs$ | async } as params">
+  <mat-progress-bar
+    *ngIf="!params?.auditLogs"
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <div class="w-100" style="overflow: auto">
+    <!-- {{ params?.auditLogs | json }} -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Type</th>
+          <th>Date & Time</th>
+          <th>By whom?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="params?.auditLogs?.length > 0">
+          <ng-container *ngFor="let serverLog of params?.auditLogs">
+            <tr
+              [ngClass]="{
+                'alert alert-danger': serverLog?.action === 'ERROR',
+                'alert alert-warning': serverLog?.action === 'WARN',
+                'alert alert-info': serverLog?.action === 'INFO'
+              }"
+            >
+              <td>{{ serverLog?.action }}</td>
+              <td>{{ serverLog?.type }}</td>
+              <td>{{ serverLog?.date_created | date: "medium" }}</td>
+              <td>{{ serverLog?.user?.name }}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="params?.auditLogs?.length == 0">
+          <tr>
+            <td colspan="100%">
+              <div class="alert alert-warning" role="alert">No audit logs</div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

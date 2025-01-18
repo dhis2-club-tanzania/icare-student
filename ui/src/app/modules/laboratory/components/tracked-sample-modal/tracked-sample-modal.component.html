@@ -1,0 +1,41 @@
+<div class="tracking-sample-container">
+    <mat-toolbar color="primary">Tracking {{sample?.id}} ({{sample?.specimenSourceName}}) | Client: {{sample?.patient?.familyName}} ,{{sample?.patient?.givenName}} | Age: {{sample?.patient?.age}} | Gender: {{sample?.patient?.gender}}</mat-toolbar>
+    <div class="tracking-details">
+        <table *ngIf="sample" class="table table-bordered table-stripped">
+            <thead class="tracked-tests-table-header">
+                <tr>
+                    <td>Test</td>
+                    <td>Container and Label</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let testOrder of sample?.orders">
+                    <td>{{ testOrder?.concept?.display }}</td>
+                    <td>
+                        {{ testOrder?.testAllocations[0]?.container?.display}} ({{testOrder.orderNumber}})
+                    </td>
+                    <td>
+                        <span *ngIf="!this.testOrder?.testAllocations[0]?.results || this.testOrder?.testAllocations[0]?.results?.length ==0">
+                            Waiting for results
+                        </span>
+                        <span *ngIf="this.testOrder?.testAllocations[0]?.results?.length > 0 && this.testOrder?.testAllocations[0]?.statuses?.length ==0">
+                            Results fed, waiting signoff
+                        </span>
+                        <span *ngIf="this.testOrder?.testAllocations[0]?.statuses?.length == 1">
+                            Waiting second signoff
+                        </span>
+                        <span *ngIf="this.testOrder?.testAllocations[0]?.statuses?.length == 2">
+                            Completed
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="btn-section">
+        <button color="primary" mat-stroked-button (click)="onCloseDialog($event)" class="mr-2 close-dialog-btn">
+            Done
+        </button>
+    </div>
+</div>

@@ -1,0 +1,201 @@
+<mat-toolbar color="primary">
+  <span>Concept : {{ conceptData?.name }}</span>
+</mat-toolbar>
+
+<div class="container my-3">
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="fetchingConcept && !conceptFetched"
+  ></mat-progress-bar>
+</div>
+
+<div class="container">
+  <div class="row" *ngIf="!fetchingConcept && conceptFetched">
+    <div class="col-md-12" *ngIf="!concept">
+      <span> Concept not found fill the form to create it. </span>
+
+      <mat-form-field class="w-100" appearance="fill">
+        <mat-label>Concept Name</mat-label>
+        <input
+          matInput
+          placeholder="Concept name"
+          [(ngModel)]="conceptData['name']"
+        />
+      </mat-form-field>
+
+      <mat-checkbox class="example-margin">Is set</mat-checkbox>
+
+      <!-- show set of concepts-->
+      <div class="concept-search-container my-3">
+        <div
+          class="concept-search-input-block p-2  {{
+            showConceptSetSearchList ? 'concept-content-available' : 'border'
+          }}"
+        >
+          <div *ngIf="{ conceptSets: conceptsSet$ | async } as params">
+            <div class="concept-search-input">
+              <mat-icon matPrefix class="text-muted">search</mat-icon>
+              <input
+                class="ml-2 w-100"
+                id="input-search-concept"
+                autocomplete="off"
+                type="text"
+                placeholder="Search Concept"
+                matInput
+                (keyup)="onSearchConcept($event)"
+              />
+              <mat-spinner
+                *ngIf="searchingConceptSet"
+                [diameter]="17"
+              ></mat-spinner>
+            </div>
+
+            <ng-container *ngIf="params?.conceptSets?.results?.length > 0">
+              <div id="concept-search-list" *ngIf="showConceptSetSearchList">
+                <mat-option
+                  *ngFor="let concept of params?.conceptSets?.results"
+                  [value]="concept"
+                  (click)="addConceptToSetMember(concept)"
+                >
+                  {{ concept.display }}
+                </mat-option>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            CONCEPT NAME
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            style="border-bottom: 1px solig gray"
+            *ngFor="let conceptSM of conceptSetMembers"
+          >
+            <td>{{ conceptSM.display }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- set mappings -->
+      <div class="data-element-search-container my-3">
+        <div
+          class="data-element-search-input-block p-2  {{
+            showDataElementsSearchList
+              ? 'data-element-content-available'
+              : 'border'
+          }}"
+        >
+          <div *ngIf="{ dataElements: dataElements$ | async } as params">
+            <div class="data-element-search-input">
+              <mat-icon matPrefix class="text-muted">search</mat-icon>
+              <input
+                class="ml-2 w-100"
+                id="input-search-data-element"
+                autocomplete="off"
+                type="text"
+                placeholder="Search Data Element"
+                matInput
+                (keyup)="onSearchDataElement($event)"
+                [(ngModel)]="selectedDataElementName"
+              />
+              <mat-spinner
+                *ngIf="searchingDataElements"
+                [diameter]="17"
+              ></mat-spinner>
+            </div>
+
+            <ng-container *ngIf="params?.dataElements?.length > 0">
+              <div
+                id="data-element-search-list"
+                *ngIf="showDataElementsSearchList"
+              >
+                <mat-option
+                  *ngFor="let dataElement of params?.dataElements"
+                  [value]="selectedDataElement"
+                  (click)="onSelectDataElement(dataElement)"
+                >
+                  {{ dataElement.name }}
+                </mat-option>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="settingMap">
+        Mapping . . .
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+
+      <mat-form-field
+        appearance="fill"
+        *ngIf="selectedDataElement"
+        class="w-100"
+      >
+        <mat-label>Category Option Combo</mat-label>
+        <mat-select>
+          <mat-option
+            *ngFor="
+              let cateogoryOpCm of selectedDataElement?.categoryCombo
+                ?.categoryOptionCombos
+            "
+            [value]="selectedCategoryOptionCombo"
+            (click)="onSelectCategoryOptionCombo(cateogoryOpCm)"
+          >
+            {{ cateogoryOpCm.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <p>
+        <button mat-flat-button color="primary" (click)="saveConcept()">
+          Save Concept
+        </button>
+      </p>
+    </div>
+
+    <div class="col-md-12" *ngIf="concept">
+      <mat-form-field class="w-100" appearance="fill">
+        <mat-label>Concept Name</mat-label>
+        <input  autocomplete="off" matInput placeholder="Concept name" [value]="concept?.display" />
+      </mat-form-field>
+
+      <div class="w-100">
+        <p>Set Members</p>
+        <table>
+          <tbody>
+            <tr *ngFor="let setMember of concept?.setMembers">
+              <td>
+                {{ setMember?.display }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <p>Mapping</p>
+        <table>
+          <tbody>
+            <tr *ngFor="let map of concept?.mappings">
+              <td>
+                {{ map?.display }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <button mat-flat-button color="primary" (click)="updateConcept()">
+          Update Concept
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

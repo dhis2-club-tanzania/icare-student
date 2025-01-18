@@ -1,0 +1,118 @@
+<div
+  class="message-construction"
+  *ngIf="{ orderFrequencies: orderFrequencies$ | async } as params"
+>
+  <p>{{ data?.referenceInstructions }}</p>
+  <div class="d-flex justify-content-between">
+    <mat-form-field class="w-50" appearance="fill">
+      <mat-label>Instructions per intake</mat-label>
+      <input
+        matInput
+        #input
+        minlength="5"
+        type="text"
+        [(ngModel)]="doseInfo"
+        (change)="getDoseInfo($event, doseInfo)"
+        placeholder="Dose e.g Kidonge 1"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="w-50 ml-2" appearance="fill">
+      <mat-label>Frequency</mat-label>
+      <input
+        type="text"
+        placeholder="Search"
+        aria-label="{{ field?.label }}"
+        matInput
+        (keyup)="searchItem($event, allFrequencies)"
+        [matAutocomplete]="auto"
+      />
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let option of orderFrequencies$ | async"
+          (click)="getSelectedItemFromOption($event, option, 'frequency')"
+          [value]="
+            option?.display
+              ? option?.display +
+                ' x(' +
+                option?.frequencyPerDay +
+                ' times per day)'
+              : option?.name +
+                ' (' +
+                option?.frequencyPerDay +
+                ' times per day)'
+          "
+        >
+          {{
+            option?.display
+              ? option?.display +
+                " (" +
+                option?.frequencyPerDay +
+                " times per day)"
+              : option?.name +
+                " (" +
+                option?.frequencyPerDay +
+                " times per day)"
+          }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+  <div class="d-flex justify-content-between">
+    <mat-form-field class="w-50" appearance="outline" floatLabel="always">
+      <mat-label>Start date & time</mat-label>
+      <input
+        matInput
+        [ngxMatDatetimePicker]="picker"
+        [readonly]="true"
+        [(ngModel)]="selectedDateTime"
+        (ngModelChange)="
+          onModelChange($event, 'start-date-time', selectedDateTime)
+        "
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker
+        #picker
+        [showSpinners]="true"
+        [showSeconds]="true"
+        [stepHour]="true"
+        [stepMinute]="true"
+      >
+      </ngx-mat-datetime-picker>
+    </mat-form-field>
+
+    <mat-form-field class="w-50 ml-2" appearance="fill">
+      <mat-label>Number of days</mat-label>
+      <input
+        matInput
+        #input
+        min="1"
+        [(ngModel)]="numberOfDays"
+        (keyup)="getNumberOfDays($evebt, numberOfDays)"
+        type="number"
+        placeholder="Day(s) e.g 1"
+      />
+    </mat-form-field>
+  </div>
+  <div class="messages-constructed">
+    <mat-accordion *ngIf="messages && messages.length > 0">
+      <mat-expansion-panel [opened]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Messages for a client
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="messages-container">
+          <p *ngFor="let message of messages; let count = index" class="constructed-message">
+            <span>
+              {{count + 1}}.
+            </span>
+            <span>
+              {{message?.message}}
+            </span>
+          </p>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

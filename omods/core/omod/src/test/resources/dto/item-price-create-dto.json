@@ -1,0 +1,12 @@
+{
+  "item": {
+    "uuid": "b21bhsld-9ab1-4b57-8a89-c0bf2580a68d"
+  },
+  "paymentType": {
+    "uuid": "e7jnec30-5344-11e8-ie7c-40b6etw3cfee"
+  },
+  "paymentScheme": {
+    "uuid": "e721ec30-5344-11e8-ie7c-40b6etw379ee"
+  },
+  "price": 4000
+}

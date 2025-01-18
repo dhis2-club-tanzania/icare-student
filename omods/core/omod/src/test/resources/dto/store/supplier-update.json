@@ -1,0 +1,8 @@
+{
+  "name": "DHIS-SUPPLIER-UPDATE",
+  "description": "This is the updated supplier for DHIS2 ",
+  "voided": true,
+  "location": {
+    "uuid": "44939999-d333-fff2-9bff-61d11117c22e"
+  }
+}

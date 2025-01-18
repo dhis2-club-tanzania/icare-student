@@ -1,0 +1,10 @@
+<div>
+  <app-pivot-header
+    (columnsToPivot)="onGetColumnsForPivot($event)"
+    (rowsToPivot)="onGetRowsForPivot($event)"
+    (filtersToPivot)="onGetFiltersForPivot($event)"
+    (excludedKeys)="onGetExclusedKeysForPivot($event)"
+    (updateLayout)="onUpdateLayout($event)"
+    [allItemsKeys]="arrayOfItems"
+  ></app-pivot-header>
+</div>

@@ -1,0 +1,313 @@
+<div
+  *ngIf="{
+    creatingLabOrderState: creatingLabOrderState$ | async,
+    voidingLabOrderState: voidingLabOrderState$ | async
+  } as params"
+>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th style="width: 10px">SN</th>
+        <th>Lab Test</th>
+        <!-- <th>Source</th>
+        <th>Date & Time Ordered</th>
+        <th>Ordered By</th> -->
+        <th>Result</th>
+        <th style="width: 20px"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container
+        *ngIf="
+          !labOrdersResultsInformation ||
+          labOrdersResultsInformation?.length === 0
+        "
+      >
+        <tr>
+          <td colspan="100%">
+            <div class="alert alert-warning" role="alert">No test ordered</div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container
+        *ngFor="let labTest of labOrdersResultsInformation; let count = index"
+      >
+        <ng-container
+          *ngIf="
+            testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid] &&
+            testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid]['members']
+              .length > 0
+          "
+        >
+          <tr *ngIf="!labTest?.voided">
+            <td
+              [attr.rowspan]="
+                showParameters[labTest?.uuid]
+                  ? testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid][
+                      'members'
+                    ]?.length + 1
+                  : 1
+              "
+            >
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ labTest?.concept?.display }}
+            </td>
+            <td>
+              <a (click)="toggleParametes($event, labTest)">
+                <img
+                  height="20"
+                  class="text-muted"
+                  *ngIf="!showParameters[labTest?.uuid]"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
+                />
+                <img
+                  height="20"
+                  class="text-muted"
+                  *ngIf="showParameters[labTest?.uuid]"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
+                />
+              </a>
+            </td>
+            <td>
+              <button
+                *ngIf="!isInpatient"
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Options"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="
+                    setCurrentOrderedItemForOtherDetailsView($event, labTest)
+                  "
+                >
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="!showOtherDetails[labTest?.concept?.uuid]"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
+                  />
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="showOtherDetails[labTest?.concept?.uuid]"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
+                  />
+                  <span>More details</span>
+                </button>
+                <!-- <button
+                    mat-menu-item
+                    (click)="onDeleteTest($event, labTest)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button> -->
+              </mat-menu>
+            </td>
+          </tr>
+          <tr
+            *ngIf="
+              currentLabTest?.orderNumber === labTest?.orderNumber &&
+              showOtherDetails[labTest?.uuid]
+            "
+          >
+            <td colspan="100%" style="padding: 0 !important">
+              <p
+                style="margin: 0 !important"
+                class="other-order-details text-center text-muted"
+              >
+                <span> <b> Source </b>: {{ labTest?.location?.display }} </span
+                >,
+                <span>
+                  <b> Order Date & Time </b>:
+                  {{ labTest?.dateActivated | date: "medium" }} </span
+                >,
+                <span>
+                  <b> Ordered By </b>: {{ labTest?.orderer?.display }}
+                </span>
+              </p>
+            </td>
+          </tr>
+          <ng-container *ngIf="showParameters[labTest?.uuid]">
+            <tr
+              style="padding: 0 !important; margin: 0 !important"
+              *ngFor="
+                let member of testSetMembersKeyedByConceptUuid[
+                  labTest?.concept?.uuid
+                ]['members']
+              "
+            >
+              <td colspan="1" class="text-muted">- {{ member?.display }}</td>
+              <td colspan="1">
+                <app-lab-result-display
+                  [labTest]="labTest"
+                  [observationsKeyedByConcept]="observationsKeyedByConcept"
+                  [codedResultsData]="codedResultsData"
+                  [concept]="member"
+                  [forSetMember]="true"
+                ></app-lab-result-display>
+              </td>
+              <td></td>
+            </tr>
+          </ng-container>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid] &&
+            testSetMembersKeyedByConceptUuid[labTest?.concept?.uuid]['members']
+              .length === 0
+          "
+        >
+          <tr *ngIf="!labTest?.voided">
+            <td>
+              {{ count + 1 }}
+            </td>
+            <td>
+              {{ labTest?.concept?.display }}
+            </td>
+            <td>
+              <app-lab-result-display
+                [labTest]="labTest"
+                [observationsKeyedByConcept]="observationsKeyedByConcept"
+                [codedResultsData]="codedResultsData"
+              ></app-lab-result-display>
+            </td>
+            <td>
+              <!-- <a
+                  style="display: table-cell; vertical-align: bottom"
+                  (click)="
+                    setCurrentOrderedItemForOtherDetailsView($event, labTest)
+                  "
+                >
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="!showOtherDetails"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
+                  />
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="showOtherDetails"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
+                  />
+                </a> -->
+              <button
+                *ngIf="!isInpatient"
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Options"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="
+                    setCurrentOrderedItemForOtherDetailsView($event, labTest)
+                  "
+                >
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="!showOtherDetails[labTest?.uuid]"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRoge3YTQ6CMBiE4bkeOxYaFnJ6egxMcCETSdPWKv35SOZJ2FHzjrogACIiIiJCAwC3X2PnlqMRn64hdaMDsO3XCmCqnvbdhHcLu1zq5uMACyP8+A3AkjowBg70GhGKX5Hx174FDj4BzLVKA+6RhkfuB/QccTqeeowoFk8tRxSPpxYjqsVTzRHV46nGiGbxVHJE83gqMaJbPJ0Z0T2e/hlhJp5+GWEunnJGmI2n1Ajz8RR7/LXyeJ4l9EuY/+Z9sRGXiCd/xKXiiW8SFth6wyEiIiIiVrwAJZDhiwgAKA4AAAAASUVORK5CYII="
+                  />
+                  <img
+                    height="10"
+                    class="text-muted"
+                    *ngIf="showOtherDetails[labTest?.uuid]"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAA2ElEQVRoge3YQQrCMBSE4bmeuyyULvT0yTFa0EU7IDUJpk3yUpgPulEL/+gmFhARERGRVhyAsF3OuKXYA8AM4L1dC4CXaVGBffylRqTiLzFiwm/8nHhtMmpMin3zC4AngHvivWF+iVw8DTvin3gabkRJPA0z4kg8mY84E09mI2rEU/cRNeOp24gW8dR8RMt4ajaiRzxVH9EznqqNsIin0yMs4+nwCBe50er4mzqeZ/+ehsgNlmf32IiQu+F7gHU87Uf43IdvWEd4jPUkgU84PNZGEREREbm6DyOF4ZDs7v8cAAAAAElFTkSuQmCC"
+                  />
+                  <span>More details</span>
+                </button>
+                <!-- <button
+                    mat-menu-item
+                    (click)="onDeleteTest($event, labTest)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button> -->
+              </mat-menu>
+            </td>
+          </tr>
+          <tr
+            *ngIf="
+              currentLabTest?.orderNumber === labTest?.orderNumber &&
+              showOtherDetails[labTest?.uuid]
+            "
+          >
+            <td colspan="100%" style="padding: 0">
+              <p
+                style="margin: 0 !important"
+                class="other-order-details text-center text-muted"
+              >
+                <span>
+                  <b> Source </b>: {{ labTest?.location?.display }},
+                </span>
+                <span class="ml-2">
+                  <b> Order Date & Time </b>:
+                  {{ labTest?.dateActivated | date: "medium" }},
+                </span>
+                <span class="ml-2">
+                  <b> Ordered By </b>: {{ labTest?.orderer?.display }}
+                </span>
+              </p>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="forConsultation && !isInpatient">
+        <tr>
+          <td colspan="3">
+            <app-form
+              [fields]="formFields"
+              [isFormHorizontal]="false"
+              (formUpdate)="onFormUpdate($event)"
+            >
+            </app-form>
+            <a
+              class="float-right"
+              style="cursor: pointer"
+              (click)="
+                onToggleCommonLabTests(
+                  $event,
+                  investigationAndProceduresFormsDetails
+                )
+              "
+              ><span> Common Lab Tests </span
+              ><span *ngIf="!showCommonLabTests">
+                <img
+                  height="15"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAA6UlEQVRIie3TsUtCURTH8Y8aCAYSCWEQNASCBA0tDU7h1lJLS1tTSzQF7U3i1NbU1hz+A04NLWJBBEEQGGZQ4NjckA9CeOrT1/a+cId77u98OWe4JCTEwT2q/+Ctog0VfGIvRvkOvrAdFDbRw34M8l18YGv4oYw3HM4gP8A7NsICJXRwMoX8CF2sjwuu4gWnEeTHeMXapA1FPKI2QfYMz1iJMBBYwgPqSIVkzvGE5ajygAXc4RLpP/UULtBCYVp5wDyauMYcMrjCLfLjmsNWHyaHBvqD+6Lfj/kdcdiRZHEzONk4xQkJo/kBrP8gcz3u2LkAAAAASUVORK5CYII="
+                /> </span
+            ></a>
+            <div *ngIf="showCommonLabTests" class="w-100 mt-1">
+              <!-- {{ commonLabTestsFields | json }} -->
+              <app-form
+                [fields]="commonLabTestsFields"
+                (formUpdate)="onFormUpdate($event)"
+                [shouldRenderAsCheckBoxesButton]="true"
+                [shouldDisable]="false"
+              ></app-form>
+            </div>
+          </td>
+          <td>
+            <button
+              mat-stroked-button
+              [disabled]="!isFormValid"
+              (click)="onAddTest($event)"
+            >
+              Add
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

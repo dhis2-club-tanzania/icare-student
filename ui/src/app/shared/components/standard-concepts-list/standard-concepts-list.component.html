@@ -1,0 +1,159 @@
+<div
+  class="standard-concepts-list"
+  *ngIf="{ conceptsList: conceptsList$ | async } as params"
+>
+  <div class="loading-overlay" *ngIf="saving">
+    <div class="text-center">
+      <div>Saving data</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div class="w-100" *ngIf="!saving">
+    <div class="w-100">
+      <mat-form-field class="w-100" apperance="fill" style="font-size: 0.9rem">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon
+        ><input
+          type="text"
+          placeholder="Search"
+          class="search-input"
+          matInput
+          autocomplete="off"
+          (keyup)="searchConcept($event)"
+        />
+      </mat-form-field>
+    </div>
+    <div *ngIf="params?.conceptsList" style="max-height: 700px; overflow: auto">
+      <table class="w-100 table-striped">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Name</th>
+            <th>Date created</th>
+            <th *ngIf="stockable">Stockable</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container
+            *ngIf="
+              params?.conceptsList && params?.conceptsList?.results?.length > 0
+            "
+          >
+            <tr
+              [ngClass]="{
+                'selected-concept': concept?.uuid === selectedConceptUuid,
+                retired: concept?.retired
+              }"
+              *ngFor="
+                let concept of params?.conceptsList?.results;
+                let count = index
+              "
+            >
+              <td>
+                {{ count + 1 + (page - 1) * pageSize }}
+              </td>
+              <td>
+                {{ concept?.display }}
+              </td>
+              <td>
+                {{ concept?.dateCreated | date }}
+              </td>
+              <td *ngIf="stockable">
+                {{ concept?.item?.stockable }}
+              </td>
+              <td>
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button
+                    [disabled]="concept?.retired"
+                    mat-menu-item
+                    (click)="onEdit($event, concept)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+
+                  <button
+                    [disabled]="concept?.item?.stockable"
+                    mat-menu-item
+                    (click)="onMakeItemStockable($event, concept)"
+                  >
+                    <mat-icon>store</mat-icon>
+                    <span>Make item stockable</span>
+                  </button>
+                  <button
+                    [disabled]="concept?.retired"
+                    mat-menu-item
+                    (click)="onDelete($event, concept)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Retire (Disable)</span>
+                  </button>
+
+                  <button
+                    mat-menu-item
+                    (click)="onPermanentDelete($event, concept)"
+                  >
+                    <mat-icon>delete_forever</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                  <button
+                    [disabled]="!concept?.retired"
+                    mat-menu-item
+                    (click)="onEnable($event, concept)"
+                  >
+                    <mat-icon>done</mat-icon>
+                    <span>Enable</span>
+                  </button>
+
+                  <button
+                    *ngIf="standardSearchTerm === 'TEST_ORDERS'"
+                    [disabled]="concept?.billableItem"
+                    mat-menu-item
+                    (click)="onSetBillable($event, concept)"
+                  >
+                    <mat-icon>local_atm</mat-icon>
+                    <span>Set Billable</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              params?.conceptsList &&
+              params?.conceptsList?.results?.length === 0
+            "
+          >
+            <tr>
+              <td colspan="100%">
+                <div class="alert alert-warning" role="alert">Missing List</div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+    <!-- {{ params?.conceptsList | json }} -->
+    <div class="w-100 mt-2">
+      <mat-paginator
+        [hidden]="!pageCounts"
+        [length]="params?.conceptsList?.pager?.total"
+        [pageSize]=""
+        [pageSizeOptions]="pageCounts"
+        (page)="getConceptList($event)"
+      >
+      </mat-paginator>
+    </div>
+  </div>
+
+  <mat-progress-bar
+    *ngIf="!params?.conceptsList"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

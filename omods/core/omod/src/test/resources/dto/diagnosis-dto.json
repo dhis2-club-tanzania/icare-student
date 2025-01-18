@@ -1,0 +1,12 @@
+{
+  "diagnosis": {
+    "coded": "A00",
+    "nonCoded": "Cholera",
+    "specificName": "Cholera"
+  },
+  "condition": "",
+  "certainty": "1",
+  "conceptUuid": "a8102d6d-c528-477a-80bd-acc38ebc6252",
+  "patient": "b1090031-0a93-4999-9185-3d28e4ac9b69",
+  "encounter": "444395c-dd07-488d-8fd7-a748c9570000"
+}

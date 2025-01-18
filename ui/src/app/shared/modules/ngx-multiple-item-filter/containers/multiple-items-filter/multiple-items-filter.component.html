@@ -1,0 +1,55 @@
+<div
+  class="w-100"
+  [ngStyle]="{ 'max-height': maxHeight ? maxHeight + 'px' : '350px' }"
+  *ngIf="{ datasetDefinitions: datasetDefinitions$ | async } as params"
+>
+  <table class="table table-bordered">
+    <tr>
+      <td style="width: 50%">
+        <mat-progress-bar
+          *ngIf="!params?.datasetDefinitions"
+          mode="indeterminate"
+        ></mat-progress-bar>
+        <div class="h5 text-center">Available</div>
+        <div
+          style="overflow: auto"
+          [ngStyle]="{
+            'max-height': maxHeight ? maxHeight - 50 + 'px' : '310px'
+          }"
+        >
+          <ul>
+            <li
+              (click)="getSelectedItem($event, item)"
+              *ngFor="
+                let item of params?.datasetDefinitions
+                  | filterFilterItems: selectedItems
+              "
+            >
+              {{ item?.display }}
+            </li>
+          </ul>
+        </div>
+      </td>
+      <td style="width: 50%">
+        <div class="h5 text-center">Selected items</div>
+        <div
+          style="overflow: auto"
+          [ngStyle]="{
+            'max-height': maxHeight ? maxHeight - 50 + 'px' : '310px'
+          }"
+        >
+          <ul>
+            <li
+              (click)="
+                unSelectItem($event, selectedItem, params?.datasetDefinitions)
+              "
+              *ngFor="let selectedItem of selectedItems"
+            >
+              {{ selectedItem?.display }}
+            </li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

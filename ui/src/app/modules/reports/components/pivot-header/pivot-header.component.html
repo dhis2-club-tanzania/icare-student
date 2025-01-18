@@ -1,0 +1,73 @@
+<div class="p-4">
+  <table class="table table-bordered">
+    <tr>
+      <td rowspan="2">
+        <p class="dimension-header">Exclused Dimensions</p>
+
+        <div
+          class="dragable-items"
+          cdkDropList
+          #excludedItems="cdkDropList"
+          [cdkDropListData]="itemsOmitted"
+          [cdkDropListConnectedTo]="[columns, rows]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div *ngFor="let item of itemsOmitted" cdkDrag>
+            {{ item }}
+          </div>
+        </div>
+      </td>
+      <td colspan="2">
+        <p class="dimension-header">Filters</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="dimension-header">Rows</p>
+        <div
+          class="dragable-items"
+          cdkDropList
+          #rows="cdkDropList"
+          [cdkDropListData]="rowsItems"
+          [cdkDropListConnectedTo]="[excludedItems, columns]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div *ngFor="let item of rowsItems" cdkDrag>
+            {{ item }}
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <p class="dimension-header">Columns</p>
+        <div
+          class="dragable-items"
+          cdkDropList
+          #columns="cdkDropList"
+          [cdkDropListData]="columnItems"
+          [cdkDropListConnectedTo]="[excludedItems, rows]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div *ngFor="let item of columnItems" cdkDrag>
+            {{ item }}
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <div class="d-flex justify-content-end">
+          <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+          <button
+            color="primary"
+            class="ml-2"
+            mat-stroked-button
+            (click)="onUpdate($event)"
+          >
+            Update
+          </button>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

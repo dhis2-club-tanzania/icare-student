@@ -1,0 +1,47 @@
+<div id="modal-location-selector" style="width: 100%">
+  <mat-toolbar color="primary">
+    <div style="text-align: center; font-size: 1rem">Select Location</div>
+  </mat-toolbar>
+  <div class="row" style="padding: 3%">
+    <div class="col-md-12">
+      <div *ngIf="settingLocation && !locationSet">
+        <p>Setting Location</p>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+
+      <mat-progress-bar
+        *ngIf="(loadingLocations$ | async) || !(locations$ | async)"
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <div *ngIf="locations$ | async">
+        <mat-form-field appearance="fill" class="w-100">
+          <input
+            type="text"
+            placeholder="Search location"
+            aria-label="Number"
+            matInput
+            autocomplete="off"
+            (keyup)="onSearch($event)"
+          />
+        </mat-form-field>
+
+        <mat-nav-list class="location-list-container">
+          <mat-list-item
+            (click)="setLocation(location)"
+            *ngFor="
+              let location of locations$
+                | async
+                | filterBy: searchingText:'name'
+            "
+          >
+            <a matLine>{{ location.name }}</a>
+            <mat-divider></mat-divider>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+      <div style="text-align: right">
+        <button mat-flat-button (click)="cancel()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

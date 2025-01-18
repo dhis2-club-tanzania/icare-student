@@ -1,0 +1,160 @@
+<!-- <mat-toolbar color="primary">
+  <span>
+    {{
+      patient?.display +
+        ", gender: " +
+        patient?.person?.gender +
+        ", age: " +
+        patient?.person?.age +
+        " yrs"
+    }}
+  </span>
+  <span class="toolbar-spacer"></span>
+  <span class="float-right">
+    <span *ngFor="let attribute of patient?.person?.attributes">
+      {{ attribute?.display }},
+    </span>
+  </span>
+  <button mat-icon-button mat-dialog-close matTooltip="close">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-toolbar> -->
+<mat-dialog-content
+  class="mat-typography"
+  *ngIf="{
+    currentVisitLoadedState: currentVisitLoadedState$ | async
+  } as params"
+>
+  <div class="patient-basic-information">
+    <div>
+      <p class="demographic-details">
+        {{
+          patient?.display +
+            " | Gender: " +
+            patient?.person?.gender +
+            " | Age: " +
+            patient?.person?.age +
+            " yrs" +
+            " | Contact:" +
+            (patientPhone ? patientPhone : "")
+        }}
+      </p>
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="!params?.currentVisitLoadedState"
+      ></mat-progress-bar>
+      <div class="row" *ngIf="params?.currentVisitLoadedState">
+        <!-- <div class="col-md-4">
+          <div class="other-patient-details">
+            <app-patient-person-attributes
+              [attributes]="patient?.person?.attributes"
+            ></app-patient-person-attributes>
+          </div>
+        </div> -->
+        <div class="col-md-12">
+          <app-other-patient-details
+            [patient]="patient"
+          ></app-other-patient-details>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="loading-overlay" *ngIf="startingVisit">
+    <div class="text-center">
+      <div>Starting visit...</div>
+      <div class="mt-3 d-flex justify-content-center w-100">
+        <mat-spinner diameter="50" strokeWidth="2"></mat-spinner>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="{
+      treatmentLocations: treatmentLocations$ | async,
+      visitTypes: visitTypes$ | async,
+      servicesConfigs: servicesConfigs$ | async,
+      allowOnlineVerification: allowOnlineVerification$ | async,
+      currentPatientVisit: currentPatientVisit$ | async
+    } as params"
+  >
+    <mat-tab-group
+      (selectedTabChange)="changeTab(selectedTab.value)"
+      [selectedIndex]="selectedTab.value"
+      (selectedIndexChange)="selectedTab.setValue($event)"
+    >
+      <mat-tab label="Current visit">
+        <div class="p-2" *ngIf="selectedTab.value === 0">
+          <app-visit
+            *ngIf="params?.servicesConfigs && params?.visitTypes"
+            [patientsByLocation]="[]"
+            [patientDetails]="patient"
+            [treatmentLocations]="params?.treatmentLocations"
+            [servicesConfigs]="params?.servicesConfigs"
+            [visitTypes]="params?.visitTypes"
+            [allowOnlineVerification]="params?.allowOnlineVerification"
+            (visitUpdate)="onVisitUpdate($event)"
+            (cancelVisitChanges)="onCancelVisitChanges($event)"
+            (startVisitEvent)="onStartVisit()"
+            (editPatient)="onEditPatient($event)"
+          ></app-visit>
+
+          <mat-progress-bar
+            mode="indeterminate"
+            *ngIf="!params?.servicesConfigs || !params?.visitTypes"
+          ></mat-progress-bar>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Update Authorization</span>
+        </ng-template>
+        <div class="p-2" *ngIf="selectedTab.value === 1">
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentPatientVisit"
+          >
+            Update can only be done for client with active visit
+          </div>
+          <app-update-visit-attribute
+            *ngIf="params?.currentPatientVisit"
+            [patient]="patient"
+          ></app-update-visit-attribute>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Previous visits </span>
+        </ng-template>
+        <div class="p-2" *ngIf="selectedTab.value === 2">
+          <app-visits-history-for-patient
+            [patient]="patient"
+          ></app-visits-history-for-patient>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Update Consultation Room </span>
+        </ng-template>
+        <div class="p-2" *ngIf="selectedTab.value === 3">
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!params?.currentPatientVisit"
+          >
+            Update can only be done for client with active visit
+          </div>
+          <app-update-doctors-room
+            *ngIf="params?.currentPatientVisit"
+            [currentVisit]="params?.currentPatientVisit"
+            [patient]="patient"
+            [treatmentLocations]="params?.treatmentLocations"
+            (closeDialog)="onCloseDialog($event, params?.currentPatientVisit)"
+          ></app-update-doctors-room>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <div *ngIf="errors?.length > 0">
+    <app-shared-error [errors]="errors"></app-shared-error>
+  </div>
+</mat-dialog-content>

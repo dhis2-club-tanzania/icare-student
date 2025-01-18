@@ -1,0 +1,261 @@
+<div
+  *ngIf="{
+    conceptsAttributesTypes: conceptsAttributesTypes$ | async,
+    selectedConceptDetails: selectedConceptDetails$ | async
+  } as params"
+>
+  <div class="row">
+    <div class="col-12">
+      <mat-tab-group>
+        <mat-tab label="Parameters">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <div class="row">
+                <div
+                  class="
+                    col-lg-8 col-md-8 col-sx-12 col-sm-12
+                    mb-4
+                    border-right-separater
+                  "
+                >
+                  <div class="loading-overlay" *ngIf="saving">
+                    <div class="text-center">
+                      <div>Saving data</div>
+                      <div class="mt-3 d-flex justify-content-center w-100">
+                        <mat-spinner
+                          diameter="50"
+                          strokeWidth="2"
+                        ></mat-spinner>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div *ngIf="errors && errors?.length > 0">
+                      <app-shared-error [errors]="errors"></app-shared-error>
+                    </div>
+                    <div class="h4 text-left">New Parameter</div>
+                    <hr />
+                    <div class="row">
+                      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                        <app-form
+                          [fields]="basicParametersFields"
+                          (formUpdate)="onFormUpdate($event)"
+                        ></app-form>
+
+                        <fieldset
+                          *ngIf="
+                            formData['datatype']?.value !==
+                            '8d4a48b6-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                        >
+                          <legend>Others</legend>
+                          <div *ngIf="params?.conceptsAttributesTypes">
+                            <app-manage-concept-attributes
+                              [conceptsAttributesTypes]="
+                                params?.conceptsAttributesTypes
+                              "
+                              [concept]="conceptBeingEdited"
+                              (attributesValues)="onGetAttributeValues($event)"
+                            ></app-manage-concept-attributes>
+                          </div>
+                          <mat-progress-bar
+                            mode="indeterminate"
+                            *ngIf="!params?.conceptsAttributesTypes"
+                          ></mat-progress-bar>
+                        </fieldset>
+                        <div
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a48b6-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                        >
+                          <app-coded-answers-selection
+                            [selectedItems]="selectedAnswers"
+                            (selectedAnswers)="onGetSelectedAnswers($event)"
+                          ></app-coded-answers-selection>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sx-12 col-sm-12">
+                        <!-- TODO: Use system settings to remove harcoded uuid -->
+                        <app-form
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a4488-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                          [fields]="[displayPrecisionField]"
+                          (formUpdate)="onFormUpdate($event)"
+                        ></app-form>
+                        <app-form
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a4488-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                          [fields]="[lowNormalField]"
+                          (formUpdate)="onFormUpdate($event)"
+                        ></app-form>
+                        <app-form
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a4488-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                          [fields]="[highNormalField]"
+                          (formUpdate)="onFormUpdate($event)"
+                        ></app-form>
+                        <app-form
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a4488-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                          [fields]="[unitsField]"
+                          (formUpdate)="onFormUpdate($event)"
+                        ></app-form>
+
+                        <fieldset
+                          *ngIf="
+                            formData['datatype']?.value ===
+                            '8d4a48b6-c2cc-11de-8d13-0010c6dffd0f'
+                          "
+                        >
+                          <legend>Others</legend>
+                          <div *ngIf="params?.conceptsAttributesTypes">
+                            <app-manage-concept-attributes
+                              [conceptsAttributesTypes]="
+                                params?.conceptsAttributesTypes
+                              "
+                              [concept]="conceptBeingEdited"
+                              (attributesValues)="onGetAttributeValues($event)"
+                            ></app-manage-concept-attributes>
+                          </div>
+                          <mat-progress-bar
+                            mode="indeterminate"
+                            *ngIf="!params?.conceptsAttributesTypes"
+                          ></mat-progress-bar>
+                        </fieldset>
+                        <fieldset>
+                          <legend>Codes</legend>
+                          <div>
+                            <table
+                              *ngIf="params?.selectedConceptDetails"
+                              class="table"
+                              style="max-height: 120; overflow: auto"
+                            >
+                              <tbody>
+                                <ng-container
+                                  *ngFor="let item of selectedCodeItems"
+                                >
+                                  <tr
+                                    [ngClass]="{
+                                      'retired-reference-term': item?.retired
+                                    }"
+                                  >
+                                    <td>
+                                      {{ item?.display }}
+                                    </td>
+                                    <td>
+                                      <button
+                                        mat-icon-button
+                                        [matMenuTriggerFor]="menu"
+                                        aria-label="Codes' deletion"
+                                      >
+                                        <mat-icon>more_vert</mat-icon>
+                                      </button>
+                                      <mat-menu #menu="matMenu">
+                                        <button
+                                          [disabled]="
+                                            item?.retired || !item?.mappingUuid
+                                          "
+                                          (click)="
+                                            onDeleteMapping($event, item)
+                                          "
+                                          mat-menu-item
+                                        >
+                                          <mat-icon>delete</mat-icon>
+                                          <span>Delete</span>
+                                        </button>
+                                      </mat-menu>
+                                    </td>
+                                  </tr>
+                                </ng-container>
+                              </tbody>
+                            </table>
+                            <app-form
+                              [fields]="[codesMappingsSourceField]"
+                              (formUpdate)="onFormUpdateForSource($event)"
+                            ></app-form>
+                            <div *ngIf="selectedCodingSource">
+                              <app-multiple-items-selection
+                                [items]="options"
+                                [itemType]="'conceptReferenceTerm'"
+                                [source]="selectedCodingSource"
+                                [selectedItems]="selectedCodeItems"
+                                (getSelectedItems)="onGetSelectedCodes($event)"
+                              ></app-multiple-items-selection>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-12" *ngIf="savingMessage">
+                        <div class="alert alert-{{ alertType }}" role="alert">
+                          {{ savingMessage }}
+                        </div>
+                      </div>
+                      <div class="col-12 d-flex justify-content-end mt-2">
+                        <button
+                          mat-stroked-button
+                          (click)="onSave($event, parameterUuid)"
+                          [disabled]="!isFormValid"
+                        >
+                          {{ !parameterUuid ? "Save" : "Update" }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="
+                    col-lg-4 col-md-4 col-sx-12 col-sm-12
+                    mb-4
+                    border-right-separater
+                  "
+                  *ngIf="!saving"
+                >
+                  <app-parameters-list
+                    (selectedParameter)="onGetSelectedParameter($event)"
+                  ></app-parameters-list>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Parameter headers">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <div>
+                <app-standard-concept-creation
+                  [conceptClass]="'Misc'"
+                  [isSet]="true"
+                  [setMembersHeaderName]="'Parameters'"
+                  [conceptDataTypes]=""
+                  [standardSearchTerm]="'PARAMETER_HEADER'"
+                  [setMembersSearchTerm]="'LIS_TEST_PARAMETER'"
+                ></app-standard-concept-creation>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Coded Answers">
+          <ng-template matTabContent>
+            <div class="p-3">
+              <app-coded-answers></app-coded-answers>
+            </div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

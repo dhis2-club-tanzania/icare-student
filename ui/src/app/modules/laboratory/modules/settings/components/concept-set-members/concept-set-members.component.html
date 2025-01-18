@@ -1,0 +1,25 @@
+<div *ngIf="{ conceptsList: conceptsList$ | async } as params">
+  <!-- <app-concept-set-members-selection
+    *ngIf="params?.conceptsList"
+    [concepts]="params?.conceptsList"
+    [selectedSetMembersItems]="selectedSetMembersItems"
+    (selectedSetMembers)="onGetSelectedSetMembers($event)"
+  ></app-concept-set-members-selection> -->
+  <app-multiple-items-selection
+    *ngIf="params?.conceptsList"
+    [items]="params?.conceptsList"
+    [standardSearchTerm]="standardSearchTerm"
+    [itemType]="'concept'"
+    [searchTermOfConceptSetToExcludeFromTestOrders]="
+      searchTermOfConceptSetToExcludeFromTestOrders
+    "
+    [standardSearchTerm]="setMembersSearchTerm"
+    [selectedItems]="selectedSetMembersItems"
+    (getSelectedItems)="onGetSelectedSetMembers($event)"
+  ></app-multiple-items-selection>
+
+  <mat-progress-bar
+    *ngIf="!params?.conceptsList"
+    mode="indeterminate"
+  ></mat-progress-bar>
+</div>

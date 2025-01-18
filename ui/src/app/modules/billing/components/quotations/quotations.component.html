@@ -1,0 +1,19 @@
+<div class="quotations-container">
+  <mat-accordion>
+    <app-quotation-item
+      *ngFor="let bill of bills; let billIndex = index"
+      [bill]="bill"
+      [expanded]="billIndex === 0"
+      [billItems]="bill.items"
+      [disableControls]="disableControls"
+      [currentUser]="currentUser"
+      [currentPatient]="currentPatient"
+      [currentPatient]="currentPatient"
+      [logo]="logo"
+      [facilityDetails]="facilityDetails"
+      (confirmPayment)="onConfirmBillPayment($event, bill)"
+      (paymentSuccess)="onPaymentSuccess()"
+    >
+    </app-quotation-item>
+  </mat-accordion>
+</div>

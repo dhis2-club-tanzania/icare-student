@@ -1,0 +1,183 @@
+<mat-progress-bar mode="indeterminate" *ngIf="savingConfigs"></mat-progress-bar>
+<div *ngIf="existingConfigsJson">
+  <button
+    mat-icon-button
+    color="primary"
+    matTooltip="Enable editing"
+    (click)="enableEditing()"
+  >
+    <mat-icon>mode_edit</mat-icon>
+  </button>
+  <!-- <button mat-icon-button color="primary" matTooltip="Void configurations">
+    <mat-icon>delete</mat-icon>
+  </button> -->
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Standard TAT</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['standardTAT']['value']"
+        [disabled]="existingConfigsDisabledEditing"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['standardTAT']['unit']"
+        [disabled]="existingConfigsDisabledEditing"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Urgent TAT</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['urgentTAT']['value']"
+        [disabled]="existingConfigsDisabledEditing"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['urgentTAT']['unit']"
+        [disabled]="existingConfigsDisabledEditing"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Additional Request Time Limit</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['additionalReqTimeLimit']['value']"
+        [disabled]="existingConfigsDisabledEditing"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="existingConfigsJson['additionalReqTimeLimit']['unit']"
+        [disabled]="existingConfigsDisabledEditing"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="w-100" *ngIf="!existingConfigsDisabledEditing">
+    <button mat-raised-button (click)="updateConfigurations()">UPDATE</button>
+  </div>
+</div>
+<div *ngIf="!existingConfigsJson">
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Standard TAT</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="configsJson['standardTAT']['value']"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="configsJson['standardTAT']['unit']"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Urgent TAT</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="configsJson['urgentTAT']['value']"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="configsJson['urgentTAT']['unit']"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="w-100 my-2">
+    <mat-form-field appearance="fill" class="w-50">
+      <mat-label>Additional Request Time Limit</mat-label>
+      <input
+        type="number"
+        matInput
+        placeholder="0.00"
+        ngDefaultControl
+        [(ngModel)]="configsJson['additionalReqTimeLimit']['value']"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Units</mat-label>
+      <mat-select
+        ngDefaultControl
+        [(ngModel)]="configsJson['additionalReqTimeLimit']['unit']"
+      >
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{ unit }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!canSave()"
+    (click)="saveConfigurations()"
+  >
+    SAVE
+  </button>
+</div>

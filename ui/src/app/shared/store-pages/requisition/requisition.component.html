@@ -1,0 +1,450 @@
+<div
+  class="requisition-container"
+  *ngIf="{
+    requisitions: requisitions$ | async,
+    stores: stores$ | async,
+    currentStore: currentStore$ | async,
+    stockableItems: stockableItems$ | async,
+    loadingRequisitions: loadingRequisitions$ | async,
+    referenceTagsThatCanRequestFromMainStoreConfigs:
+      referenceTagsThatCanRequestFromMainStoreConfigs$ | async,
+    referenceTagsThatCanRequestFromPharmacyConfigs:
+      referenceTagsThatCanRequestFromPharmacyConfigs$ | async,
+    mainStoreLocationTagUuid: mainStoreLocationTagUuid$ | async,
+    pharmacyLocationTagUuid: pharmacyLocationTagUuid$ | async,
+    requisitionCodeFormat: requisitionCodeFormat$ | async,
+    facilityDetails: facilityDetails$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <mat-card appearance="outlined" class="border">
+    <div class="d-flex justify-content-between">
+      <div class="w-75">
+        <div class="d-flex">
+          <div class="">
+            <app-invoice-filters
+              (searchingText)="onGetSearchingText($event)"
+              (definedEndDate)="onGetEndDate($event)"
+              (definedStartDate)="onGetStartDate($event)"
+            ></app-invoice-filters>
+          </div>
+          <mat-form-field class="w-100 ml-2" appearance="fill">
+            <mat-label>Filter </mat-label>
+            <mat-select (selectionChange)="onSelectStatus($event)">
+              <mat-option *ngFor="let status of statuses" [value]="status">
+                {{ status }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <button
+        class="{{
+          showRequisitionForm ? 'float-right button-round' : 'button-round'
+        }}"
+        [disabled]="
+          !params?.pharmacyLocationTagUuid ||
+          params?.pharmacyLocationTagUuid == 'none' ||
+          !params?.mainStoreLocationTagUuid ||
+          params?.mainStoreLocationTagUuid == 'none' ||
+          !params?.referenceTagsThatCanRequestFromPharmacyConfigs ||
+          !params?.referenceTagsThatCanRequestFromMainStoreConfigs
+        "
+        (click)="onNewRequest($event, params)"
+        mat-flat-button
+        color="primary"
+        style="height: 40px"
+      >
+        {{ showRequisitionForm ? "Hide Request Form" : "New Request" }}
+      </button>
+    </div>
+    <div class="col-12">
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="
+          !params?.pharmacyLocationTagUuid ||
+          !params?.mainStoreLocationTagUuid ||
+          !params?.referenceTagsThatCanRequestFromPharmacyConfigs ||
+          !params?.referenceTagsThatCanRequestFromMainStoreConfigs
+        "
+      ></mat-progress-bar>
+      <div
+        *ngIf="
+          params?.pharmacyLocationTagUuid == 'none' ||
+          params?.mainStoreLocationTagUuid == 'none' ||
+          params?.referenceTagsThatCanRequestFromPharmacyConfigs == 'none' ||
+          params?.referenceTagsThatCanRequestFromMainStoreConfigs == 'none'
+        "
+        class="alert alert-warning"
+        role="alert"
+      >
+        Contact IT, some settings are missing
+      </div>
+    </div>
+
+    <!-- <table class="table">
+      <tr>
+        <td>#</td>
+        <td>Item</td>
+        <td>Quantity Requested</td>
+        <td>Requested On</td>
+        <td>Quantity Issued</td>
+        <td>Issued On</td>
+        <td>Requsted From</td>
+        <td>Status</td>
+        <td><span class="float-right">Actions</span></td>
+      </tr>
+
+      <tr *ngIf="!params.requisitions">
+        <td colspan="7">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </td>
+      </tr>
+
+      <tr *ngIf="params.requisitions && params.requisitions.length === 0">
+        <td colspan="7">
+          <div class="w-100 d-flex justify-content-center">No data</div>
+        </td>
+      </tr>
+
+      <tr
+        *ngFor="let request of params?.requisitions; let requestIndex = index"
+      >
+        <td>{{ requestIndex + 1 }}</td>
+        <td>{{ request?.name }}</td>
+        <td>{{ request?.quantityRequested }}</td>
+        <td>{{ request?.created | date }}</td>
+        <td>{{ request?.quantityIssued || "-" }}</td>
+        <td>
+          {{ request?.quantityIssued ? (request?.issuedDate | date) : "-" }}
+        </td>
+        <td>{{ request?.targetStore?.name }}</td>
+        <td>
+          <div
+            [ngClass]="{
+              'text-warning': request?.status === 'PENDING',
+              'text-success':
+                request?.status === 'ISSUED' || request?.status === 'RECEIVED',
+              'text-danger': request?.status === 'REJECTED'
+            }"
+          >
+            {{ request?.status }}
+          </div>
+        </td>
+        <td>
+          <div *ngIf="request.status !== 'RECEIVED'">
+            <div *ngIf="request.status !== 'ISSUED'">
+              <button
+                class="float-right"
+                mat-flat-button
+                color="warn"
+                *ngIf="request.status !== 'REJECTED'"
+                [disabled]="
+                  request?.crudOperationStatus?.status === 'CANCELLING'
+                "
+                (click)="onCancelRequisition($event, request?.id)"
+              >
+                <mat-spinner
+                  color="primary"
+                  *ngIf="request?.crudOperationStatus?.status === 'CANCELLING'"
+                  [diameter]="20"
+                  style="display: inline-block !important; margin-right: 4px"
+                ></mat-spinner>
+                Cancel Request
+              </button>
+            </div>
+
+            <div class="float-right" *ngIf="request.status === 'ISSUED'">
+              <button
+                mat-flat-button
+                color="primary"
+                [disabled]="
+                  request?.crudOperationStatus?.status === 'CANCELLING'
+                "
+                (click)="onReceiveRequisition($event, request)"
+              >
+                <mat-spinner
+                  color="primary"
+                  *ngIf="request?.crudOperationStatus?.status === 'CANCELLING'"
+                  [diameter]="20"
+                  style="display: inline-block !important; margin-right: 4px"
+                ></mat-spinner>
+                Receive
+              </button>
+              <button
+                mat-flat-button
+                class="ml-2"
+                color="warn"
+                [disabled]="
+                  request?.crudOperationStatus?.status === 'REJECTING'
+                "
+                (click)="onRejectRequisition($event, request)"
+              >
+                <mat-spinner
+                  color="primary"
+                  *ngIf="request?.crudOperationStatus?.status === 'REJECTING'"
+                  [diameter]="20"
+                  style="display: inline-block !important; margin-right: 4px"
+                ></mat-spinner>
+                Reject
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table> -->
+    <div *ngIf="!showRequisitionForm">
+      <mat-progress-bar
+        mode="indeterminate"
+        *ngIf="!loadedRequisitions"
+      ></mat-progress-bar>
+      <mat-paginator
+        [hidden]="!requisitions?.length"
+        [length]="pager?.total"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+      >
+      </mat-paginator>
+      <div *ngIf="loadedRequisitions && requisitions?.length">
+        <mat-accordion>
+          <mat-expansion-panel
+            class="border mat-elevation-z0 mt-2"
+            *ngFor="
+              let requisition of requisitions;
+              let requisitionsIndex = index
+            "
+            [expanded]="
+              viewRequisitionItems && viewRequisitionItems === requisition?.uuid
+                ? true
+                : requisitionsIndex === 0
+                ? true
+                : false
+            "
+          >
+            <mat-expansion-panel-header class="d-flex justify-content-between">
+              <mat-panel-title>
+                <span>Requisition: {{ requisition?.code }} </span>
+                <span class="ml-4"
+                  >Target Store:
+                  {{ requisition?.requestedLocation?.display }}</span
+                >
+                <span class="ml-4 text-small"
+                  ><i>
+                    Requested on:
+                    {{ requisition?.created | date : "dd/MM/yyyy" }}
+                  </i></span
+                >
+                <span class="ml-4">
+                  Status:
+                  {{
+                    requisition?.requisitionStatuses[
+                      requisition?.requisitionStatuses?.length - 1
+                    ]?.status
+                      ? requisition?.requisitionStatuses[
+                          requisition?.requisitionStatuses?.length - 1
+                        ]?.status
+                      : "DRAFT"
+                  }}
+                </span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="row mt-2">
+              <div class="col-4"></div>
+              <div class="col-4"></div>
+              <div class="col-4">
+                <div class="float-right">
+                  <a
+                    *ngIf="
+                      viewRequisitionItems &&
+                      viewRequisitionItems === requisition?.uuid
+                    "
+                    class="anchor-button ml-2"
+                    color="primary"
+                    (click)="
+                      onPrint(
+                        $event,
+                        requisition,
+                        params?.facilityDetails,
+                        params?.currentUser
+                      )
+                    "
+                  >
+                    <mat-icon color="primary" matTooltip="Print"
+                      >print</mat-icon
+                    >
+                  </a>
+                  <a
+                    class="anchor-button ml-2"
+                    color="primary"
+                    (click)="onViewRequisitionItems(requisition?.uuid)"
+                    matTooltip="{{
+                      viewRequisitionItems &&
+                      viewRequisitionItems !== requisition?.uuid
+                        ? 'View Requisition Items'
+                        : 'Hide Requisition Items'
+                    }}"
+                  >
+                    <mat-icon
+                      *ngIf="
+                        viewRequisitionItems &&
+                        viewRequisitionItems === requisition?.uuid
+                      "
+                      >visibility_off</mat-icon
+                    >
+                    <mat-icon
+                      *ngIf="
+                        !viewRequisitionItems ||
+                        viewRequisitionItems !== requisition?.uuid
+                      "
+                      >visibility</mat-icon
+                    >
+                  </a>
+                  <!-- ATTENDED REQUISITION -->
+                  <ng-container
+                    *ngIf="
+                      requisition?.requisitionStatuses[
+                        requisition?.requisitionStatuses?.length - 1
+                      ]?.status === 'ATTENDED'
+                    "
+                  >
+                    <a
+                      class="anchor-button ml-4"
+                      color="primary"
+                      matTooltip="Receive all items in this requisition"
+                      (click)="onReceiveRequisition($event, requisition)"
+                    >
+                      <mat-icon>done_all</mat-icon>
+                    </a>
+                    <a
+                      class="anchor-button ml-4"
+                      color="primary"
+                      matTooltip="Reject all items in this requisition"
+                      (click)="onRejectRequisition($event, requisition)"
+                    >
+                      <mat-icon>thumb_down</mat-icon>
+                    </a>
+                  </ng-container>
+                  <!-- DRAFT REQUISITION -->
+                  <ng-container
+                    *ngIf="
+                      requisition?.requisitionStatuses[
+                        requisition?.requisitionStatuses?.length - 1
+                      ]?.status === 'DRAFT'
+                    "
+                  >
+                    <a
+                      class="anchor-button ml-4"
+                      color="primary"
+                      matTooltip="Send this requisition"
+                      (click)="onSendRequisition($event, requisition)"
+                    >
+                      <mat-icon>send</mat-icon>
+                    </a>
+                    <a
+                      class="anchor-button ml-4"
+                      color="primary"
+                      matTooltip="Update this requisition"
+                      (click)="onUpdateRequisition($event, requisition)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                    <a
+                      class="anchor-button ml-4"
+                      color="primary"
+                      (click)="onDeleteRequisition($event, requisition)"
+                      matTooltip="Delete this requisition"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </a>
+                  </ng-container>
+                  <!-- PENDING REQUISITION -->
+                  <a
+                    *ngIf="
+                      requisition?.requisitionStatuses[
+                        requisition?.requisitionStatuses?.length - 1
+                      ]?.status === 'PENDING'
+                    "
+                    class="anchor-button ml-4"
+                    color="primary"
+                    (click)="onCancelRequisition($event, requisition)"
+                    matTooltip="Cancel this requisition"
+                  >
+                    <mat-icon>clear</mat-icon>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div
+              class="inv-items-table container-fluid"
+              *ngIf="
+                viewRequisitionItems &&
+                viewRequisitionItems === requisition?.uuid
+              "
+            >
+              <app-requisition-items
+                [requisition]="requisition"
+                (rejectItem)="onRejectItem($event)"
+                (receiveItem)="onReceiveItem($event, requisition)"
+                (selectionChange)="getSelection($event)"
+              ></app-requisition-items>
+            </div>
+            <div class="w-100" *ngIf="selectedItemsCount > 0">
+              <div class="float-right">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="receiveAllSelected($event, requisition)"
+                >
+                  Receive
+                </button>
+                <button
+                  class="ml-3"
+                  mat-flat-button
+                  color="warn"
+                  (click)="rejectAllSelected($event)"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+        <!-- <app-requisition-by-store
+          [requisitions]="requisitions"
+          [currentStore]="params?.currentStore"
+          (cancelRequisition)="onCancelRequisition($event)"
+          (rejectRequisition)="onRejectRequisition($event)"
+          (receiveRequisition)="onReceiveRequisition($event)"
+        >
+        </app-requisition-by-store> -->
+      </div>
+      <div *ngIf="!requisitions?.length && loadedRequisitions">
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <h3 class="text-center">No requisitions</h3>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div *ngIf="showRequisitionForm && params?.requisitionCodeFormat">
+      <app-new-requisition-form
+        [stores]="params?.stores"
+        [currentStore]="params?.currentStore"
+        [loadingRequisitions]="params?.loadedRequisitions"
+        [referenceTagsThatCanRequestFromMainStoreConfigs]="
+          params?.referenceTagsThatCanRequestFromMainStoreConfigs
+        "
+        [referenceTagsThatCanRequestFromPharmacyConfigs]="
+          params?.referenceTagsThatCanRequestFromPharmacyConfigs
+        "
+        [mainStoreLocationTagUuid]="params?.mainStoreLocationTagUuid"
+        [pharmacyLocationTagUuid]="params?.pharmacyLocationTagUuid"
+        [codeFormatSetting]="params?.requisitionCodeFormat"
+        [existingRequisition]="existingRequisition"
+      ></app-new-requisition-form>
+    </div>
+  </mat-card>
+</div>

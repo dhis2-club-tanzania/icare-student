@@ -1,0 +1,21 @@
+<div
+  class="w-100"
+  *ngIf="{ storeLocations: storeLocations$ | async } as params"
+>
+  <mat-progress-bar mode="indeterminate" *ngIf="!params?.storeLocations">
+  </mat-progress-bar>
+  <div *ngIf="params?.storeLocations">
+    <mat-chip-listbox aria-label="Fish selection">
+      <mat-chip-option
+        [ngClass]="{ 'selected-store': currentStoreLocation?.id === store?.id }"
+        (click)="onSetCurrentStore($event, store)"
+        *ngFor="let store of params?.storeLocations"
+      >
+        {{ store?.display }}
+      </mat-chip-option>
+    </mat-chip-listbox>
+    <div *ngIf="currentStoreLocation" class="mt-2">
+      <app-stock></app-stock>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "SystemAuth": {
+    "ServiceCode": "1001",
+    "Signature": "iRSuajvkiyJnloLjkPsQ2BVueqcVX/KVYH7F7kym1TJ448Pi0jye2ACidAikTVwBJb9UYvW7XaLlftTD3m4/dDuvi5mRoemIjO6rizuwI1TWoWst9b1P8BpthKObnofVKwPVKnD6v2GLpfbXwtoiRSuajvkiyJnSCrqsQvtmBmL8ACV3pls5eesYxppsszXEtV/VfilMePOJhfGsIma64baM7sJ8q7LHyujjWT3094Df5oYZEbMDXOPjy13kCm63vjsEdrrT0A+vz+N7LblmTdHBhtHar52OJmbpNZkbVq/0ZsL1IbX0Wc7SrlU6cWaNuOt0CRJ3bqNnSe8RlO746zkUJtXerYdg=="
+  },
+  "FeedbackData": {
+    "gepgBillSubResp": {
+      "BillTrxInf": {
+        "BillId": "298b75eb-er45-12e8-9c7cs",
+        "PayCntrNum": "991110164278",
+        "TrxSts": "GF",
+        "TrxStsCode": "7301;7201"
+      }
+    }
+  },
+  "Status": {
+    "RequestId": "24d5fcec-4bd5-4d62-8a61-dc938694556a_sgdf",
+    "Code": "7301;7201",
+    "Description": "Duplicate,Fail"
+  }
+}

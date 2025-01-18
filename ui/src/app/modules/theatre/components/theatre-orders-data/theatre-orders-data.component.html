@@ -1,0 +1,175 @@
+<div
+  class="patient-home-container"
+  *ngIf="{
+    currentPatient: patient,
+    currentLocation: location,
+    vitalSignObservations: vitalSignObservations,
+    provider: provider,
+    visit: visit,
+    radilogyOrders: radilogyOrders$ | async,
+    procedureOrders: procedureOrders$ | async
+  } as params"
+>
+  <div>
+    <!-- <mat-progress-bar
+      *ngIf="params?.loadingVisit"
+      mode="indeterminate"
+    ></mat-progress-bar> -->
+    <div class="theatre-container" *ngIf="params?.currentPatient">
+      <div class="theatre-sidebar-container bg-white mat-elevation-z1">
+        <app-patient-profile
+          [patient]="params?.currentPatient"
+        ></app-patient-profile>
+      </div>
+      <div class="theatre-home-content">
+        <div class="row">
+          <div class="col-12">
+            <div>
+              <div *ngIf="params?.currentLocation">
+                <mat-tab-group mat-align-tabs="start" dynamicHeight="true">
+                  <mat-tab label="Procedures">
+                    <div class="procedure-orders-container p-3">
+                      <table class="table table-responsive">
+                        <tbody>
+                          <tr>
+                            <td>#</td>
+                            <td>Order</td>
+                            <td>Ordered by</td>
+                          </tr>
+                          <ng-container
+                            *ngIf="params?.procedureOrders?.length > 0"
+                          >
+                            <tr
+                              *ngFor="
+                                let order of params?.procedureOrders;
+                                let count = index
+                              "
+                            >
+                              <td>
+                                {{ count + 1 }}
+                              </td>
+                              <td>
+                                {{ order?.concept?.display }}
+                              </td>
+                              <td>{{ order?.orderer?.display }}</td>
+                            </tr>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="params?.procedureOrders?.length == 0"
+                          >
+                            <tr>
+                              <td colspan="3">
+                                <p class="text-center text-warning">
+                                  No orders
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                  </mat-tab>
+                  <mat-tab label="Radiology">
+                    <div class="radiology-orders-container p-3">
+                      <table class="table table-responsive">
+                        <tbody>
+                          <tr>
+                            <td>#</td>
+                            <td>Order</td>
+                            <td>Ordered by</td>
+                          </tr>
+                          <ng-container
+                            *ngIf="params?.radilogyOrders?.length > 0"
+                          >
+                            <tr
+                              *ngFor="
+                                let order of params?.radilogyOrders;
+                                let count = index
+                              "
+                            >
+                              <td>
+                                {{ count + 1 }}
+                              </td>
+                              <td>
+                                {{ order?.concept?.display }}
+                              </td>
+                              <td>{{ order?.orderer?.display }}</td>
+                            </tr>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="params?.radilogyOrders?.length == 0"
+                          >
+                            <tr>
+                              <td colspan="3">
+                                <p class="text-center text-warning">
+                                  No orders
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                  </mat-tab>
+                  <mat-tab label="Notes">
+                    <div class="pt-3">
+                      <div class="row">
+                        <div class="col-4">
+                          <mat-accordion>
+                            <mat-expansion-panel
+                              class="mb-2 border p-0"
+                              [expanded]="true"
+                            >
+                              <mat-expansion-panel-header>
+                                <mat-panel-title> Vitals </mat-panel-title>
+                              </mat-expansion-panel-header>
+
+                              <div
+                                class="text-center"
+                                *ngIf="
+                                  params?.vitalSignObservations?.length === 0
+                                "
+                              >
+                                No data
+                              </div>
+
+                              <table class="table">
+                                <tr
+                                  *ngFor="
+                                    let vitalObservation of params?.vitalSignObservations
+                                  "
+                                >
+                                  <td>{{ vitalObservation.display }}</td>
+                                  <td>{{ vitalObservation.value }}</td>
+                                </tr>
+                              </table>
+                            </mat-expansion-panel>
+                          </mat-accordion>
+                        </div>
+                        <div class="col-4">
+                          <mat-accordion>
+                            <mat-expansion-panel
+                              class="mb-2 border p-0"
+                              [expanded]="true"
+                            >
+                              <mat-expansion-panel-header>
+                                <mat-panel-title> Diagnoses </mat-panel-title>
+                              </mat-expansion-panel-header>
+                              <app-patient-diagnoses-summary></app-patient-diagnoses-summary>
+                            </mat-expansion-panel>
+                          </mat-accordion>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-tab>
+                </mat-tab-group>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

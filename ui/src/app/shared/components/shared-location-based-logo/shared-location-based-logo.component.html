@@ -1,0 +1,61 @@
+<!-- <div class="row p-2 ml-2 mr-2">
+  <div class="col-5">
+    <p class="text-center text-nowrap text-uppercase">
+      {{ parentLocation?.display }}
+    </p>
+    <p class="text-center">
+      {{ parentLocation?.description }}
+    </p>
+  </div>
+  <div class="col-2 text-center">
+    <img height="80" [src]="logo" />
+  </div>
+  <div class="col-5"></div>
+</div> -->
+<table class="w-100">
+  <tbody>
+    <tr>
+      <td style="width: 40%">
+        <p class="text-left text-nowrap text-uppercase">
+          {{ parentLocation?.display }}
+        </p>
+        <p class="text-left">
+          {{ parentLocation?.description }}
+        </p>
+        <p class="text-left">
+          P.O Box {{ parentLocation?.postalCode }}
+          {{ parentLocation?.stateProvince }}
+        </p>
+        <p class="text-left">{{ parentLocation?.country }}</p>
+      </td>
+      <td style="width: 20%">
+        <div class="text-center">
+          <img height="80" [src]="logo" alt="Facility's Logo" />
+        </div>
+      </td>
+      <td style="width: 40%">
+        <p style="text-align: right">Hospital Reg. No.: {{ identifier }}</p>
+        <p style="text-align: right">
+          Surname:
+          {{ visitDetails?.patient?.person?.preferredName?.familyName }}
+        </p>
+
+        <p style="text-align: right">
+          Other names:
+          {{ visitDetails?.patient?.person?.preferredName?.givenName }}
+          {{ visitDetails?.patient?.person?.preferredName?.middleName }}
+        </p>
+
+        <p style="text-align: right">
+          <span>
+            DoB/Age: {{ visitDetails?.patient?.person?.birthdate | date }}/{{
+              visitDetails?.patient?.person?.age
+            }}
+            yrs
+          </span>
+          <span> Sex: {{ visitDetails?.patient?.person?.gender }} </span>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,103 @@
+<div
+  class="other-labs-configurations"
+  *ngIf="{ paymentCategories: paymentCategories$ | async } as params"
+>
+  <mat-tab-group>
+    <mat-tab label="Sample Priorities">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Priority'"
+            [standardSearchTerm]="'SAMPLE_PRIORITIES'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Sample Conditions">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Condition'"
+            [standardSearchTerm]="'SAMPLE_CONDITIONS'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Sample Rejection Reasons">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Misc'"
+            [standardSearchTerm]="'SAMPLE_REJECTION_REASONS'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Transport Conditions">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Misc'"
+            [standardSearchTerm]="'SAMPLE_TRANSPORT_CONDITION'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Transport Temperatures">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Misc'"
+            [standardSearchTerm]="'SAMPLE_TRANSPORT_TEMPERATURE'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Sample Dispose Methods">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'Misc'"
+            [standardSearchTerm]="'SAMPLE_DISPOSE_METHOD'"
+            (conceptCreated)="getConceptCreated($event)"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Codes Reference and Coding Sources">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sx-12 col-sm-12 mb-4">
+              <app-other-parameters-configs></app-other-parameters-configs>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Billing">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sx-12 col-sm-12 mb-4">
+              <app-lb-price-list-container
+                *ngIf="params?.paymentCategories"
+                [paymentCategories]="params?.paymentCategories?.setMembers"
+              ></app-lb-price-list-container>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

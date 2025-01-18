@@ -1,0 +1,23 @@
+{
+  "requestedLocation": {
+    "uuid": "44939999-d333-fff2-9bff-61d11117c22e"
+  },
+  "requestingLocation": {
+    "uuid": "44938888-e444-ggg3-8aee-61d22227c22e"
+  },
+  "requisitionItems": [
+    {
+      "item":{
+        "uuid": "8o00d43570-8y37-11f3-1234-08002007777"
+      },
+      "quantity": 20,
+      "requisitionItemStatuses": [
+        {
+          "status": "DRAFT"
+        }
+      ]
+    }
+  ],
+  "code": "REQ-NO-1",
+  "requisitionStatuses": [{"status": "DRAFT"}]
+}

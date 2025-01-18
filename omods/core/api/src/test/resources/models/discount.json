@@ -1,0 +1,21 @@
+{
+  "remarks": "Remarks",
+  "discountedBy": "",
+  "patient": {
+    "uuid": "1f6959e5-d15a-4025-bb48-340ee9e2c58d"
+  },
+  "criteria": {
+    "uuid": "298b75eb-5345-11e8-9c7c-40b034c3cfee"
+  },
+  "items": [
+    {
+      "item": {
+        "uuid": "b210used-9ab1-4b57-8a89-c0b09854368d"
+      },
+      "invoice": {
+        "uuid": "fa3e24ef-1877-497c-ba43-7a402aec2239"
+      },
+      "amount": 2000
+    }
+  ]
+}

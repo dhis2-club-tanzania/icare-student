@@ -1,0 +1,107 @@
+<!-- <app-menu></app-menu>
+
+<div style="padding-top: 25px">
+  <div class="row">
+    <div class="col-md-6">
+      <app-patient-search></app-patient-search>
+    </div>
+    <div class="col-md-6" style="padding-top:4px;">
+      <a href="#/registration/add" mat-raised-button color="primary">Register <mat-icon>person_add</mat-icon></a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-9">
+      <mat-card>
+        <div class="row">
+          <div class="col-md-12">
+            <p class="title">VISIT TYPE</p>
+            <p><button mat-raised-button *ngFor // height: 100vh;="let visitType of visitTypes"
+                style="margin-right: 4px" (click)="setOptions(visitType)" [ngClass]="{
+              'active-btn': visitDetails.visitType && visitType.uuid == visitDetails.visitType['uuid']
+            }">
+                {{ visitType.display }}
+              </button></p>
+
+            <br />
+
+            <p class="title">SERVICE</p>
+
+            <p *ngIf="visitDetails && visitDetails.visitType">
+
+              {{visitDetails | json}}
+
+              <button mat-raised-button
+                *ngFor="let service of formatedServiceDetails[visitDetails.visitType.display]['setMembers']"
+                style="margin-right: 4px; margin-bottom: 4px" [ngClass]="{
+              'active-btn': visitDetails['service'] && service.display == visitDetails['service']['display']
+            }" (click)="setService(service)">
+                {{ service.display }}
+              </button>
+            </p>
+
+            <p>
+              <mat-form-field appearance="fill" floatLabel="always" class="example-full-width" (click)="openDialog()"
+                style="width: 50% !important">
+                <mat-label>Doctor's Room</mat-label>
+                <input  autocomplete="off" matInput placeholder="Select Room" [(ngModel)]="visitDetails['Room']" readonly="true" />
+              </mat-form-field>
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="title">PAYMENT CATEGORY</p>
+            <p>
+              <button mat-raised-button *ngFor="let option of visitDetailsForm['Payment']"
+                style="margin-right: 4px; margin-bottom: 4px" (click)="setPaymentOptions('Payment', option)" [ngClass]="{
+                  'active-btn': option == visitDetails['Payment']
+                }">
+                {{ option }}
+              </button>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p *ngIf="visitDetails['Payment'] == 'Insurance'" class="title">
+              INSURANCE TYPE
+            </p>
+            <p *ngIf="visitDetails['Payment'] == 'Insurance'">
+              <button mat-raised-button *ngFor="let option of visitDetailsForm['Insurance']"
+                style="margin-right: 4px; margin-bottom: 4px" (click)="setPaymentOptions('Insurance', option)"
+                [ngClass]="{
+                  'active-btn': option == visitDetails['Insurance']
+                }">
+                {{ option }}
+              </button>
+            </p>
+
+            <p *ngIf="visitDetails['Payment'] == 'Insurance'">
+              <mat-form-field appearance="fill" floatLabel="always" class="example-full-width">
+                <mat-label>Insurance ID</mat-label>
+                <input  autocomplete="off" matInput placeholder="Enter Text" />
+              </mat-form-field>
+            </p>
+
+            <p *ngIf="visitDetails['Payment'] == 'Cash'" class="title">
+              TRACK SCHEME
+            </p>
+            <p *ngIf="visitDetails['Payment'] == 'Cash'">
+              <button mat-raised-button *ngFor="let option of visitDetailsForm['Cash']"
+                style="margin-right: 4px; margin-bottom: 4px" (click)="setPaymentOptions('Cash', option)" [ngClass]="{
+                  'active-btn': option == visitDetails['Cash']
+                }">
+                {{ option }}
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12" style="text-align: right;"><button mat-raised-button color="primary"
+              (click)="startVisit()"> START VISIT </button></div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div> -->

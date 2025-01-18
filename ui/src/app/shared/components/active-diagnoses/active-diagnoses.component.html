@@ -1,0 +1,103 @@
+<div class="active-diagnoses-container">
+  <!-- {{ diagnoses | json }} -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>Diagnosis</th>
+        <th>Certainty</th>
+        <th>Order(Primary/Secondary)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="diagnoses && diagnoses?.length > 0">
+        <tr
+          [ngClass]="{ 'text-danger': diagnosisData?.voided }"
+          *ngFor="let diagnosisData of diagnoses; let count = index"
+        >
+          <td>{{ count + 1 }}</td>
+          <td>
+            <p *ngIf="diagnosisData?.voided">
+              <s>
+                {{
+                  diagnosisData?.diagnosisDetails
+                    ? diagnosisData?.diagnosisDetails?.display
+                    : diagnosisData?.display
+                }}
+              </s>
+            </p>
+            <p *ngIf="!diagnosisData?.voided">
+              {{
+                diagnosisData?.diagnosisDetails
+                  ? diagnosisData?.diagnosisDetails?.display
+                  : diagnosisData?.display
+              }}
+            </p>
+          </td>
+          <td>
+            {{
+              diagnosisData?.diagnosisDetails
+                ? diagnosisData?.diagnosisDetails?.certainty
+                : diagnosisData?.certainty
+            }}
+          </td>
+          <td>
+            {{
+              diagnosisData?.diagnosisDetails
+                ? diagnosisData?.diagnosisDetails?.rank == 0
+                  ? "Primary"
+                  : "Secondary"
+                : diagnosisData?.rank == 0
+                ? "Primary"
+                : "Secondary"
+            }}
+          </td>
+          <td>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Options"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="onEdit($event, diagnosisData)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button
+                [disabled]="diagnosisData?.voided"
+                mat-menu-item
+                (click)="onDelete($event, diagnosisData)"
+              >
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="diagnoses && diagnoses?.length === 0">
+        <tr>
+          <td colspan="5" class="text-center text-warning">No data</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  <!-- <div style="width: 90%">
+      <app-form
+        [fields]="diagnosisForm?.formFields"
+        [isFormHorizontal]="true"
+        (formUpdate)="onFormUpdate($event)"
+      >
+      </app-form>
+    </div>
+    <button
+      (click)="saveChanges($event)"
+      mat-stroked-button
+      style="height: 39px; margin-top: -20px"
+    >
+      Update
+    </button> -->
+</div>

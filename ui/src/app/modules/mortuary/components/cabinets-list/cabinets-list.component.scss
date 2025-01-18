@@ -1,0 +1,9 @@
+.cabinet {
+  border-radius: 5px;
+  height: 150px;
+  padding: 8px;
+}
+
+.cabinet:hover {
+  box-shadow: 1px 0px 3px 0px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,48 @@
+.patient-list {
+  flex-wrap: wrap;
+}
+
+.patient-item {
+  width: 200px;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 60px;
+  }
+
+  .patient-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2a8fd1 !important;
+  }
+}
+
+.patient-item:hover {
+  box-shadow: 1px 0px 3px 0px rgba(0, 0, 0, 0.15);
+}
+
+.tabular-patient-list {
+  width: 100% !important;
+}
+
+.patient-list-type-toggle-container button {
+  border: none !important;
+  background-color: transparent;
+  outline: none !important;
+}
+
+.patient-list-type-toggle-container button:hover {
+  outline: none !important;
+}
+
+.active-list-type {
+  font-weight: 600;
+  color: #2a8fd1 !important;
+}
+
+.insured-client {
+  color: #528f6b !important;
+}

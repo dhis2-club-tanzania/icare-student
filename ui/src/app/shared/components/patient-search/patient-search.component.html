@@ -1,0 +1,141 @@
+<!-- <div
+  class="patient-search-container"
+  *ngIf="{ patients: patients$ | async } as params"
+>
+  <div
+    class="patient-search-input-block p-2  {{
+      showList ? 'patient-content-available' : 'border'
+    }}"
+  >
+    <div class="patient-search-input">
+      <mat-icon matPrefix class="text-muted">search</mat-icon>
+      <input
+        class="ml-2 w-100"
+        id="input-search-patient"
+        autocomplete="off"
+        type="text"
+        placeholder="Search Patient"
+        matInput
+        (keyup)="onSearchPatients($event)"
+      />
+      <mat-spinner *ngIf="searching" [diameter]="17"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="params?.patients?.length > 0">
+      <div id="patient-search-list" *ngIf="showList">
+        <mat-option
+          *ngFor="let patient of params?.patients"
+          [value]="patient.name"
+          (click)="onSelectPatient($event, patient)"
+        >
+          {{
+            patient.name +
+              "  |  " +
+              patient.identifier +
+              "  |  " +
+              patient.gender
+          }}
+        </mat-option>
+      </div>
+    </ng-container>
+  </div>
+</div> -->
+<div class="mt-2" *ngIf="{ patients: patients$ | async } as params">
+  <div class="patient-search-container">
+    <div class="patient-search-input-block p-2 border">
+      <div class="patient-search-input">
+        <mat-icon matPrefix class="text-muted">search</mat-icon>
+        <input
+          id="input-search-patient"
+          autocomplete="off"
+          type="text"
+          placeholder="Search Patient"
+          matInput
+          (keyup)="onSearchPatients($event)"
+        />
+        <div class="search-spinner">
+          <mat-spinner *ngIf="searching" [diameter]="22"></mat-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="params?.patients?.length > 0 && showList"
+    class="mt-3"
+    style="margin-left: 10%; width: 80%"
+  >
+    <table
+      mat-table
+      [dataSource]="params?.patients"
+      class="mat-elevation-z2 w-100"
+    >
+      <!-- No Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>No</th>
+        <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.patient.person.display }}
+        </td>
+      </ng-container>
+
+      <!-- Gender Column -->
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef>Gender</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.patient.person.gender }}
+        </td>
+      </ng-container>
+
+      <!-- Age Column -->
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef>Age</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.patient.person.age }}
+        </td>
+      </ng-container>
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let element">
+          {{
+            element?.phone
+              ? (element?.phone + "").length === 9
+                ? "0" + element.phone
+                : element.phone
+              : element?.phoneNumber
+              ? (element?.phoneNumber + "").length === 9
+                ? "0" + element.phoneNumber
+                : element.phoneNumber
+              : ""
+          }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumn"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumn"
+        style="cursor: pointer"
+        (click)="onSelectPatient($event, row)"
+      ></tr>
+    </table>
+  </div>
+  <div
+    *ngIf="
+      params?.patients &&
+      !(params?.patients.length > 0) &&
+      showList &&
+      !searching &&
+      focused
+    "
+    class="no-data mt-4 alert alert-danger"
+  >
+    <p>No Patient with this keyword. Please Register or search again!</p>
+  </div>
+</div>

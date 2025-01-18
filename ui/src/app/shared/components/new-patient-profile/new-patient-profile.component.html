@@ -1,0 +1,146 @@
+<div class="patient-profile-container" *ngIf="patientDetails">
+  <div class="row">
+    <div class="col-md-1 col-sm-12 col-sx-12">
+      <mat-icon class="text-muted" style="font-size: 80px">person</mat-icon>
+      <img
+        *ngIf="patientDetails?.person?.dead"
+        height="80"
+        style="position: absolute; margin-left: -24px"
+        src="assets/images/transparent_cross.png"
+      />
+    </div>
+    <div class="col-md-11 col-sm-12 col-sx-12">
+      <div
+        color="primary"
+        class="row patient-prifile-header d-flex justify-content-left"
+      >
+        <span
+          class="mr-2 client-names"
+          [ngClass]="{ 'text-danger': patientDetails?.person?.dead }"
+        >
+          {{ patientDetails?.person?.display }},
+          {{ patientDetails?.person?.middleName }}
+        </span>
+        <span
+          *ngIf="!patientDetails?.person?.dead"
+          class="mr-2 age-and-gender-details"
+          [ngClass]="{ 'text-danger': patientDetails?.person?.dead }"
+          >(<b>{{
+            patientDetails?.person?.gender === "M" ? "Male" : "Female"
+          }}</b>
+          |
+          {{ patientDetails?.person?.age }} Yrs |
+          {{ patientDetails?.person?.birthdate | date }}
+          )
+        </span>
+        <span
+          *ngIf="patientDetails?.person?.dead && ageAtDeathDetails"
+          class="mr-2 age-and-gender-details"
+          [ngClass]="{ 'text-danger': patientDetails?.person?.dead }"
+        >
+          Died at {{ ageAtDeathDetails?.years }} years,
+          {{ ageAtDeathDetails?.months }} months,
+          {{ ageAtDeathDetails?.days }} days,
+        </span>
+        <span
+          *ngIf="patientDetails?.person?.dead"
+          class="ml-2"
+          style="text-align: right"
+          [ngClass]="{ 'text-danger': patientDetails?.person?.dead }"
+        >
+          | <b>Cause of Death</b>:
+          {{
+            patientDetails?.person?.causeOfDeath
+              ? patientDetails?.person?.causeOfDeath?.display
+              : patientDetails?.person?.causeOfDeathNonCoded
+              ? patientDetails?.person?.causeOfDeathNonCoded
+              : "-"
+          }}
+        </span>
+      </div>
+      <div
+        class="
+          row
+          other-demographic-details
+          d-flex
+          flex-direction-column
+          justify-content-between
+        "
+      >
+        <div class="col-md-5 col-sm-12 col-sx-12">
+          <div class="item-left p-items">
+            MRN: <span class="text-muted"> {{ patientDetails?.mrn }}</span>
+            <span class="ml-2">
+              Phone:
+              <span class="text-muted">
+                {{
+                  patientDetails?.person?.phone
+                    ? patientDetails?.person?.phone
+                    : " - "
+                }}
+              </span>
+            </span>
+
+            <span
+              >Email:
+              <span class="text-muted">
+                {{
+                  patientDetails?.person?.email
+                    ? patientDetails?.person?.email
+                    : " - "
+                }}
+              </span>
+            </span>
+            <span class="ml-2">
+              Payment type:
+              <span class="text-muted">
+                {{ (activeVisit$ | async)?.isEnsured ? "INSURANCE" : "CASH" }}
+              </span>
+            </span>
+            <div class="w-100 d-flex justify-content-left">
+              <app-patient-address
+                [personUuid]="currentPatient?.patient?.person?.uuid"
+              >
+              </app-patient-address>
+            </div>
+          </div>
+        </div>
+        <div
+          *ngIf="
+            (activeVisit$ | async)?.isEnsured &&
+            (activeVisit$ | async) as activeVisit
+          "
+          class="col-md-5 col-sm-12 col-sx-12"
+        >
+          <div class="w-100">
+            <app-patient-visit-attributes-details
+              [attributes]="activeVisit?.patientProfileAttributes"
+            ></app-patient-visit-attributes-details>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-12 col-sx-12">
+          <mat-icon style="font-size: 20px"> location_on </mat-icon>
+          <span class="text-muted">
+            {{ (activeVisit$ | async)?.isAdmitted ? "Bed: " : "" }}
+            {{ (activeVisit$ | async)?.location?.display }}
+            <span>
+              {{
+                (activeVisit$ | async)?.location?.parentLocation
+                  ? "/" +
+                    (activeVisit$ | async)?.location?.parentLocation?.display
+                  : ""
+              }}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="row">
+    <div class="col-md-12">
+      <button class="float-right" (click)="toggleVitals($event)">Vitals</button>
+    </div>
+  </div> -->
+</div>
+<!-- <div *ngIf="vitalsIsSet"></div> -->
+<!-- TODO: Add insurance name, in case it is there -->

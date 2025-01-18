@@ -1,0 +1,95 @@
+*.iml
+*.class
+# Package Files #
+*.war
+*.ear
+*.iml
+.classpath
+.idea
+.project
+.settings/*
+# Ignore package-lock.json
+package-lock.json
+
+# Ignore package.json
+package.json
+
+omods/*/api/.classpath
+omods/*/api/.project
+omods/*/api/.settings/*
+omods/*/api/target/*
+omods/*/omod/.classpath
+omods/*/omod/.project
+omods/*/omod/.settings/*
+omods/*/omod/target/*
+/.settings
+.DS_Store
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+# compiled output
+ui/dist
+ui/tmp
+ui/out-tsc
+# Only exists if Bazel was run
+ui/bazel-out
+# dependencies
+ui/node_modules
+node_modules/canvas/build/Release/librsvg-2
+# profiling files
+ui/chrome-profiler-events*.json
+ui/speed-measure-plugin*.json
+# IDEs and editors
+ui/.idea
+ui/.project
+ui/.classpath
+ui/.c9/
+*.launch
+ui/.settings/
+ui/.angular
+*.sublime-workspace
+# IDE - VSCode
+ui/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+# misc
+ui/.sass-cache
+ui/connect.lock
+ui/coverage
+ui/libpeerconnection.log
+ui/npm-debug.log
+ui/yarn-error.log
+ui/testem.log
+ui/typings
+# System Files
+.DS_Store
+ui/Thumbs.db
+ui/proxy-config.json
+ui/cypress/videos/*
+ui/cypress/screenshots/*
+ui/cypress/reports/*
+*/backup/
+docker-compose.yml
+# Messaging support
+messaging/functions/node_modules/
+messaging/firestore-debug.log
+messaging/firebase-debug.log
+messaging/database-debug.log
+messaging/ui-debug.log
+# Generated files
+docs/.docusaurus
+docs/.cache-loader
+# Misc
+docs/.DS_Store
+docs/.env.local
+docs/.env.development.local
+docs/.env.test.local
+docs/.env.production.local
+docs/npm-debug.log*
+docs/yarn-debug.log*
+docs/yarn-error.log*
+<<<<<<< HEAD
+node_modules/canvas/build/Release/librsvg-2.so.2
+=======
+>>>>>>> develop

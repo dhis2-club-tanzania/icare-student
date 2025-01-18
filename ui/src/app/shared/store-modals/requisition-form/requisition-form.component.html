@@ -1,0 +1,172 @@
+<div
+  *ngIf="{
+    stockStatusForSelectedStore: stockStatusForSelectedStore$ | async
+  } as params"
+>
+  <mat-toolbar color="primary">Requisition Form</mat-toolbar>
+  <div class="d-flex">
+    <div class="p-3 w-100">
+      <div class="requisition-form">
+        <app-form
+          [fields]="requisitionFields"
+          (formUpdate)="onUpdateForm($event)"
+        ></app-form>
+  
+        <div
+          class="w-100 ml-2 mr-2 mb-2"
+          *ngIf="params?.stockStatusForSelectedStore"
+        >
+          Available Stock:
+          <b>
+            {{ params?.stockStatusForSelectedStore?.eligibleQuantity }}
+          </b>
+        </div>
+        <app-form
+          [fields]="[quantityField]"
+          (formUpdate)="onUpdateForm($event)"
+        ></app-form>
+        <div
+          class="w-100 alert alert-warning"
+          role="alert"
+          *ngIf="
+            specifiedQuantity &&
+            specifiedQuantity >
+              params?.stockStatusForSelectedStore?.eligibleQuantity
+          "
+        >
+          Request can not exceed availability
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      <div class="float-right">
+        <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+          <button
+            class="ml-2"
+            color="primary"
+            mat-flat-button
+            [disabled]="
+              !requisitionFormValue?.isValid || !params?.stockStatusForSelectedStore
+            "
+            (click)="onRequest($event)"
+          >
+            Request
+          </button>
+      </div>
+    </div>
+    <!-- <div class="p-3 w-50">
+      <div class="row">
+        <table class="table requisition-table table-striped">
+          <tr>
+            <th>Item Requested</th>
+            <th>Quantity</th>
+            <th>Target Store</th>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+          <tr>
+            <td>Amoxycillin+Clavulanic Acid Tablet 375mg</td>
+            <td>250</td>
+            <td>Main Store</td>
+          </tr>
+        </table>
+      </div>
+      <div class="row">
+        <div class="requisition-form">  
+          <div
+            class="w-100 alert alert-warning"
+            role="alert"
+            *ngIf="
+              specifiedQuantity &&
+              specifiedQuantity >
+                params?.stockStatusForSelectedStore?.eligibleQuantity
+            "
+          >
+            Request can not exceed availability
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+        <button
+          class="ml-2"
+          color="primary"
+          mat-flat-button
+          [disabled]="
+            !requisitionFormValue?.isValid || !params?.stockStatusForSelectedStore
+          "
+          (click)="onRequest($event)"
+        >
+          Request
+        </button>
+      </div>
+    </div> -->
+  </div>
+</div>

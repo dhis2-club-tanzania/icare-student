@@ -1,0 +1,155 @@
+<div *ngIf="!forSetMember">
+  <b>
+    {{
+      observationsKeyedByConcept[labTest?.concept?.uuid + "-" + labTest?.uuid]
+        ?.latest
+        ? !observationsKeyedByConcept[
+            labTest?.concept?.uuid + "-" + labTest?.uuid
+          ]?.latest?.valueObject
+          ? observationsKeyedByConcept[
+              labTest?.concept?.uuid + "-" + labTest?.uuid
+            ]?.latest?.value
+          : observationsKeyedByConcept[
+              labTest?.concept?.uuid + "-" + labTest?.uuid
+            ]?.latest?.valueObject?.display
+        : "No result"
+    }}
+  </b>
+
+  <span>
+    {{
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[labTest?.concept?.uuid + "-" + labTest?.uuid]
+        ?.latest
+        ? observationsKeyedByConcept[
+            labTest?.concept?.uuid + "-" + labTest?.uuid
+          ]?.latest?.concept?.units
+        : ""
+    }}
+  </span>
+  <span style="font-size: x-small">
+    <em *ngIf="labTest?.result"
+      >(Fed at:
+      {{
+        labTest?.result?.observationDatetime
+          ? (labTest?.result?.observationDatetime | date: "medium")
+          : null
+      }})
+    </em></span
+  >
+</div>
+<div *ngIf="forSetMember">
+  <b
+    *ngIf="
+      !observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.value?.links?.uri
+    "
+  >
+    {{
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+        ? observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+            ?.latest?.value
+        : "No result"
+    }}
+  </b>
+  <span>
+    {{
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+        ? observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+            ?.latest?.concept?.units
+        : ""
+    }}
+  </span>
+  <span
+    style="font-size: 0.8rem; margin-left: 6px"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.hiNormal
+    "
+    >(
+    {{
+      observationsKeyedByConcept &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+          ?.latest &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+          ?.concept?.lowNormal
+    }}
+    -
+    {{
+      observationsKeyedByConcept &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]
+          ?.latest &&
+        observationsKeyedByConcept[concept?.uuid + "-" + labTest?.uuid]?.latest
+          ?.concept?.hiNormal
+    }}
+    )</span
+  >
+
+  <span
+    class="ml-4 text-danger"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.hiNormal &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.value >
+        observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+          ?.concept?.hiNormal
+    "
+    ><b><mat-icon style="font-size: 16px">arrow_upward</mat-icon></b></span
+  >
+  <span
+    class="ml-4 text-danger"
+    *ngIf="
+      observationsKeyedByConcept &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.concept?.lowNormal &&
+      observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+        ?.value <
+        observationsKeyedByConcept[concept?.uuid + '-' + labTest?.uuid]?.latest
+          ?.concept?.lowNormal
+    "
+    ><b><mat-icon style="font-size: 16px">arrow_downward</mat-icon></b></span
+  >
+
+  <span
+    *ngIf="observationsKeyedByConcept[concept?.uuid]?.latest?.value?.links?.uri"
+  >
+    <a
+      *ngIf="
+        observationsKeyedByConcept[
+          concept?.uuid
+        ]?.latest?.value?.links?.uri.split('openmrs').length > 2
+      "
+      href="{{
+        '/openmrs' +
+          observationsKeyedByConcept[
+            concept?.uuid
+          ]?.latest?.value?.links?.uri.split('openmrs')[2]
+      }}"
+    >
+      Download Results
+    </a>
+    <a
+      *ngIf="
+        observationsKeyedByConcept[
+          concept?.uuid
+        ]?.latest?.value?.links?.uri.split('openmrs').length == 2
+      "
+      [href]="
+        '/openmrs' +
+        observationsKeyedByConcept[
+          concept?.uuid
+        ]?.latest?.value?.links?.uri.split('openmrs')[1]
+      "
+    >
+      Download Results
+    </a>
+  </span>
+</div>

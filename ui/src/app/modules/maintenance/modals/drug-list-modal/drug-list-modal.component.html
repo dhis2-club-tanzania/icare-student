@@ -1,0 +1,15 @@
+<div>
+  <mat-toolbar color="primary"
+    >View Drugs of {{ dialogData?.concept?.display }}</mat-toolbar
+  >
+  <div class="p-3">
+    <div class="drugs-list">
+      <app-drugs-list
+        [conceptUuid]="dialogData?.concept?.uuid"
+      ></app-drugs-list>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button mat-stroked-button (click)="onClose($event)">Close</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "requisition": {
+    "uuid": ""
+  },
+  "issuedLocation": {
+    "uuid": "44938888-e444-ggg3-8aee-61d22227c22e"
+  },
+  "issueingLocation": {
+    "uuid": "44939999-d333-fff2-9bff-61d11117c22e"
+  },
+  "issueItems": [
+    {
+      "item": {
+        "uuid": "8o00d43570-8y37-11f3-1234-08002007777"
+      },
+      "quantity": 20,
+      "batch":"batch-xyz",
+      "expiryDate":"10000-10-08T00:00:00.000Z"
+    }
+  ]
+}

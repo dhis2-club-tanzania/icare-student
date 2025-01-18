@@ -1,0 +1,42 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h3 style="color: #222222; float: left;">Samples collected</h3>
+
+      <button
+        style="float: right;color: #222222 !important"
+        mat-stroked-button
+        (click)="refreshPage()"
+      >
+        Refresh
+      </button>
+    </div>
+
+    <div
+      class="col-12"
+      *ngIf="
+        !(visits$ | async) ||
+        !(sampleTypes$ | async) ||
+        !(labOrdersBillingInfo$ | async)
+      "
+    >
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div
+      style="margin-top: 15px"
+      class="col-12"
+      *ngIf="
+        (visits$ | async) &&
+        (visits$ | async)?.length > 0 &&
+        (sampleTypes$ | async) &&
+        (labOrdersBillingInfo$ | async)
+      "
+    >
+      <app-samples-collected
+        [visits]="visits$ | async"
+        [sampleTypes]="sampleTypes$ | async"
+        [labOrdersBillingInfo]="labOrdersBillingInfo$ | async"
+      ></app-samples-collected>
+    </div>
+  </div>
+</div>

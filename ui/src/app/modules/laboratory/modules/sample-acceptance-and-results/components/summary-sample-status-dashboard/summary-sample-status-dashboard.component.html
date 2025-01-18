@@ -1,0 +1,41 @@
+<div
+  class="w-100"
+  *ngIf="{
+    visitsLoadedState: visitsLoadedState$ | async,
+    samples: samples$ | async,
+    samplesToCollect: samplesToCollect$ | async
+  } as params"
+>
+  <div class="w-100">
+    <span style="width: 8%; float: left">Collection status</span>
+    <span style="width: 6%; float: left; font-weight: 600; margin-right: 10px">
+      <app-summary-samples-to-collect
+        [samples]="params?.samples"
+        [samplesToCollect]="params?.samplesToCollect"
+      >
+      </app-summary-samples-to-collect>
+    </span>
+    <span style="width: 6%; float: left; margin-right: 5px">Collected</span>
+    <span style="width: 4%; float: left; font-weight: 600; margin-right: 10px"
+      ><app-summary-sample-collected> </app-summary-sample-collected
+    ></span>
+    <span style="width: 8%; float: left; margin-right: 5px"
+      >Awaiting acceptance</span
+    >
+    <span style="width: 6%; float: left; font-weight: 600; margin-right: 10px"
+      ><app-summary-sample-pending></app-summary-sample-pending
+    ></span>
+    <span style="width: 6%; float: left; margin-right: 8px">Accepted</span>
+    <span style="width: 4%; float: left; font-weight: 600; margin-right: 10px"
+      ><app-summary-samples-accepted></app-summary-samples-accepted
+    ></span>
+    <span style="width: 6%; float: left; margin-right: 8px">Rejected</span>
+    <span style="width: 4%; float: left; font-weight: 600; margin-right: 10px"
+      ><app-summary-samples-rejected></app-summary-samples-rejected
+    ></span>
+    <span style="width: 6%; float: left; margin-right: 8px">Completed</span>
+    <span style="width: 4%; float: left; font-weight: 600; margin-right: 10px">
+      <app-summary-samples-with-results></app-summary-samples-with-results>
+    </span>
+  </div>
+</div>

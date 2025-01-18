@@ -1,0 +1,40 @@
+<div class="w-100">
+  <mat-tab-group>
+    <mat-tab label="Lab Sections">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-standard-concept-creation
+            [conceptClass]="'LAB Department'"
+            [dataType]="'8d4a4c94-c2cc-11de-8d13-0010c6dffd0f'"
+            [isSet]="true"
+            [itemTypeName]="'Lab Section'"
+            [setMembersHeaderName]="'Test orders'"
+            [searchTermOfConceptSetToExcludeFromTestOrders]="
+              searchTermOfConceptSetToExclude
+            "
+            [standardSearchTerm]="'LAB_DEPARTMENT'"
+            [setMembersSearchTerm]="'TEST_ORDERS'"
+          ></app-standard-concept-creation>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Laboratories Management">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <div>
+            <app-shared-location-settings-home
+              [key]="'icare.location.types'"
+            ></app-shared-location-settings-home>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Lab Equipments/Instruments">
+      <ng-template matTabContent>
+        <div class="p-3">
+          <app-shared-instruments-management></app-shared-instruments-management>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>

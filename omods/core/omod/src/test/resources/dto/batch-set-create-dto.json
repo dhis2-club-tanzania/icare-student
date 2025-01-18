@@ -1,0 +1,16 @@
+[
+  {
+  "label": "Test-Batchset",
+  "name" : "Test-BatchSet-Name",
+  "description": "This is a test batchSet",
+  "fields" : "{dynamic1:{ name:dynamic-name,uuid:123},fixed1:{ name:fixed-name,uuid:124}}"
+
+},
+  {
+    "label": "Test-BatchSet2",
+    "name" : "Test-BatchSet2-Name",
+    "description": "This is a test batchSet2",
+    "fields" : "{dynamic1:{ name:dynamic-name,uuid:123},fixed1:{ name:fixed-name,uuid:124}}"
+
+  }
+]

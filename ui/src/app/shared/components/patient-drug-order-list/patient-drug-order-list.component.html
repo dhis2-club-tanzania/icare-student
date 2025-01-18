@@ -1,0 +1,77 @@
+<div
+  *ngIf="{
+    isThereDiagnosisProvided: isThereDiagnosisProvided$ | async,
+    visitLoadingState: visitLoadingState$ | async,
+    drugOrders: drugOrders$ | async,
+    currentLocation: currentLocation$ | async,
+    facilityDetails: facilityDetails$ | async,
+    logo: facilityLogo$ | async,
+    currentUser: currentUser$ | async
+  } as params"
+>
+  <div class="d-flex justify-content-between p-3">
+    <div>
+      <div class="h5">
+        {{
+          actionOptions?.actionCode === "CALCULATE_PRESCRIPTION"
+            ? "Prescriptions"
+            : "Dispensing"
+        }}
+      </div>
+    </div>
+    <div *ngIf="canAddPrescription">
+      <div class="w-100">
+        <button
+          [disabled]="!params?.isThereDiagnosisProvided"
+          mat-flat-button
+          class="float-right"
+          color="primary"
+          (click)="onAddOrder($event)"
+        >
+          <mat-icon>add</mat-icon>
+          <span class="ml-2">Add Prescription</span>
+        </button>
+      </div>
+      <div
+        class="alert alert-warning w-100"
+        role="alert"
+        *ngIf="!params?.isThereDiagnosisProvided && !params?.visitLoadingState"
+      >
+        No diagnosis provided, hence you can not do prescription
+      </div>
+    </div>
+  </div>
+  <mat-divider class="mt-0"></mat-divider>
+  <mat-progress-bar
+    *ngIf="params?.visitLoadingState || !params?.drugOrders"
+    mode="indeterminate"
+    class="mb-3"
+  ></mat-progress-bar>
+  <app-patient-medication-summary
+    *ngIf="!actionOptions"
+    [patientVisit]="visit"
+  ></app-patient-medication-summary>
+  <app-table
+    *ngIf="!params?.visitLoadingState && actionOptions && params?.drugOrders"
+    [columns]="drugOrderColumns"
+    [data$]="visit?.dispensingDrugOrderTableList$"
+    [drugOrders]="params?.drugOrders | filterDrugOrders: 'EMPTY':[]"
+    [loading]="loading"
+    [visit]="visit"
+    [currentPatient]="currentPatient"
+    [generalMetadataConfigurations]="generalMetadataConfigurations"
+    [useNormalTable]="true"
+    [loadingDataError]="loadingError"
+    [tableConfig]="tableConfig"
+    [actionOptions]="actionOptions"
+    (selectAction)="onSelectAction($event)"
+    (printPrescriptions)="
+      onPrintPrescriptions($event, {
+        CurrentPatient: currentPatient,
+        FacilityDetails: params?.facilityDetails,
+        Logo: params?.logo,
+        CurrentUser: params?.currentUser
+      })
+    "
+  ></app-table>
+</div>

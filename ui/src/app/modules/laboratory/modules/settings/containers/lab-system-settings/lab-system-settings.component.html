@@ -1,0 +1,39 @@
+<div
+  *ngIf="{
+    systemSettingsGroups: systemSettingsGroups$ | async
+  } as params"
+>
+  <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.systemSettingsGroups"
+  ></mat-progress-bar>
+  <ng-container
+    *ngIf="
+      params?.systemSettingsGroups && params?.systemSettingsGroups?.length > 0
+    "
+  >
+    <mat-tab-group>
+      <mat-tab
+        [label]="group?.name"
+        *ngFor="let group of params?.systemSettingsGroups"
+      >
+        <ng-template matTabContent>
+          <app-shared-system-settings-list
+            [key]="group?.id"
+            [currentUser]="currentUser"
+          ></app-shared-system-settings-list>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+
+  <ng-container
+    *ngIf="
+      params?.systemSettingsGroups && params?.systemSettingsGroups?.length === 0
+    "
+  >
+    <div class="mt-2 alert alert-warning" role="alert">
+      You do not have access to any system settings
+    </div>
+  </ng-container>
+</div>

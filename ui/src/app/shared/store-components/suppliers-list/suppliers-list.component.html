@@ -1,0 +1,73 @@
+<div class="container-fluid"
+  *ngIf="{
+    suppliers: suppliers$ | async,
+    supplierLocations: supplierLocations$ | async
+  } as params"
+>
+  <div class="row mt-3">
+     <div class="w-100 mb-3 float-right">
+        
+        <button
+          [disabled]=""
+          class="float-right"
+          color="primary"
+          mat-stroked-button
+          (click)="onAddNewSupplier($event, params?.supplierLocations)"
+        >
+          Add New Supplier
+        </button>
+      </div>
+    <div class="col-12">
+      <mat-progress-bar mode="indeterminate" *ngIf="!params?.suppliers?.length && loadingSuppliers"></mat-progress-bar>
+      <table class="table table-hover table-striped" *ngIf="params?.suppliers?.length && !loadingSuppliers">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let supplier of params?.suppliers; let index = index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ supplier?.name }}</td>
+            <td>{{ supplier?.description }}</td>
+            <td>{{ supplier?.location?.display }}</td>
+            <td>
+              <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <button
+                      mat-menu-item
+                      (click)="onUpdateSupplier($event, supplier, params?.supplierLocations)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                      <span>Update</span>
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="onDeleteSupplier($event, supplier)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                      <span>Delete</span>
+                    </button>
+                  </mat-menu>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-striped" *ngIf="!params?.suppliers?.length && !loadingSuppliers">
+        <tbody>
+          <tr>
+            <td class="text-center">No supplier found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

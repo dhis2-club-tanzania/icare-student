@@ -1,0 +1,45 @@
+<!-- <span
+  *ngFor="
+    let result of allocation?.finalResult?.groups[
+      allocation?.finalResult?.groups?.length - 1
+    ]?.results
+  "
+>
+  {{
+    result?.valueCoded
+      ? result?.valueCoded?.display
+      : result?.valueDateTime
+      ? result?.valueDateTime
+      : result?.valueNumeric
+      ? result?.valueNumeric
+      : result?.valueText
+      ? result?.valueText
+      : ""
+  }},
+</span> -->
+<table style="width: 100%" data-pdfmake="{'widths':[60,60,60]}">
+  <tr>
+    <td
+      style="border: 0"
+      [ngStyle]="{
+        width:
+          100 /
+            allocationMatchingRelatedToParameter?.finalResult?.groups[
+              allocationMatchingRelatedToParameter?.finalResult?.groups
+                ?.length - 1
+            ]?.results?.length +
+          '%'
+      }"
+      *ngFor="
+        let result of allocationMatchingRelatedToParameter?.finalResult?.groups[
+          allocationMatchingRelatedToParameter?.finalResult?.groups?.length - 1
+        ]?.results
+      "
+    >
+      <app-shared-related-result-parameter-value
+        [parentResult]="result"
+        [allocation]="allocation"
+      ></app-shared-related-result-parameter-value>
+    </td>
+  </tr>
+</table>

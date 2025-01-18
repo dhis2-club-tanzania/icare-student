@@ -1,0 +1,92 @@
+<ng-container
+  *ngIf="{
+    form: form$ | async,
+    savingObservations: savingObservations$ | async,
+    observations: observations$ | async,
+    deathRegistryFormUuid: deathRegistryFormUuid$ | async,
+    referralFormsConcepts: referralFormsConcepts$ | async,
+    diagnoses: diagnoses$ | async
+  } as params"
+>
+  <mat-progress-bar
+    *ngIf="
+      !params?.form || !params?.observations || !params?.deathRegistryFormUuid
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+  <ng-container>
+    <mat-toolbar color="primary">
+      <span>{{ params?.form?.name }}</span>
+      <span class="toolbar-spacer"></span>
+      <button mat-icon-button mat-dialog-close matTooltip="close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-toolbar>
+    <div
+      *ngIf="
+        params?.form && params?.observations && params?.deathRegistryFormUuid
+      "
+    >
+      <mat-dialog-content class="mt-2 ml-1 mr-1">
+        <app-capture-form-data
+          [form]="params?.form"
+          [visit]="visit"
+          [observations]="params?.observations"
+          (formDataUpdate)="
+            onFormUpdate($event, params?.form, params?.deathRegistryFormUuid)
+          "
+        ></app-capture-form-data>
+      </mat-dialog-content>
+      <mat-progress-bar
+        *ngIf="!params?.form || !params?.observations"
+        mode="indeterminate"
+      ></mat-progress-bar>
+      <mat-dialog-actions align="end" class="mb-2 ml-2 mr-2">
+        <button mat-stroked-button (click)="onClose($event)">Cancel</button>
+        <div *ngIf="data.fromClinic && showPrintButton" class="ml-5">
+          <app-print-button
+            [iconName]="'print'"
+            [toolTipText]="'Click to print refereal form'"
+            [showText]="'Print Referral Form'"
+            [classesList]="['float-right', 'button', 'mr-5']"
+            [ElementToBePrinted]="{
+              FacilityDetails: data?.facilityDetails[0],
+              CurrentPatient: data?.patient,
+              ObservationsGroupedByConcept: data?.observations,
+              ReferralFormsConcepts: params?.referralFormsConcepts,
+              Diagnoses: params?.diagnoses
+            }"
+            (print)="onPrint($event)"
+          ></app-print-button>
+          <!-- <app-print-button
+            [iconName]="'print'"
+            [toolTipText]="'Click to print refereal form'"
+            [showText]="'Print Referral Form'"
+            [classesList]="['float-right', 'button', 'mr-5']"
+            (print)="onPrint($event)"
+            [ElementToBePrinted]="{
+              CurrentPatient: data?.patient,
+              ObservationsGroupedByConcept: params?.observations,
+              ReferralFormsConcepts: params?.referralFormsConcepts,
+              Diagnoses: params?.diagnoses
+            }"
+          ></app-print-button> -->
+        </div>
+        <button
+          mat-flat-button
+          [disabled]="!params?.deathRegistryFormUuid || !isValid"
+          color="primary"
+          (click)="saveCurrentFormData($event, params?.deathRegistryFormUuid)"
+        >
+          <mat-spinner
+            color="primary"
+            *ngIf="params?.savingObservations"
+            [diameter]="20"
+            style="display: inline-block !important"
+          ></mat-spinner>
+          {{ savingObservations ? "Saving ..." : "Save" }}
+        </button>
+      </mat-dialog-actions>
+    </div>
+  </ng-container>
+</ng-container>

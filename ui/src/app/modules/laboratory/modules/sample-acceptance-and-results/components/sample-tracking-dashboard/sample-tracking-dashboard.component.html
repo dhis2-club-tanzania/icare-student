@@ -1,0 +1,70 @@
+<div
+  *ngIf="{
+    visits: visits$ | async,
+    sampleTypes: sampleTypes$ | async,
+    labConfigs: labConfigs$ | async,
+    sampleTypesLoadedState: sampleTypesLoadedState$ | async,
+    visitsLoadedState: visitsLoadedState$ | async,
+    labOrdersLoadedState: labOrdersLoadedState$ | async,
+    labOrdersGroupedByPatients: labOrdersGroupedByPatients$ | async,
+    collectedLabOrders: collectedLabOrders$ | async,
+    visitReferences: visitReferences$ | async,
+    testsContainers: testsContainers$ | async,
+    sampleContainers: sampleContainers$ | async,
+    privileges: privileges$ | async,
+    codedSampleRejectionReasons: codedSampleRejectionReasons$ | async,
+    labDepartments: labDepartments$ | async
+  } as params"
+>
+  <!-- <div class="col-12">
+    <h3 class="p-3" style="color: #222222; float: left">Samples & Results</h3>
+  </div> -->
+  <mat-progress-bar
+    *ngIf="
+      !params?.visitsLoadedState ||
+      !params?.sampleTypesLoadedState ||
+      !params?.labConfigs ||
+      !params?.labOrdersLoadedState
+    "
+    mode="indeterminate"
+  ></mat-progress-bar>
+
+  <div
+    class="row"
+    *ngIf="
+      params?.visitsLoadedState &&
+      params?.sampleTypesLoadedState &&
+      params?.labConfigs &&
+      params?.labOrdersLoadedState
+    "
+  >
+    <div class="col-12">
+      <app-summary-sample-status-dashboard
+        [labConfigs]="params?.labConfigs"
+        [visits]="params?.visits"
+        [sampleTypes]="params?.sampleTypes"
+      >
+      </app-summary-sample-status-dashboard>
+
+      <hr style="margin-top: 2rem" />
+    </div>
+    <div style="margin-top: 15px" class="col-12">
+      <div>
+        <app-sample-tracking
+          [visits]="params?.visits"
+          [sampleTypes]="params?.sampleTypes"
+          [labConfigs]="params?.labConfigs"
+          [labOrdersGroupedByPatients]="params?.labOrdersGroupedByPatients"
+          [collectedLabOrders]="params?.collectedLabOrders"
+          [sampleContainers]="params?.sampleContainers"
+          [testsContainers]="params?.testsContainers"
+          [visitReferences]="params?.visitReferences"
+          [privileges]="params?.privileges"
+          [codedSampleRejectionReasons]="params?.codedSampleRejectionReasons"
+          [labDepartments]="params?.labDepartments"
+        >
+        </app-sample-tracking>
+      </div>
+    </div>
+  </div>
+</div>

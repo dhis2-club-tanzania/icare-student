@@ -1,0 +1,448 @@
+<div
+  [formGroup]="form"
+  *ngIf="
+    isCommonField &&
+    !isReport &&
+    !field?.shouldHaveLiveSearchForDropDownFields &&
+    !isDateTime
+  "
+>
+  <mat-form-field
+    [ngSwitch]="field?.controlType"
+    appearance="outline"
+    class="w-100 no-padding"
+  >
+    <mat-label [attr.for]="field?.key">{{ field?.label }} </mat-label>
+
+    <!-- phone number -->
+    <input
+      *ngSwitchCase="'phoneNumber'"
+      [formControlName]="field?.key"
+      [id]="field?.key"
+      [min]="field?.type === 'number' ? 0 : null"
+      [max]="field?.max"
+      [disabled]="shouldDisable || field?.disabled"
+      [placeholder]="field?.placeholder"
+      class="{{ fieldClass || 'field-input' }}"
+      [type]="field?.type"
+      [required]="field?.required"
+      matInput
+      autocomplete="off"
+      (keyup)="onFieldUpdate()"
+    />
+    <!-- end of phone number -->
+
+    <!-- File upload for default complex -->
+    <div *ngSwitchCase="'ComplexDefaultFile'">
+      <mat-toolbar>
+        <input matInput readonly [name]="field?.key" />
+        <!-- <button mat-flat-button color="primary">Browse</button> -->
+      </mat-toolbar>
+
+      <!-- Fetch selected filed on change -->
+      <input
+        type="file"
+        #UploadFileInput
+        [id]="field?.key"
+        [name]="field?.key"
+        [formControlName]="field?.key"
+        (keyup)="fileChangeEvent($event, field)"
+        multiple="multiple"
+        accept=".pdf,.png,.jpeg,.jpg,.doc,.xls,.xlsx,.docx"
+      />
+    </div>
+    <!-- End of File upload for default complex -->
+
+    <!-- textbox -->
+    <input
+      *ngSwitchCase="'textbox'"
+      [formControlName]="field?.key"
+      [id]="field?.key"
+      [min]="field?.type === 'number' ? 0 : null"
+      [max]="field?.max"
+      [disabled]="shouldDisable || field?.disabled"
+      [placeholder]="field?.placeholder"
+      class="{{ fieldClass || 'field-input' }}"
+      [type]="
+    (field?.label === 'Dose' || field?.label === 'Duration') 
+      ? 'number' 
+      : field?.type === 'number' 
+      ? 'text' 
+      : field?.type
+  "
+      [required]="field?.required"
+      matInput
+      step="any"
+      autocomplete="off"
+      (keyup)="onFieldUpdate($event)"
+      (keydown)="onListenKeyEvent($event, field?.type)"
+    />
+    <!-- <input
+    *ngSwitchCase="'textbox'"
+    [formControlName]="field?.key"
+    [id]="field?.key"
+    [min]="field?.type === 'number' ? 0 : null"
+    [max]="field?.max"
+    [disabled]="shouldDisable || field?.disabled"
+    [placeholder]="field?.placeholder"
+    class="{{ fieldClass || 'field-input' }}"
+    [type]="field?.type"
+    [required]="field?.required"
+    matInput
+    autocomplete="off"
+    (input)="onInput($event)"
+    (keyup)="onFieldUpdate($event)"
+    (keydown)="onListenKeyEvent($event)"
+/> -->
+
+    <!-- end of textbox -->
+
+    <!-- (input)="onInput($event)"
+    (blur)="onBlur($event)" -->
+    <!-- dropdown -->
+
+    <ng-container *ngIf="!field?.multiple">
+      <input
+        type="text"
+        *ngSwitchCase="'dropdown'"
+        placeholder="Search {{ field?.label }}"
+        aria-label="{{ field?.label }}"
+        [required]="field?.required"
+        [formControlName]="field?.key"
+        matInput
+        [value]="field?.value"
+        [disabled]="field?.disabled"
+        autocomplete="off"
+        (keyup)="searchItemFromOptions($event, field)"
+        [matAutocomplete]="auto"
+      />
+      <span
+        style="
+          position: relative;
+          float: right;
+          margin-top: -30px;
+          margin-right: 16px;
+        "
+        *ngIf="field?.options?.length > 0"
+      >
+        <mat-icon>arrow_drop_down</mat-icon>
+      </span>
+      <span
+        *ngIf="field?.value && field?.options?.length > 0"
+        style="
+          position: relative;
+          float: right;
+          margin-top: -30px;
+          font-size: 0.7rem;
+        "
+      >
+        <mat-icon class="text-muted" (click)="onClearValue($event, field)"
+          >clear</mat-icon
+        >
+      </span>
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayLabelFunc.bind(this)"
+      >
+        <ng-container *ngFor="let option of members$ | async">
+          <mat-option
+            [disabled]="option?.disabled"
+            (click)="getSelectedItemFromOption($event, option, field)"
+            [value]="option?.label"
+          >
+            <span
+              [ngClass]="{
+                'disabled-form-selection-option': option?.disabled
+              }"
+            >
+              {{ option?.label }}
+            </span>
+            <span *ngIf="option?.disabled" class="ml-2">
+              ({{ option?.message }})
+            </span>
+          </mat-option>
+        </ng-container>
+      </mat-autocomplete>
+    </ng-container>
+
+    <ng-container *ngIf="field?.multiple">
+      <!-- <input
+        type="text"
+        placeholder="Search {{ field?.label }}"
+        aria-label="{{ field?.label }}"
+        [required]="field?.required"
+        [formControlName]="field?.key"
+        matInput
+        [value]="field?.value"
+        autocomplete="off"
+        (keyup)="searchItemFromOptions($event, field)"
+      /> -->
+      <mat-select
+        [formControlName]="field?.key"
+        [required]="field?.required"
+        (selectionChange)="onFieldUpdate()"
+        [disabled]="field?.disabled"
+        multiple
+        [value]="field?.value"
+      >
+        <mat-option *ngFor="let option of members$ | async" [value]="option">{{
+          option?.label
+        }}</mat-option>
+      </mat-select>
+    </ng-container>
+
+    <!-- <mat-select
+      [id]="field?.key"
+      *ngSwitchCase="'dropdown'"
+      [placeholder]="field?.placeholder"
+      class="{{ fieldClass || 'field-input' }}"
+      [formControlName]="field?.key"
+      [required]="field?.required"
+      (selectionChange)="onFieldUpdate()"
+    >
+      <mat-option
+        *ngFor="let option of field?.options"
+        [disabled]="option?.disabled"
+        [value]="option?.value"
+      >
+        <span
+          [ngClass]="{ 'disabled-form-selection-option': option?.disabled }"
+        >
+          {{ option.label }}
+        </span>
+        <span *ngIf="option?.disabled" class="ml-2"
+          >({{ option?.message }})</span
+        >
+      </mat-option>
+    </mat-select> -->
+    <!-- end of dropdown -->
+    <!-- TODO: Remove hardcoded ID -->
+    <!-- text area field -->
+    <textarea
+      [ngStyle]="{
+        'font-size':
+          field?.id === '3a010ff3-6361-4141-9f4e-dd863016db5a'
+            ? '1.2rem'
+            : '1rem'
+      }"
+      *ngSwitchCase="'textarea'"
+      matInput
+      [required]="field?.required"
+      [rows]="
+        field?.rows
+          ? field?.rows
+          : field?.id === '3a010ff3-6361-4141-9f4e-dd863016db5a'
+          ? 8
+          : 3
+      "
+      [id]="field?.key"
+      [formControlName]="field?.key"
+      [placeholder]="field?.placeholder"
+      [value]="field?.value"
+      [disabled]="field?.disabled"
+      (keyup)="onFieldUpdate()"
+    ></textarea>
+    <!-- end of text area field -->
+    <mat-error *ngIf="issueWithTheDataField">
+      {{ issueWithTheDataField }}
+    </mat-error>
+  </mat-form-field>
+</div>
+
+<div
+  [formGroup]="form"
+  *ngIf="
+    isCommonField &&
+    !isReport &&
+    field?.shouldHaveLiveSearchForDropDownFields &&
+    field?.controlType === 'dropdown' &&
+    !field?.multiple
+  "
+>
+  <mat-form-field class="w-100" appearance="outline">
+    <mat-label>{{ field?.label }}</mat-label>
+    <input
+      type="text"
+      placeholder="Search {{ field?.label }}"
+      aria-label="{{ field?.label }}"
+      [required]="field?.required"
+      matInput
+      [value]="
+        field?.value &&
+        (members$ | async) &&
+        (members$ | async)?.length == 1 &&
+        (members$ | async)[0]
+          ? (members$ | async)[0]?.display
+          : ''
+      "
+      [disabled]="field?.disabled"
+      autocomplete="off"
+      (keyup)="searchItem($event, field)"
+      [matAutocomplete]="auto"
+    />
+    <span
+      style="position: relative; float: right; margin-top: -30px"
+      *ngIf="!field?.multiple"
+    >
+      <mat-icon>arrow_drop_down</mat-icon>
+    </span>
+    <mat-autocomplete #auto="matAutocomplete">
+      <ng-container *ngFor="let option of members$ | async">
+        <mat-option
+          [ngClass]="{
+            'stock-out-item': option?.isStockOut,
+            'in-stock-item':
+              !option?.isStockOut && field?.searchControlType === 'drugStock'
+          }"
+          [disabled]="option?.disabled"
+          (click)="getSelectedItemFromOption($event, option, field)"
+          [value]="option?.display ? option?.display : option?.name"
+        >
+          <span
+            [ngClass]="{
+              'disabled-form-selection-option': option?.disabled
+            }"
+          >
+            {{ option?.display ? option?.display : option?.name }}
+          </span>
+          <span *ngIf="option?.disabled" class="ml-2">
+            ({{ option?.message }})
+          </span>
+        </mat-option>
+      </ng-container>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
+<div
+  [formGroup]="form"
+  *ngIf="
+    isCommonField &&
+    !isReport &&
+    field?.shouldHaveLiveSearchForDropDownFields &&
+    field?.controlType === 'dropdown' &&
+    field?.multiple
+  "
+>
+  <mat-form-field class="w-100" appearance="outline">
+    <mat-label>{{ field?.label }}</mat-label>
+    <mat-select
+      [formControlName]="field?.key"
+      [required]="field?.required"
+      (selectionChange)="onFieldUpdate()"
+      [value]="value"
+      multiple
+    >
+      <!-- <mat-select-trigger *ngIf="field?.value">
+        {{ field?.value[0] || "" }}
+        <span
+          *ngIf="(field?.value?.length || 0) > 1"
+          class="example-additional-selection"
+        >
+          (+{{ (field.value?.length || 0) - 1 }}
+          {{ field.value?.length === 2 ? "other" : "others" }})
+        </span>
+      </mat-select-trigger> -->
+      <mat-option *ngFor="let option of members$ | async" [value]="option">{{
+        option?.display
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div
+  [formGroup]="form"
+  *ngIf="
+    (isBoolean || field?.controlType === 'checkbox' || isCheckBoxButton) &&
+    !isReport
+  "
+>
+  <section>
+    <mat-checkbox
+      [hidden]="field?.hidden"
+      [id]="field?.id"
+      [required]="field?.required"
+      [formControlName]="field?.key"
+      [checked]="field?.value"
+      (change)="onFieldUpdate()"
+      color="primary"
+    >
+      <span [ngClass]="{ 'disabled-form-selection-option': field?.disabled }">
+        {{ field.label }}
+      </span>
+      <span class="ml-2" *ngIf="field?.disabled"> ({{ field?.message }}) </span>
+    </mat-checkbox>
+  </section>
+</div>
+<div [formGroup]="form" *ngIf="isDateTime && !isReport">
+  <mat-form-field
+    [hidden]="field?.hidden"
+    [ngSwitch]="field?.controlType"
+    appearance="outline"
+    class="w-100"
+  >
+    <mat-label [attr.for]="field?.key">{{ field?.label }}</mat-label>
+    <input
+      matInput
+      autocomplete="off"
+      [id]="field?.key"
+      [required]="field?.required"
+      [value]="field?.value"
+      [disabled]="field?.disabled"
+      [ngxMatDatetimePicker]="fieldId"
+      [placeholder]="field?.placeholder"
+      [max]="field?.max"
+      [min]="field?.min"
+      [formControlName]="field?.key"
+      (dateChange)="onFieldUpdate()"
+    />
+    <mat-datepicker-toggle matSuffix [for]="fieldId"></mat-datepicker-toggle>
+    <ngx-mat-datetime-picker #fieldId> </ngx-mat-datetime-picker>
+    <mat-error *ngIf="!isValid">{{ field?.label }} is required</mat-error>
+  </mat-form-field>
+</div>
+
+<div [formGroup]="form" *ngIf="isDate && !isReport">
+  <!-- date field -->
+  <mat-form-field
+    [hidden]="field?.hidden"
+    [ngSwitch]="field?.controlType"
+    appearance="outline"
+    class="w-100"
+  >
+    <mat-label [attr.for]="field?.key">{{ field?.label }}</mat-label>
+    <input
+      matInput
+      autocomplete="off"
+      [id]="field?.key"
+      [required]="field?.required"
+      [matDatepicker]="fieldId"
+      [max]="field?.max"
+      [min]="field?.min"
+      [placeholder]="field?.placeholder"
+      [formControlName]="field?.key"
+      (dateChange)="onFieldUpdate()"
+    />
+    <mat-datepicker-toggle matSuffix [for]="fieldId"></mat-datepicker-toggle>
+    <mat-datepicker #fieldId></mat-datepicker>
+    <mat-error *ngIf="!isValid">{{ field?.label }} is required</mat-error>
+  </mat-form-field>
+  <!-- end of date field -->
+</div>
+
+<div [formGroup]="form" *ngIf="isCommonField && !isReport"></div>
+
+<div *ngIf="isReport">
+  <div *ngIf="field?.controlType === 'dropdown'">
+    {{ field?.label }}:
+    <b>
+      {{ getOptionValueLabel }}
+    </b>
+  </div>
+  <div *ngIf="field?.controlType !== 'dropdown'">
+    {{ field?.label }}:
+    <b>
+      {{ value }}
+    </b>
+  </div>
+</div>
