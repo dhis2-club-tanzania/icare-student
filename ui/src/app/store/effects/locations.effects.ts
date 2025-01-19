@@ -277,7 +277,7 @@ export class LocationsEffects {
       withLatestFrom(this.store.select(getAuthenticationState)),
       switchMap(([action, isAuthenticated]: [any, boolean]) => {
         if (isAuthenticated) {
-          return this.locationService.getAllLocations().pipe(
+          return this.locationService.getAllCountryLocations().pipe(
             map((locationResponse) => {
               const results = locationResponse?.results || [];
               return addLoadedLocations({
