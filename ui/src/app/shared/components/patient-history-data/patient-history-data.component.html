@@ -178,10 +178,8 @@
                             }}
                             by
                             {{
-                              visitData?.results[0]?.provider?.display?.split(
-                                "-"
-                              )[1]
-                            }}
+                                  visitData?.technician ? visitData?.technician : "-"
+                              }}
                           </i>
                         </span>
                       </span>
@@ -300,7 +298,7 @@
                       visitData?.results[0]?.obsDatetime
                         | date: "dd-MM-yyyy HH:mm:ss"
                     }}
-                    by {{ visitData?.results[0]?.provider?.display }}
+                    by   {{visitData?.technician ? visitData?.technician : "-"}}
                   </i>
                 </span>
               </p>
@@ -336,7 +334,7 @@
                   >
                     <mat-panel-title>
                       <span>
-                        <strong> Results </strong>
+                        <strong> Results :</strong>
                         <span class="text-small">
                           <i>
                             fed on
@@ -346,9 +344,7 @@
                             }}
                             by
                             {{
-                              visitData?.results[0]?.provider?.display?.split(
-                                "-"
-                              )[1]
+                                  visitData?.technician ? visitData?.technician : "-"
                             }}
                           </i>
                         </span>
@@ -449,7 +445,7 @@
                       visitData?.results[0]?.obsDatetime
                         | date: "dd-MM-yyyy HH:mm:ss"
                     }}
-                    by {{ visitData?.results[0]?.provider?.display }}
+                    by {{   visitData?.technician ? visitData?.technician : "-" }}
                   </i>
                 </span>
               </p>
@@ -485,7 +481,7 @@
                   >
                     <mat-panel-title>
                       <span>
-                        <strong> Results </strong>
+                        <strong> Results :</strong>
                         <span class="text-small">
                           <i>
                             fed on
@@ -495,9 +491,7 @@
                             }}
                             by
                             {{
-                              visitData?.results[0]?.provider?.display?.split(
-                                "-"
-                              )[1]
+                                  visitData?.technician ? visitData?.technician : "-"
                             }}
                           </i>
                         </span>
@@ -573,7 +567,7 @@
                           | date: "dd-MM-yyyy HH:mm:ss"
                       }}
                     </span>
-                    by {{ visitData?.results[0]?.provider?.display }}
+                    by {{   visitData?.technician ? visitData?.technician : "-" }}
                   </i>
                 </span>
               </p>

@@ -194,6 +194,10 @@ export class PatientHistoryDataComponent implements OnInit {
             }
           })
           ?.filter((ob) => ob),
+          technician: this.visit?.obs
+              ?.filter((ob) => order?.uuid === ob?.order?.uuid)
+              ?.map((ob) => ob?.provider?.display?.split('-')[1])[0], // Extract technician
+
       };
     });
     this.radiologyOrders = visit.radiologyOrders.map((order) => {
@@ -206,6 +210,10 @@ export class PatientHistoryDataComponent implements OnInit {
             }
           })
           ?.filter((ob) => ob),
+          technician: this.visit?.obs
+              ?.filter((ob) => order?.uuid === ob?.order?.uuid)
+              ?.map((ob) => ob?.provider?.display?.split('-')[1])[0], // Extract technician
+
       };
     });
     this.procedureOrders = visit.procedureOrders.map((order) => {
@@ -218,6 +226,10 @@ export class PatientHistoryDataComponent implements OnInit {
             }
           })
           ?.filter((ob) => ob),
+          technician: this.visit?.obs
+              ?.filter((ob) => order?.uuid === ob?.order?.uuid)
+              ?.map((ob) => ob?.provider?.display?.split('-')[1])[0], // Extract technician
+
       };
     });
     this.drugsPrescribed = getGenericDrugPrescriptionsFromVisit(
