@@ -114,49 +114,59 @@ export class DischargePatientModalComponent implements OnInit {
         ) || []
       )?.length > 0;
   }
+onSaveDischargeSummary(event: Event): void {
+  event.stopPropagation();
 
-  onSaveDischargeSummary(event: Event): void {
-    event.stopPropagation();
-    const data = {
-      encounterDatetime: this.visitDetails?.admissionEncounter?.encounterDatetime,
-      patient : this.visitDetails?.patient?.uuid,
-      encounterUuid: this.visitDetails?.admissionEncounter?.uuid,
-      location: this.visitDetails?.location?.uuid,
-      encounterProviders:[
-        {
-          provider: this.visitDetails?.provider?.uuid,
-          encounterRole: this.visitDetails?.admissionEncounter?.uuid,
-        }
-      ],
-      visit: this.visitDetails?.uuid,
-      obs: ( Object.keys(this.observationData)?.map((key: string) => {
+  // Prepare the encounter data payload
+  const data = {
+    encounterDatetime: this.visitDetails?.admissionEncounter?.encounterDatetime,
+    patient: this.visitDetails?.patient?.uuid,
+    encounterUuid: this.visitDetails?.admissionEncounter?.uuid,
+    location: this.visitDetails?.location?.uuid,
+    encounterProviders: [
+      {
+        provider: this.visitDetails?.provider?.uuid,
+        encounterRole: this.visitDetails?.admissionEncounter?.uuid,
+      },
+    ],
+    visit: this.visitDetails?.uuid,
+    obs: Object.keys(this.observationData || {})
+      .map((key: string) => {
         const observation = this.observationData[key];
-        if (observation && observation.value) {
+        if (observation?.value) {
           return {
             person: this.visitDetails?.patient?.uuid,
             concept: key,
             obsDatetime: new Date(),
-            // form: this.dischargeFormUuid,
             value: observation.value,
           };
-        } else {
-          return null; 
         }
-      }).filter((observation: any) => observation)
-      ),
-      form: this.dischargeFormUuid,
-      orders:[],
-    };
-    this.savingData = true;
-    this.observationService
-      .saveObservationsViaEncounter(data)
-      .subscribe((response: any) => {
-        if (response) {
-          this.getVisit();
-          this.savingData = false;
-        }
-      });
-  }
+        return null;
+      })
+      .filter((observation) => observation !== null),
+    form: this.dischargeFormUuid,
+    orders: [],
+  };
+
+  // Set savingData to true to indicate a save operation is in progress
+  this.savingData = true;
+
+  // Save observations via the observation service
+  this.observationService.saveObservationsViaEncounter(data).subscribe({
+    next: (response: any) => {
+      if (response) {
+        this.getVisit();
+      }
+    },
+    error: (err: any) => {
+      console.error('Error saving observations:', err);
+    },
+    complete: () => {
+      this.savingData = false;
+    },
+  });
+}
+
   onPrint(event: Event, parentLocation: any, activeVisit: any): void {
     event.stopPropagation();
     this.diagnoses = getAllDiagnosesFromVisitDetails(activeVisit);
