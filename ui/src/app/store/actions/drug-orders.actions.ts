@@ -64,3 +64,34 @@ export const setDrugOrderEncounter = createAction(
   '[Drug orders] set drug order encounter',
   props<{ drugOrderEncounter: any }>()
 );
+
+//My new added actions
+export const notifyDoctor = createAction(
+  '[Drug Order] notify doctor',
+  props<{ 
+    doctorUuid: string;
+    drugOrder: DrugOrderObject;
+    patientInfo?: any;
+  }>()
+);
+export const notifyDoctorSuccess = createAction(
+  '[Drug Order] notify doctor success',
+  props<{ 
+    doctorUuid: string;
+    drugOrder: DrugOrderObject;
+  }>()
+);
+export const notifyDoctorFail = createAction(
+  '[Drug Order] notify doctor fail',
+  props<{ 
+    error: any;
+    doctorUuid: string;
+  }>()
+);
+export const batchNotifyDoctors = createAction(
+  '[Drug Order] batch notify doctors',
+  props<{ 
+    drugOrders: DrugOrderObject[];
+    patientInfo?: any;
+  }>()
+);

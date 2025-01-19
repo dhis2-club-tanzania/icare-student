@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -88,8 +91,19 @@ export class Notification implements NotificationInterface {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  constructor(private snackBar: MatSnackBar) {}
-
+  constructor(private snackBar: MatSnackBar, private http: HttpClient) {}
+  sendNotification(doctorUuid: string, data: any): Observable<any> {
+    //Actual API endpoint
+    const endpoint = /api/notification/${doctorUuid};
+    return this.http.post(endpoint, {
+      type: 'DRUG_ORDER_UPDATE',
+      data: {
+        drugOrder: data.drugOrder,
+        patientInfo: data.patientInfo,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }
   /**
    * Show notification snack bar for the supplied options
    * @param notification Notification

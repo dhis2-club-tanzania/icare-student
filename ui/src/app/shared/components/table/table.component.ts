@@ -141,4 +141,14 @@ export class TableComponent implements OnInit {
       },
     });
   }
+  onNotifyDoctor(event: Event): void {
+    event.preventDefault();
+
+    this.store.dispatch(
+      drugOrderActions.batchNotifyDoctors({
+        drugOrders: this.drugOrders,
+        patientInfo: this.currentPatient
+      })
+    );
+}
 }
