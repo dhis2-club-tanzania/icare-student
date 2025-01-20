@@ -141,6 +141,20 @@ export class SampleImportExportComponent implements OnInit {
 
     this.exceltoJson = {};
     let headerJson = {};
+        //  code to resolve the date issue 
+     const filteredData = jsonData.filter((row: any) => {
+      // Assuming there's a column named 'Date' in your Excel sheet
+      const dateColumn = row["Date"];
+      if (dateColumn) {
+        const dateValue = new Date(dateColumn); // Convert to Date object
+        const startDate = new Date("2025-01-01"); // Replace with your desired start date
+        const endDate = new Date("2025-01-31"); // Replace with your desired end date
+        // Filter rows between the date range
+        return dateValue >= startDate && dateValue <= endDate;
+      }
+      return false; // Exclude rows without a valid 'Date' column
+    });
+    
     const reader: FileReader = new FileReader();
     reader.readAsBinaryString(this.file);
     this.exceltoJson["filename"] = this.file.name;
