@@ -28,8 +28,18 @@
   >
     Reset Filter <!-- CHANGED: New button action to reset filter -->
   </button>
+    
 </div>
-  
+   <mat-progress-bar
+    mode="indeterminate"
+    *ngIf="!params?.samples && startDate && endDate"
+    *ngIf="isLoading && startDate && endDate"
+  ></mat-progress-bar>
+  <div
+    class="row sample-filters d-flex justify-content-left"
+    *ngIf="startDate && endDate"
+  >
+  </div>  
   <mat-radio-group class="registration-category mb-2">
     <mat-radio-button
       (change)="getSelectionCategory($event)"
