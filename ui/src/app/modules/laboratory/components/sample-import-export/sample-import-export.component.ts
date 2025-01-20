@@ -161,7 +161,50 @@ export class SampleImportExportComponent implements OnInit {
       }
       return false; // Exclude rows without a valid 'Date' column
     });
-    
+    // Utility function to check if a date is within a specified range
+function isDateInRange(date, startDate, endDate) {
+    return date >= startDate && date <= endDate;
+}
+
+// Utility function to safely parse a date string into a Date object
+function parseDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+        throw new Error(`Invalid date format: ${dateString}`);
+    }
+    return date;
+}
+
+// Main function to process the date column and check if it falls within a range
+function processDateColumn(row, startDateStr = "2025-01-01", endDateStr = "2025-01-31") {
+    const dateColumn = row["Date"];
+    if (!dateColumn) {
+        console.log("No date found in the specified column.");
+        return false; // Return false if no date is found
+    }
+
+    try {
+        const dateValue = parseDate(dateColumn); // Safely parse the date
+        const startDate = new Date(startDateStr); // Convert start date string to Date object
+        const endDate = new Date(endDateStr); // Convert end date string to Date object
+
+        if (isDateInRange(dateValue, startDate, endDate)) {
+            console.log(`Date "${dateColumn}" is within the range ${startDateStr} to ${endDateStr}.`);
+            return true; // Return true if the date is within the range
+        } else {
+            console.log(`Date "${dateColumn}" is outside the range ${startDateStr} to ${endDateStr}.`);
+            return false; // Return false if the date is outside the range
+        }
+    } catch (error) {
+        console.error(`Error processing date: ${error.message}`);
+        return false; // Return false if an error occurs
+    }
+}
+
+// Example usage
+const row = { Date: "2025-01-15" }; // Replace with your actual row data
+const isDateValid = processDateColumn(row); // Uses default date range
+console.log(`Is the date valid? ${isDateValid}`);
     const reader: FileReader = new FileReader();
     reader.readAsBinaryString(this.file);
     this.exceltoJson["filename"] = this.file.name;
