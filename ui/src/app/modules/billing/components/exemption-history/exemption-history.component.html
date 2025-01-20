@@ -4,7 +4,7 @@
         <mat-expansion-panel-header class="d-flex justify-content-between">
             <mat-panel-title class="d-flex justify-content-between">
                 <div class="float-left">
-                    <span>EXEMPTION HISTORY</span>
+                    <span>EXEMPTION FOR HISTORY</span>
                 </div>
                 <div class="float-right">
                     <span>Total Amount Exempted:
@@ -18,6 +18,8 @@
                     {{ column?.label }}
                 </th>
                 <td mat-cell *matCellDef="let row; let i = index">
+
+                    
                     {{
                     column.isIndexColumn
                     ? i + 1
