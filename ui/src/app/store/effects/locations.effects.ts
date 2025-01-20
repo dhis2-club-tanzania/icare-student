@@ -24,6 +24,7 @@ import {
 import {
   addLoadedLocations,
   loadAllLocations,
+  loadAllCountryLocations,
   loadingLocationsFails,
   loadLocationById,
   loadingLocationByTagNameFails,
@@ -251,6 +252,28 @@ export class LocationsEffects {
   loadAllLocation$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadAllLocations),
+      withLatestFrom(this.store.select(getAuthenticationState)),
+      switchMap(([action, isAuthenticated]: [any, boolean]) => {
+        if (isAuthenticated) {
+          return this.locationService.getAllLocations().pipe(
+            map((locationResponse) => {
+              const results = locationResponse?.results || [];
+              return addLoadedLocations({
+                locations: formatLocationsPayLoad(results),
+              });
+            })
+          );
+        } else {
+          this.store.dispatch(go({ path: ["/login"] }));
+          return of(null);
+        }
+      })
+    )
+  );
+
+  loadAllCountryLocation$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadAllCountryLocations),
       withLatestFrom(this.store.select(getAuthenticationState)),
       switchMap(([action, isAuthenticated]: [any, boolean]) => {
         if (isAuthenticated) {

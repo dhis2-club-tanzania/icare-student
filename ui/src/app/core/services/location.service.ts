@@ -193,6 +193,31 @@ export class LocationService {
       );
   }
 
+  getAllCountryLocations() {
+    return this.httpClient
+      .get(
+        "location?v=custom:(uuid,display,parentLocation:(uuid,display),tags,description,attributes:(attributeType,uuid,value,voided))&limit=100"
+      )
+      .pipe(
+        map((response) => {
+          return {
+            results: response?.results.map((result) => {
+              return {
+                ...result,
+                attributes:
+                  result?.attributes && result?.attributes?.length > 0
+                    ? result?.attributes.filter(
+                        (attribute) => !attribute?.voided
+                      )
+                    : [],
+              };
+            }),
+          };
+        }),
+        catchError((error) => of(error))
+      );
+  }
+
   getLocationsByTagName(
     tagName: string,
     parameters?: { limit?: number; startIndex?: number; v?: string; q?: string }
@@ -351,4 +376,5 @@ export class LocationService {
         catchError((error) => of(error))
       );
   }
+
 }
