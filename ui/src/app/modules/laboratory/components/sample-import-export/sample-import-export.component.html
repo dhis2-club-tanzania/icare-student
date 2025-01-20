@@ -21,6 +21,13 @@
   <button mat-flat-button color="primary" (click)="applyDateFilter()">
     Apply Filter
   </button>
+          <button
+    mat-flat-button
+    color="accent" <!-- CHANGED: Button color -->
+    (click)="resetDateFilter()"
+  >
+    Reset Filter <!-- CHANGED: New button action to reset filter -->
+  </button>
 </div>
   
   <mat-radio-group class="registration-category mb-2">
