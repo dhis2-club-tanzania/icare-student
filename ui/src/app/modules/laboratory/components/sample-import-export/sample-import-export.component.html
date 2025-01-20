@@ -4,6 +4,25 @@
     exportTemplateDataReferences: exportTemplateDataReferences$ | async
   } as params"
 >
+
+  <div class="date-filter">
+  <mat-form-field>
+    <mat-label>Start Date</mat-label>
+    <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" />
+    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+    <mat-datepicker #startPicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>End Date</mat-label>
+    <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" />
+    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+    <mat-datepicker #endPicker></mat-datepicker>
+  </mat-form-field>
+  <button mat-flat-button color="primary" (click)="applyDateFilter()">
+    Apply Filter
+  </button>
+</div>
+  
   <mat-radio-group class="registration-category mb-2">
     <mat-radio-button
       (change)="getSelectionCategory($event)"
