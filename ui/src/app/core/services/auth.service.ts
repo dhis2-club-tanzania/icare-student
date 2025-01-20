@@ -82,6 +82,10 @@ export class AuthService {
     return this.httpClient.login(credentialsToken).pipe(
       switchMap((loginResponse) => {
         const { authenticated, user } = loginResponse;
+        if(!authenticated){
+          //handle failure gracefully
+          return throwError('authentication failed, please check your credentials.');
+        }
         this._session.next(loginResponse);
         return this.currentUserService.get(user?.uuid).pipe(
           map((userDetails) => {
