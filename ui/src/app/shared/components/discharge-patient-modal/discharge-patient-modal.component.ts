@@ -430,7 +430,7 @@ onSaveDischargeSummary(event: Event): void {
 
     frameDoc.document.close();
 
-    setTimeout(function () {
+    setTimeout(function ()  {
       window.frames["frame3"].focus();
       window.frames["frame3"].print();
       document.body.removeChild(frame1);
