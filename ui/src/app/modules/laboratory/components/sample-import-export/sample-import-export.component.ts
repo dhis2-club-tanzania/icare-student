@@ -133,6 +133,13 @@ export class SampleImportExportComponent implements OnInit {
       exportTemplateDataReferences
     );
 
+      // Reset the date filter logic
+  resetDateFilter() {
+    this.startDate = null;
+    this.endDate = null;
+    console.log('Date filter reset');
+    // Additional logic to reset the filtered data
+  }
     const keyedExportColumnHeaders = keyBy(
       exportTemplateDataReferences,
       "exportKey"
