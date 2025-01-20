@@ -62,7 +62,7 @@ export class ExemptionHomeComponent implements OnInit, OnDestroy {
     this.unsubscribe$.complete();
   }
 
-  private getRandomItem<T>(array: T[]): T {
+  private getItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
   }
 
@@ -70,7 +70,7 @@ export class ExemptionHomeComponent implements OnInit, OnDestroy {
   private addMockDataToVisit(visit: any): any {
     return {
       ...visit,
-      exemptionType: this.getRandomItem(this.exemptionTypes),
+      exemptionType: this.getItem(this.exemptionTypes),
       exemptionCriteria: this.determineExemptionCriteria(visit.patientAge),
     };
   }
@@ -119,7 +119,7 @@ export class ExemptionHomeComponent implements OnInit, OnDestroy {
     } else if (age >= 18 && age <= 25) {
       return "Student"; // Students (assumed age range: 18-25)
     } else {
-      return this.getRandomItem(this.additionalCriteria); // Default additional criteria
+      return this.getItem(this.additionalCriteria); // Default additional criteria
     }
   }
   
@@ -129,7 +129,7 @@ export class ExemptionHomeComponent implements OnInit, OnDestroy {
     return {
       ...visit,
       index: index + 1,
-      exemptionType: visit.exemptionType || this.getRandomItem(this.exemptionTypes),
+      exemptionType: visit.exemptionType || this.getItem(this.exemptionTypes),
       exemptionCriteria: visit.exemptionCriteria || this.determineExemptionCriteria(patientAge), // Use refined criteria
       patientName: visit.patient?.name || visit.patientName || "Unknown",
       patientGender: visit.patient?.gender || visit.patientGender || "Unknown",
