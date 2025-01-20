@@ -16,8 +16,9 @@ export function getOrdersFromCurrentVisitEncounters(
       ..._.map(
         encounter?.orders?.filter(
           (order) =>
-            order?.orderType?.display?.toLowerCase() === "procedure order" ||
-            order?.orderType?.display?.toLowerCase() === "radiology order"
+            !order.voided &&
+            (order?.orderType?.display?.toLowerCase() === "procedure order" ||
+              order?.orderType?.display?.toLowerCase() === "radiology order")
         ) || [],
         (order) => {
           const paid =
@@ -25,8 +26,8 @@ export function getOrdersFromCurrentVisitEncounters(
               ? true
               : !isEnsured && bills && bills?.length === 0
               ? true
-              // : isEnsured && bills && bills?.length === 0
-              : isEnsured
+              : // : isEnsured && bills && bills?.length === 0
+              isEnsured
               ? true
               : (
                   bills?.filter(
@@ -34,8 +35,7 @@ export function getOrdersFromCurrentVisitEncounters(
                       (
                         bill?.items?.filter(
                           (billItem) =>
-                            billItem?.billItem?.item?.concept?.uuid ===
-                            order?.concept?.uuid
+                            billItem?.billItem?.item?.concept?.uuid === order?.concept?.uuid
                         ) || []
                       )?.length > 0
                   ) || []
@@ -43,47 +43,43 @@ export function getOrdersFromCurrentVisitEncounters(
               ? false
               : true;
 
-              const observations = encounter
-              ? encounter?.obs?.filter(
-                  (obs) => obs?.concept?.uuid === order?.concept?.uuid
-                ) || []
-              : [];
-            
-              const formattedItem = {
-                orderNumber: order?.orderNumber,
-                uuid: order?.uuid,
-                dateActivated: order?.dateActivated,
-                id: order?.uuid,
-                concept: {
-                  uuid: order?.concept?.uuid,
-                  display: order?.concept?.display,
-                },
-                encounterUuid: order?.encounter?.uuid,
-                orderer: {
-                  uuid: order?.orderer?.uuid,
-                  display: order?.orderer?.display,
-                },
-                values: observations.map((obs) => obs?.value), 
-                remarks: observations[0]?.comment || null, 
-                obsDatetime: observations[0]?.obsDatetime || null,
-                paid,
-                orderReason: order?.orderReason,
-                orderType: order?.orderType.display,
-                display: order?.display,
-                instructions: order?.instructions,
-                type: order?.type,
-              };
-              
+          const observations = encounter
+            ? encounter?.obs?.filter((obs) => obs?.concept?.uuid === order?.concept?.uuid) || []
+            : [];
+
+          const formattedItem = {
+            orderNumber: order?.orderNumber,
+            uuid: order?.uuid,
+            dateActivated: order?.dateActivated,
+            id: order?.uuid,
+            concept: {
+              uuid: order?.concept?.uuid,
+              display: order?.concept?.display,
+            },
+            encounterUuid: order?.encounter?.uuid,
+            orderer: {
+              uuid: order?.orderer?.uuid,
+              display: order?.orderer?.display,
+            },
+            values: observations.map((obs) => obs?.value),
+            remarks: observations[0]?.comment || null,
+            obsDatetime: observations[0]?.obsDatetime || null,
+            paid,
+            orderReason: order?.orderReason,
+            orderType: order?.orderType.display,
+            display: order?.display,
+            instructions: order?.instructions,
+            type: order?.type,
+          };
+
           return formattedItem;
         }
       ),
     ];
   });
   return (
-    orders.filter(
-      (order) =>
-        order?.orderType?.toLowerCase()?.indexOf(type.toLowerCase()) > -1
-    ) || []
+    orders.filter((order) => order?.orderType?.toLowerCase()?.indexOf(type.toLowerCase()) > -1) ||
+    []
   );
 }
 
