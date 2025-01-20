@@ -13,6 +13,10 @@ import { VisitsService } from "../../resources/visits/services/visits.service";
 import { Store } from "@ngrx/store";
 import { AppState } from "src/app/store/reducers";
 import {
+  getAdmissionStatusOfCurrentPatient,
+  getAdmittingLoadingState,
+} from "src/app/store/selectors/current-patient.selectors";
+import {
   getAllForms,
   getCustomOpenMRSFormById,
   getCustomOpenMRSFormsByIds,
@@ -51,6 +55,8 @@ export class PatientHistoryComponent implements OnInit {
 
   formData: any;
   visits$: Observable<any>;
+  add$:Observable<boolean>;
+  add1$:Observable<boolean>;
   customForms$: Observable<any>;
   generalPrescriptionOrderType$: any;
   prescriptionArrangementFields$: Observable<any>;
@@ -82,13 +88,30 @@ export class PatientHistoryComponent implements OnInit {
     private systemSettingsService: SystemSettingsService,
     private observationService: ObservationService
   ) {}
+//data has to be initialized on start to work
+ // params: any;
+  get patientStatus(): boolean {
+    return this.add$?._isScalar;
+  }
+
 
   ngOnInit(): void {
     this.loadData();
+
+    this.add$ = this.store.select(
+      getAdmissionStatusOfCurrentPatient
+    );
   }
+
+
+  
+
+
 
   private loadData(): void {
     this.loadingData = true;
+    this.add1$=this.store.select(getAdmissionStatusOfCurrentPatient);
+    this.add$ = this.store.select( getAdmissionStatusOfCurrentPatient);
     this.customForms$ = this.store.select(getAllForms);
     this.facilityDetails$ = this.store.select(getParentLocation);
     this.currentUser$ = this.store.select(getCurrentUserDetails);
@@ -147,6 +170,11 @@ export class PatientHistoryComponent implements OnInit {
       .pipe(
         map((response) => {
           this.loadingData = false;
+
+
+
+
+          
           if (!response?.error) {
             return response?.map((visit) => {
               let obs = [];
@@ -205,13 +233,23 @@ export class PatientHistoryComponent implements OnInit {
   //     });
   // }
 
+
+ // params: any; // Replace with actual type
+ // loadingData: boolean = false;
+
+  
+
+
+
   onDoctorsIPDRoundCommentsFormUpdate(formValue: FormValue): void {
     console.log(formValue.getValues());
+    this.loadData();
     this.formData = formValue.getValues();
   }
 
   onSave(event: Event, form: any, provider: any, visit: any): void {
     event.stopPropagation();
+    this.loadData();
     const obs = Object.keys(this.formData).map((key: string) => {
       return {
         concept: key,
