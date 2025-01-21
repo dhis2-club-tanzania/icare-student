@@ -155,10 +155,45 @@
 
 
       <mat-tab>
-        <ng-template mat-tab-label>
-          <span>Update Payment Category</span>
-        </ng-template>
-      </mat-tab>
+      <ng-template mat-tab-label>
+        <span>Update Payment Category</span>
+      </ng-template>
+
+
+          <div *ngIf="patient">
+            <p><strong>Patient Name:</strong> {{ patient.name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.id }}</p>
+          </div>
+
+          <!-- Form to update payment category -->
+          <div>
+            <label for="payment-category">Select Payment Category:</label>
+            <select id="payment-category" [(ngModel)]="paymentCategory">
+
+                  <option value="cash">Cash</option>
+                  <option value="insurance">Insurance</option>
+
+            </select>
+          </div>
+
+          <!-- Update button -->
+          <div class="d-flex justify-content-end">
+            <button mat-stroked-button (click)="onCancel($event)">Cancel</button>
+            <button
+              class="ml-2"
+              [disabled]="!currentRoom"
+              mat-stroked-button
+              color="primary"
+              (click)="update($event, params?.currentPatientVisit)"
+              [disable]="
+                currentRoom?.name &&
+                currentRoom?.name == params?.currentPatientVisit.location?.display
+              "
+            >
+              Update
+            </button>
+          </div>
+    </mat-tab>
 
     </mat-tab-group>
   </div>
