@@ -20,12 +20,18 @@ export class SubmitEClaimComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.patientUuid = this.route.snapshot.params['patientId'];
+    this.route.params.subscribe(params => {
+      this.patientUuid = params['patientId']; // Dynamically fetch patient ID
+      this.loadPatientData(); // Fetch patient details based on new ID
+    });
+  }
+
+  loadPatientData(): void {
     this.activeVisitDetails$ = this.visitService.getActiveVisit(
       this.patientUuid,
       false,
       false,
-      false
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    false,
     );
   }
 }
