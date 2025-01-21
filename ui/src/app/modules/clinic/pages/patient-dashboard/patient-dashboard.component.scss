@@ -1,5 +1,17 @@
 .patient-dashboard-container {
-  position: relative;
+  position: fixed; /* Stays fixed on the screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff; /* Background color to ensure readability */
+  z-index: 1000; /* High z-index to stay on top */
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  margin-top: 70px; /* Adds margin to prevent content overlap */
 }
 
 .button-container {
@@ -22,4 +34,19 @@
 
 .range-label {
   font-size: 0.6rem;
+}
+
+mat-progress-bar {
+  margin-top: 70px; /* Ensure the progress bar does not overlap the fixed header */
+}
+
+@media (max-width: 768px) {
+  .patient-dashboard-container {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .content {
+    margin-top: 60px;
+  }
 }
