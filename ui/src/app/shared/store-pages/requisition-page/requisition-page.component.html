@@ -10,13 +10,13 @@
     mode="indeterminate"
   ></mat-progress-bar>
   <ng-container *ngIf="params?.currentStore && params?.storeLocations">
-    <mat-chip-list *ngIf="!params?.storeLocations" aria-label="Fish selection">
+    <mat-chip-list aria-label="Fish selection">
       <mat-chip
         [ngClass]="{ 'selected-store': params?.currentStore?.id === store?.id }"
         (click)="onSetCurrentStore($event, store)"
         *ngFor="let store of params?.storeLocations"
       >
-      {{ store?.display }}
+        {{ store?.display }}
       </mat-chip>
     </mat-chip-list>
     <div class="mt-2">
