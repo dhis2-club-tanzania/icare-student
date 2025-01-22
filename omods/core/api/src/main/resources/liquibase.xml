@@ -5074,29 +5074,6 @@
             </column>
         </addColumn>
     </changeSet>
-
-    
-    <!-- STOPPED MEDICATION TABLE -->
-    <changeSet id="create_stopped_medication" author="moody-amin" dbms="mysql">
-    <preConditions onFail="MARK_RAN">
-        <not>
-            <tableExists tableName="stopped_medication"/>
-        </not>
-    </preConditions>
-    <comment>Creating openmrs stopped_medication table</comment>
-    <createTable tableName="stopped_medication">
-    <column name="id" type="INTEGER" autoIncrement="true">
-        <constraints primaryKey="true" primaryKeyName="stopped_medication_id_pk"/>
-    </column>
-    <column name="patient_id" type="INTEGER">
-        <constraints nullable="false"></constraints>
-    </column>
-    <column name="prescription" type="TEXT"/>
-    <column name="remarks" type="TEXT"/>
-    </createTable>
-    </changeSet>
-
-
     <changeSet id="add_status_to_bl_payment_item_table" author="gaspar-giddson" dbms="mysql">
         <preConditions onFail="MARK_RAN">
             <not>

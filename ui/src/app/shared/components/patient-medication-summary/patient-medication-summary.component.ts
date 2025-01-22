@@ -30,12 +30,6 @@ export class PatientMedicationSummaryComponent implements OnInit {
   useGeneralPrescription$: Observable<any>;
   currentVisit$: Observable<any>;
 
-  prescriptions = [
-    { id: 1, name: 'Diclofenac+Paracetamol+Chlorzoxazone Tablets 50mg+325mg+250mg - 1 (capsule) qid / 6 hrly 6 Days Oral', remarks: 'Skin reaction with the medication' },
-    { id: 2, name: 'Paracetamol 500mg Tablet(s) - 1 (tablet) immediately / stat 2 Days Oral', remarks: 'Addiction to medication' },
-    { id: 3, name: 'Chlorzoxazone + Diclofenac + Paracetamol Tablet: 250mg+50mg+325mg - 1 (capsule) od 1 Weeks Topical', remarks: 'Testing the remarks!!!!' }
-  ];
-
   @Output() updateConsultationOrder = new EventEmitter();
   @Output() updateMedicationComponent = new EventEmitter();
   patientDrugOrdersStatuses$: Observable<any>;

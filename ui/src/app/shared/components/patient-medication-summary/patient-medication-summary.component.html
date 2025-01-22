@@ -237,36 +237,6 @@
           </ng-template>
         </div>
       </mat-tab>
-      <mat-tab
-        label="Stopped Medication"
-        *ngIf="!previous"
-      >
-        <div class="mat-tab-container">
-          <ng-template matTabContent>
-            <div>
-              <table class="w-100 table table-bordered">
-                <thead>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Prescription</th>
-                    <th>Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let prescription of prescriptions; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ prescription.name }}</td>
-                    <td>{{ prescription.remarks }}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div *ngIf="prescriptions.length === 0">
-                No stopped medications available.
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      </mat-tab>
       <mat-tab label="Drugs" *ngIf="previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
