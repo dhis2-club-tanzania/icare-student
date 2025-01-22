@@ -65,6 +65,13 @@
               </table>
             </div>
           </ng-template>
+
+         <app-patient-list
+          [patients]="patients"
+          [title]="'Patient List'"
+          [showDetails]="true">
+          </app-patient-list>
+         
         </div>
       </mat-tab>
       <mat-tab
@@ -344,12 +351,5 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-    <div
-      *ngIf="!drugParams?.currentVisit?.hasConfirmedDiagnosis"
-      class="alert alert-warning"
-      role="alert"
-    >
-      NO Confirmed/Final Diagnosis provided. Please provide before Medication
-    </div>
   </div>
-</div>
+</div> 

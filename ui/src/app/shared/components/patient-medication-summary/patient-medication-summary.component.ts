@@ -97,6 +97,12 @@ export class PatientMedicationSummaryComponent implements OnInit {
 
       this.filteredDrugOrders$ = zip(
         this.drugOrders$,
+
+        this.patientService.getpatientsWitchprescriptions().pipe(
+          map((response) =>{
+            return response;
+          })
+          ),
         this.patientDrugOrdersStatuses$
       ).pipe(
         map((res) => {

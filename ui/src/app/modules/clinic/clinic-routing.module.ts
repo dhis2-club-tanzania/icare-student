@@ -13,6 +13,10 @@ const routes: Routes = [
       { path: "", redirectTo: "patient-list", pathMatch: "full" },
       { path: "patient-list", component: ClinicPatientListComponent },
       {
+        path: "patient-medications",
+        component: PatientMedicationsComponents,
+      },
+      {
         path: "patient-dashboard/:patientID",
         component: PatientDashboardComponent,
       },

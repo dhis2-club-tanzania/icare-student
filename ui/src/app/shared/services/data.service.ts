@@ -14,15 +14,15 @@ export class DataService {
 
   // openmrs/ws/rest/v1/visit?includeInactive=true&patient=17454676-46fb-4b68-a88c-b960d977d625&v=custom:(uuid,visitType,startDatetime,stopDatetime,location,encounters:(uuid))
   // get constant from global variable: openmrs/ws/rest/v1/bahmnicore/sql/globalproperty?property=bahmni.pharmacy.daysLeftToExpiryAlert
-  getVisitDetailsForCurrentPatient(patientId) {}
+  getVisitDetailsForCurrentPatient(patientId: string): void {}
 
-  getBasicDetailFrom() {}
+  getBasicDetailFrom(): void {}
 
-  saveObs(data): Observable<any> {
+  saveObs(data: any): Observable<any> {
     return this.httpClient.post(this.BASE_URL + 'obs', data);
   }
 
-  getObsDetails(encounterUuid): Observable<any> {
+  getObsDetails(encounterUuid: string): Observable<any> {
     return this.httpClient.get(
       this.BASE_URL +
         'encounter/' +
@@ -31,10 +31,14 @@ export class DataService {
     );
   }
 
-  deleteObs(uuid): Observable<any> {
+  deleteObs(uuid: string): Observable<any> {
     return this.httpClient.delete(
       this.BASE_URL + 'obs/' + uuid + '?purge=true'
     );
+  }
+
+  getMedicatedPatients(): Observable<any> {
+    return this.httpClient.get(this.BASE_URL + 'medicatedPatients');
   }
 
   getBillingInformation(): Observable<any> {
@@ -44,7 +48,7 @@ export class DataService {
     );
   }
 
-  async getOrderResults(patientUuid) {
+  async getOrderResults(patientUuid: string): Promise<any> {
     return await this.httpClient
       .get(
         this.BASE_URL + 'bahmnicore/labOrderResults?patientUuid=' + patientUuid
@@ -53,7 +57,7 @@ export class DataService {
       .toPromise();
   }
 
-  uploadFileToBahmni(data): Observable<any> {
+  uploadFileToBahmni(data: any): Observable<any> {
     return this.httpClient.post(
       this.BASE_URL + 'bahmnicore/visitDocument/uploadDocument',
       data
@@ -157,12 +161,31 @@ export class DataService {
                         );
 
                         if (filteredQts.length > 0) {
-                          orders = {
-                            ...orders,
-                            ...{
-                              quotes: filteredQts,
-                            },
-                          };
+                                                }
+                                              }
+                                            );
+                                        idsLoaded[billingInfo.patient.uuid] = billingInfo.patient.uuid;
+                                      });
+                                    } else {
+                                      observer.next(patientsBillingInfos);
+                                      observer.complete();
+                                    }
+                                  },
+                                  (error) => {
+                                    observer.error(error);
+                                  }
+                                );
+                            });
+                            return data;
+                          }
+                        
+                          getMedicationList(patientUuid: string): Observable<any> {
+                            return this.httpClient.get(
+                              this.BASE_URL + 'bahmnicore/medicationList?patientUuid=' + patientUuid
+                            );
+                          orders.quotes = filteredQts;
+                          allPatientsOrders = [...allPatientsOrders, orders];
+                          observer.next(allPatientsOrders);
                           allPatientsOrders = [...allPatientsOrders, orders];
                           observer.next(allPatientsOrders);
                         }
