@@ -3,18 +3,22 @@
     settingCurrentLocationStatus: settingCurrentLocationStatus$ | async
   } as params"
 >
+
   <div class="pt-4" *ngIf="!params?.settingCurrentLocationStatus">
     <mat-toolbar>
       <!-- <button mat-icon-button [routerLink]="''" matTooltip="Go to Home page">
         <mat-icon>arrow_back</mat-icon>
       </button> -->
-      <span class="ml-2">Billing</span>
+      <span class="ml-2">Billing</span> 
     </mat-toolbar>
     <!-- patient list -->
 
     <!-- To include deceased patient in billing, set includeDeadPatients= "true" -->
     <div class="ml-2 mr-2">
-      <app-patient-list
+      <app-patient-list#
+
+
+
         [itemsPerPage]="10"
         [includeDeadPatients]="false"
         [isTabularList]="true"

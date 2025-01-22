@@ -1,0 +1,9 @@
+{
+    "patientId": "12345",
+    "name": "John Doe",
+    "paymentType": "exempted",
+    "amount": 100.00,
+    "currency": "USD",
+    "date": "2023-10-01",
+    "status": "completed"
+}
