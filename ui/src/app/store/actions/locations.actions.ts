@@ -7,6 +7,8 @@ export const loadAllLocationsByLoginTag = createAction(
   "[LOCATIONS] load all locations"
 );
 
+export const loadAllCountryLocations = createAction("[LOCATIONS] load all country locations")
+
 export const loadLoginLocations = createAction(
   "[LOCATIONS] load login locations"
 );
