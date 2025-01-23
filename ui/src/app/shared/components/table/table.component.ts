@@ -24,6 +24,7 @@ import { Patient } from "../../resources/patient/models/patient.model";
 import { AppState } from "src/app/store/reducers";
 import { select, Store } from "@ngrx/store";
 import { getActiveVisit } from "src/app/store/selectors/visit.selectors";
+import * as drugOrderActions from '../../../../app/store/actions/drug-orders.actions';
 
 @Component({
   selector: "app-table",
@@ -141,4 +142,15 @@ export class TableComponent implements OnInit {
       },
     });
   }
+  
+    onNotifyDoctor(event: Event): void {
+    event.preventDefault();
+    
+    this.store.dispatch(
+      drugOrderActions.batchNotifyDoctors({
+        drugOrders: this.drugOrders,
+        patientInfo: this.currentPatient
+      })
+    );
+}
 }
