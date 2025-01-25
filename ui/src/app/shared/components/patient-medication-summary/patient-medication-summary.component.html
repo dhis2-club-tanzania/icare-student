@@ -7,142 +7,86 @@
     drugOrders: drugOrders$ | async
   } as drugParams"
 >
+  <!-- Progress Bar -->
   <mat-progress-bar
     mode="indeterminate"
     *ngIf="!drugParams?.useGeneralPrescription || !drugParams?.currentVisit"
   ></mat-progress-bar>
+
+  <!-- Main Content -->
   <div *ngIf="drugParams?.useGeneralPrescription && drugParams?.currentVisit">
     <mat-tab-group *ngIf="drugParams?.currentVisit?.hasConfirmedDiagnosis">
+
+      <!-- Doctor's Prescriptions Tab -->
       <mat-tab
         label="Doctor's Prescriptions"
-        *ngIf="
-          drugParams?.useGeneralPrescription === 'true' &&
-          !previous &&
-          !forHistory
-        "
+        *ngIf="drugParams?.useGeneralPrescription === 'true' && !previous && !forHistory"
       >
         <div class="mat-tab-container">
           <ng-template matTabContent>
-            <div>
-              <table class="w-100 table table-bordered">
-                <tbody>
-                  <tr class="p-4">
-                    <app-current-prescriptions
-                      *ngIf="
-                        drugParams?.currentVisit &&
-                        drugParams?.generalPrescriptionOrderType
-                      "
-                      [visit]="drugParams?.currentVisit"
-                      [genericPrescriptionOrderType]="
-                        drugParams?.generalPrescriptionOrderType
-                      "
-                      [fromClinic]="forConsultation"
-                      (loadVisit)="loadVisit($event)"
-                    ></app-current-prescriptions>
-                    <mat-progress-bar
-                      *ngIf="
-                        !drugParams?.currentVisit ||
-                        !drugParams?.generalPrescriptionOrderType
-                      "
-                      mode="indeterminate"
+            <table class="w-100 table table-bordered">
+              <tbody>
+                <tr class="p-4">
+                  <app-current-prescriptions
+                    *ngIf="drugParams?.currentVisit && drugParams?.generalPrescriptionOrderType"
+                    [visit]="drugParams?.currentVisit"
+                    [genericPrescriptionOrderType]="drugParams?.generalPrescriptionOrderType"
+                    [fromClinic]="forConsultation"
+                    (loadVisit)="loadVisit($event)"
+                  ></app-current-prescriptions>
+                  <mat-progress-bar
+                    *ngIf="!drugParams?.currentVisit || !drugParams?.generalPrescriptionOrderType"
+                    mode="indeterminate"
+                  ></mat-progress-bar>
+                </tr>
+                <tr *ngIf="!isInpatient">
+                  <td colspan="3">
+                    <button
+                      mat-flat-button
+                      class="float-right"
+                      color="primary"
+                      (click)="onAddOrder($event)"
                     >
-                    </mat-progress-bar>
-                  </tr>
-                  <tr *ngIf="!isInpatient">
-                    <td colspan="3">
-                      <button
-                        mat-flat-button
-                        class="float-right"
-                        color="primary"
-                        (click)="onAddOrder($event)"
-                      >
-                        <mat-icon>add</mat-icon>
-                        <span class="ml-2">Add Prescription</span>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      <mat-icon>add</mat-icon>
+                      <span class="ml-2">Add Prescription</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </ng-template>
         </div>
       </mat-tab>
+
+      <!-- To Be Dispensed Tab -->
       <mat-tab
         *ngIf="!previous"
-        label="{{
-          drugParams?.useGeneralPrescription === 'true' && !forHistory
-            ? 'To Be Dispensed'
-            : forHistory
-            ? 'Ordered but not dispensed'
-            : 'Doctor\'s Prescriptions'
-        }}"
+        label="{{ drugParams?.useGeneralPrescription === 'true' && !forHistory ? 'To Be Dispensed' : 'Ordered but not dispensed' }}"
       >
         <div class="mat-tab-container">
           <ng-template matTabContent>
             <table class="table">
               <thead>
-                <tr
-                  *ngIf="
-                    drugParams?.filteredDrugOrders?.toBeDispensedDrugOrders
-                      ?.length > 0
-                  "
-                >
+                <tr *ngIf="drugParams?.filteredDrugOrders?.toBeDispensedDrugOrders?.length > 0">
                   <th>SN</th>
                   <th>Drug Details</th>
-                  <th>
-                    {{
-                      drugParams?.useGeneralPrescription === "true"
-                        ? "Verified By"
-                        : "Prescribed By"
-                    }}
-                  </th>
+                  <th>{{ drugParams?.useGeneralPrescription === 'true' ? 'Verified By' : 'Prescribed By' }}</th>
                   <th>Order Date</th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  *ngFor="
-                    let drugOrder of drugParams?.filteredDrugOrders
-                      ?.toBeDispensedDrugOrders;
-                    let count = index
-                  "
-                >
+                <tr *ngFor="let drugOrder of drugParams?.filteredDrugOrders?.toBeDispensedDrugOrders; let count = index">
                   <td>{{ count + 1 }}</td>
-                  <td>
-                    {{
-                      drugOrder?.drug
-                        ? drugOrder?.drug?.display
-                        : drugOrder?.drugOrder?.display
-                    }}
-                  </td>
-                  <td>
-                    {{ drugOrder?.orderer?.display }}
-                  </td>
-                  <td>
-                    {{ drugOrder?.dateActivated | date: "medium" }}
+                  <td>{{ drugOrder?.drug ? drugOrder?.drug?.display : drugOrder?.drugOrder?.display }}</td>
+                  <td>{{ drugOrder?.orderer?.display }}</td>
+                  <td>{{ drugOrder?.dateActivated | date: 'medium' }}</td>
+                </tr>
+                <tr *ngIf="drugParams?.filteredDrugOrders?.toBeDispensedDrugOrders?.length === 0" class="text-center p-3">
+                  <td colspan="4">
+                    No {{ drugParams?.useGeneralPrescription === 'true' ? 'drugs to be dispensed' : 'previous prescriptions' }} for this patient
                   </td>
                 </tr>
-                <tr
-                  *ngIf="
-                    drugParams?.filteredDrugOrders?.toBeDispensedDrugOrders
-                      ?.length === 0
-                  "
-                  class="text-center p-3"
-                >
-                  No
-                  {{
-                    drugParams?.useGeneralPrescription === "true"
-                      ? "drugs to be dispensed"
-                      : "previous prescriptions"
-                  }}
-                  for this patient
-                </tr>
-                <tr
-                  *ngIf="
-                    !isInpatient &&
-                    drugParams?.useGeneralPrescription !== 'true'
-                  "
-                >
+                <tr *ngIf="!isInpatient && drugParams?.useGeneralPrescription !== 'true'">
                   <td colspan="4">
                     <button
                       mat-flat-button
@@ -160,15 +104,12 @@
           </ng-template>
         </div>
       </mat-tab>
+
+      <!-- Dispensed Tab -->
       <mat-tab label="Dispensed" *ngIf="!previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
-            <table
-              class="table table-bordered"
-              *ngIf="
-                drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length > 0
-              "
-            >
+            <table *ngIf="drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length > 0" class="table table-bordered">
               <thead>
                 <tr>
                   <th style="width: 10px">SN</th>
@@ -177,96 +118,63 @@
                 </tr>
               </thead>
               <tbody>
-                <ng-container>
-                  <tr
-                    *ngFor="
-                      let drugOrder of drugParams?.filteredDrugOrders
-                        ?.dispensedDrugOrders;
-                      let count = index
-                    "
-                  >
-                    <td>
-                      {{ count + 1 }}
-                    </td>
-                    <td>
-                      {{
-                        drugOrder?.drug
-                          ? drugOrder?.drug?.display
-                          : drugOrder?.drugOrder?.display
-                      }}
-                    </td>
-                    <td>
-                      {{
-                        drugOrder?.drugOrder?.instructions
-                          ? drugOrder?.drugOrder?.instructions
-                          : drugOrder?.instructions
-                          ? drugOrder?.instructions
-                          : "No instructions written"
-                      }}
-                    </td>
-                  </tr>
-                </ng-container>
-                <ng-container *ngIf="isInpatient && forConsultation">
-                  <tr>
-                    <td colspan="3">
-                      <button
-                        mat-flat-button
-                        class="float-right"
-                        color="primary"
-                        (click)="onAddOrder($event)"
-                      >
-                        <mat-icon>add</mat-icon>
-                        <span class="ml-2">Add Prescription</span>
-                      </button>
-                    </td>
-                  </tr>
-                </ng-container>
+                <tr *ngFor="let drugOrder of drugParams?.filteredDrugOrders?.dispensedDrugOrders; let count = index">
+                  <td>{{ count + 1 }}</td>
+                  <td>{{ drugOrder?.drug ? drugOrder?.drug?.display : drugOrder?.drugOrder?.display }}</td>
+                  <td>{{ drugOrder?.instructions || drugOrder?.drugOrder?.instructions || 'No instructions written' }}</td>
+                </tr>
+                <tr *ngIf="isInpatient && forConsultation">
+                  <td colspan="3">
+                    <button
+                      mat-flat-button
+                      class="float-right"
+                      color="primary"
+                      (click)="onAddOrder($event)"
+                    >
+                      <mat-icon>add</mat-icon>
+                      <span class="ml-2">Add Prescription</span>
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <table
-              class="table table-striped"
-              *ngIf="
-                drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length ===
-                0
-              "
-            >
+            <table *ngIf="drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length === 0" class="table table-striped">
               <tr class="text-center p-3">
-                No drugs dispensed for this patient
+                <td>No drugs dispensed for this patient</td>
               </tr>
             </table>
           </ng-template>
         </div>
       </mat-tab>
-      <mat-tab
-        label="Stopped Medication"
-        *ngIf="!previous"
-      >
+
+      <!-- Stopped Medication Tab -->
+      <mat-tab label="Stopped Medication" *ngIf="!previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
-            <div>
-              <table class="w-100 table table-bordered">
-                <thead>
-                  <tr>
-                    <th>S/N</th>
-                    <th>Prescription</th>
-                    <th>Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let prescription of prescriptions; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ prescription.name }}</td>
-                    <td>{{ prescription.remarks }}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div *ngIf="prescriptions.length === 0">
-                No stopped medications available.
-              </div>
+            <table class="w-100 table table-bordered">
+              <thead>
+                <tr>
+                  <th>S/N</th>
+                  <th>Prescription</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let prescription of prescriptions; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ prescription.name }}</td>
+                  <td>{{ prescription.remarks }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="prescriptions.length === 0">
+              No stopped medications available.
             </div>
           </ng-template>
         </div>
       </mat-tab>
+
+      <!-- Drugs Tab for Previous Visits -->
       <mat-tab label="Drugs" *ngIf="previous">
         <div class="mat-tab-container">
           <ng-template matTabContent>
@@ -282,73 +190,26 @@
                 </tr>
               </thead>
               <tbody>
-                <ng-container *ngIf="drugParams?.drugOrders?.length > 0"
-                  ><ng-container
-                    *ngFor="
-                      let drugOrder of drugParams?.drugOrders;
-                      let count = index
-                    "
-                  >
-                    <tr *ngIf="drugOrder?.statuses?.length > 0">
-                      <td>
-                        {{ count + 1 }}
-                      </td>
-                      <td>
-                        {{
-                          drugOrder?.drug
-                            ? drugOrder?.drug?.display
-                            : drugOrder?.drugOrder?.display
-                        }}
-                      </td>
-                      <td>
-                        {{
-                          drugOrder?.drugOrder?.instructions
-                            ? drugOrder?.drugOrder?.instructions
-                            : "No instructions written"
-                        }}
-                      </td>
-                      <td>
-                        {{ drugOrder?.orderer?.display }}
-                      </td>
-                      <td>
-                        {{ drugOrder?.dateActivated | date: "medium" }}
-                      </td>
-                      <td>
-                        {{ drugOrder?.dispensed ? "Yes" : "No" }}
-                      </td>
-                    </tr>
-                  </ng-container>
-                </ng-container>
-                <ng-container *ngIf="drugParams?.drugOrders?.length === 0">
-                  <tr>
-                    <td colspan="100%">
-                      No previous visit drugs prescribed for this patient
-                    </td>
-                  </tr>
-                </ng-container>
+                <tr *ngFor="let drugOrder of drugParams?.drugOrders; let count = index">
+                  <td>{{ count + 1 }}</td>
+                  <td>{{ drugOrder?.drug ? drugOrder?.drug?.display : drugOrder?.drugOrder?.display }}</td>
+                  <td>{{ drugOrder?.drugOrder?.instructions || 'No instructions written' }}</td>
+                  <td>{{ drugOrder?.orderer?.display }}</td>
+                  <td>{{ drugOrder?.dateActivated | date: 'medium' }}</td>
+                  <td>{{ drugOrder?.dispensed ? 'Yes' : 'No' }}</td>
+                </tr>
+                <tr *ngIf="drugParams?.drugOrders?.length === 0">
+                  <td colspan="6">No previous visit drugs prescribed for this patient</td>
+                </tr>
               </tbody>
-            </table>
-            <table
-              class="table table-striped"
-              *ngIf="
-                !previous &&
-                drugParams?.filteredDrugOrders?.dispensedDrugOrders?.length ===
-                  0
-              "
-            >
-              <tr class="text-center p-3">
-                No drugs dispensed for this patient
-              </tr>
             </table>
           </ng-template>
         </div>
       </mat-tab>
     </mat-tab-group>
-    <div
-      *ngIf="!drugParams?.currentVisit?.hasConfirmedDiagnosis"
-      class="alert alert-warning"
-      role="alert"
-    >
+
+    <!-- Warning for Missing Diagnosis -->
+    <div *ngIf="!drugParams?.currentVisit?.hasConfirmedDiagnosis" class="alert alert-warning" role="alert">
       NO Confirmed/Final Diagnosis provided. Please provide before Medication
     </div>
   </div>

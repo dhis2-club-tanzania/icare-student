@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import { Observable, of, zip } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map, tap, catchError } from "rxjs/operators";
 import { SystemSettingsService } from "src/app/core/services/system-settings.service";
 import { AppState } from "src/app/store/reducers";
 import { DispensingFormComponent } from "../../dialogs";
@@ -24,23 +24,17 @@ export class PatientMedicationSummaryComponent implements OnInit {
   @Input() isInpatient: boolean;
   @Input() previous: boolean;
   @Input() forHistory: boolean;
+
   drugOrders$: Observable<any>;
   patientVisitData$: Observable<any>;
-  generalPrescriptionOrderType$: Observable<any>;
-  useGeneralPrescription$: Observable<any>;
-  currentVisit$: Observable<any>;
+  generalPrescriptionOrderType$: Observable<string>;
+  useGeneralPrescription$: Observable<boolean>;
+  currentVisit$: Observable<Visit>;
+  filteredDrugOrders$: Observable<{ dispensedDrugOrders: any[]; toBeDispensedDrugOrders: any[] }>;
 
-  prescriptions = [
-    { id: 1, name: 'Diclofenac+Paracetamol+Chlorzoxazone Tablets 50mg+325mg+250mg - 1 (capsule) qid / 6 hrly 6 Days Oral', remarks: 'Skin reaction with the medication' },
-    { id: 2, name: 'Paracetamol 500mg Tablet(s) - 1 (tablet) immediately / stat 2 Days Oral', remarks: 'Addiction to medication' },
-    { id: 3, name: 'Chlorzoxazone + Diclofenac + Paracetamol Tablet: 250mg+50mg+325mg - 1 (capsule) od 1 Weeks Topical', remarks: 'Testing the remarks!!!!' }
-  ];
+  @Output() updateConsultationOrder = new EventEmitter<void>();
+  @Output() updateMedicationComponent = new EventEmitter<void>();
 
-  @Output() updateConsultationOrder = new EventEmitter();
-  @Output() updateMedicationComponent = new EventEmitter();
-  patientDrugOrdersStatuses$: Observable<any>;
-  filteredDrugOrders$: Observable<any>;
-  visitDetails$: Observable<any>;
   constructor(
     private store: Store<AppState>,
     private ordersService: OrdersService,
@@ -51,107 +45,79 @@ export class PatientMedicationSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.generalPrescriptionOrderType$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.genericPrescription.orderType"
-      );
-    this.useGeneralPrescription$ =
-      this.systemSettingsService.getSystemSettingsByKey(
-        "iCare.clinic.useGeneralPrescription"
-      );
-    if (this.previous) {
-      this.currentVisit$ = of(new Visit(this.patientVisit));
-    } else if (!this.previous && !this.forHistory) {
-      this.loadVisit();
-    } else {
-      this.currentVisit$ = of(this.patientVisit);
-    }
+    this.generalPrescriptionOrderType$ = this.systemSettingsService.getSystemSettingsByKey(
+      "iCare.clinic.genericPrescription.orderType"
+    );
+    this.useGeneralPrescription$ = this.systemSettingsService.getSystemSettingsByKey(
+      "iCare.clinic.useGeneralPrescription"
+    );
+
+    this.loadVisit();
+
     if (this.patientVisit) {
-      this.drugOrders$ = this.ordersService
-        .getOrdersByVisitAndOrderType({
-          visit: this.patientVisit?.uuid,
-          orderType: "iCARESTS-PRES-1111-1111-525400e4297f", // TODO: This has to be softcoded
-        })
-        .pipe(
-          map((response) => {
-            return response?.map((drugOrder) => {
-              return {
-                ...drugOrder,
-                dispensed:
-                  (
-                    drugOrder?.statuses?.filter(
-                      (status) => status?.status === "DISPENSED"
-                    ) || []
-                  ).length > 0,
-              };
-            });
-          })
-        );
-      this.patientDrugOrdersStatuses$ = this.drugOrderService
-        .getDrugOrderStatus(this.patientVisit?.uuid)
-        .pipe(
-          map((response) => {
-            return response;
-          })
-        );
-
-      this.filteredDrugOrders$ = zip(
-        this.drugOrders$,
-        this.patientDrugOrdersStatuses$
-      ).pipe(
-        map((res) => {
-          let drugOrders = res[0];
-          let drugOrdersStatuses = res[1];
-          let toBeDispensedDrugOrders: any[] = [];
-          let dispensedDrugOrders: any[] = [];
-
-          if (drugOrders?.length > 0) {
-            drugOrders?.forEach((drugOrder) => {
-              if (
-                drugOrder?.uuid in drugOrdersStatuses &&
-                drugOrdersStatuses[drugOrder?.uuid]["status"] === "DISPENSED"
-              ) {
-                dispensedDrugOrders = [...dispensedDrugOrders, drugOrder];
-              } else {
-                toBeDispensedDrugOrders = [
-                  ...toBeDispensedDrugOrders,
-                  drugOrder,
-                ];
-              }
-            });
-          }
-
-          return {
-            dispensedDrugOrders: dispensedDrugOrders,
-            toBeDispensedDrugOrders: toBeDispensedDrugOrders,
-          };
-        })
-      );
+      this.initializeDrugOrders();
     }
   }
 
-  loadVisit(visit?: any) {
-    this.currentVisit$ = of(null);
-    let visitUuid = this.patientVisit?.uuid
-      ? this.patientVisit?.uuid
-      : visit
-      ? visit?.uuid
-      : "";
-    this.currentVisit$ = this.visitService.getVisitDetailsByVisitUuid(
-      visitUuid,
-      {
-        v:
-          "custom:(uuid,display,patient,startDatetime,attributes,stopDatetime," +
-          "patient:(uuid,display,identifiers,person,voided)," +
-          "encounters:(uuid,diagnoses,display,obs,orders,encounterProviders," +
-          "encounterDatetime,encounterType,voided,voidReason),attributes)",
-      }
+  private initializeDrugOrders(): void {
+    this.drugOrders$ = this.ordersService
+      .getOrdersByVisitAndOrderType({
+        visit: this.patientVisit?.uuid,
+        orderType: "iCARESTS-PRES-1111-1111-525400e4297f", // TODO: Replace with a dynamic value from system settings
+      })
+      .pipe(
+        map((response) =>
+          response?.map((drugOrder) => ({
+            ...drugOrder,
+            dispensed: drugOrder?.statuses?.some((status) => status?.status === "DISPENSED"),
+          }))
+        ),
+        catchError((error) => {
+          console.error("Error fetching drug orders", error);
+          return of([]);
+        })
+      );
+
+    this.filteredDrugOrders$ = zip(this.drugOrders$, this.getDrugOrderStatuses()).pipe(
+      map(([drugOrders, drugOrdersStatuses]) => {
+        const dispensedDrugOrders = drugOrders.filter(
+          (order) => drugOrdersStatuses[order?.uuid]?.status === "DISPENSED"
+        );
+
+        const toBeDispensedDrugOrders = drugOrders.filter(
+          (order) => !drugOrdersStatuses[order?.uuid]?.status || drugOrdersStatuses[order?.uuid]?.status !== "DISPENSED"
+        );
+
+        return { dispensedDrugOrders, toBeDispensedDrugOrders };
+      })
     );
   }
 
-  onAddOrder(e: Event) {
+  private getDrugOrderStatuses(): Observable<any> {
+    return this.drugOrderService.getDrugOrderStatus(this.patientVisit?.uuid).pipe(
+      map((response) => response || {}),
+      catchError((error) => {
+        console.error("Error fetching drug order statuses", error);
+        return of({});
+      })
+    );
+  }
+
+  private loadVisit(): void {
+    const visitUuid = this.patientVisit?.uuid || "";
+    this.currentVisit$ = this.visitService.getVisitDetailsByVisitUuid(visitUuid, {
+      v:
+        "custom:(uuid,display,patient,startDatetime,attributes,stopDatetime," +
+        "patient:(uuid,display,identifiers,person,voided)," +
+        "encounters:(uuid,diagnoses,display,obs,orders,encounterProviders," +
+        "encounterDatetime,encounterType,voided,voidReason),attributes)",
+    });
+  }
+
+  onAddOrder(e: Event): void {
     e.stopPropagation();
-    const dialog = this.dialog.open(DispensingFormComponent, {
+
+    const dialogRef = this.dialog.open(DispensingFormComponent, {
       width: "80%",
       disableClose: true,
       data: {
@@ -159,24 +125,31 @@ export class PatientMedicationSummaryComponent implements OnInit {
         patient: this.patientVisit?.patientUuid,
         patientUuid: this.patientVisit?.patientUuid,
         visit: this.patientVisit,
-        location: localStorage.getItem("currentLocation")
-          ? JSON.parse(localStorage.getItem("currentLocation"))
-          : null,
-        encounterUuid: JSON.parse(localStorage.getItem("patientConsultation"))[
-          "encounterUuid"
-        ],
+        location: this.getCurrentLocation(),
+        encounterUuid: this.getEncounterUuid(),
         fromDispensing: this.fromDispensing,
         showAddButton: false,
         forConsultation: this.forConsultation,
       },
     });
 
-    dialog.afterClosed().subscribe((data) => {
+    dialogRef.afterClosed().subscribe((data) => {
       this.loadVisit();
       if (data?.updateConsultationOrder) {
         this.updateMedicationComponent.emit();
         this.updateConsultationOrder.emit();
       }
     });
+  }
+
+  private getCurrentLocation(): any {
+    return localStorage.getItem("currentLocation")
+      ? JSON.parse(localStorage.getItem("currentLocation"))
+      : null;
+  }
+
+  private getEncounterUuid(): string {
+    const consultation = localStorage.getItem("patientConsultation");
+    return consultation ? JSON.parse(consultation)["encounterUuid"] : "";
   }
 }
