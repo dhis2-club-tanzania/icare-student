@@ -44,6 +44,7 @@ export class PrescriptionComponent implements OnInit {
   loading: boolean;
   loadingError: string;
   patientVisitLoadedState$: Observable<boolean>;
+
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
@@ -96,9 +97,17 @@ export class PrescriptionComponent implements OnInit {
     this.currentDrugOrder = drugOrder;
     this.countOfDrugsOrdered++;
     if (!drugOrder.uuid) {
-      this.store.dispatch(
-        saveDrugOrder({ drugOrder: DrugOrder.getOrderForSaving(drugOrder) })
-      );
+      this._checkActiveDosage(drugOrder).subscribe((isActive) => {
+        if (isActive) {
+          console.error(
+            "An active dosage already exists for this medication."
+          );
+        } else {
+          this.store.dispatch(
+            saveDrugOrder({ drugOrder: DrugOrder.getOrderForSaving(drugOrder) })
+          );
+        }
+      });
     } else {
       this.store.dispatch(
         updateDrugOrder({
@@ -112,7 +121,22 @@ export class PrescriptionComponent implements OnInit {
     this.store.dispatch(removeDrugOrder({ orderId: drugOrder.id }));
     this.currentDrugOrder = null;
   }
+
   onOrderSelection(data): void {
     // console.log(data);
+  }
+
+  private _checkActiveDosage(drugOrder): Observable<boolean> {
+    const now = new Date();
+    return this.drugsOrdered$.pipe(
+      select((orders) =>
+        orders.some(
+          (order) =>
+            order.id === drugOrder.id &&
+            order.startDate <= now &&
+            (!order.endDate || order.endDate > now)
+        )
+      )
+    );
   }
 }

@@ -31,7 +31,11 @@
         [currentLocation]="params.currentLocation"
         [canAddPrescription]="true"
         (orderSelectAction)="onOrderSelection($event)"
+        (validateActiveDosage)="onValidateActiveDosage($event)"
       ></app-patient-drug-order-list>
+      <div *ngIf="activeDosageConflict" class="alert alert-warning mt-2">
+        A conflicting active dosage exists for the selected medication. Please resolve the conflict before proceeding.
+      </div>
     </div>
   </div>
 </div>
