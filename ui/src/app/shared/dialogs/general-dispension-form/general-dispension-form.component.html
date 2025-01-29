@@ -20,9 +20,7 @@
     <div>
       <app-form
         [fields]="[drugConceptField]"
-        (formUpdate)="
-          onFormUpdate($event, 'drug', params?.keyedPreviousVisitDrugOrders)
-        "
+        (formUpdate)="onFormUpdate($event, 'drug', params?.keyedPreviousVisitDrugOrders)"
       ></app-form>
     </div>
     <div class="row" *ngIf="params?.conceptFields">
@@ -39,11 +37,16 @@
         ></app-form>
       </div>
       <div class="col-4" *ngIf="dosingUnits$ | async as dosingUnits">
+        <div *ngIf="selectedDosingUnit">
+          {{ selectedDosingUnit}} is selected
+        </div>
         <app-unit-field
           [dosingUnits]="dosingUnits"
+          [selectedValue]="selectedDosingUnit"
           (formUpdate)="onFormUpdate($event)"
         ></app-unit-field>
       </div>
+      
       <div
         class="col-4"
         *ngIf="dosingFrequencies$ | async as dosingFrequencies"
@@ -113,6 +116,7 @@
         <span>{{ savingOrder ? "Saving..." : "Save" }}</span>
       </button>
     </div>
-    <!-- {{ selectedDrug | json }} -->
+    
+    <!-- <pre>{{ selectedDrug | json }}</pre> -->
   </div>
 </div>
