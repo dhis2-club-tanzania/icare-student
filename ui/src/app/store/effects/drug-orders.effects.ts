@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { createEffect, Actions, ofType } from "@ngrx/effects";
+import { HttpClient } from "@angular/common/http";
 import {
   saveDrugOrder,
   addDrugsOrdered,
@@ -17,6 +18,7 @@ import {
   catchError,
   concatMap,
   withLatestFrom,
+  mergeMap
 } from "rxjs/operators";
 import { of } from "rxjs";
 import {
@@ -32,6 +34,7 @@ import { getActiveVisit } from "../selectors/visit.selectors";
 import { getEncounterTypeByUuid } from "../selectors/encounter-type.selectors";
 import { ICARE_CONFIG } from "src/app/shared/resources/config";
 import { DrugOrdersService } from "src/app/shared/resources/order/services";
+import * as drugOrderActions from '../actions/drug-orders.actions';
 
 @Injectable()
 export class DrugOrdersEffects {
@@ -39,7 +42,8 @@ export class DrugOrdersEffects {
     private drugOrderService: DrugOrdersService,
     private actions$: Actions,
     private notificationService: NotificationService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private httpClient: HttpClient  // Added missing HttpClient
   ) {}
 
   loadDrugOrders$ = createEffect(() =>
@@ -53,7 +57,6 @@ export class DrugOrdersEffects {
       )
     )
   );
-
   // drugOrder$ = createEffect(() =>
   //   this.actions$.pipe(
   //     ofType(saveDrugOrder),
@@ -159,7 +162,7 @@ export class DrugOrdersEffects {
   //     )
   //   )
   // );
-
+  
   updateDrugOrder$ = createEffect(() =>
     this.actions$.pipe(
       ofType(updateDrugOrder),
@@ -180,7 +183,7 @@ export class DrugOrdersEffects {
             );
 
             return addDrugsOrdered({
-              drugOrders: { ...response, id: response.uuid },
+              drugOrders: [{ ...response, id: response.uuid }]  // Fixed array syntax
             });
           }),
           catchError((error) => {
@@ -230,6 +233,64 @@ export class DrugOrdersEffects {
             return of(dispenseDrugFail({ drugOrder, error }));
           })
         );
+      })
+    )
+  );
+
+  notifyDoctor$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(drugOrderActions.notifyDoctor),
+      mergeMap((action) => {
+        const notificationData = {
+          doctorUuid: action.doctorUuid,
+          drugOrder: action.drugOrder,
+          patientInfo: action.patientInfo,
+          timestamp: new Date().toISOString()
+        };
+
+        return this.httpClient
+          .post(`/api/notification/doctor/${action.doctorUuid}`, notificationData)
+          .pipe(
+            map(() => 
+              drugOrderActions.notifyDoctorSuccess({
+                doctorUuid: action.doctorUuid,
+                drugOrder: action.drugOrder
+              })
+            ),
+            catchError((error) =>
+              of(
+                drugOrderActions.notifyDoctorFail({
+                  error,
+                  doctorUuid: action.doctorUuid
+                })
+              )
+            )
+          );
+      })
+    )
+  );
+
+  batchNotifyDoctors$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(drugOrderActions.batchNotifyDoctors),
+      mergeMap((action) => {
+        const notifications = action.drugOrders.map((drugOrder) => {
+          const doctorUuid = drugOrder?.orderer?.uuid;
+          if (!doctorUuid) {
+            return drugOrderActions.notifyDoctorFail({
+              error: 'No doctor UUID found',
+              doctorUuid: 'unknown'
+            });
+          }
+
+          return drugOrderActions.notifyDoctor({
+            doctorUuid,
+            drugOrder,
+            patientInfo: action.patientInfo
+          });
+        });
+
+        return notifications;
       })
     )
   );
