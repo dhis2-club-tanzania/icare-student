@@ -17,10 +17,16 @@ export class SubmitEClaimComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private visitService: VisitsService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.patientUuid = this.route.snapshot.params['patientId'];
+    this.route.params.subscribe(params => {
+      this.patientUuid = params['patientId'];
+      this.loadPatientData();
+    });
+  }
+
+  loadPatientData(): void {
     this.activeVisitDetails$ = this.visitService.getActiveVisit(
       this.patientUuid,
       false,
