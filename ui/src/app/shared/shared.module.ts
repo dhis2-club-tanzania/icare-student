@@ -20,12 +20,17 @@ import { sharedStoreModals } from "./store-modals";
 import { sharedStorePages } from "./store-pages";
 import { sharedStoreComponents } from "./store-components";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { NotificationDialogComponent } from '../shared/components/notification-dialog/notification-dialog.component';
+
+import { MatDialogModule } from '@angular/material/dialog';
+
 @NgModule({
   imports: [
     CommonModule,
     ...materialModules,
     ...modules,
     NgxMatSelectSearchModule,
+    MatDialogModule
   ],
   exports: [
     CommonModule,
@@ -41,6 +46,7 @@ import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
     ...sharedEntryComponents,
     HttpClientModule,
     NgxMatSelectSearchModule,
+    NotificationDialogComponent
   ],
   declarations: [
     ...components,
@@ -57,6 +63,7 @@ import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
     FilterItemsBySelectionsPipe,
     SearchTestDetailsPipe,
     FormatLabelCharCountDisplayPipe,
+    NotificationDialogComponent
   ],
   providers: [...sharedServices],
 })

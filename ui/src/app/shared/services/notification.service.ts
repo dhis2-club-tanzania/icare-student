@@ -4,17 +4,46 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationDialogComponent } from '../components/notification-dialog/notification-dialog.component';
+
 
 export interface NotificationInterface {
   type: 'SUCCESS' | 'ERROR' | 'WARNING' | 'LOADING';
   message: string;
   duration?: number;
   action?: string;
+
+  patientName?: string;
+  labName?: string;
+  
   horizontalPosition?: MatSnackBarHorizontalPosition;
   verticalPosition?: MatSnackBarVerticalPosition;
-  autoClose?: boolean;
-}
+    autoClose?: boolean;  }
 
+
+    @Injectable({providedIn: 'root'})
+
+export class NotificationService {
+  constructor(private dialog: MatDialog) {}
+
+  show(notification: { message: string; details?: string }) {
+    this.dialog.open(NotificationDialogComponent, {
+      data: notification,
+      width: '400px',
+    });
+  }
+
+  private clinicNotificationSubject = new Subject<any>();
+  notifyClinic(notification: any): void {
+    this.clinicNotificationSubject.next(notification);
+  }
+  getClinicNotification() {
+    return this.clinicNotificationSubject.asObservable();
+  }
+  
+}
 export class Notification implements NotificationInterface {
   type: 'SUCCESS' | 'ERROR' | 'WARNING' | 'LOADING';
   message: string;
@@ -85,20 +114,7 @@ export class Notification implements NotificationInterface {
     return type === 'ERROR' ? 'top' : verticalPosition || 'bottom';
   }
 }
-
-@Injectable({ providedIn: 'root' })
-export class NotificationService {
-  constructor(private snackBar: MatSnackBar) {}
-
-  /**
-   * Show notification snack bar for the supplied options
-   * @param notification Notification
-   */
-  show(notification: Notification): void {
-    this.snackBar.open(notification?.message, notification?.action, {
-      duration: notification?.displayDuration,
-      horizontalPosition: notification?.horizontalPosition,
-      verticalPosition: notification?.verticalPosition,
-    });
-  }
+function handleIncomingNotification(notification: any, any: any) {
+  throw new Error('Function not implemented.');
 }
+

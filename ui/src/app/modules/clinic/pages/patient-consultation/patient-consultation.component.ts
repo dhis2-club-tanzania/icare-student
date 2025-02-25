@@ -16,6 +16,11 @@ import {
   getFormPrivilegesConfigs,
   getFormPrivilegesConfigsLoadingState,
 } from "src/app/store/selectors/form-privileges-configs.selectors";
+
+import { Notification } from "src/app/shared/services/notification.service";
+import { NotificationService } from 'src/app/shared/services/notification.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 @Component({
   selector: "app-patient-consultation",
   templateUrl: "./patient-consultation.component.html",
@@ -28,7 +33,11 @@ export class PatientConsultationComponent implements OnInit {
   patientIdentifier: string;
   userPrivileges$: Observable<any>;
   userPrivilegesSet$: Observable<boolean>;
-  constructor(private store: Store<AppState>, private route: ActivatedRoute) {}
+  constructor(private store: Store<AppState>, 
+              private route: ActivatedRoute,
+              private notificationService: NotificationService,
+              private snackBar: MatSnackBar
+             ) {}
 
   ngOnInit(): void {
     const patientId = this.route.snapshot.params["patientID"];
@@ -38,13 +47,19 @@ export class PatientConsultationComponent implements OnInit {
     // this.store.dispatch(loadActiveVisit({ patientId }));
     this.store.dispatch(loadCurrentPatient({ uuid: patientId }));
     this.privilegesConfigs$ = this.store.select(getFormPrivilegesConfigs);
-    this.formPrivilegesConfigsLoadingState$ = this.store.select(
-      getFormPrivilegesConfigsLoadingState
-    );
+    this.formPrivilegesConfigsLoadingState$ = this.store.select(getFormPrivilegesConfigsLoadingState );
     this.currentUser$ = this.store.select(getCurrentUserDetails);
     this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
     this.userPrivilegesSet$ = this.store.select(
       getIfCurrentUserPrivilegesAreSet
     );
+this.notificationService.getClinicNotification().subscribe((notification) => {
+      this.displayNotification(notification);
+    });
+  }
+
+  displayNotification(notification: any) {
+    const message = `${notification.patientName}'s ${notification.labName} results are ready! Review them now and take the necessary action.`;
+    this.snackBar.open(message, 'Close', { duration: 5000 });
   }
 }
