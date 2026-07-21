@@ -12,6 +12,7 @@
       >
         <div>
           <img src="{{ module?.app?.image }}" style="height: 20px" />
+          <span *ngIf="module?.app?.name == 'Radiology' && showRadiologyBadge" class="badge-counter" >1</span>
           <p class="mt-2 menu-label">{{ module?.app?.name }}</p>
         </div>
       </div>

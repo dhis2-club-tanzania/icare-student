@@ -8,6 +8,7 @@ import { flatten, orderBy, uniqBy } from "lodash";
 import { SharedConfirmationComponent } from "../shared-confirmation/shared-confirmation.component";
 import { MatDialog } from "@angular/material/dialog";
 import { SharedPdfPreviewComponent } from "../../dialogs/shared-pdf-preview/shared-pdf-preview.component";
+import { RadiologyBadgeService } from "../../services/radio-badge.service";
 
 @Component({
   selector: "app-patient-radiology-summary",
@@ -35,6 +36,7 @@ export class PatientRadiologySummaryComponent implements OnInit {
   formDetails: FormValue;
   @Output() updateConsultationOrder = new EventEmitter();
   constructor(
+    private radiologyBadgeService: RadiologyBadgeService,
     private ordersService: OrdersService,
     private visitService: VisitsService,
     private dialog: MatDialog
@@ -115,6 +117,7 @@ export class PatientRadiologySummaryComponent implements OnInit {
 
   onSave(event: Event): void {
     event.stopPropagation();
+    this.radiologyBadgeService.setShowRadiologyBadge(true);
     let orders = [];
     this.formDetails.clear();
     this.addingOrder = true;

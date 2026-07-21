@@ -10,6 +10,7 @@ import {
 } from "src/app/store/actions";
 import { ICARE_APPS } from "src/app/core/containers/modules/modules.constants";
 import { GoogleAnalyticsService } from "src/app/google-analytics.service";
+import { RadiologyBadgeService } from "src/app/shared/services/radio-badge.service";
 
 @Component({
   selector: "app-modules-selector",
@@ -17,6 +18,7 @@ import { GoogleAnalyticsService } from "src/app/google-analytics.service";
   styleUrls: ["./modules-selector.component.scss"],
 })
 export class ModulesSelectorComponent implements OnInit {
+  showRadiologyBadge: boolean = false;
   @Input() locations: Location[];
   @Input() lisConfigurations: any;
   modulesReferences: string[];
@@ -25,10 +27,15 @@ export class ModulesSelectorComponent implements OnInit {
   userLocationsForTheCurrentModule: Location[];
   constructor(
     private store: Store<AppState>,
-    private googleAnalyticsService: GoogleAnalyticsService
+    private googleAnalyticsService: GoogleAnalyticsService,
+    private radiologyBadgeService: RadiologyBadgeService
   ) {}
 
   ngOnInit(): void {
+    this.radiologyBadgeService.showRadiologyBadge$.subscribe(value => {
+      this.showRadiologyBadge = value;
+    });
+
     const storedNavigationDetails =
       localStorage.getItem("navigationDetails") != "undefined"
         ? JSON.parse(localStorage.getItem("navigationDetails"))
@@ -228,6 +235,9 @@ export class ModulesSelectorComponent implements OnInit {
     // module?.app?.name
     event.stopPropagation();
     this.currentModule = module;
+    if (module?.app?.name === 'Radiology') {
+      this.radiologyBadgeService.setShowRadiologyBadge(false);
+    }
     this.userLocationsForTheCurrentModule =
       this.locations.filter(
         (location: any) =>
