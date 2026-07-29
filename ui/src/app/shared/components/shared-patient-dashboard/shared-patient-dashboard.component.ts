@@ -83,7 +83,6 @@ import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 import { SharedRemotePatientHistoryModalComponent } from "../../dialogs/shared-remote-patient-history-modal/shared-remote-patient-history-modal.component";
 import { MatRadioChange } from "@angular/material/radio";
 import { LocationService } from "src/app/core/services";
-import { GlobalSettingService } from "../../resources/global-setting/services";
 
 @Component({
   selector: "app-shared-patient-dashboard",
@@ -157,7 +156,6 @@ export class SharedPatientDashboardComponent implements OnInit {
   tabsToShow: string[] = ["LABORATORY", "PROCEDURE", "RADIOLOGY"];
   currentFormDetails: any = {};
   useSideBar: boolean = false;
-  clearingFormTime: number = 0.5;
 
   selectedHistoryCategory: string = "local";
 
@@ -173,7 +171,6 @@ export class SharedPatientDashboardComponent implements OnInit {
     private userService: UserService,
     private conceptService: ConceptsService,
     private billingService: BillingService,
-    private globalSettingService: GlobalSettingService,
     private googleAnalyticsService: GoogleAnalyticsService,
     private locationService: LocationService
   ) {
@@ -190,6 +187,7 @@ export class SharedPatientDashboardComponent implements OnInit {
           obs?.concept?.uuid === this.visitEndingControlStatusesConceptUuid
       ) || [])[0]?.valueObject;
     }
+    // console.log("Active visit are .............................................",this.activeVisit);
     this.onStartConsultation(this.activeVisit);
     this.store.dispatch(loadOrderTypes());
     this.orderTypes$ = this.store.select(getAllOrderTypes);
@@ -368,19 +366,9 @@ export class SharedPatientDashboardComponent implements OnInit {
     event.stopPropagation();
     this.useSideBar = !this.useSideBar;
   }
-  async loadGlobalProperty() {
-    try {
-      const globalProperty = await this.globalSettingService.getSpecificGlobalProperties("ed9dac4a-5b2a-4a5f-8ee2-ca0d88b08506").toPromise();
-      const minutes = parseInt(globalProperty?.value ?? "0", 10);
-      this.clearingFormTime = isNaN(minutes / 60) ? 0.5 : minutes / 60;
-      console.log("time received :",this.clearingFormTime);
-    } catch (error) {
-      console.error("Error occurred:", error);
-      this.clearingFormTime = 0.5; 
-    }
-  }
 
   onToggleVitalsSummary(event: Event): void {
+    console.log("data tracing ...............");
     console.log(event);
     event.stopPropagation();
     this.trackActionForAnalytics(`View Vitals: Open`);
@@ -389,7 +377,6 @@ export class SharedPatientDashboardComponent implements OnInit {
 
   getSelectedForm(event: Event, form: any): void {
     this.trackActionForAnalytics(`${form?.name}: Open`);
-    this.loadGlobalProperty();
     this.readyForClinicalNotes = false;
     if (event) {
       event.stopPropagation();

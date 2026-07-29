@@ -27,7 +27,10 @@
                 [itemsPerPage]="10"
                 [orderType]="
                   params?.useGenericPrescription &&
-                  params?.useGenericPrescription === 'true'? params?.generalPrescriptionOrderType : 'iCARESTS-PRES-1111-1111-525400e4297f'"
+                  params?.useGenericPrescription === 'true'
+                    ? params?.generalPrescriptionOrderType
+                    : 'iCARESTS-PRES-1111-1111-525400e4297f'
+                "
                 [orderStatusCode]="'EMPTY'"
                 (selectPatient)="onSelectPatient($event)"
               ></app-patient-list>
@@ -49,7 +52,8 @@
               <app-patient-list
                 [isTabularList]="true"
                 [itemsPerPage]="10"
-                [orderType]="'iCARESTS-PRES-1111-1111-525400e4297f'"
+                [orderType]="'iCARESTS-PRES-1111-1111-525400e4297f'
+                "
                 [orderStatusCode]="'DISPENSED'"
                 (selectPatient)="onSelectPatient($event)"
               ></app-patient-list>
