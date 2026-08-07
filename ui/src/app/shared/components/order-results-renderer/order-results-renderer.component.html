@@ -39,7 +39,7 @@
               .length > 0
           "
         >
-          <tr *ngIf="!labTest?.voided">
+          <tr *ngIf="order.uuid !== labOrder.uuid">
             <td
               [attr.rowspan]="
                 showParameters[labTest?.uuid]
@@ -100,13 +100,13 @@
                   />
                   <span>More details</span>
                 </button>
-                <!-- <button
+                <button
                     mat-menu-item
                     (click)="onDeleteTest($event, labTest)"
                   >
                     <mat-icon>delete</mat-icon>
                     <span>Delete</span>
-                  </button> -->
+                  </button>
               </mat-menu>
             </td>
           </tr>
@@ -226,13 +226,13 @@
                   />
                   <span>More details</span>
                 </button>
-                <!-- <button
+                <button
                     mat-menu-item
                     (click)="onDeleteTest($event, labTest)"
                   >
                     <mat-icon>delete</mat-icon>
                     <span>Delete</span>
-                  </button> -->
+                  </button>
               </mat-menu>
             </td>
           </tr>
