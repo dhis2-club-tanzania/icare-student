@@ -35,6 +35,7 @@ import { GoogleAnalyticsService } from "src/app/google-analytics.service";
 })
 export class PatientListComponent implements OnInit, OnChanges {
   @Input() currentLocation: any;
+  @Input() currentPage: number = 1;
   @Input() isTabularList: boolean;
   @Input() visits: Visit[];
   @Input() shouldShowParentLocation: boolean;
@@ -52,6 +53,7 @@ export class PatientListComponent implements OnInit, OnChanges {
   @Input() encounterType: string;
   @Input() includeDeadPatients: boolean;
   @Input() isDischarge?: boolean = false;
+  @Output() pageChange = new EventEmitter<number>();
 
   page: number = 0;
   visits$: Observable<Visit[]>;
@@ -350,4 +352,8 @@ export class PatientListComponent implements OnInit, OnChanges {
         })
       );
   }
+
+onPageChanged(page: number): void {
+  this.pageChange.emit(page);
+}
 }

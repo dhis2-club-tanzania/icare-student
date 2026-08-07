@@ -15,7 +15,14 @@ import { getVisitLoadingState } from "src/app/store/selectors/visit.selectors";
 export class SampleCollectionHomeComponent implements OnInit {
   loadingVisit$: Observable<boolean>;
   privileges$: Observable<any>;
+  currentPage: number = 1;
   constructor(private store: Store<AppState>) {}
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    // Store current page in sessionStorage
+    sessionStorage.setItem('sampleCollectionPage', page.toString());
+  }
 
   ngOnInit(): void {
     this.loadingVisit$ = this.store.pipe(select(getVisitLoadingState));
@@ -90,6 +97,7 @@ export class SampleCollectionHomeComponent implements OnInit {
 
   onSelectPatient(patient) {
     this.store.dispatch(addCurrentPatient({ patient }));
+    sessionStorage.setItem('sampleCollectionPage', this.currentPage.toString());
     this.store.dispatch(
       go({
         path: [
