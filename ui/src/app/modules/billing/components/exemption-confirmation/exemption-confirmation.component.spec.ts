@@ -22,8 +22,9 @@ describe('ExemptionConfirmationComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
+// change  expect**ExemptionFullConfirmationComponent** to **ExemptionConfirmationComponent**
   it('should create', () => {
+    
     expect(component).toBeTruthy();
   });
 });

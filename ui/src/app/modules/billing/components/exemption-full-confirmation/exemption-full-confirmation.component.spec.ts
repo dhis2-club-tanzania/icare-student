@@ -7,6 +7,7 @@ import { ExemptionFullConfirmationComponent } from './exemption-full-confirmatio
 import { matDialogRefMock } from 'src/test-mocks/material.mocks';
 
 describe('ExemptionFullConfirmationComponent', () => {
+  // Compare this snippet from ui/src/app/modules/billing/components/exemption-confirmation/exemption-confirmation.component.spec.ts:
   let component: ExemptionFullConfirmationComponent;
   let fixture: ComponentFixture<ExemptionFullConfirmationComponent>;
 
