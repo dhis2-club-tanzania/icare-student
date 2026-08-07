@@ -349,4 +349,11 @@ export class LocationService {
         catchError((error) => of(error))
       );
   }
+
+  addAllLocations(data: any): Observable<LocationCreate> {
+    return from(this.api.location.createLocation(data)).pipe(
+      map((response) => response),
+      catchError((error) => of(error))
+    );
+  }
 }
