@@ -37,6 +37,12 @@ const reducer = createReducer(
       loadingLocationById: false,
     })
   ),
+  on(addCountryLocations, (state, { countryLocations }) =>
+    locationsAdapter.addMany(locations, {
+      ...state,
+      ...loadedBaseState
+    })
+  ),
   on(loadingLocationsFails, (state, { error }) => ({
     ...state,
     error,
