@@ -94,6 +94,13 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
+### Result Synchronization
+
+- Shared Service: `ResultsSyncService`
+- Lab Module: Emits changes on result save.
+- Clinic Module: Subscribes to updates for live synchronization.
+
+
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
 ## Further help

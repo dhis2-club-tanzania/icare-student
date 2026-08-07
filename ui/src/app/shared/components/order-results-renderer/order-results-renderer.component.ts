@@ -19,6 +19,7 @@ import { OrdersService } from "../../resources/order/services/orders.service";
 import { Visit } from "../../resources/visits/models/visit.model";
 import { DeleteConfirmationComponent } from "../delete-confirmation/delete-confirmation.component";
 import { SharedConfirmationComponent } from "../shared-confirmation/shared-confirmation.component";
+import { ResultsSyncService } from "../../services/results-sync.service";
 
 @Component({
   selector: "app-order-results-renderer",
@@ -60,7 +61,8 @@ export class OrderResultsRendererComponent implements OnInit {
     private store: Store<AppState>,
     private dialog: MatDialog,
     private investigationPrecedureService: InvestigationProcedureService,
-    private ordersService: OrdersService
+    private ordersService: OrdersService,
+    private resultsSyncService: ResultsSyncService
   ) {}
 
   ngOnInit(): void {
@@ -94,6 +96,14 @@ export class OrderResultsRendererComponent implements OnInit {
       },
     ];
     this.voidingLabOrderState$ = this.store.select(getLabOrderVoidingState);
+    this.resultsSyncService.resultsUpdated$.subscribe((updatedResults) => {
+      if (updatedResults) {
+        this.labOrdersResultsInformation = this.labOrdersResultsInformation.map((order) => {
+          const updatedOrder = updatedResults.find((res) => res.uuid === order.uuid);
+          return updatedOrder ? { ...order, ...updatedOrder } : order;
+      });
+    }
+  });
   }
 
   toggleParametes(event: Event, labTest: any): void {
