@@ -30,7 +30,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
   formValuesData: any = {};
   procedures$: Observable<any>;
   fields: string =
-    "custom:(uuid,encounters:(uuid,location:(uuid,display),encounterType,display,encounterProviders,encounterDatetime,voided,obs,orders:(uuid,display,orderer,orderType,dateActivated,dateStopped,autoExpireDate,orderNumber,concept,display)))";
+    "custom:(uuid,encounters:(uuid,location:(uuid,display),encounterType,display,encounterProviders,encounterDatetime,voided,obs,orders:(uuid,display,orderer,orderType,dateActivated,dateStopped,autoExpireDate,orderNumber,concept,display,voided)))";
   creatingProceduresResponse$: Observable<any>;
   addingProcedure: boolean = false;
   hasError: boolean = false;
@@ -52,13 +52,11 @@ export class PatientProceduresSummaryComponent implements OnInit {
       this.patientVisit.uuid,
       this.fields
     );
-    this.procedures$.subscribe((item)=>{
-      console.log("procedures ------------------------------>",item)
-    })
-    
-    this.observationsKeyedByConcepts$ = this.store.select(
-      getGroupedObservationByConcept
-    );
+    this.procedures$.subscribe((item) => {
+      console.log("procedures ------------------------------>", item);
+    });
+
+    this.observationsKeyedByConcepts$ = this.store.select(getGroupedObservationByConcept);
     this.formFields = [
       {
         id: "procedure",
@@ -71,9 +69,7 @@ export class PatientProceduresSummaryComponent implements OnInit {
         options:
           this.investigationAndProceduresFormsDetails &&
           this.investigationAndProceduresFormsDetails?.setMembers
-            ? getProcedures(
-                this.investigationAndProceduresFormsDetails?.setMembers
-              )
+            ? getProcedures(this.investigationAndProceduresFormsDetails?.setMembers)
             : [],
         conceptClass: "procedure",
         searchControlType: "searchFromOptions",
@@ -107,26 +103,20 @@ export class PatientProceduresSummaryComponent implements OnInit {
         {
           concept: this.formValuesData["procedure"]?.value,
           orderType: (this.orderTypes.filter(
-            (orderType) =>
-              orderType?.display.toLowerCase().indexOf("procedure") === 0
+            (orderType) => orderType?.display.toLowerCase().indexOf("procedure") === 0
           ) || [])[0]?.uuid,
           action: "NEW",
           patient: this.patientVisit?.patientUuid,
-          careSetting: !this.patientVisit?.isAdmitted
-            ? "OUTPATIENT"
-            : "INPATIENT",
+          careSetting: !this.patientVisit?.isAdmitted ? "OUTPATIENT" : "INPATIENT",
           orderer: this.provider?.uuid,
           urgency: "ROUTINE",
           instructions: this.formValuesData["remarks"]?.value,
-          encounter: JSON.parse(localStorage.getItem("patientConsultation"))[
-            "encounterUuid"
-          ],
+          encounter: JSON.parse(localStorage.getItem("patientConsultation"))["encounterUuid"],
           type: "order",
         },
       ];
     }
-    this.creatingProceduresResponse$ =
-      this.ordersService.createOrdersViaEncounter(procedures);
+    this.creatingProceduresResponse$ = this.ordersService.createOrdersViaEncounter(procedures);
 
     this.creatingProceduresResponse$.subscribe((response) => {
       if (response) {
@@ -159,7 +149,6 @@ export class PatientProceduresSummaryComponent implements OnInit {
   }
 
   onDeleteProcedure(e: Event, procedure: any) {
-    // e.stopPropagation();
     const confirmDialog = this.dialog.open(SharedConfirmationComponent, {
       minWidth: "25%",
       data: {
@@ -172,20 +161,23 @@ export class PatientProceduresSummaryComponent implements OnInit {
     });
     confirmDialog.afterClosed().subscribe((confirmationObject) => {
       if (confirmationObject?.confirmed) {
+        this.addingProcedure = true;
         this.ordersService
           .voidOrderWithReason({
-            ...procedure,
+            uuid: procedure?.uuid,
             voidReason: confirmationObject?.remarks || "",
           })
           .subscribe((response) => {
+            this.addingProcedure = false;
+
             if (!response?.error) {
               this.procedures$ = this.visitService.getActiveVisitProcedures(
                 this.patientVisit.uuid,
                 this.fields
               );
-            }
-            if (response?.error) {
-              this.errors = [...this.errors, response?.error];
+              this.updateConsultationOrder.emit();
+            } else {
+              this.errors = [...(this.errors || []), response?.error];
             }
           });
       }
