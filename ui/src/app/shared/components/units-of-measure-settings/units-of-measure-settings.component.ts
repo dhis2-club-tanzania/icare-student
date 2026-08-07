@@ -98,5 +98,20 @@ export class UnitsOfMeasureSettingsComponent implements OnInit {
       });
   }
 
-  onEdit(concept: ConceptGet): void {}
+  onEdit(concept: ConceptGet): void {
+    this.dialog
+    .open(ManageUnitOfMeasureModalComponent, {
+      minWidth: "40%",
+      data: {
+       
+      },
+    })
+    .afterClosed()
+    .subscribe((shouldReloadData) => {
+      if (shouldReloadData) {
+        this.getUnitsOfMeasure();
+      }
+    });
+
+  }
 }
