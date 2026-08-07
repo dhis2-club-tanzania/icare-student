@@ -78,7 +78,7 @@ export class GeneralDispensingFormComponent implements OnInit {
   errors: any[] = [];
   selectedDrug: any;
   keyedPreviousVisitDrugOrders$: Observable<any>;
-
+  selectedDosingUnit: any; 
   constructor(
     private ordersService: OrdersService,
     private observationService: ObservationService,
@@ -149,12 +149,13 @@ export class GeneralDispensingFormComponent implements OnInit {
   ): void {
     this.selectedDrug = null;
     this.isFormValid = formValues.isValid;
-
+  
     this.formValues = { ...this.formValues, ...formValues.getValues() };
-
+  
     const doseDataValueKey: any = (Object.keys(this.formValues)?.filter(
       (key) => this.formValues[key]?.label === "Dose"
     ) || [])[0];
+  
     this.isFormValid =
       this.isFormValid &&
       this.formValues[doseDataValueKey]?.value?.length > 0 &&
@@ -162,12 +163,55 @@ export class GeneralDispensingFormComponent implements OnInit {
       this.formValues?.frequency?.value?.length > 0
         ? true
         : false;
+  
     if (
       formValues.getValues()?.drug?.value?.length > 0 ||
       (formValues.getValues()?.drug?.value as any)?.display
     ) {
       this.selectedDrug = formValues.getValues()?.drug?.value;
+      // console.log("Selected drug:", this.selectedDrug);
+      // Check if drug name contains units
+      const drugName = this.selectedDrug?.display || "";
+      // console.log("Drug name:", drugName);
+  
+      // Subscribe to dosing units observable and process the result
+      this.dosingUnits$.subscribe((dosingUnitsResponse) => {
+        // Extract the array of dosing units from `answers` or `setMembers`
+        const dosingUnits = dosingUnitsResponse?.answers || dosingUnitsResponse?.setMembers || [];
+        // console.log("Available dosing units:", dosingUnits);
+  
+        // Find all matching units in the drug name
+        const matchingUnits = dosingUnits.filter((unit: any) =>
+          drugName.toLowerCase().includes(unit.display.toLowerCase())
+        );
+  
+        if (matchingUnits.length > 0) {
+          // Define a prioritization order for units
+          const prioritizationOrder = ["tablet", "capsule", "mg", "ml"];
+  
+          // Sort matching units by prioritization order
+          const prioritizedUnit =
+            matchingUnits.sort((a, b) => {
+              const indexA = prioritizationOrder.indexOf(a.display);
+              const indexB = prioritizationOrder.indexOf(b.display);
+              return (
+                (indexA === -1 ? Infinity : indexA) -
+                (indexB === -1 ? Infinity : indexB)
+              );
+            })[0];
+  
+          // Automatically set the dosing unit to the best match
+          this.formValues["dosingUnit"] = {
+            value: prioritizedUnit.uuid,
+            label: prioritizedUnit.display,
+          };
+          this.selectedDosingUnit = prioritizedUnit.display;
+          console.log("Selected dosing unit:", this.selectedDosingUnit);
+          
+        }
+      });
     }
+  
     if (fieldItem == "drug" && !this.specificDrugConceptUuid) {
       this.drugService
         .getDrugsUsingConceptUuid(this.formValues?.drug?.value)
@@ -199,6 +243,7 @@ export class GeneralDispensingFormComponent implements OnInit {
         });
     }
   }
+  
 
   saveOrder(e: any, conceptFields: any) {
     if (!this.formValues?.drug?.value) {
