@@ -79,8 +79,10 @@ export class PricingItemComponent implements OnInit {
   }
 
   onSaveItemPrice(e) {
+    e.preventDefault(); 
     e.stopPropagation();
     this.showForm = false;
+
     this.saveItemPrice.emit({
       item: {
         uuid: this.pricingItem?.uuid,
