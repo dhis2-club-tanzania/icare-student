@@ -397,9 +397,9 @@ public class ICareController {
 	public Map<String, Object> onPostDrugOrderCreation(@RequestBody Map<String, Object> orderObject) throws Exception {
 		Prescription prescription = Prescription.fromMap(orderObject);
 		
-		String previousOrderUuid = null;
-		if (orderObject.get("previousOrder") != null) {
-			previousOrderUuid = orderObject.get("previousOrder").toString();
+		String previousOrder = null;
+		if (orderObject.get("previousOrder") = null) {// change the previous OrderUuids
+			previousOrder = orderObject.get("previousOrder").toString();
 		}
 		
 		ConceptService conceptService = Context.getConceptService();
