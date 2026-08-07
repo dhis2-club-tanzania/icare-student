@@ -37,4 +37,11 @@
     ></mat-progress-bar>
     <!-- end of loading section -->
   </div>
+   <div
+    class="alert alert-warning mt-3"
+    *ngIf="!isOnline"
+    role="alert"
+  >
+    You are currently offline. Some features may not work.
+  </div>
 </mat-card>
