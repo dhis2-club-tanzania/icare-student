@@ -30,6 +30,7 @@ export class ClinicPatientListComponent implements OnInit {
   labTestOrderType$: Observable<any>;
   showAllPatientsTab$: Observable<any>;
   userPrivileges$: Observable<any>;
+  savedSelectedTab: any;
   constructor(
     private store: Store<AppState>,
     private systemSettingsService: SystemSettingsService,
@@ -67,6 +68,12 @@ export class ClinicPatientListComponent implements OnInit {
         `iCare.clinic.settings.patientsListGroups.showAllPatientsTab`
       );
     this.userPrivileges$ = this.store.select(getCurrentUserPrivileges);
+
+    this.savedSelectedTab = localStorage.getItem("activeTab");
+
+    if(this.savedSelectedTab != null) {
+      this.selectedTab.setValue(parseInt(this.savedSelectedTab));
+    }
   }
 
   onSelectPatient(patient: any) {
@@ -84,6 +91,7 @@ export class ClinicPatientListComponent implements OnInit {
 
   changeTab(index) {
     this.selectedTab.setValue(index);
+    localStorage.setItem("activeTab", index.toString());
     index == 0
       ? this.trackActionForAnalytics(`Awaiting Consultation : Open`)
       : index == 1
