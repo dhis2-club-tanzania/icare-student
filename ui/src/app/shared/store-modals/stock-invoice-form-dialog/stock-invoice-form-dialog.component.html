@@ -26,7 +26,7 @@
     [existingStockInvoice]="data?.stockInvoice"
     [stockInvoiceItem]="data?.stockInvoiceItem"
     [currentLocation]="data?.currentLocation"
-    [hideAddedItems]="true"
+    [hideAddedItems]="false"
     (closeDialog)="onClosePopup()"
   ></app-stock-receiving-form>
   <div class="mt-2 mb-2" *ngIf="!data?.stockInvoice">
