@@ -1,38 +1,37 @@
+
 <div class="pricing-item">
-  <!-- view item price info -->
+  <!-- View item price info -->
   <div class="price-view" *ngIf="!showForm">
     <span>{{ itemValue }}</span>
     <button
       mat-icon-button
+      type="button"
       (click)="onToggleForm($event)"
       class="price-edit-button"
     >
-      <mat-icon inline id="edit-price-{{ pricingItem?.htmlDisplay }}"
-        >edit</mat-icon
-      >
+      <mat-icon inline id="edit-price-{{ pricingItem?.htmlDisplay }}">edit</mat-icon>
     </button>
   </div>
-  <!-- end of view item price info -->
+  <!-- End of view item price info -->
 
-  <!-- item price editing -->
+  <!-- Item price editing -->
   <div class="price-edit d-flex w-100 align-items-center" *ngIf="showForm">
     <app-form
       class="w-100"
       [fields]="[pricingItemField]"
       [fieldClass]="'item-price-input-' + pricingItem?.htmlDisplay"
       (formUpdate)="onPriceUpdate($event)"
-    >
-    </app-form>
+    ></app-form>
     <app-form
-    class="w-100"
-    [fields]="[payableItemField]"
-    [fieldClass]="'item-price-input-' + pricingItem?.htmlDisplay"
-    (formUpdate)="onPayableUpdate($event)"
-  >
-  </app-form>
-    
+      class="w-100"
+      [fields]="[payableItemField]"
+      [fieldClass]="'item-price-input-' + pricingItem?.htmlDisplay"
+      (formUpdate)="onPayableUpdate($event)"
+    ></app-form>
+
     <button
       mat-stroked-button
+      type="button"
       (click)="onToggleForm($event)"
       class="ml-1 mt-n3"
       style="height: 36px"
@@ -41,6 +40,7 @@
     </button>
     <button
       mat-flat-button
+      type="button"
       id="save-price-btn-{{ pricingItem?.htmlDisplay }}"
       class="ml-2 mt-3"
       color="primary"
@@ -51,5 +51,6 @@
       <mat-icon>edit</mat-icon>
     </button>
   </div>
-  <!-- end of price editing -->
+  <!-- End of price editing -->
 </div>
+

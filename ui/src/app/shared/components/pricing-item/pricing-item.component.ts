@@ -73,14 +73,19 @@ export class PricingItemComponent implements OnInit {
     });
   }
 
-  onToggleForm(e) {
-    e.stopPropagation();
+
+
+  onToggleForm(event: Event): void {
+    event.preventDefault(); // Prevent default behavior (form submission or page reload)
+    event.stopPropagation(); // Stop the event from bubbling up
     this.showForm = !this.showForm;
   }
-
-  onSaveItemPrice(e) {
-    e.stopPropagation();
+  
+  onSaveItemPrice(event: Event): void {
+    event.preventDefault(); // Prevent default behavior
+    event.stopPropagation(); // Stop the event from bubbling up
     this.showForm = false;
+  
     this.saveItemPrice.emit({
       item: {
         uuid: this.pricingItem?.uuid,
@@ -91,12 +96,36 @@ export class PricingItemComponent implements OnInit {
       payable: this.priceObject[this.fieldId + "-payable"]?.value,
       payablePaymentMode:
         this.cashPaymentType && this.cashPaymentType?.uuid
-          ? {
-              uuid: this.cashPaymentType?.uuid,
-            }
+          ? { uuid: this.cashPaymentType?.uuid }
           : null,
     });
   }
+  
+
+  // onToggleForm(e) {
+  //   e.stopPropagation();
+  //   this.showForm = !this.showForm;
+  // }
+
+  // onSaveItemPrice(e) {
+  //   e.stopPropagation();
+  //   this.showForm = false;
+  //   this.saveItemPrice.emit({
+  //     item: {
+  //       uuid: this.pricingItem?.uuid,
+  //     },
+  //     paymentType: { uuid: this.paymentScheme?.paymentTypeUuid },
+  //     paymentScheme: { uuid: this.paymentScheme?.concept?.uuid },
+  //     price: this.priceObject[this.fieldId]?.value,
+  //     payable: this.priceObject[this.fieldId + "-payable"]?.value,
+  //     payablePaymentMode:
+  //       this.cashPaymentType && this.cashPaymentType?.uuid
+  //         ? {
+  //             uuid: this.cashPaymentType?.uuid,
+  //           }
+  //         : null,
+  //   });
+  // }
 
   onPriceUpdate(formValue: FormValue) {
     this.formValue = formValue;
