@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { getGenericDrugPrescriptionsFromVisit } from "../../helpers/visits.helper";
 import { uniqBy, keyBy } from "lodash";
+import { add, parseISO } from 'date-fns';
 import { Observable } from "rxjs";
 import { FormValue } from "src/app/shared/modules/form/models/form-value.model";
 import {
@@ -201,6 +203,16 @@ export class GeneralDispensingFormComponent implements OnInit {
   }
 
   saveOrder(e: any, conceptFields: any) {
+    
+    const prescriptions = getGenericDrugPrescriptionsFromVisit(this.currentVisit, this.orderType);
+    let drug_obs;
+    for (const item of prescriptions) {
+      if (item.obs[this.specificDrugConceptUuid]?.comment === this.formValues?.drug?.value.drug.display) {
+        drug_obs = item.obs;
+        break; // Exit the loop once the condition is met
+      }
+    }
+    
     if (!this.formValues?.drug?.value) {
       this.errors = [];
       setTimeout(() => {
@@ -214,7 +226,41 @@ export class GeneralDispensingFormComponent implements OnInit {
           },
         ];
       });
-    } else {
+    } 
+    
+ if(drug_obs &&
+      drug_obs[this.specificDrugConceptUuid].comment === this.formValues?.drug?.value.drug.display
+    ) {
+      const duration = parseInt(drug_obs[this.generalPrescriptionDurationConcept].display.split(': ')[1], 10)
+      const unit = drug_obs[this.durationUnitsSettings].display.split(': ')[1].toLowerCase()
+      const now = new Date();
+      const obs_datetime = drug_obs[this.specificDrugConceptUuid].obsDatetime.replace(/(\+|-)(\d{2})(\d{2})$/, '$1$2:$3')
+    // Define the mapping of units to date-fns duration objects
+      const unitMap: { [key: string]: any } = {
+        minutes: { minutes: duration },
+        hours: { hours: duration },
+        days: { days: duration },
+        weeks: { weeks: duration }, 
+        months: { months: duration },
+        years: { years: duration },
+      };
+      //calculate end date
+      const result_time = add(parseISO(obs_datetime), unitMap[unit]);
+      if (now < result_time) {
+      console.log('tumezuia kurudia dawa mda haujaisha');
+      setTimeout(() => {
+        this.errors = [
+          ...this.errors,
+          {
+            error: {
+              message: "The selected drug is already in the current prescription!",
+            },
+          },
+        ];
+      });
+      return; // Exit early if the condition is met
+     }
+ }
       this.savingOrder = true;
       let encounterObject = {
         patient: this.currentPatient?.id,
@@ -337,5 +383,4 @@ export class GeneralDispensingFormComponent implements OnInit {
 
       this.updateConsultationOrder.emit();
     }
-  }
 }
