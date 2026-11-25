@@ -12,13 +12,7 @@
       } as params"
     >
       <div
-        *ngIf="
-          params?.currentUser &&
-          params?.userPrivileges &&
-          params?.activeVisit &&
-          params?.iCareGeneralConfigurations &&
-          params?.currentLocation
-        "
+        *ngIf="params?.currentUser && params?.userPrivileges && params?.activeVisit && params?.iCareGeneralConfigurations && params?.currentLocation"
       >
         <app-shared-patient-dashboard
           [currentUser]="params?.currentUser"
@@ -27,37 +21,20 @@
           [iCareGeneralConfigurations]="params?.iCareGeneralConfigurations"
           [currentLocation]="params?.currentLocation"
           [isTheatre]="true"
-          [moduleName] = "Theater"
-          []
+          [moduleName]="Theater"
         ></app-shared-patient-dashboard>
       </div>
-      <div
-        class="alert alert-danger mt-2"
-        role="alert"
-        *ngIf="params?.iCareGeneralConfigurations === ''"
-      >
-        Missing General iCare Metadata Configurations, Please set
-        "iCare.GeneralMetadata.Configurations" or Contact IT
+      <div class="alert alert-danger mt-2" role="alert" *ngIf="params?.iCareGeneralConfigurations === ''">
+        Missing General iCare Metadata Configurations, Please set "iCare.GeneralMetadata.Configurations" or Contact IT
       </div>
 
-      <div
-        class="alert alert-danger mt-2"
-        role="alert"
-        *ngIf="params?.iCareClinicConfigurations === ''"
-      >
-        Missing Icare Clinic Configurations. Please set
-        "icare.clinic.configurations" or Contact IT
+      <div class="alert alert-danger mt-2" role="alert" *ngIf="params?.iCareClinicConfigurations === ''">
+        Missing Icare Clinic Configurations. Please set "icare.clinic.configurations" or Contact IT
       </div>
 
       <mat-progress-bar
         mode="indeterminate"
-        *ngIf="
-          !params?.userPrivileges ||
-          params?.rolesLoadingState ||
-          !params?.userPrivileges ||
-          params?.loadingVisit ||
-          !params?.currentLocation
-        "
+        *ngIf="!params?.userPrivileges || params?.rolesLoadingState || !params?.userPrivileges || params?.loadingVisit || !params?.currentLocation"
       ></mat-progress-bar>
     </div>
   </div>
